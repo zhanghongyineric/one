@@ -72,6 +72,26 @@ export const asyncRoutes = [
   informationManageRouter, // 信息管理
   liveMonitorRouter, // 实时监控
   statisticsInquireRouter, // 统计查询
+  {
+    path: '/advertising-management',
+    component: Layout,
+    redirect: 'noRedirect',
+    hidden: false,
+    alwaysShow: false,
+    meta: {
+      title: '广告管理',
+      icon: 'el-icon-star-on',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'advertising-management1',
+        name: 'AdvertisingManagement',
+        component: () => import('@/views/advertising-management'),
+        meta: { title: '广告管理' }
+      },
+    ]
+  },
   businessManagementRouter, // 业务管理
   systemManageRouter, // 系统管理路由 <<<<<<<这个放最下面，新增的放上面>>>>>>>
   // 404 page must be placed at the end !!!
