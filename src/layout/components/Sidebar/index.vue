@@ -1,0 +1,151 @@
++<template>
+  <div :class="{'has-logo':showLogo}">
+    <logo v-if="showLogo" :collapse="isCollapse" />
+    <el-scrollbar wrap-class="scrollbar-wrapper">
+      <el-menu
+        :default-active="activeMenu"
+        :collapse="isCollapse"
+        :background-color="variables.menuBg"
+        :text-color="variables.menuText"
+        :unique-opened="false"
+        :active-text-color="variables.menuActiveText"
+        :collapse-transition="false"
+        mode="vertical"
+      >
+        <sidebar-item v-for="route in permission_routes" :key="route.path" :item="route" :base-path="route.path" />
+      </el-menu>
+      <div class="footer " :style="{display:isCollapse?'none':'block' }">
+        <div class="box f-col-sb-c">
+          <div style="height: 34px;overflow:hidden;" class="f-c">
+            <div id="he-plugin-simple" />
+          </div>
+          <span class="time">{{ this.time }}</span>
+          <div class="date">
+            <span>{{ this.date }}</span>
+          </div>
+          <div class="company">
+            四川明亚智行提供技术支持
+          </div>
+        </div>
+      </div>
+    </el-scrollbar>
+
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import Logo from './Logo'
+import SidebarItem from './SidebarItem'
+import variables from '@/styles/variables.scss'
+import { parseTime } from '@/utils'
+
+export default {
+  components: { SidebarItem, Logo },
+  data() {
+    return {
+      date: '-',
+      time: '-'
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'permission_routes',
+      'sidebar'
+    ]),
+    activeMenu() {
+      const route = this.$route
+      const { meta, path } = route
+      // if set path, the sidebar will highlight the path you set
+      if (meta.activeMenu) {
+        return meta.activeMenu
+      }
+      return path
+    },
+    showLogo() {
+      return this.$store.state.settings.sidebarLogo
+    },
+    variables() {
+      return variables
+    },
+    isCollapse() {
+      return !this.sidebar.opened
+    }
+  },
+  created() {
+    this.setTime()
+    setInterval((item, index) => {
+      this.setTime()
+    }, 1000)
+  },
+  mounted() {
+    window.WIDGET = {
+      'CONFIG': {
+        'modules': '01234',
+        'background': '5',
+        'tmpColor': 'FFFFFF',
+        'tmpSize': '16',
+        'cityColor': 'FFFFFF',
+        'citySize': '16',
+        'aqiColor': 'FFFFFF',
+        'aqiSize': '16',
+        'weatherIconSize': '24',
+        'alertIconSize': '18',
+        'padding': '10px 10px 10px 10px',
+        'shadow': '0',
+        'language': 'auto',
+        'fixed': 'false',
+        'vertical': 'top',
+        'horizontal': 'left',
+        'key': 'd1f6aa034c234ecca3d998d02d94165b'
+      }
+    };
+    (function(d) {
+      const script = d.getElementsByTagName('script')[0]
+      const newScript = d.createElement('script')
+      newScript.src = 'https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0'
+      script.parentNode.insertBefore(newScript, script)
+    })(document)
+  },
+  methods: {
+
+    // 设置日期
+    setTime() {
+      this.date = parseTime(new Date(), '{y}年{m}月{d}日 星期{a}')
+      this.time = parseTime(new Date(), '{h}:{i}:{s}')
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+.footer{
+  //position: absolute;
+  //bottom: 0;
+  //left: 0;
+  width: 210px;
+  height: 150px;
+  padding-bottom: 20px;
+  font-size: 16px;
+  color:white;
+  .box{
+    height: 100%;
+    >div{
+      width: 100%;
+      text-align: center;
+    }
+    .weather{
+      img{
+        width: 20px;
+        height: 20px;
+      }
+      .temperature{
+      }
+    }
+    .time{
+      font-size: 20px;
+    }
+    .company{
+      text-align: center;
+    }
+  }
+}
+</style>

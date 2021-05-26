@@ -1,0 +1,214 @@
+@import './variables.scss';
+@import './mixin.scss';
+@import './transition.scss';
+@import './element-ui.scss';
+@import './sidebar.scss';
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
+
+ul{
+  list-style: none;
+}
+
+label {
+  font-weight: 700;
+}
+
+
+
+#app {
+  height: 100%;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+div:focus {
+  outline: none;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+// main-container global css
+.app-container {
+  //padding: 20px;
+}
+
+//定制内容布局
+.layout-content {
+  margin: 24px;
+}
+
+//定制搜索栏和弹窗的样式
+.table-page-search-wrapper, .base-dialog {
+
+  .el-select {
+    width: 100%;
+  }
+
+  .el-date-editor {
+    width: 100%;
+  }
+
+  .el-input-number {
+    width: 100%;
+  }
+
+  .table-page-search-submitButtons {
+    margin-bottom: 20px;
+  }
+
+  .el-dialog__body {
+    padding: 30px 40px;
+  }
+}
+
+//弹窗宽度
+.dialog-col-1 {
+  max-width: 600px;
+}
+
+.dialog-col-2 {
+  width: 800px;
+}
+
+.dialog-col-3 {
+  width: 1100px;
+}
+
+.dialog-col-4 {
+  width: 1400px;
+}
+
+
+/*
+  flex布局通用类名
+*/
+
+.f-1{
+  flex: 1;
+}
+.f-c{
+  display: flex;
+  justify-content: center;
+}
+.f-fe{
+  display: flex;
+  justify-content: flex-end;
+}
+.f-sb{
+  display: flex;
+  justify-content: space-between;
+}
+.f-sa{
+  display: flex;
+  justify-content: space-around;
+}
+.f-c-c{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.f-sb-c{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.f-sa-c{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+//纵向布局
+.f-col{
+  display: flex;
+  flex-direction: column;
+}
+.f-col-sb-c{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+/*
+  flex布局定制类名
+*/
+.f{
+  display: flex;
+}
+.f-i{
+  display: inline-flex;
+}
+
+//排列方向
+.fd-c{
+  flex-direction: column;
+}
+
+//主轴上的对齐方式
+.jc-c{
+  justify-content: center;
+}
+.jc-sb{
+  justify-content: space-between;
+}
+.jc-sa{
+  justify-content: space-around;
+}
+.jc-fe{
+  justify-content: flex-end;
+}
+
+//在交叉轴上如何对齐
+.ai-c{
+  align-items: center;
+}
+.ai-fe{
+  align-items: flex-end;
+}
+
+
+//超出省略
+.ellipsis{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

@@ -1,0 +1,223 @@
+<template>
+  <div class="navbar clearfix">
+    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+
+    <breadcrumb class="breadcrumb-container" />
+
+    <div v-if="role" class="right-menu">
+      <div class="role">
+        当前身份:{{ role |roleFilter }}
+      </div>
+      <el-dropdown class="avatar-container" trigger="hover">
+        <div class="f-c-c" style="cursor:pointer;height: 100%">
+          <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px" />
+          <span class="username">{{ name }}</span>
+        </div>
+        <el-dropdown-menu slot="dropdown" class="user-dropdown">
+          <el-dropdown-item @click.native="handleUpdate">
+            <span style="display:block;">修改密码</span>
+          </el-dropdown-item>
+          <el-dropdown-item @click.native="logout">
+            <span style="display:block;">退出登录</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <ChangePassword
+        ref="password"
+        :visible.sync="dialogFormVisible"
+      />
+    </div>
+
+  </div>
+</template>
+
+<script>
+import { mapGetters } from 'vuex'
+import Breadcrumb from '@/components/Breadcrumb'
+import ChangePassword from './ChangePassword'
+import Hamburger from '@/components/Hamburger'
+import { roleOption } from '@/options'
+import connect from '@/utils/mqtt'
+
+export default {
+  components: {
+    Breadcrumb,
+    Hamburger,
+    ChangePassword
+  },
+  filters: {
+    roleFilter: function(role) {
+      return roleOption.map[role]
+    }
+  },
+  data() {
+    return {
+      dialogFormVisible: false
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'sidebar',
+      'name',
+      'role'
+    ])
+  },
+  created() {
+    // this.initMqtt() //初始化mqtt
+  },
+  beforeDestroy() {
+    // this.client.end(true)// passing it to true will close the client right away, without waiting for the in-flight messages to be acked. This parameter is optional.
+    // console.log('关闭链接')
+  },
+  methods: {
+    initMqtt() {
+      this.client = connect()
+      this.client.on('connect', () => {
+        console.log('连接成功')
+        // 订阅多个主题,必须先订阅才能在 message 中 收到消息
+        this.client.subscribe(
+          ['test'], // 订阅主题
+          { qos: 1 }, // 保证消息传递次数
+          (err) => {
+            console.log(err || '订阅成功')
+          }
+        )
+      })
+      // 失败重连
+      this.client.on('reconnect', (error) => {
+        console.log('正在重连:', error)
+      })
+      // 连接失败
+      this.client.on('error', (error) => {
+        console.log('连接失败:', error)
+      })
+      // 接收消息
+      this.client.on('message', (topic, message) => {
+        console.log('收到消息：', topic, message.toString())
+        this.$notify({
+          type: 'success',
+          title: '收到消息',
+          duration: 0,
+          message: message.toString()
+        })
+      })
+    },
+    toggleSideBar() {
+      this.$store.dispatch('app/toggleSideBar')
+    },
+    async logout() {
+      const loading = this.$loading({
+        lock: true,
+        text: '正在退出登录...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      try {
+        await this.$store.dispatch('user/logout')
+        loading.close()
+        this.$router.push(`/login?redirect=${this.$route.path}&query=${JSON.stringify(this.$route.query)}`)
+      } catch (e) {
+        loading.close()
+      }
+    },
+    handleUpdate() {
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['password'].$refs['dataForm'].clearValidate()
+      })
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.navbar {
+  //height: 50px;
+  //overflow: hidden;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+
+  .hamburger-container {
+    line-height: 46px;
+    height: 100%;
+    float: left;
+    cursor: pointer;
+    transition: background .3s;
+    -webkit-tap-highlight-color: transparent;
+
+    &:hover {
+      background: rgba(0, 0, 0, .025)
+    }
+  }
+
+  .breadcrumb-container {
+    float: left;
+  }
+
+  .right-menu {
+    float: right;
+    display: flex;
+    height: 100%;
+    line-height: 50px;
+
+    &:focus {
+      outline: none;
+    }
+
+    .role {
+      margin-right: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      color: rgb(96, 98, 102)
+    }
+
+    .right-menu-item {
+      display: inline-block;
+      padding: 0 8px;
+      height: 100%;
+      font-size: 18px;
+      color: #5a5e66;
+      vertical-align: text-bottom;
+
+      &.hover-effect {
+        cursor: pointer;
+        transition: background .3s;
+
+        &:hover {
+          background: rgba(0, 0, 0, .025)
+        }
+      }
+    }
+
+    .avatar-container {
+      margin-right: 30px;
+
+      .username {
+        display: flex;
+        font-weight: bold;
+      }
+
+      .avatar-wrapper {
+        margin-top: 5px;
+        position: relative;
+
+        .user-avatar {
+          cursor: pointer;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+        }
+
+        .el-icon-caret-bottom {
+          cursor: pointer;
+          position: absolute;
+          right: -20px;
+          top: 25px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+</style>
