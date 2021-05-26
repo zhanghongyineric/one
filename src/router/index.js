@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import Layout from '@/layout'
+import Layout from '@/layout'
 
 /*
   引入路由模块
@@ -56,17 +56,11 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   redirect: '/home',
-  //   children: [{
-  //     path: 'home',
-  //     name: 'Home',
-  //     component: () => import('@/views/home/'),
-  //     meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin', 'gov', 'unit'] }
-  //   }]
-  // },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/official-website/carousel-images',
+  },
   // companyManageRouter, // 企业管理路由
   // companyRouter, // 企业路由
   // safeCodeRouter, // 安全码管理路由
