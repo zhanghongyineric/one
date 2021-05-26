@@ -10,6 +10,7 @@
       <span class="el-icon-close" style="opacity: 0;height: 0" />
       <div class="title-container">
         <h3 class="title">四川省交通运输安全码大数据平台</h3>
+        <h2 class="subtitle">监测·管理</h2>
       </div>
       <el-form
         ref="loginForm"
@@ -388,9 +389,16 @@ $light_gray: #eee;
     .title {
       font-size: 46px;
       color: $light_gray;
-      margin: 0px auto 100px auto;
+      margin: 0px auto ;
       text-align: center;
       font-weight: bold;
+    }
+    .subtitle{
+      font-size: 30px;
+      text-align: center;
+      font-weight: bold;
+      color: $light_gray;
+      margin-bottom: 80px;
     }
   }
 
