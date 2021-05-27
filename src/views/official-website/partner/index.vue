@@ -165,7 +165,7 @@ export default {
     },
     previewImg(file) {
       this.imgsFiles.push(file.raw)
-      this.fileList.push(file)
+      if (this.modify) this.fileList.push(file)
     },
     handleRemove(file) {
       if (!file.raw) {
@@ -211,11 +211,12 @@ export default {
                 if (this.addFormData.imgUrl) this.addFormData.imgUrl = this.addFormData.imgUrl.concat(';', arr.join(';'))
                 else this.addFormData.imgUrl = arr.join(';')
                 const lastarr = this.addFormData.imgUrl.split(';')
-                if (lastarr[lastarr.length - 1] === '')lastarr.pop()
+                if (lastarr[lastarr.length - 1] === '' || lastarr[lastarr.length - 1][1] !== 'm') {
+                  lastarr.pop()
+                }
                 this.addFormData.imgUrl = lastarr.join(';')
               } else this.addFormData.imgUrl = this.imgArr.join(';')
 
-              // this.addFormData.imgUrl = this.imgArr.join(';')
               this.addFormData.creator = this.$store.state.user.name
               this.addFormData.updator = this.$store.state.user.name
               this.addFormData.creatorNo = this.$store.state.user.userId
