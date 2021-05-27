@@ -201,7 +201,6 @@ export default {
                 const { fileUrl } = item.data
                 this.imgArr.push(fileUrl)
               }
-
               // 判断是修改还是新增，并将原有的数据与现有数据进行比对、重组合
               if (this.modify) {
                 this.addFormData.imgUrl = this.imgArr.join(';')
@@ -209,14 +208,14 @@ export default {
                 this.fileList.forEach(item => {
                   arr.push(item.url.split('.cn')[1])
                 })
-                this.addFormData.imgUrl = this.addFormData.imgUrl.concat(';', arr.join(';'))
-
+                if (this.addFormData.imgUrl) this.addFormData.imgUrl = this.addFormData.imgUrl.concat(';', arr.join(';'))
+                else this.addFormData.imgUrl = arr.join(';')
                 const lastarr = this.addFormData.imgUrl.split(';')
                 if (lastarr[lastarr.length - 1] === '')lastarr.pop()
                 this.addFormData.imgUrl = lastarr.join(';')
               } else this.addFormData.imgUrl = this.imgArr.join(';')
 
-              this.addFormData.imgUrl = this.imgArr.join(';')
+              // this.addFormData.imgUrl = this.imgArr.join(';')
               this.addFormData.creator = this.$store.state.user.name
               this.addFormData.updator = this.$store.state.user.name
               this.addFormData.creatorNo = this.$store.state.user.userId
@@ -228,7 +227,7 @@ export default {
               save(req)
                 .then(res => {
                   this.$message({
-                    message: '新增成功',
+                    message: `${this.modify ? '修改成功' : '新增成功'}`,
                     type: 'success'
                   })
                   this.visible = false

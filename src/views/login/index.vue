@@ -9,7 +9,7 @@
     <div class="outer_box">
       <span class="el-icon-close" style="opacity: 0;height: 0" />
       <div class="title-container">
-        <h3 class="title">四川省交通运输安全码大数据平台</h3>
+        <h3 class="title">四川省交通安全风控大数据平台</h3>
         <h2 class="subtitle">监测·管理</h2>
       </div>
       <el-form
