@@ -68,7 +68,7 @@ const actions = {
       if (dictRes.status === 'fulfilled') {
         // 存储字典数据
         localStorage.setItem('onlineOption', JSON.stringify(dictRes.value.data))
-        console.log('字典数据', dictRes.value.data)
+        // console.log('字典数据', dictRes.value.data)
       }
       if (userRes.status === 'fulfilled') {
         // 设置用户信息

@@ -59,7 +59,7 @@ export const asyncRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/official-website/carousel-images',
+    redirect: '/official-website/carousel-images'
   },
   // companyManageRouter, // 企业管理路由
   // companyRouter, // 企业路由
@@ -86,7 +86,7 @@ export const asyncRoutes = [
         name: 'AdvertisingManagement',
         component: () => import('@/views/advertising-management'),
         meta: { title: '广告管理' }
-      },
+      }
     ]
   },
   informationManageRouter, // 信息管理
