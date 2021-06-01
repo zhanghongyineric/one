@@ -437,3 +437,273 @@ export const driverSafecode = {
     }
   ]
 }
+
+// 服务车辆类型
+export const serviceCarKinds = {
+  list: [
+    {
+      label: '全部',
+      value: '1'
+    },
+    {
+      label: '班线客运',
+      value: '2'
+    },
+    {
+      label: '旅游客运',
+      value: '3'
+    },
+    {
+      label: '包车客运',
+      value: '4'
+    },
+    {
+      label: '农村客运',
+      value: '5'
+    },
+    {
+      label: '普通货车',
+      value: '6'
+    },
+    {
+      label: '重型货车',
+      value: '7'
+    },
+    {
+      label: '危险品运输车辆',
+      value: '8'
+    }
+  ]
+}
+
+// 服务车辆类型(不包含全部)
+export const serviceCarKindsNotAll = {
+  list: [
+    {
+      label: '班线客运',
+      value: '2'
+    },
+    {
+      label: '旅游客运',
+      value: '3'
+    },
+    {
+      label: '包车客运',
+      value: '4'
+    },
+    {
+      label: '农村客运',
+      value: '5'
+    },
+    {
+      label: '普通货车',
+      value: '6'
+    },
+    {
+      label: '重型货车',
+      value: '7'
+    },
+    {
+      label: '危险品运输车辆',
+      value: '8'
+    },
+    {
+      label: '其他车辆',
+      value: '9'
+    }
+  ]
+}
+
+// 接入平台性质
+export const accessPlatformBelong = {
+  list: [
+    {
+      label: '全部',
+      value: '1'
+    },
+    {
+      label: '经营性',
+      value: '2'
+    },
+    {
+      label: '非经营性',
+      value: '3'
+    }
+  ]
+}
+
+// 接入平台类型
+export const accessPlatformKinds = {
+  list: [
+    {
+      label: '全部',
+      value: ''
+    },
+    {
+      label: '企业监控平台',
+      value: ''
+    },
+    {
+      label: '政府监管平台',
+      value: ''
+    }
+  ]
+}
+
+// 平台支持功能
+export const platformSupportFeatures = {
+  list: [
+    {
+      label: '全部',
+      value: ''
+    },
+    {
+      label: '行驶记录仪',
+      value: ''
+    },
+    {
+      label: '视频监控',
+      value: ''
+    },
+    {
+      label: '高级驾驶辅助系统ADAS',
+      value: ''
+    },
+    {
+      label: '驾驶员状态监测系统LKP',
+      value: ''
+    },
+    {
+      label: '胎压监测系统TPMS',
+      value: ''
+    }
+  ]
+}
+
+// 平台支持功能(不包含全部)
+export const platformSupportFeaturesNotAll = {
+  list: [
+    {
+      label: '行驶记录仪',
+      value: ''
+    },
+    {
+      label: '视频监控',
+      value: ''
+    },
+    {
+      label: '高级驾驶辅助系统ADAS',
+      value: ''
+    },
+    {
+      label: '驾驶员状态监测系统LKP',
+      value: ''
+    },
+    {
+      label: '胎压监测系统TPMS',
+      value: ''
+    },
+    {
+      label: '盲区监测BSD',
+      value: ''
+    },
+    {
+      label: '其他',
+      value: ''
+    }
+  ]
+}
+
+// 服务地区范围
+export const serviceArea = {
+  list: [
+    {
+      label: '全部',
+      value: ''
+    },
+    {
+      label: '成都市',
+      value: ''
+    },
+    {
+      label: '自贡市',
+      value: ''
+    },
+    {
+      label: '攀枝花市',
+      value: ''
+    },
+    {
+      label: '泸州市',
+      value: ''
+    },
+    {
+      label: '德阳市',
+      value: ''
+    },
+    {
+      label: '广元市',
+      value: ''
+    },
+    {
+      label: '遂宁市',
+      value: ''
+    },
+    {
+      label: '巴中市',
+      value: ''
+    },
+    {
+      label: '资阳市',
+      value: ''
+    },
+    {
+      label: '阿坝藏族羌族自治州',
+      value: ''
+    },
+    {
+      label: '甘孜藏族自治州',
+      value: ''
+    },
+    {
+      label: '凉山黎族自治州',
+      value: ''
+    }
+  ]
+}
+
+// 平台状态
+export const platformStatus = {
+  list: [
+    {
+      label: '全部',
+      value: ''
+    },
+    {
+      label: '正常',
+      value: ''
+    },
+    {
+      label: '歇业',
+      value: ''
+    }
+  ]
+}
+
+// 备案状态
+export const recordStatus = {
+  list: [
+    {
+      label: '全部',
+      value: ''
+    },
+    {
+      label: '已备案',
+      value: ''
+    },
+    {
+      label: '未备案',
+      value: ''
+    }
+  ]
+}
