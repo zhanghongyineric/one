@@ -145,6 +145,7 @@
 <script>
 import Pagination from '@/components/Pagination'
 import AreaSelect from '@/components/AreaSelect'
+import { selectList, getStatus } from '@/api/information-manage/service-provider'
 
 export default {
   name: 'ServiceProviderInformation',
@@ -156,7 +157,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         keyword: '',
-        status: '1'
+        status: 1
       },
       area: [],
       optionGroup: [
@@ -205,8 +206,26 @@ export default {
       modify: false
     }
   },
+  mounted() {
+    this.getList()
+  },
   methods: {
-    getList() {},
+    getList() {
+      getStatus()
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        throw err
+      })
+      // selectList({...this.listQuery})
+      // .then(res => {
+      //   console.log(res);
+      // })
+      // .catch(err => {
+      //   throw err
+      // })
+    },
     resetQuery() {},
     showDetails() {},
     addCompany() {
