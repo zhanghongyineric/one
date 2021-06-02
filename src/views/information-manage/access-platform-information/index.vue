@@ -365,9 +365,6 @@ import AreaSelect from '@/components/AreaSelect'
 export default {
   name: 'AccessPlatformInformation',
   components: { Pagination, AreaSelect },
-  mounted() {
-    console.log(this.serviceCarKindsNotAll);
-  },
   data() {
     return {
       advanced: false,
@@ -429,6 +426,9 @@ export default {
         beian: [{ required: true, message: '请选择备案状态', trigger: 'change' }]
       }
     }
+  },
+  mounted() {
+    console.log(this.serviceCarKindsNotAll)
   },
   methods: {
     handleSearch() {},
