@@ -135,11 +135,11 @@
         </el-form>
         <span v-if="detail" style="margin-left: 35%">
           <el-button type="primary" @click="delData()">删除</el-button>
-          <el-button type="primary" @click="submit()">关闭</el-button>
+          <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
         <span v-else style="margin-left: 35%">
           <el-button type="primary" @click="submit()">保存</el-button>
-          <el-button type="primary" @click="submit()">关闭</el-button>
+          <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
       </el-dialog>
     </el-card>

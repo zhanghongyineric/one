@@ -361,6 +361,15 @@ import {
 } from '@/options'
 import Pagination from '@/components/Pagination'
 import AreaSelect from '@/components/AreaSelect'
+import {
+  queryConditions,
+  protocolVersion,
+  selectList,
+  save,
+  deleteData,
+  allowConnect,
+  facilitatorName
+} from '@/api/information-manage/access-platform'
 
 export default {
   name: 'AccessPlatformInformation',
@@ -387,17 +396,7 @@ export default {
       recordStatus: recordStatus.list,
       platformSupportFeaturesNotAll: platformSupportFeaturesNotAll.list,
       serviceCarKindsNotAll: serviceCarKindsNotAll.list,
-      tableData: [
-        {
-          name: '四川明亚智行',
-          code: '510266',
-          feature: '行驶记录仪',
-          adress: '成都市西部智谷',
-          beian: '已备案',
-          number: '0817-13598443',
-          status: '正常'
-        }
-      ],
+      tableData: [],
       modify: false,
       dialogVisible: false,
       dialogData: {
@@ -427,10 +426,30 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log(this.serviceCarKindsNotAll)
+  created() {
+    this.getQueryConditions()
+    this.getProtocolVersion()
   },
+  mounted() {},
   methods: {
+    getQueryConditions() {
+      queryConditions()
+      .then(res => {
+        console.log(res,'queryConditions');
+      })
+      .catch(err => {
+        throw err
+      })
+    },
+    getProtocolVersion() {
+      protocolVersion()
+      .then(res => {
+        console.log(res, 'protocolVersion');
+      })
+      .catch(err => {
+        throw err
+      })
+    },
     handleSearch() {},
     handleCreate() {
       this.modify = false,
