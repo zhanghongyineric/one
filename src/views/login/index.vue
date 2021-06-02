@@ -1,94 +1,90 @@
-<!--
-  - FileName: 登录
-  - @author: ZhouJiaXing
-  - @date: 2021/4/30 下午4:40
-  -->
-
 <template>
-  <div class="login-container">
-    <div class="outer_box">
-      <span class="el-icon-close" style="opacity: 0;height: 0" />
-      <div class="title-container">
-        <h3 class="title">四川省交通安全风控大数据平台</h3>
-        <h2 class="subtitle">监测·管理</h2>
-      </div>
-      <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        auto-complete="on"
-        size="small"
-        label-position="left"
-      >
-        <el-form-item prop="username">
-          <span class="svg-container">
-
-            <svg-icon icon-class="user" />
-          </span>
-          <el-input
-            ref="username"
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            name="username"
-            type="text"
-            tabindex="1"
-            auto-complete="off"
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <span class="svg-container">
-            <svg-icon icon-class="password" />
-          </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="请输入密码"
-            name="password"
-            tabindex="2"
-            auto-complete="off"
-            @keyup.enter.native="handleLogin"
-          />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
-        </el-form-item>
-
-        <!--滑动验证-->
-        <div id="captcha" :class="showSliderImage?'showSliderImage':'hideSliderImage'" />
-
-        <p class="slider-placeholder">
-          向右滑动填充拼图
-          <span v-show="showFinishSliderTip" class="finishSlider">请先完成拼图</span>
-        </p>
-
-        <div style="overflow: hidden">
-          <el-button
-            :loading="loading"
-            size="medium"
-            style="width:150px;margin-bottom:0;padding:14px 20px;float: right;color: #606266;"
-            @click.native.prevent="handleLogin"
-          >
-            登录
-          </el-button>
+  <div class="login-page f-col ai-c jc-sb">
+    <div class="login-box">
+      <div class="left">
+        <div class="description">
+          <h1>{{ title }}</h1>
+          <h2>助力政府监管，降低安全隐患</h2>
+          <h3>政府·监测端</h3>
         </div>
-
-        <svg-icon icon-class="code" class="code code_1" />
-        <svg-icon icon-class="code" class="code code_2" />
-        <svg-icon icon-class="code" class="code code_3" />
-        <svg-icon icon-class="code" class="code code_4" />
-
-      </el-form>
-      <div class="footer">
-        <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备2020030187号</a>
-        <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备2020030187号-1</a>
-        <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51019002003222">
-          <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
-          川公网安备 51019002003222 号
-        </a>
       </div>
+      <div class="right">
+        <h2 class="welcome">欢迎登录</h2>
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form"
+          auto-complete="on"
+          size="small"
+          label-position="left"
+        >
+          <el-form-item prop="username">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="username"
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+              name="username"
+              type="text"
+              tabindex="1"
+              auto-complete="off"
+              clearable
+            />
+          </el-form-item>
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              clearable
+              :type="passwordType"
+              placeholder="请输入密码"
+              name="password"
+              tabindex="2"
+              auto-complete="off"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+
+          <!--滑动验证-->
+          <div id="captcha" :class="showSliderImage?'showSliderImage':'hideSliderImage'" />
+          <p class="slider-placeholder">
+            向右滑动填充拼图
+            <span v-show="showFinishSliderTip" class="finishSlider">请先完成拼图</span>
+          </p>
+
+          <div style="overflow: hidden;text-align: center">
+            <el-button
+              :loading="loading"
+              type="primary"
+              size="large"
+              class="login-button"
+              @click.native.prevent="handleLogin"
+            >
+              登录
+            </el-button>
+          </div>
+        </el-form>
+
+      </div>
+    </div>
+
+    <div class="footer">
+      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备2020030187号</a>
+      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备2020030187号-1</a>
+      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51019002003222">
+        <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
+        川公网安备 51019002003222 号
+      </a>
     </div>
   </div>
 </template>
@@ -119,13 +115,18 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', message: '请输入用户名' }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{ required: true, trigger: 'change', message: '请输入用户名' }],
+        password: [{ required: true, trigger: 'change', validator: validatePassword }]
       },
       loading: false,
       passwordType: 'password',
       redirect: undefined,
       query: undefined // 重定向页面携带过来的参数
+    }
+  },
+  computed: {
+    title() {
+      return this.$store.state.settings.title
     }
   },
   watch: {
@@ -145,8 +146,8 @@ export default {
     // 初始化滑动验证
     window.jigsaw.init({
       el: document.getElementById('captcha'),
-      width: 428,
-      height: 200,
+      width: 318,
+      height: 180,
       onSuccess: function() {
         _this.passed = true
         _this.handleLogin()
@@ -254,7 +255,7 @@ $input_font_size: 14px;
 }
 
 /* reset element-ui css */
-.login-container {
+.login-page {
   .el-input {
     display: inline-block;
     height: 37px;
@@ -283,8 +284,8 @@ $input_font_size: 14px;
   }
 
   .el-form-item {
-    margin-bottom: 34px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 47px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     font-size: 20px;
@@ -300,177 +301,214 @@ $bg: #2d3a4b;
 $dark_gray: #889aa4;
 $light_gray: #eee;
 
-.login-container {
-  display: flex;
-  position: relative;
+body {
   height: 100%;
-  min-height: 650px;
-  min-width: 850px;
-  width: 100%;
-  background: rgb(0, 31, 72) url("../../assets/login_images/login_bg.png") no-repeat; //先显示背景颜色，再显示背景图
-  background-size: cover;
   overflow: hidden;
-  justify-content: center;
-  align-items: center;
+}
 
-  .outer_box {
+.login-page {
+  min-width: 1180px;
+  min-height: 750px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background: rgb(227, 240, 255) url("../../assets/login_images/bg.png") no-repeat center; //先显示背景颜色，再显示背景图
+
+  .logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    img {
+      width: 70px;
+    }
+  }
+
+  .login-box {
     display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-top: -100px;
-    width: 900px;
-    max-width: 100%;
-  }
+    width: 1156px;
+    height: 600px;
+    margin: 12% auto 0px;
+    overflow: hidden;
+    box-shadow: 0px 0px 13px 5px rgb(14 25 80 / 20%);
+    border-radius: 10px;
 
-  .login-form {
-    position: relative;
-    width: 560px;
-    padding: 65px 65px 25px 65px;
-    background: rgb(1, 27, 57);
-    box-shadow: 0px 1px 25px 13px rgba(95, 82, 168, 100);
-    @include borderd_h(white, 1, 5);
+    .left {
+      width: 716px;
+      height: 600px;
+      overflow: hidden;
+      background: rgb(227, 240, 255) url("../../assets/login_images/traffic.jpg") no-repeat center;
+      background-size: auto 100%;
 
-    ::v-deep.el-form-item__content {
-      background: white;
-      border-radius: 4px;
-    }
+      .description {
+        height: 600px;
+        padding-top: 190px;
+        background-image: linear-gradient(to bottom, rgba(47, 213, 201, 0.8), rgba(71, 148, 230, 0.8));
 
-    .code {
-      position: absolute;
-      width: 25px;
-      height: 25px;
-      color: white;
-    }
+        h1, h2, h3 {
+          margin: 0;
+          text-align: center;
+          color: white;
+          font-weight: normal;
+        }
 
-    .code_1 {
-      left: 0;
-      top: 0;
-    }
+        h1 {
+          font-size: 40px;
+          line-height: 90px;
+          font-family: 'SimSun,Microsoft YaHei",微软雅黑,"MicrosoftJhengHei",华文细黑,STHeiti,MingLiu ';
+        }
 
-    .code_2 {
-      right: 0;
-      top: 0;
-    }
+        h2 {
+          font-size: 26px;
+          line-height: 70px;
+          letter-spacing: 3px;
+        }
 
-    .code_3 {
-      left: 0;
-      bottom: 0;
-    }
-
-    .code_4 {
-      bottom: 0;
-      right: 0;
-    }
-  }
-
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
-
-    span {
-      &:first-of-type {
-        margin-right: 16px;
+        h3 {
+          padding-top: 160px;
+          font-size: 24px;
+          line-height: 70px;
+          letter-spacing: 3px;
+        }
       }
     }
-  }
 
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
+    .right {
+      flex: 1;
+      height: 100%;
+      background: white;
+      padding-top: 60px;
 
-  .title-container {
-    position: relative;
+      .welcome {
+        letter-spacing: 2px;
+        margin: 0 0 50px;
+        display: block;
+        text-align: center;
+        color: #0092e7;
+        font-size: 30px;
+        font-weight: normal;
+      }
 
-    .title {
-      font-size: 46px;
-      color: $light_gray;
-      margin: 0px auto ;
-      text-align: center;
-      font-weight: bold;
-    }
-    .subtitle{
-      font-size: 30px;
-      text-align: center;
-      font-weight: bold;
-      color: $light_gray;
-      margin-bottom: 80px;
-    }
-  }
+      .tips {
+        font-size: 14px;
+        color: #fff;
+        margin-bottom: 10px;
 
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
-  }
+        span {
+          &:first-of-type {
+            margin-right: 16px;
+          }
+        }
+      }
 
-  .slider-placeholder {
-    position: relative;
-    margin-bottom: 34px;
-    height: 38px;
-    text-align: center;
-    line-height: 38px;
-    margin-top: 15px;
-    background: #f7f9fa;
-    color: #45494c;
-    border: 1px solid transparent;
+      .svg-container {
+        padding: 6px 5px 6px 15px;
+        color: #0092e7;
+        vertical-align: middle;
+        width: 30px;
+        display: inline-block;
+      }
 
-    .finishSlider {
-      position: absolute;
-      left: 0;
-      bottom: -32px;
-      color: #F56C6C;
-      font-size: 12px;
-    }
-  }
+      .login-form {
+        position: relative;
+        height: 329px;
+        padding: 0 60px 25px;
 
-  #captcha {
-    position: absolute !important;
-    z-index: 1;
-    bottom: 107px;
-    left: 65px;
+        ::v-deep.el-form-item__content {
+          background: white;
+          border-radius: 4px;
+        }
 
-    ::v-deep.sliderContainer {
-      border: none !important;
-    }
-  }
+        .login-button {
+          width: 100%;
+          height: 50px;
+          padding: 0;
+          line-height: 50px;
+          border: none;
+          border-radius: 60px;
+          background: #14a7ff;
+          color: #fff;
+          font-size: 18px;
+          letter-spacing: 2px;
+          cursor: pointer;
+        }
 
-  #captcha.showSliderImage {
-    bottom: 86px;
-    height: 275px;
-  }
+      }
 
-  #captcha.hideSliderImage {
-    height: 50px;
+      .show-pwd {
+        position: absolute;
+        right: 10px;
+        top: 3px;
+        font-size: 16px;
+        color: $dark_gray;
+        cursor: pointer;
+        user-select: none;
+      }
 
-    > :not(.sliderContainer) {
-      display: none !important;
+      .slider-placeholder {
+        position: relative;
+        margin-bottom: 34px;
+        height: 38px;
+        text-align: center;
+        line-height: 38px;
+        margin-top: 15px;
+        background: #f7f9fa;
+        color: #45494c;
+        border: 1px solid transparent;
+
+        .finishSlider {
+          position: absolute;
+          left: 0;
+          bottom: -32px;
+          color: #F56C6C;
+          font-size: 12px;
+        }
+      }
+
+      #captcha {
+        position: absolute !important;
+        z-index: 1;
+        bottom: 110px;
+        left: 60px;
+
+        ::v-deep.sliderContainer {
+          border: none !important;
+        }
+      }
+
+      //显示图片时
+      #captcha.showSliderImage {
+        bottom: 110px;
+        height: 234px;
+      }
+
+      #captcha.hideSliderImage {
+        height: 50px;
+
+        > :not(.sliderContainer) {
+          display: none !important;
+        }
+      }
     }
   }
 }
 
 .footer {
+  width: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
-  position: absolute;
-  bottom: 20px;
   height: 50px;
-  a{
+
+  a {
     display: flex;
     align-items: center;
     height: 16px;
     line-height: 16px;
     color: white;
 
-    img{
+    img {
       margin-right: 4px;
     }
   }

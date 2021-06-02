@@ -251,7 +251,15 @@ export default {
           throw err
         })
     },
-    resetQuery() {},
+    resetQuery() {
+      this.listQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        unitName: '',
+        status: null
+      }
+      this.getList()
+    },
     showDetails(row) {
       this.currentRow = row
       this.dialogVisible = true
