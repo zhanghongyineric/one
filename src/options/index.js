@@ -618,10 +618,6 @@ export const platformSupportFeaturesNotAll = {
 export const serviceArea = {
   list: [
     {
-      label: '全部',
-      value: ''
-    },
-    {
       label: '成都市',
       value: ''
     },

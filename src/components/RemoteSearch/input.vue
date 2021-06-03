@@ -42,6 +42,7 @@ export default {
         return this.value
       },
       set(val) {
+        console.log('input')
         this.$emit('input', val)// 用于实现v-model
       }
     }

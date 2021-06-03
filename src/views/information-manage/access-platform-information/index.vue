@@ -2,23 +2,29 @@
   <div class="layout-content account-manage">
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="80px" size="small">
+        <el-form :model="listQuery" label-width="110px" size="small">
           <el-row :gutter="48">
 
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
               <el-form-item label="平台名称:">
-                <el-input v-model="listQuery.accountType" placeholder="请输入平台名称" />
+                <el-autocomplete
+                  v-model="listQuery.platformName"
+                  :fetch-suggestions="searchType"
+                  placeholder="请输入平台名称"
+                  :debounce="500"
+                  @select="selectPlatform"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="车辆类型:">
-                <el-select v-model="listQuery.accountType" placeholder="请选择服务车辆类型">
+              <el-form-item label="服务车辆类型:">
+                <el-select v-model="listQuery.serviceVehicleTypeCode" placeholder="请选择服务车辆类型">
                   <el-option
                     v-for="item in serviceCarKinds"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -27,44 +33,44 @@
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
-                <el-form-item label="平台性质:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择接入平台性质">
+                <el-form-item label="接入平台性质:">
+                  <el-select v-model="listQuery.characterCode" placeholder="请选择接入平台性质">
                     <el-option
                       v-for="item in accessPlatformBelong"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
-                <el-form-item label="平台类型:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择接入平台类型">
+                <el-form-item label="接入平台类型:">
+                  <el-select v-model="listQuery.typeCode" placeholder="请选择接入平台类型">
                     <el-option
                       v-for="item in accessPlatformKinds"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
-                <el-form-item label="平台功能:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择平台支持功能">
+                <el-form-item label="平台支持功能:">
+                  <el-select v-model="listQuery.functions" placeholder="请选择平台支持功能">
                     <el-option
                       v-for="item in platformSupportFeatures"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <!-- <el-col :md="8" :sm="24">
                 <el-form-item label="服务地区:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择服务地区范围">
+                  <el-select v-model="listQuery.serviceArea" placeholder="请选择服务地区范围">
                     <el-option
                       v-for="item in serviceArea"
                       :key="item.value"
@@ -73,27 +79,27 @@
                     />
                   </el-select>
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :md="8" :sm="24">
                 <el-form-item label="平台状态:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择平台状态">
+                  <el-select v-model="listQuery.status" placeholder="请选择平台状态">
                     <el-option
                       v-for="item in platformStatus"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="备案状态:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择备案状态">
+                  <el-select v-model="listQuery.keepOnRecord" placeholder="请选择备案状态">
                     <el-option
                       v-for="item in recordStatus"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
@@ -108,7 +114,7 @@
                 :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
               >
                 <el-button size="small" @click="resetQuery">重置</el-button>
-                <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
+                <el-button type="primary" size="small" @click="getList">查询</el-button>
                 <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
                 <el-button type="text" @click="advanced=!advanced">
                   {{ advanced ? '收起' : '展开' }}
@@ -130,12 +136,12 @@
         highlight-current-row
       >
         <el-table-column type="index" label="编号" width="50" />
-        <el-table-column prop="name" label="平台名称" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="code" label="平台编码" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="feature" label="平台支持功能" min-width="110" show-overflow-tooltip />
-        <el-table-column prop="adress" label="地址" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="beian" label="是否备案" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="number" label="传真" min-width="130" />
+        <el-table-column prop="platformName" label="平台名称" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="platformCode" label="平台编码" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="functions" label="平台支持功能" min-width="110" show-overflow-tooltip />
+        <el-table-column prop="serviceArea" label="地址" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="keepOnRecord" label="是否备案" min-width="150" show-overflow-tooltip />
+        <!-- <el-table-column prop="number" label="传真" min-width="130" /> -->
         <el-table-column prop="status" label="状态" min-width="130" />
         <el-table-column fixed="right" label="操作" min-width="200" align="center">
           <template slot-scope="scope">
@@ -143,7 +149,7 @@
               class="btn"
               type="primary"
               size="small"
-              @click="showDetails(scope.row.id,scope.$index)"
+              @click="showDetails(scope.row)"
             >查看详情</el-button>
             <el-button
               class="btn"
@@ -164,28 +170,28 @@
       />
 
       <el-dialog
-
         :title="modify ? '更新' : '添加'"
         :visible.sync="dialogVisible"
         top="20px"
+        :before-close="closeDialog"
       >
-        <el-form :rules="rules" :model="dialogData" label-width="120px">
+        <el-form ref="dialogForm" :rules="rules" :model="dialogData" label-width="120px">
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="平台名称：" prop="name">
-                <el-input v-model="dialogData.name" placeholder="请输入平台名称" size="small" />
+              <el-form-item label="平台名称：" prop="platformName">
+                <el-input v-model="dialogData.platformName" placeholder="请输入平台名称" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="平台编码：" prop="code">
-                <el-input v-model="dialogData.code" placeholder="请输入平台编码" size="small" />
+              <el-form-item label="平台编码：" prop="platformCode">
+                <el-input v-model="dialogData.platformCode" placeholder="请输入平台编码" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
-              <el-form-item label="用户名：" prop="username">
-                <el-input v-model="dialogData.username" placeholder="请输入用户名" size="small" />
+              <el-form-item label="用户名：" prop="userName">
+                <el-input v-model="dialogData.userName" placeholder="请输入用户名" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
@@ -194,32 +200,37 @@
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="版本协议：" prop="rule">
-                <el-select v-model="dialogData.rule" placeholder="请选择版本协议">
-                  <el-option label="全部" />
+              <el-form-item label="版本协议：" prop="protocolVersion">
+                <el-select v-model="dialogData.protocolVersion" placeholder="请选择版本协议">
+                  <el-option
+                    v-for="item in protocolVersionOptions"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
-              <el-form-item label="联系人：" prop="person">
-                <el-input v-model="dialogData.person" placeholder="请输入联系人" size="small" />
+              <el-form-item label="联系人：" prop="contact">
+                <el-input v-model="dialogData.contact" placeholder="请输入联系人" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="联系电话：" prop="tel">
-                <el-input v-model="dialogData.tel" placeholder="请输入联系电话" size="small" />
+              <el-form-item label="联系电话：" prop="contactInfo">
+                <el-input v-model="dialogData.contactInfo" placeholder="请输入联系电话" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="接入平台性质：" prop="belong">
-                <el-select v-model="dialogData.belong" placeholder="请选择接入平台性质">
+              <el-form-item label="接入平台性质：" prop="characterCode">
+                <el-select v-model="dialogData.characterCode" placeholder="请选择接入平台性质">
                   <el-option
                     v-for="item in accessPlatformBelong"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -227,25 +238,25 @@
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
-              <el-form-item label="接入平台类型：" prop="type">
-                <el-select v-model="dialogData.type" placeholder="请选择接入平台类型">
+              <el-form-item label="接入平台类型：" prop="typeCode ">
+                <el-select v-model="dialogData.typeCode" placeholder="请选择接入平台类型">
                   <el-option
                     v-for="item in accessPlatformKinds"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="终端接入IP：" prop="ip">
-                <el-input v-model="dialogData.ip" placeholder="请输入终端接入IP" size="small" />
+              <el-form-item label="终端接入IP：" prop="deviceIp">
+                <el-input v-model="dialogData.deviceIp" placeholder="请输入终端接入IP" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="终端接入端口：" prop="port">
-                <el-input v-model="dialogData.port" placeholder="请输入终端接入端口" size="small" />
+              <el-form-item label="终端接入端口：" prop="devicePort">
+                <el-input v-model="dialogData.devicePort" placeholder="请输入终端接入端口" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -255,21 +266,21 @@
                 <el-select v-model="dialogData.status" placeholder="请选择平台状态">
                   <el-option
                     v-for="item in platformStatus"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="接入平台IP：" prop="pip">
-                <el-input v-model="dialogData.pip" placeholder="请输入接入平台IP" size="small" />
+              <el-form-item label="接入平台IP：" prop="ip">
+                <el-input v-model="dialogData.ip" placeholder="请输入接入平台IP" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="接入平台端口：" prop="pport">
-                <el-input v-model="dialogData.pport" placeholder="请输入接入平台端口" size="small" />
+              <el-form-item label="接入平台端口：" prop="port">
+                <el-input v-model="dialogData.port" placeholder="请输入接入平台端口" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -292,75 +303,86 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="是否可连接：" prop="concat">
-                <el-select v-model="dialogData.concat" placeholder="请选择是否可连接">
-                  <el-option label="是" :value="true" />
-                  <el-option label="否" :value="false" />
+              <el-form-item label="是否可连接：" prop="allowConnect">
+                <el-select v-model="dialogData.allowConnect" placeholder="请选择是否可连接">
+                  <el-option
+                    v-for="item in allowConnectOptions"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="服务商名称：" prop="sname">
-                <el-input v-model="dialogData.sname" placeholder="请输入服务商名称" size="small" />
+              <el-form-item label="服务商名称：" prop="developerName">
+                <el-input v-model="dialogData.developerName" placeholder="请输入服务商名称" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="备案状态：" prop="beian">
-                <el-select v-model="dialogData.beian" placeholder="请选择备案状态">
-                  <el-option label="已备案" :value="true" />
-                  <el-option label="未备案" :value="false" />
+              <el-form-item label="备案状态：" prop="keepOnRecord">
+                <el-select v-model="dialogData.keepOnRecord" placeholder="请选择备案状态">
+                  <el-option
+                    v-for="item in recordStatus"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="24" :sm="24">
-              <el-form-item label="服务地区范围：" prop="area">
-                <AreaSelect v-model="area" size="small" limit-area :area-text.sync="dialogData.adress" @update:areaText="setAreaText" />
+              <el-form-item label="服务地区范围：" prop="serviceArea">
+                <el-select
+                  v-model="dialogData.serviceArea"
+                  multiple
+                  placeholder="请选择服务地区范围"
+                >
+                  <el-option
+                    v-for="item in serviceAreaOptions"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.label"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="平台支持功能：" prop="feature">
+          <el-form-item label="平台支持功能：" prop="functions">
             <el-checkbox-group
-              v-model="dialogData.feature"
+              v-model="dialogData.functions"
             >
-              <el-checkbox v-for="item in platformSupportFeaturesNotAll" :key="item.value" :label="item.label">{{ item.label }}</el-checkbox>
+              <el-checkbox v-for="item in platformSupportFeatures" :key="item.label" :label="item.label">{{ item.value }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
-          <el-form-item label="服务车辆类型：" prop="carType">
+          <el-form-item label="服务车辆类型：" prop="serviceVehicleTypeCode">
             <el-checkbox-group
-              v-model="dialogData.carType"
+              v-model="dialogData.serviceVehicleTypeCode"
             >
-              <el-checkbox v-for="item in serviceCarKindsNotAll" :key="item.value" :label="item.label">{{ item.label }}</el-checkbox>
+              <el-checkbox v-for="item in serviceCarKinds" :key="item.label" :label="item.label">{{ item.value }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-form>
-        <span style="margin-left: 35%">
+        <span v-if="detail" style="margin-left: 35%">
+          <el-button type="primary" @click="delData()">删除</el-button>
+          <el-button type="primary" @click="closeDialog()">关闭</el-button>
+        </span>
+        <span v-else style="margin-left: 35%">
           <el-button type="primary" @click="submit()">保存</el-button>
-          <el-button type="primary" @click="submit()">关闭</el-button>
+          <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
       </el-dialog>
-
     </el-card>
   </div>
 </template>
 
 <script>
-import {
-  serviceCarKinds,
-  accessPlatformBelong,
-  accessPlatformKinds,
-  platformSupportFeatures,
-  serviceArea,
-  platformStatus,
-  recordStatus,
-  platformSupportFeaturesNotAll,
-  serviceCarKindsNotAll
-} from '@/options'
+import { serviceArea } from '@/options'
 import Pagination from '@/components/Pagination'
-import AreaSelect from '@/components/AreaSelect'
 import {
   queryConditions,
   protocolVersion,
@@ -370,10 +392,11 @@ import {
   allowConnect,
   facilitatorName
 } from '@/api/information-manage/access-platform'
+import RemoteSearch from '../../../components/RemoteSearch/select'
 
 export default {
   name: 'AccessPlatformInformation',
-  components: { Pagination, AreaSelect },
+  components: { Pagination, RemoteSearch },
   data() {
     return {
       advanced: false,
@@ -381,90 +404,291 @@ export default {
       listQuery: {
         pageNum: 1,
         pageSize: 10,
-        unitName: '',
-        unitTel: '',
-        accountType: '',
-        account: ''
+        platformName: '',
+        serviceVehicleTypeCode: '',
+        characterCode: '',
+        typeCode: '',
+        functions: '',
+        keepOnRecord: null,
+        status: null,
+        serviceArea: ''
       },
       total: 1,
-      serviceCarKinds: serviceCarKinds.list,
-      accessPlatformBelong: accessPlatformBelong.list,
-      accessPlatformKinds: accessPlatformKinds.list,
-      platformSupportFeatures: platformSupportFeatures.list,
-      serviceArea: serviceArea.list,
-      platformStatus: platformStatus.list,
-      recordStatus: recordStatus.list,
-      platformSupportFeaturesNotAll: platformSupportFeaturesNotAll.list,
-      serviceCarKindsNotAll: serviceCarKindsNotAll.list,
+      serviceCarKinds: [],
+      accessPlatformBelong: [],
+      accessPlatformKinds: [],
+      platformSupportFeatures: [],
+      serviceArea: [],
+      platformStatus: [],
+      recordStatus: [],
+      protocolVersionOptions: [],
+      allowConnectOptions: [],
+      serviceAreaOptions: serviceArea.list,
       tableData: [],
       modify: false,
       dialogVisible: false,
       dialogData: {
-        adress: '',
-        feature: [],
-        carType: []
+        platformName: '',
+        platformCode: '',
+        userName: '',
+        password: '',
+        protocolVersion: '',
+        contact: '',
+        contactInfo: '',
+        characterCode: '',
+        typeCode: '',
+        deviceIp: '',
+        status: '',
+        devicePort: '',
+        ip: '',
+        port: '',
+        m1: '',
+        ia1: '',
+        ic1: '',
+        allowConnect: '',
+        developerName: '',
+        keepOnRecord: '',
+        serviceArea: [],
+        functions: [],
+        serviceVehicleTypeCode: []
       },
       area: [],
       rules: {
-        name: [{ required: true, message: '请输入平台名称', trigger: 'blur' }],
-        code: [{ required: true, message: '请输入平台编码', trigger: 'blur' }],
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        platformName: [{ required: true, message: '请输入平台名称', trigger: 'blur' }],
+        platformCode: [{ required: true, message: '请输入平台编码', trigger: 'blur' }],
+        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        rule: [{ required: true, message: '请选择版本协议', trigger: 'change' }],
-        belong: [{ required: true, message: '请选择接入平台性质', trigger: 'change' }],
-        belong: [{ required: true, message: '请选择接入平台性质', trigger: 'change' }],
-        ip: [{ required: true, message: '请输入终端接入IP', trigger: 'blur' }],
-        port: [{ required: true, message: '请输入终端接入端口', trigger: 'blur' }],
+        protocolVersion: [{ required: true, message: '请选择版本协议', trigger: 'change' }],
+        characterCode: [{ required: true, message: '请选择接入平台性质', trigger: 'change' }],
+        deviceIp: [{ required: true, message: '请输入终端接入IP', trigger: 'blur' }],
+        devicePort: [{ required: true, message: '请输入终端接入端口', trigger: 'blur' }],
         status: [{ required: true, message: '请选择平台状态', trigger: 'change' }],
-        pip: [{ required: true, message: '请输入接入平台IP', trigger: 'blur' }],
-        pport: [{ required: true, message: '请输入接入平台端口', trigger: 'blur' }],
+        ip: [{ required: true, message: '请输入接入平台IP', trigger: 'blur' }],
+        port: [{ required: true, message: '请输入接入平台端口', trigger: 'blur' }],
         m1: [{ required: true, message: '请输入m1', trigger: 'blur' }],
         ic1: [{ required: true, message: '请输入ic1', trigger: 'blur' }],
         ia1: [{ required: true, message: '请输入ia1', trigger: 'blur' }],
-        concat: [{ required: true, message: '请选择是否可连接', trigger: 'change' }],
-        beian: [{ required: true, message: '请选择备案状态', trigger: 'change' }]
-      }
+        allowConnect: [{ required: true, message: '请选择是否可连接', trigger: 'change' }],
+        keepOnRecord: [{ required: true, message: '请选择备案状态', trigger: 'change' }]
+      },
+      detail: false,
+      currentRow: {}
     }
   },
   created() {
     this.getQueryConditions()
     this.getProtocolVersion()
+    this.getAllowConnect()
   },
-  mounted() {},
+  mounted() {
+    this.getList()
+  },
   methods: {
+    searchType(queryString, cb) {
+      if (queryString) {
+        facilitatorName({ developerName: queryString })
+          .then(res => {
+            const { data } = res
+            data.forEach(item => {
+              item.label = item.unitName
+              item.value = item.unitName
+            })
+            cb(res.data)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectPlatform(item) {
+      this.listQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        platformName: '',
+        serviceVehicleTypeCode: '',
+        characterCode: '',
+        typeCode: '',
+        functions: '',
+        keepOnRecord: null,
+        status: null,
+        serviceArea: ''
+      }
+      this.listQuery.platformName = item.value
+      this.getList()
+    },
     getQueryConditions() {
       queryConditions()
-      .then(res => {
-        console.log(res,'queryConditions');
+        .then(res => {
+          const { data } = res
+          this.serviceCarKinds = data['服务车辆类型']
+          this.accessPlatformBelong = data['接入平台性质']
+          this.accessPlatformKinds = data['接入平台类型']
+          this.platformSupportFeatures = data['平台支持功能']
+          this.platformStatus = data['平台状态']
+          this.recordStatus = data['备案状态']
       })
-      .catch(err => {
-        throw err
-      })
+        .catch(err => {
+          throw err
+        })
     },
     getProtocolVersion() {
       protocolVersion()
-      .then(res => {
-        console.log(res, 'protocolVersion');
-      })
-      .catch(err => {
-        throw err
-      })
+        .then(res => {
+          this.protocolVersionOptions = res.data
+        })
+        .catch(err => {
+          throw err
+        })
     },
-    handleSearch() {},
+    getAllowConnect() {
+      allowConnect()
+        .then(res => {
+          this.allowConnectOptions = res.data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     handleCreate() {
       this.modify = false,
       this.dialogVisible = true
+      this.detail = false
     },
-    resetQuery() {},
-    getList() {},
-    showDetails() {},
+    resetQuery() {
+      this.listQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        platformName: '',
+        serviceVehicleTypeCode: '',
+        characterCode: '',
+        typeCode: '',
+        functions: '',
+        keepOnRecord: null,
+        status: null,
+        serviceArea: ''
+      }
+      this.getList()
+    },
+    getList() {
+      this.listLoading = true
+      selectList({ ...this.listQuery })
+        .then(res => {
+          const { data } = res
+          this.total = data.total
+          this.tableData = data.list
+          this.listLoading = false
+        })
+        .catch(err => {
+          this.listLoading = false
+          throw err
+        })
+    },
+    showDetails(row) {
+      this.detail = true
+      this.dialogVisible = true
+      this.currentRow = row
+      const data = { ...row }
+      data.serviceArea = row.serviceArea.split(',')
+      data.functions = row.functions.split(',')
+      data.serviceVehicleTypeCode = row.serviceVehicleTypeCode.split(',')
+      this.dialogData = { ...data }
+    },
     modifyData(row) {
-      this.dialogData = { ...row }
       this.modify = true
       this.dialogVisible = true
+      this.detail = false
+      this.currentRow = row
+      const data = { ...row }
+      data.serviceArea = row.serviceArea.split(',')
+      data.functions = row.functions.split(',')
+      data.serviceVehicleTypeCode = row.serviceVehicleTypeCode.split(',')
+      this.dialogData = { ...data }
     },
-    setAreaText(data) {
-      this.dialogData.adress = data
+    resetDialogData() {
+      this.dialogData = {
+        platformName: '',
+        platformCode: '',
+        userName: '',
+        password: '',
+        protocolVersion: '',
+        contact: '',
+        contactInfo: '',
+        characterCode: '',
+        typeCode: '',
+        deviceIp: '',
+        status: '',
+        devicePort: '',
+        ip: '',
+        port: '',
+        m1: '',
+        ia1: '',
+        ic1: '',
+        allowConnect: '',
+        developerName: '',
+        keepOnRecord: '',
+        serviceArea: '',
+        functions: '',
+        serviceVehicleTypeCode: ''
+      }
+    },
+    closeDialog() {
+      this.dialogVisible = false
+      this.resetDialogData()
+    },
+    submit() {
+      this.$refs['dialogForm'].validate(valid => {
+        if (valid) {
+          this.dialogData.updatorName = this.$store.state.user.name
+          this.dialogData.updatorNo = this.$store.state.user.userId
+          this.dialogData.creatorName = this.$store.state.user.name
+          this.dialogData.creatorNo = this.$store.state.user.userId
+          if (this.modify) this.dialogData.id = this.currentRow.id
+          const req = { ...this.dialogData }
+          req.serviceArea = this.dialogData.serviceArea.join(',')
+          req.functions = this.dialogData.functions.join(',')
+          req.serviceVehicleTypeCode = this.dialogData.serviceVehicleTypeCode.join(',')
+
+          save({ ...req })
+            .then(res => {
+              this.dialogVisible = false
+              this.getList()
+              this.$message({
+                type: 'success',
+                message: this.modify ? '修改成功' : '新增成功！'
+              })
+              this.resetDialogData()
+            })
+            .catch(err => {
+              throw err
+            })
+        }
+      })
+    },
+    delData() {
+      this.$confirm('确定删除该条数据？')
+        .then(() => {
+          deleteData({ id: this.currentRow.id })
+            .then(res => {
+              this.dialogVisible = false
+              this.getList()
+              this.$message({
+                type: 'success',
+                message: '删除成功！'
+              })
+            })
+            .catch(err => {
+              throw err
+            })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     }
   }
 }
