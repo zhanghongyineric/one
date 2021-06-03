@@ -112,6 +112,129 @@
         :limit.sync="listQuery.pageSize"
         @pagination="getList"
       />
+      <el-dialog
+        title="新增"
+        :visible.sync="dialogVisible"
+        top="20px"
+      >
+        <el-steps :active="stepIndex" align-center>
+          <el-step title="基本信息" />
+          <el-step title="机动车驾驶证信息" />
+          <el-step title="从业资格证信息" />
+        </el-steps>
+        <el-form ref="dialogForm" :rules="rules" :model="dialogData" label-width="120px">
+              <el-row>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="姓名：" prop="platformName">
+                    <el-input v-model="dialogData.test" placeholder="请输入姓名" size="small" />
+                  </el-form-item>
+                </el-col>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="性别：" prop="platformCode">
+                    <el-checkbox v-model="dialogData.test">男</el-checkbox>
+                    <el-checkbox v-model="dialogData.test">女</el-checkbox>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="民族：" prop="userName">
+                    <el-input v-model="dialogData.test" placeholder="请输入民族" size="small" />
+                  </el-form-item>
+                </el-col>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="文化程度：" prop="password">
+                    <el-select v-model="dialogData.test" placeholder="请选择文化程度">
+                      <!-- <el-option
+                        v-for="item in accessPlatformKinds"
+                        :key="item.label"
+                        :label="item.value"
+                        :value="item.label"
+                      /> -->
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-form-item label="籍贯：" prop="contact">
+                  <el-select v-model="dialogData.test" placeholder="请选择籍贯">
+                  </el-select>
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="健康状况：" prop="typeCode ">
+                    <el-select v-model="dialogData.test" placeholder="请选择健康状况">
+                      <!-- <el-option
+                        v-for="item in accessPlatformKinds"
+                        :key="item.label"
+                        :label="item.value"
+                        :value="item.label"
+                      /> -->
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="身份证号码：" prop="deviceIp">
+                    <el-input v-model="dialogData.test" placeholder="请输入身份证号码" size="small" />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="手机号码：" prop="status">
+                    <el-input v-model="dialogData.test" placeholder="请输入手机号码" size="small" />
+                  </el-form-item>
+                </el-col>
+                <el-col :md="12" :sm="24">
+                  <el-form-item label="所属运输企业：" prop="ip">
+                    <el-input v-model="dialogData.test" placeholder="请输入所属运输企业" size="small" />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-form-item label="所属地区：" prop="m1">
+                  <el-select v-model="dialogData.test" placeholder="请选择所属地区">
+                  </el-select>
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-form-item label="居住地址：" prop="allowConnect">
+                  <el-select v-model="dialogData.test" placeholder="请选择居住地址">
+                    <!-- <el-option
+                      v-for="item in allowConnectOptions"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
+                    /> -->
+                  </el-select>
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-form-item label="详细居住地址：" prop="keepOnRecord">
+                  <el-input v-model="dialogData.test" placeholder="请输入详细居住地址" size="small" />
+                </el-form-item>
+              </el-row>
+
+              <div style="margin-left: 53px;margin-bottom: 30px">
+                <p><b>服务商logo：</b></p>
+                <el-upload
+                  ref="upload"
+                  action
+                  list-type="picture-card"
+                  :auto-upload="false"
+                  :limit="1"
+                  :multiple="true"
+                  :on-change="previewImg"
+                  :on-remove="handleRemove"
+                  :before-upload="previewImg"
+                  :file-list="fileList"
+                >
+                  <i slot="default" class="el-icon-plus" />
+                </el-upload>
+              </div>
+            </el-form>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -130,13 +253,29 @@ export default {
       listQuery: {
         pageSize: 10,
         pageNum: 1
-      }
+      },
+      dialogVisible: false,
+      tableData: [],
+      rules: [],
+      dialogData: {
+        test: '',
+        testArr: []
+      },
+      fileList: [],
+      stepIndex: 1
     }
   },
   methods: {
     showDetails() {},
     modifyData() {},
-    getList() {}
+    getList() {},
+    handleCreate() {
+      this.dialogVisible = true
+    },
+    resetQuery() {},
+    handleSearch() {},
+    previewImg() {},
+    handleRemove() {}
   }
 }
 </script>

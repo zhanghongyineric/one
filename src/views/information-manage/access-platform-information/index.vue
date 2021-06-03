@@ -529,7 +529,7 @@ export default {
           this.platformSupportFeatures = data['平台支持功能']
           this.platformStatus = data['平台状态']
           this.recordStatus = data['备案状态']
-      })
+        })
         .catch(err => {
           throw err
         })
