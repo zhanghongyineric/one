@@ -103,15 +103,6 @@
             <el-button type="primary" size="mini" @click="handleDetail(row)">
               查看详情
             </el-button>
-            <el-popconfirm
-              title="确认删除吗？"
-              style="margin-left:10px;margin-right:10px;"
-              @confirm="handleDelete(row)"
-            >
-              <el-button slot="reference" size="mini" type="danger">
-                删除
-              </el-button>
-            </el-popconfirm>
           </template>
         </el-table-column>
 
@@ -137,6 +128,7 @@
           :rules="rules"
           :model="createFormData"
           label-width="200px"
+          :disabled="disableStatus"
         >
           <!--          <el-form-item-->
           <!--            label="账号类别:"-->
@@ -224,8 +216,7 @@
           <el-form-item label="地址:" prop="unitAddress" class="address">
             <el-input
               v-model="createFormData.unitAddress"
-              placeholder="请通过右侧选点确定企业地址"
-              disabled
+              placeholder="请输入地址"
             />
             <!--传入对象，选点成功后会将修改了address、longitude、latitude的对象传回-->
             <!--需要手动修改绑定choosePoint事件-->
@@ -327,9 +318,28 @@
           <el-button @click="dialogFormVisible = false">
             取消
           </el-button>
-          <el-button type="primary" :loading="buttonLoading" @click="dialogStatus==='create'?createData():updateData()">
-            确认
-          </el-button>
+          <div v-if="dialogStatus==='create'">
+            <el-button type="primary" :loading="buttonLoading" @click="createData()">
+              确认
+            </el-button>
+          </div>
+          <div v-else-if="dialogStatus==='update'">
+            <el-button type="primary" :loading="buttonLoading" @click="updateData()">
+              确认
+            </el-button>
+          </div>
+          <div v-else-if="dialogStatus==='detail'">
+            <el-popconfirm
+              title="确认删除吗？"
+              style="margin-left:10px;margin-right:10px;"
+              @confirm="handleDelete()"
+            >
+              <el-button slot="reference" size="large" type="danger" style="margin-left: -5px">
+                删除
+              </el-button>
+            </el-popconfirm>
+          </div>
+
         </div>
       </el-dialog>
     </el-card>
@@ -337,7 +347,7 @@
 </template>
 
 <script>
-import { fetchList, companyStatus, companyRoleStatus, companyEconomyStatus, updateCount } from '@/api/information-manage/company-base-information'
+import { fetchList, companyStatus, companyRoleStatus, companyEconomyStatus, updateCount, deleteCount } from '@/api/information-manage/company-base-information'
 import Pagination from '@/components/Pagination' // 分页
 import AreaSelect from '@/components/AreaSelect'
 import RemoteSearch from '@/components/RemoteSearch/select'
@@ -378,6 +388,7 @@ export default {
     return {
       unitAddress: null,
       dialogFormVisible: false,
+      disableStatus: false,
       rowId: '',
       list: [], // 表格数据
       listLoading: true, // 表格加载状态
@@ -725,10 +736,10 @@ export default {
     //   })
     // },
     // 选择公司
-    toChoosePoint() {
-      this.pickLocation = true
-      this.searchKey = this.createFormData.unitAddress
-    },
+    // toChoosePoint() {
+    //   this.pickLocation = true
+    //   this.searchKey = this.createFormData.unitAddress
+    // },
     // 选择公司
     // selectCompany(item) {
     //   // 自动填充部分表单
@@ -776,6 +787,7 @@ export default {
       this.resetCreateFormData()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.disableStatus = false
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -825,39 +837,42 @@ export default {
       // if (zoneId.indexOf('') !== -1) {
       //   zoneId = zoneId.slice(0, zoneId.indexOf('') + 1)
       // }
+      this.rowId = row.id
       const zoneId = [row.zoneId]
       this.createFormData = { ...row, zoneId } // 由于表格没有密码，不设置会为undefined
       this.dialogStatus = 'detail'
       this.dialogFormVisible = true
+      this.disableStatus = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    showDetails(id, index) {
-      this.dialogVisible = true
-      this.operatingPermitImage = []
-      this.listLoading = true
-      this.rowId = id
-      details({ id })
-        .then((res) => {
-          const { data } = res
-          this.createFormData = { ...data }
-          this.createFormData.index = index + 1
-          let pathArr = []
-          if (data.contentPic) { pathArr = data.contentPic.split('；') }
-          for (let i = 0; i < pathArr.length; i++) {
-            pathArr[i] = 'https://www.image.gosmooth.com.cn' + pathArr[i]
-          }
-          this.dialogInfo.operatingPermitImage = pathArr
-          console.log(this.dialogInfo.operatingPermitImage, '申诉图片')
-          this.listLoading = false
-        })
-        .catch((err) => {
-          this.listLoading = false
-          throw err
-        })
-    },
+    // showDetails(id, index) {
+    //   this.dialogVisible = true
+    //   this.operatingPermitImage = []
+    //   this.listLoading = true
+    //   this.rowId = id
+    //   details({ id })
+    //     .then((res) => {
+    //       const { data } = res
+    //       this.createFormData = { ...data }
+    //       this.createFormData.index = index + 1
+    //       let pathArr = []
+    //       if (data.contentPic) { pathArr = data.contentPic.split('；') }
+    //       for (let i = 0; i < pathArr.length; i++) {
+    //         pathArr[i] = 'https://www.image.gosmooth.com.cn' + pathArr[i]
+    //       }
+    //       this.dialogInfo.operatingPermitImage = pathArr
+    //       console.log(this.dialogInfo.operatingPermitImage, '申诉图片')
+    //       this.listLoading = false
+    //     })
+    //     .catch((err) => {
+    //       this.listLoading = false
+    //       throw err
+    //     })
+    // },
     // 点击编辑
+    // 点击更新信息
     handleUpdate(row) {
       this.rowId = row.id
       console.log(row.zoneId)
@@ -872,11 +887,12 @@ export default {
       this.createFormData = { ...row, zoneId } // 由于表格没有密码，不设置会为undefined
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.disableStatus = false
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    // 保存编辑
+    // 保存更新信息
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -911,9 +927,9 @@ export default {
       })
     },
     // 删除数据
-    handleDelete(row) {
+    handleDelete() {
       this.listLoading = true
-      deleteCount({ userId: row.userId }).then(() => {
+      deleteCount({ id: this.rowId }).then(() => {
         this.dialogFormVisible = false
         this.listLoading = false
         if (this.list.length === 1 && this.listQuery.pageNumber !== 1) {
@@ -946,18 +962,28 @@ export default {
   border: 1px solid #999;
 }
 
-::v-deep .amap-box {
-  height: 100vh !important;
-}
-
-.company-information .address ::v-deep.el-form-item__content {
-  display: flex;
-
-  .el-input {
-    flex: 1;
-    margin-right: 10px;
+::v-deep {
+  .amap-box {
+    height: 100vh !important;
   }
 
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    :nth-child(2){
+      margin-left: 10px;
+    }
+  }
 }
+  .company-information .address ::v-deep.el-form-item__content {
+    display: flex;
+
+    .el-input {
+      flex: 1;
+      margin-right: 10px;
+    }
+
+  }
+
 
 </style>
