@@ -437,6 +437,110 @@ export const driverSafecode = {
     }
   ]
 }
+// 信息管理-企业基础信息-企业类型
+export const companyRoleOption = {
+  list: [
+    {
+      label: '班线客运企业',
+      value: 1
+    },
+    {
+      label: '农村客运企业',
+      value: 2
+    },
+    {
+      label: '旅游客运企业',
+      value: 3
+    },
+    {
+      label: '危险品运输企业',
+      value: 4
+    },
+    {
+      label: '普通货运企业',
+      value: 5
+    },
+    {
+      label: '个体户',
+      value: 6
+    },
+    {
+      label: '公交',
+      value: 7
+    },
+    {
+      label: '出租',
+      value: 8
+    },
+    {
+      label: '其他',
+      value: 9
+    }
+  ],
+  map: {
+    1: '班线客运企业',
+    2: '农村客运企业',
+    3: '旅游客运企业',
+    4: '危险品运输企业',
+    5: '普通货运企业',
+    6: '个体户',
+    7: '公交',
+    8: '出租',
+    9: '其他'
+  }
+}
+export const companyStatusOption = {
+  list: [
+    {
+      label: '全部',
+      value: 1
+    },
+    {
+      label: '营运',
+      value: 2
+    },
+    {
+      label: '歇业',
+      value: 3
+    }
+  ],
+  map: {
+    0: '营运',
+    1: '歇业'
+  }
+}
+export const companyLevel = {
+  list: [
+    {
+      label: '总公司',
+      value: 1
+    },
+    {
+      label: '子公司',
+      value: 2
+    }
+  ],
+  map: {
+    1: '总公司',
+    2: '子公司'
+  }
+}
+export const companyEconomy = {
+  list: [
+    {
+      label: '集体',
+      value: 0
+    },
+    {
+      label: '合资',
+      value: 1
+    }
+  ],
+  map: {
+    0: '总公司',
+    1: '子公司'
+  }
+}
 
 // 服务车辆类型
 export const serviceCarKinds = {
@@ -706,4 +810,126 @@ export const recordStatus = {
       value: ''
     }
   ]
+}
+// 车辆基本信息
+// 车辆基本信息-车辆类型
+export const carRoleOption = {
+  list: [
+    {
+      label: '旅游包车',
+      value: 1
+    },
+    {
+      label: '农村客运企业',
+      value: 2
+    },
+    {
+      label: '旅游客运企业',
+      value: 3
+    },
+    {
+      label: '危险品运输企业',
+      value: 4
+    },
+    {
+      label: '普通货运企业',
+      value: 5
+    },
+    {
+      label: '个体户',
+      value: 6
+    },
+    {
+      label: '公交',
+      value: 7
+    },
+    {
+      label: '出租',
+      value: 8
+    },
+    {
+      label: '其他',
+      value: 9
+    }
+  ],
+  map: {
+    1: '班线客运企业',
+    2: '农村客运企业',
+    3: '旅游客运企业',
+    4: '危险品运输企业',
+    5: '普通货运企业',
+    6: '个体户',
+    7: '公交',
+    8: '出租',
+    9: '其他'
+  }
+}
+// 车辆基本信息-运营状态
+export const runStatusOption = {
+  list: [
+    {
+      label: '旅游包车',
+      value: 1
+    },
+    {
+      label: '农村客运企业',
+      value: 2
+    },
+    {
+      label: '旅游客运企业',
+      value: 3
+    },
+    {
+      label: '危险品运输企业',
+      value: 4
+    },
+    {
+      label: '普通货运企业',
+      value: 5
+    },
+    {
+      label: '个体户',
+      value: 6
+    },
+    {
+      label: '公交',
+      value: 7
+    },
+    {
+      label: '出租',
+      value: 8
+    },
+    {
+      label: '其他',
+      value: 9
+    }
+  ],
+  map: {
+    1: '班线客运企业',
+    2: '农村客运企业',
+    3: '旅游客运企业',
+    4: '危险品运输企业',
+    5: '普通货运企业',
+    6: '个体户',
+    7: '公交',
+    8: '出租',
+    9: '其他'
+  }
+}
+// 车辆基本信息-单双驾
+export const doubleStatusOption = {
+  list: [
+    {
+      label: '单驾',
+      value: 1
+    },
+    {
+      label: '双驾',
+      value: 2
+    }
+  ],
+  map: {
+    1: '单驾',
+    2: '双驾 '
+  }
 }
