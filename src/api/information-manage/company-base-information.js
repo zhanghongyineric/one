@@ -40,3 +40,11 @@ export function updateCount(data) {
     data
   })
 }
+// 删除
+export function deleteCount(data) {
+  return request({
+    url: '/enterprose/delete',
+    method: 'post',
+    data
+  })
+}
