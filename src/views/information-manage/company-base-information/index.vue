@@ -121,7 +121,7 @@
         :title="textMap[dialogStatus]"
         :visible.sync="dialogFormVisible"
         :close-on-click-modal="false"
-        custom-class="base-dialog dialog-col-1"
+        custom-class="base-dialog"
       >
         <el-form
           ref="dataForm"
@@ -130,189 +130,228 @@
           label-width="200px"
           :disabled="disableStatus"
         >
-          <!--          <el-form-item-->
-          <!--            label="账号类别:"-->
-          <!--            prop="role"-->
-          <!--          >-->
-          <!--            <el-select-->
-          <!--              v-model="createFormData.role"-->
-          <!--              placeholder="请选择账号类别"-->
-          <!--              :disabled="dialogStatus==='update'"-->
-          <!--            >-->
-          <!--              <el-option-->
-          <!--                v-if="dialogStatus === 'update'"-->
-          <!--                key="unit"-->
-          <!--                label="企业"-->
-          <!--                value="unit"-->
-          <!--              />-->
-
-          <!--              <el-option-->
-          <!--                v-for="{label,value} in optionGroup.roleList"-->
-          <!--                :key="value"-->
-          <!--                :label="label"-->
-          <!--                :value="value"-->
-          <!--              />-->
-          <!--            </el-select>-->
-          <!--          </el-form-item>-->
-
-          <!--公司选择-->
-          <!--          <el-form-item v-if="createFormData.role==='unit'" label="企业名称:" prop="unitName">-->
-          <!--            <RemoteSearch-->
-          <!--              v-model="createFormData.unitName"-->
-          <!--              :api-method="searchCompany"-->
-          <!--              :formatter="formatter"-->
-          <!--              label="企业"-->
-          <!--              @onSelect="selectCompany"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <el-form-item v-if="createFormData.role==='admin'" label="企业名称:" prop="unitName">
-            <el-input v-model="createFormData.unitName" placeholder="请输入企业名称" />
-          </el-form-item>
-          <el-form-item label="企业简称:" prop="shortName">
-            <el-input v-model="createFormData.shortName" placeholder="请输入企业简称" />
-          </el-form-item>
-          <el-form-item
-            label="企业级别:"
-            prop="aptitudeLevel"
-          >
-            <el-select
-              v-model="createFormData.aptitudeLevel"
-              placeholder="请选择企业级别"
-            >
-              <el-option
-                v-for="item in optionGroup.roleList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="上级企业单位:" prop="upUnitName">
-            <el-input v-model="createFormData.upUnitName" placeholder="请输入上级企业单位" />
-          </el-form-item>
-          <!--          区域选择-->
-          <el-form-item v-if="createFormData.role!=='admin'" label="行政区域:" prop="zoneId">
-            <AreaSelect v-model="createFormData.zoneId" size="large" :area-text.sync="createFormData.areaText" />
-          </el-form-item>
-          <el-form-item label="社会统一信用代码:" prop="businessLicence">
-            <el-input v-model="createFormData.businessLicence" />
-          </el-form-item>
-          <el-form-item
-            label="企业经济类型:"
-            prop="enconomicType"
-          >
-            <el-select
-              v-model="createFormData.enconomicType"
-              placeholder="请选择企业经济类型"
-            >
-              <el-option
-                v-for="item in optionGroup.economyList"
-                :key="item.label"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="地址:" prop="unitAddress" class="address">
-            <el-input
-              v-model="createFormData.unitAddress"
-              placeholder="请输入地址"
-            />
-            <!--传入对象，选点成功后会将修改了address、longitude、latitude的对象传回-->
-            <!--需要手动修改绑定choosePoint事件-->
-            <ChoosePoint :infos.sync="createFormData" />
-          </el-form-item>
-          <el-form-item label="法人:" prop="lrname">
-            <el-input v-model="createFormData.lrname" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="电话号码:" prop="telephone">
-            <el-input v-model="createFormData.telephone" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="联系人:" prop="contact">
-            <el-input v-model="createFormData.contact" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="联系电话:" prop="contactphone">
-            <el-input v-model="createFormData.contactphone" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="传真号码:" prop="postcode">
-            <el-input v-model="createFormData.postcode" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="企业注册地代码:" prop="registerZoneId">
-            <el-input v-model="createFormData.registerZoneId" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="道路运输经营范围代码:" prop="businesScopeCode">
-            <el-input v-model="createFormData.businesScopeCode" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="道路运输经营范围描述:" prop="businesScopeScript">
-            <el-input v-model="createFormData.businesScopeScript" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item
-            label="企业运营类型:"
-            prop="operationType"
-          >
-            <el-select
-              v-model="createFormData.operationType"
-              placeholder="请选择企业类型"
-            >
-              <el-option
-                v-for="item in optionGroup.companyTypes"
-                :key="item.label"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="备注信息:" prop="remark">
-            <el-input v-model="createFormData.remark" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="排序编号:" prop="orderNumber">
-            <el-input v-model="createFormData.orderNumber" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item
-            label="状态:"
-            prop="status"
-          >
-            <el-select
-              v-model="createFormData.status"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in optionGroup.accountTypeList"
-                :key="item.label"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="道路运输经营许可证号:" prop="transportLincense">
-            <el-input v-model="createFormData.transportLincense" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="道路运输经营许可证有效期起:" prop="transportStartDate">
-            <el-input v-model="createFormData.transportStartDate" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="道路运输经营许可证有效期止:" prop="transportEndDate">
-            <el-input v-model="createFormData.transportEndDate" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item v-if="dialogStatus==='detail'" label="有关图片:" prop="operatingPermitImage">
-            <p class="img-tit">
-              <span v-if="!operatingPermitImage.length">未上传图片</span>
-            </p>
-            <div class="dialog-imgs">
-              <div
-                v-for="img in operatingPermitImage"
-                :key="img"
-                class="img-con"
+          <el-row>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="企业名称:" prop="unitName">
+                <el-input v-model="createFormData.unitName" placeholder="请输入企业名称" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="企业简称:" prop="shortName">
+                <el-input v-model="createFormData.shortName" placeholder="请输入企业简称" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item
+                label="企业级别:"
+                prop="aptitudeLevel"
               >
-                <el-image
-                  class="dialog-img"
-                  :src="img"
-                  fit="cover"
-                  :preview-src-list="operatingPermitImage"
-                  :z-index="3000"
+                <el-select
+                  v-model="createFormData.aptitudeLevel"
+                  placeholder="请选择企业级别"
+                >
+                  <el-option
+                    v-for="item in optionGroup.roleList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="上级企业单位:" prop="upUnitName">
+                <el-input v-model="createFormData.upUnitName" placeholder="请输入上级企业单位" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="行政区域:" prop="zoneId">
+                <AreaSelect v-model="createFormData.zoneId" size="large" :area-text.sync="createFormData.areaText" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="社会统一信用代码:" prop="businessLicence">
+                <el-input v-model="createFormData.businessLicence" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item
+                label="企业经济类型:"
+                prop="enconomicType"
+              >
+                <el-select
+                  v-model="createFormData.enconomicType"
+                  placeholder="请选择企业经济类型"
+                >
+                  <el-option
+                    v-for="item in optionGroup.economyList"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="地址:" prop="unitAddress" class="address">
+                <el-input
+                  v-model="createFormData.unitAddress"
+                  placeholder="请输入地址"
                 />
-              </div>
-            </div>
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="法人:" prop="lrname">
+                <el-input v-model="createFormData.lrname" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="电话号码:" prop="telephone">
+                <el-input v-model="createFormData.telephone" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="联系人:" prop="contact">
+                <el-input v-model="createFormData.contact" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="联系电话:" prop="contactphone">
+                <el-input v-model="createFormData.contactphone" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="传真号码:" prop="postcode">
+                <el-input v-model="createFormData.postcode" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="企业注册地代码:" prop="registerZoneId">
+                <el-input v-model="createFormData.registerZoneId" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="道路运输经营范围代码:" prop="businesScopeCode">
+                <el-input v-model="createFormData.businesScopeCode" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="道路运输经营范围描述:" prop="businesScopeScript">
+                <el-input v-model="createFormData.businesScopeScript" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item
+                label="企业运营类型:"
+                prop="operationType"
+              >
+                <el-select
+                  v-model="createFormData.operationType"
+                  placeholder="请选择企业类型"
+                >
+                  <el-option
+                    v-for="item in optionGroup.companyTypes"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="备注信息:" prop="remark">
+                <el-input v-model="createFormData.remark" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="排序编号:" prop="orderNumber">
+                <el-input v-model="createFormData.orderNumber" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item
+                label="状态:"
+                prop="status"
+              >
+                <el-select
+                  v-model="createFormData.status"
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in optionGroup.accountTypeList"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="24" :sm="24">
+              <el-form-item label="道路运输经营许可证号:" prop="transportLincense">
+                <el-input v-model="createFormData.transportLincense" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="24" :sm="24">
+              <el-form-item label="道路运输经营许可证有效期起:" prop="transportStartDate">
+                  <el-date-picker
+                    v-model="createFormData.transportStartDate"
+                    type="date"
+                    placeholder="选择日期"
+                    format="yyyy 年 MM 月 dd 日">
+                  </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+          <el-form-item label="道路运输经营许可证有效期止:" prop="transportEndDate">
+            <el-date-picker
+              v-model="createFormData.transportEndDate"
+              type="date"
+              placeholder="选择日期"
+              format="yyyy 年 MM 月 dd 日">
+            </el-date-picker>
           </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item v-if="dialogStatus==='detail'" label="有关图片:" prop="operatingPermitImage">
+              <p class="img-tit">
+                <span v-if="!operatingPermitImage.length">未上传图片</span>
+              </p>
+              <div class="dialog-imgs">
+                <div
+                  v-for="img in operatingPermitImage"
+                  :key="img"
+                  class="img-con"
+                >
+                  <el-image
+                    class="dialog-img"
+                    :src="img"
+                    fit="cover"
+                    :preview-src-list="operatingPermitImage"
+                    :z-index="3000"
+                  />
+                </div>
+              </div>
+            </el-form-item>
+          </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
@@ -758,14 +797,16 @@ export default {
     // 获取列表
     getList() {
       this.listLoading = true
+      // console.log(this.listQuery.place) // 地址
       fetchList(
         {
           pageNum: this.listQuery.pageNum,
           pageSize: this.listQuery.pageSize,
-          // zoneId: this.listQuery.area - 0,
+          zoneId: this.listQuery.place[0],
+          // const zoneId = this.createFormData.zoneId
           status: this.listQuery.status,
           operationType: this.listQuery.operationType,
-          unitName: this.listQuery.unitName
+          unitName: this.listQuery.unitName // 搜索条件
         }).then((res) => {
         const { data: { list, total }} = res
         console.log({ data: { list, total }})
@@ -875,7 +916,7 @@ export default {
     // 点击更新信息
     handleUpdate(row) {
       this.rowId = row.id
-      console.log(row.zoneId)
+      // console.log(row.zoneId)
       // let zoneId = [row.province, row.city, row.region]
       const zoneId = [row.zoneId]
 
@@ -963,6 +1004,24 @@ export default {
 }
 
 ::v-deep {
+  .el-dialog__headerbtn{
+    right: -273px;
+  }
+  .el-dialog__header{
+    width: 1000px;
+    background-color: white;
+  }
+  .table-page-search-wrapper .el-dialog__body, .base-dialog .el-dialog__body{
+    width: 1000px;
+    background-color: white;
+  }
+  .el-dialog__footer{
+    width: 1000px;
+    background-color: white;
+  }
+  .el-steps--horizontal{
+    margin-bottom:33px;
+  }
   .amap-box {
     height: 100vh !important;
   }
