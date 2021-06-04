@@ -523,6 +523,7 @@ export default {
       queryConditions()
         .then(res => {
           const { data } = res
+          console.log(res)
           this.serviceCarKinds = data['服务车辆类型']
           this.accessPlatformBelong = data['接入平台性质']
           this.accessPlatformKinds = data['接入平台类型']
@@ -553,7 +554,7 @@ export default {
         })
     },
     handleCreate() {
-      this.modify = false,
+      this.modify = false
       this.dialogVisible = true
       this.detail = false
     },
