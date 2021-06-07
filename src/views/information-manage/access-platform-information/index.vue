@@ -143,7 +143,7 @@
         <el-table-column prop="keepOnRecord" label="是否备案" min-width="100" show-overflow-tooltip />
         <!-- <el-table-column prop="number" label="传真" min-width="130" /> -->
         <el-table-column prop="status" label="平台状态" min-width="90" />
-        <el-table-column fixed="right" label="操作" min-width="200" align="center">
+        <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
               class="btn"

@@ -147,23 +147,23 @@
           width="50"
           align="center"
         />
-        <el-table-column v-slot="{row}" label="车牌号" prop="unitName" width="100" show-overflow-tooltip align="center">
+        <el-table-column v-slot="{row}" label="车牌号" prop="unitName" min-width="100" show-overflow-tooltip align="center">
           {{ row.unitName || '-' }}
         </el-table-column>
-        <el-table-column v-slot="{row}" label="车辆类型" prop="operationType" width="250" align="center">
+        <el-table-column v-slot="{row}" label="车辆类型" prop="operationType" min-width="250" align="center">
           {{ row.operationType | companyRoleFilter }}
         </el-table-column>
-        <el-table-column v-slot="{row}" label="运营状态" prop="status" width="200" align="center">
+        <el-table-column v-slot="{row}" label="运营状态" prop="status" min-width="200" align="center">
           {{ row.status | companyStatusFilter }}
         </el-table-column>
-        <el-table-column label="保险信息" prop="baoxian" width="100" align="center">
+        <el-table-column label="保险信息" prop="baoxian" min-width="100" align="center">
           <a href="#">保险信息</a>
         </el-table-column>
         <el-table-column v-slot="{row}" label="驾驶类型" prop="carStatus" width="100" align="center">
           {{ row.carStatus | companyLevelFilter }}
         </el-table-column>
         <!--表格操作列-->
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="300">
           <template v-slot="{row}">
             <el-button type="primary" size="mini" @click="handleUpdate(row)">
               更新信息

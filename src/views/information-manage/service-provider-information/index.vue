@@ -51,7 +51,7 @@
         <el-table-column prop="email" label="邮箱" min-width="120" show-overflow-tooltip />
         <el-table-column prop="postcode" label="传真" min-width="120" />
         <el-table-column prop="unitAddress" label="地址" min-width="150" show-overflow-tooltip />
-        <el-table-column fixed="right" label="操作" min-width="150" align="center">
+        <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button
               class="btn"

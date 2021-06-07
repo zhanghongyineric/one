@@ -475,3 +475,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+::v-deep .el-dialog__body {
+  padding: 20px 20px;
+}
+</style>

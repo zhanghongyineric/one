@@ -84,10 +84,10 @@
           width="50"
           align="center"
         />
-        <el-table-column v-slot="{row}" label="企业名称" prop="unitName" width="400" show-overflow-tooltip align="center">
+        <el-table-column v-slot="{row}" label="企业名称" prop="unitName" min-width="400" show-overflow-tooltip align="center">
           {{ row.unitName || '-' }}
         </el-table-column>
-        <el-table-column v-slot="{row}" label="企业类型" prop="operationType" width="300" align="center">
+        <el-table-column v-slot="{row}" label="企业类型" prop="operationType" min-width="300" align="center">
           {{ row.operationType | companyRoleFilter }}
         </el-table-column>
         <el-table-column v-slot="{row}" label="运营状态" prop="status" width="300" align="center">
@@ -95,7 +95,7 @@
         </el-table-column>
 
         <!--表格操作列-->
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
           <template v-slot="{row}">
             <el-button type="primary" size="mini" @click="handleUpdate(row)">
               更新信息
