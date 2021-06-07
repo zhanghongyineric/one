@@ -40,6 +40,14 @@ export function updateCount(data) {
     data
   })
 }
+// 新增
+export function addCount(data) {
+  return request({
+    url: '/enterprose/save',
+    method: 'post',
+    data
+  })
+}
 // 删除
 export function deleteCount(data) {
   return request({

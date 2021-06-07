@@ -386,7 +386,7 @@
 </template>
 
 <script>
-import { fetchList, companyStatus, companyRoleStatus, companyEconomyStatus, updateCount, deleteCount } from '@/api/information-manage/company-base-information'
+import { fetchList, companyStatus, companyRoleStatus, companyEconomyStatus, updateCount, deleteCount, addCount } from '@/api/information-manage/company-base-information'
 import Pagination from '@/components/Pagination' // 分页
 import AreaSelect from '@/components/AreaSelect'
 import RemoteSearch from '@/components/RemoteSearch/select'
@@ -846,8 +846,8 @@ export default {
           // 将zoneId拆分成后端需要的数据
           // const zoneId = this.createFormData.zoneId
           const requestData = {
-            ...this.createFormData
-            // province: zoneId[0] || '',
+            ...this.createFormData,
+            zoneId: this.createFormData.zoneId[0] || ''
             // city: zoneId[1] || '',
             // region: zoneId[2] || '',
             // area: this.createFormData.areaText

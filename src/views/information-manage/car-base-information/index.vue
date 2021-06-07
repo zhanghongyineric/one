@@ -193,7 +193,7 @@
         @pagination="getList"
       />
 
-      <!--编辑、新增、查看详情共用弹窗-->
+      <!--新增、更新信息共用弹窗-->
       <el-dialog
         :title="textMap[dialogStatus]"
         :visible.sync="dialogFormVisible"
@@ -607,8 +607,199 @@
         <div slot="footer" class="dialog-footer">
           <el-button v-show="indexs !== 0" type="primary" @click="lastStep()">上一步</el-button>
           <el-button v-show="indexs !== 2" type="primary" @click="nextStep()">下一步</el-button>
-          <el-button v-show="indexs === 2" type="primary" @click="submit()">保存</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
+          <div v-if="dialogStatus==='create'">
+            <el-button v-show="indexs === 2" type="primary" :loading="buttonLoading" @click="createData()">
+              保存
+            </el-button>
+          </div>
+          <div v-else-if="dialogStatus==='update'">
+            <el-button v-show="indexs === 2" type="primary" :loading="buttonLoading" @click="updateData()">
+              保存
+            </el-button>
+            <el-popconfirm
+              title="确认删除吗？"
+              style="margin-left:10px;margin-right:10px;"
+              @confirm="handleDelete()"
+            >
+              <el-button v-show="indexs === 2" slot="reference" size="large" type="danger" style="margin-left: -5px">
+                删除
+              </el-button>
+            </el-popconfirm>
+          </div>
+        </div>
+      </el-dialog>
+      <!--入网信息弹窗-->
+      <el-dialog
+        :title="onLineTitle"
+        :visible.sync="dialogFormVisible"
+        :close-on-click-modal="false"
+        custom-class="base-dialog"
+      >
+        <el-form
+          ref="twoForm"
+          :rules="onlineRules"
+          :model="onLineFormData"
+          label-width="200px"
+        >
+          <el-row>
+            <el-form-item label="入网方式:" prop="shortName">
+              <el-select v-model="listQuery.shortName" placeholder="请选择">
+                <el-option
+                  v-for="item in optionGroup.networkStyleList"
+                  :key="item.label"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="车载终端名称:" prop="shortName">
+                <el-input v-model="createFormData.shortName" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item v-if="createFormData.role==='admin'" label="平台名称:" prop="unitName">
+                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="服务器域名及端口:" prop="unitName">
+                <el-select v-model="listQuery.shortName" placeholder="请选择">
+                  <el-option
+                    v-for="item in optionGroup.networkStyleList"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="服务商名称:" prop="shortName">
+                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="通讯协议版本:" prop="unitName">
+                <el-select v-model="listQuery.shortName" placeholder="请选择">
+                  <el-option
+                    v-for="item in optionGroup.networkStyleList"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="定位模式:" prop="shortName">
+                <el-select v-model="listQuery.shortName" placeholder="请选择">
+                  <el-option
+                    v-for="item in optionGroup.networkStyleList"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="通讯模式:" prop="unitName">
+                <el-select v-model="listQuery.shortName" placeholder="请选择">
+                  <el-option
+                    v-for="item in optionGroup.networkStyleList"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="制造商名称:" prop="shortName">
+                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="主机型号:" prop="unitName">
+                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="物联网卡号:" prop="shortName">
+                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+              <el-form-item label="视频通道数:" prop="unitName">
+                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              </el-form-item>
+          </el-row>
+          <el-row>
+              <el-form-item label="主要功能:" prop="minThings">
+                <el-select v-model="onLineFormData.minThings" multiple placeholder="请选择">
+                  <el-option
+                    v-for="item in optionGroup.minStyleList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+          </el-row>
+          <el-row>
+            <!--            v-if="dialogStatus==='detail'"-->
+            <el-form-item label="有关图片:" prop="operatingPermitImage">
+              <p class="img-tit">
+                <span v-if="!operatingPermitImage.length">未上传图片</span>
+              </p>
+              <div class="dialog-imgs">
+                <div
+                  v-for="img in operatingPermitImage"
+                  :key="img"
+                  class="img-con"
+                >
+                  <el-image
+                    class="dialog-img"
+                    :src="img"
+                    fit="cover"
+                    :preview-src-list="operatingPermitImage"
+                    :z-index="3000"
+                  />
+                </div>
+              </div>
+            </el-form-item>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="closeDialog()">关闭</el-button>
+            <el-button type="primary" :loading="buttonLoading" @click="createData()">
+              保存
+            </el-button>
+            <el-button v-show="indexs === 2" type="primary" :loading="buttonLoading" @click="updateData()">
+              保存
+            </el-button>
+            <el-popconfirm
+              title="确认删除吗？"
+              style="margin-left:10px;margin-right:10px;"
+              @confirm="handleDelete()"
+            >
+              <el-button slot="reference" size="large" type="danger" style="margin-left: -5px">
+                删除
+              </el-button>
+            </el-popconfirm>
         </div>
       </el-dialog>
     </el-card>
@@ -719,13 +910,23 @@ export default {
       total: 0, // 总数据条数
       advanced: false, // 是否展开高级搜索条件
       optionGroup: {
-        option4: [{
-          value: '选项1',
-          label: '县内班车'
-        }, {
-          value: '选项2',
-          label: '县际班车'
-        }],
+        minStyleList: [
+          {
+            value: '选项1',
+            label: '行驶记录'
+          }, {
+            value: '选项2',
+            label: '视频监控'
+          }
+        ],
+        option4: [
+          {
+            value: '选项1',
+            label: '县内班车'
+          }, {
+            value: '选项2',
+            label: '县际班车'
+          }],
         // runList: companyRoleOption.list,
         // newStateList: companyStatusOption.list,
         roleList: companyLevel.list,
@@ -975,7 +1176,7 @@ export default {
         // accountTypeList: onlineOption.account_type.list
       }, // 存放选项的数据
       createFormData: {
-        role: 'admin',
+        // role: 'admin',
         unitName: '',
         shortName: '',
         aptitudeLevel: '',
@@ -1001,7 +1202,7 @@ export default {
         operatingPermitImage: ''
       }, // 存储新增和编辑框的数据
       createFormDataTemp: {
-        role: 'admin',
+        // role: 'admin',
         unitName: '',
         shortName: '',
         aptitudeLevel: '',
@@ -1045,11 +1246,15 @@ export default {
         // address: [{ required: true, message: '请选择地址', trigger: 'change' }],
       }, // 新增和编辑框的规则
       textMap: {
-        update: '编辑',
-        create: '新增',
-        detail: '详情'
+        update: '更新信息',
+        create: '新增'
+        // detail: '详情'
       }, // 弹出框标题
+      onLineFormData: {
+        minThings: []
+      },
       dialogStatus: '',
+      onLineTitle: '入网信息',
       poiPicker: null,
       operatingPermitImage: []
     }
@@ -1285,31 +1490,32 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    showDetails(id, index) {
-      this.dialogVisible = true
-      this.operatingPermitImage = []
-      this.listLoading = true
-      this.rowId = id
-      details({ id })
-        .then((res) => {
-          const { data } = res
-          this.createFormData = { ...data }
-          this.createFormData.index = index + 1
-          let pathArr = []
-          if (data.contentPic) { pathArr = data.contentPic.split('；') }
-          for (let i = 0; i < pathArr.length; i++) {
-            pathArr[i] = 'https://www.image.gosmooth.com.cn' + pathArr[i]
-          }
-          this.dialogInfo.operatingPermitImage = pathArr
-          console.log(this.dialogInfo.operatingPermitImage, '申诉图片')
-          this.listLoading = false
-        })
-        .catch((err) => {
-          this.listLoading = false
-          throw err
-        })
-    },
+    // showDetails(id, index) {
+    //   this.dialogVisible = true
+    //   this.operatingPermitImage = []
+    //   this.listLoading = true
+    //   this.rowId = id
+    //   details({ id })
+    //     .then((res) => {
+    //       const { data } = res
+    //       this.createFormData = { ...data }
+    //       this.createFormData.index = index + 1
+    //       let pathArr = []
+    //       if (data.contentPic) { pathArr = data.contentPic.split('；') }
+    //       for (let i = 0; i < pathArr.length; i++) {
+    //         pathArr[i] = 'https://www.image.gosmooth.com.cn' + pathArr[i]
+    //       }
+    //       this.dialogInfo.operatingPermitImage = pathArr
+    //       console.log(this.dialogInfo.operatingPermitImage, '申诉图片')
+    //       this.listLoading = false
+    //     })
+    //     .catch((err) => {
+    //       this.listLoading = false
+    //       throw err
+    //     })
+    // },
     // 点击编辑
+    // 点击更新信息
     handleUpdate(row) {
       this.rowId = row.id
       console.log(row.zoneId)
@@ -1362,10 +1568,10 @@ export default {
         }
       })
     },
-    // 删除数据
-    handleDelete(row) {
+    // 更新数据-删除数据
+    handleDelete() {
       this.listLoading = true
-      deleteCount({ userId: row.userId }).then(() => {
+      deleteCount({ id: this.rowId }).then(() => {
         this.dialogFormVisible = false
         this.listLoading = false
         if (this.list.length === 1 && this.listQuery.pageNumber !== 1) {
@@ -1390,7 +1596,6 @@ export default {
     nextStep() {
       this.indexs += 1
     },
-    submit() {},
     closeDialog() {
       this.dialogFormVisible = false
       this.indexs = 1
@@ -1410,7 +1615,15 @@ export default {
   border: 1px solid #999;
 }
 
-::v-deep {.amap-box {
+::v-deep {
+  .dialog-footer{
+    display: flex;
+    justify-content: flex-end;
+    :nth-child(4){
+      margin-left: 10px;
+    }
+  }
+  .amap-box {
   height: 100vh !important;
 }
   .el-dialog__headerbtn{
