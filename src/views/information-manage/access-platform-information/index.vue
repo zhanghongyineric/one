@@ -136,13 +136,13 @@
         highlight-current-row
       >
         <el-table-column type="index" label="编号" width="50" />
-        <el-table-column prop="platformName" label="平台名称" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="platformCode" label="平台编码" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="functions" label="平台支持功能" min-width="110" show-overflow-tooltip />
-        <el-table-column prop="serviceArea" label="地址" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="keepOnRecord" label="是否备案" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="platformName" label="平台名称" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="platformCode" label="平台编码" min-width="80" show-overflow-tooltip />
+        <el-table-column prop="developerName" label="服务商名称" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="serviceArea" label="服务地区范围" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="keepOnRecord" label="是否备案" min-width="100" show-overflow-tooltip />
         <!-- <el-table-column prop="number" label="传真" min-width="130" /> -->
-        <el-table-column prop="status" label="状态" min-width="130" />
+        <el-table-column prop="status" label="平台状态" min-width="90" />
         <el-table-column fixed="right" label="操作" min-width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -472,7 +472,43 @@ export default {
         keepOnRecord: [{ required: true, message: '请选择备案状态', trigger: 'change' }]
       },
       detail: false,
-      currentRow: {}
+      currentRow: {},
+      connectMap: new Map(),
+      versionMap: new Map()
+    }
+  },
+  watch: {
+    // platformSupportFeatures: function(newVal, oldVal) {
+    //   const functionsMap = new Map()
+    //   newVal.forEach(item => {
+    //     functionsMap.set(item.label, item.value)
+    //   })
+    //   this.tableData.forEach(item => {
+    //     const fnArr = item.functions.split(',')
+    //   const fnText = []
+    //     fnArr.forEach(code => {
+    //       fnText.push(functionsMap.get(code))
+    //     })
+    //     item.functions = fnText.join(',')
+    //   })
+    // },
+    recordStatus: function(newVal, oldVal) {
+      const recordsMap = new Map()
+      newVal.forEach(item => {
+        recordsMap.set(parseInt(item.label), item.value)
+      })
+      this.tableData.forEach(item => {
+        item.keepOnRecord = recordsMap.get(item.keepOnRecord)
+      })
+    },
+    platformStatus: function(newVal, oldVal) {
+      const statusMap = new Map()
+      newVal.forEach(item => {
+        statusMap.set(parseInt(item.label), item.value)
+      })
+      this.tableData.forEach(item => {
+        item.status = statusMap.get(item.status)
+      })
     }
   },
   created() {
@@ -537,7 +573,11 @@ export default {
     getProtocolVersion() {
       protocolVersion()
         .then(res => {
-          this.protocolVersionOptions = res.data
+          const { data } = res
+          this.protocolVersionOptions = data
+          data.forEach(item => {
+            this.versionMap.set(parseInt(item.label), item.value)
+          })
         })
         .catch(err => {
           throw err
@@ -546,7 +586,11 @@ export default {
     getAllowConnect() {
       allowConnect()
         .then(res => {
-          this.allowConnectOptions = res.data
+          const { data } = res
+          this.allowConnectOptions = data
+          data.forEach(item => {
+            this.connectMap.set(parseInt(item.label), item.value)
+          })
         })
         .catch(err => {
           throw err
@@ -580,6 +624,10 @@ export default {
           this.total = data.total
           this.tableData = data.list
           this.listLoading = false
+          this.tableData.forEach(item => {
+            item.allowConnect = this.connectMap.get(item.allowConnect)
+            item.protocolVersion = this.versionMap.get(item.protocolVersion)
+          })
         })
         .catch(err => {
           this.listLoading = false

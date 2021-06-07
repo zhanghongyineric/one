@@ -469,8 +469,8 @@ export default {
     },
     submit() {},
     closeDialog() {
-      this.dialogVisible = false
       this.stepIndex = 1
+      this.dialogVisible = false
     }
   }
 }
