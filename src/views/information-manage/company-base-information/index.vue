@@ -311,24 +311,24 @@
           <el-row>
             <el-col :md="24" :sm="24">
               <el-form-item label="道路运输经营许可证有效期起:" prop="transportStartDate">
-                  <el-date-picker
-                    v-model="createFormData.transportStartDate"
-                    type="date"
-                    placeholder="选择日期"
-                    format="yyyy 年 MM 月 dd 日">
-                  </el-date-picker>
+                <el-date-picker
+                  v-model="createFormData.transportStartDate"
+                  type="date"
+                  placeholder="选择日期"
+                  format="yyyy 年 MM 月 dd 日"
+                />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-          <el-form-item label="道路运输经营许可证有效期止:" prop="transportEndDate">
-            <el-date-picker
-              v-model="createFormData.transportEndDate"
-              type="date"
-              placeholder="选择日期"
-              format="yyyy 年 MM 月 dd 日">
-            </el-date-picker>
-          </el-form-item>
+            <el-form-item label="道路运输经营许可证有效期止:" prop="transportEndDate">
+              <el-date-picker
+                v-model="createFormData.transportEndDate"
+                type="date"
+                placeholder="选择日期"
+                format="yyyy 年 MM 月 dd 日"
+              />
+            </el-form-item>
           </el-row>
           <el-row>
             <el-form-item v-if="dialogStatus==='detail'" label="有关图片:" prop="operatingPermitImage">

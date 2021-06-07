@@ -249,8 +249,8 @@
                 <el-date-picker
                   v-model="value1"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
@@ -258,8 +258,8 @@
                 <el-date-picker
                   v-model="value2"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
@@ -267,8 +267,8 @@
                 <el-date-picker
                   v-model="value3"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -370,8 +370,8 @@
                 <el-date-picker
                   v-model="value1"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
@@ -379,13 +379,13 @@
                 <el-date-picker
                   v-model="value1"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-<!--            v-if="dialogStatus==='detail'"-->
+            <!--            v-if="dialogStatus==='detail'"-->
             <el-form-item label="有关图片:" prop="operatingPermitImage">
               <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
@@ -417,17 +417,17 @@
         >
           <el-row>
             <el-col :md="12" :sm="24">
-            <el-form-item label="机动车车辆类型:" prop="shortName">
-              <el-select v-model="listQuery.shortName" placeholder="请选择机动车车辆类型">
-                <el-option
-                  v-for="item in optionGroup.carKindList"
-                  :key="item.label"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
+              <el-form-item label="机动车车辆类型:" prop="shortName">
+                <el-select v-model="listQuery.shortName" placeholder="请选择机动车车辆类型">
+                  <el-option
+                    v-for="item in optionGroup.carKindList"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item v-if="createFormData.role==='admin'" label="车籍所在地:" prop="unitName">
                 <el-input v-model="createFormData.unitName" placeholder="请选择" />
@@ -464,8 +464,8 @@
                 <el-date-picker
                   v-model="value1"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -473,15 +473,15 @@
                 <el-date-picker
                   v-model="value1"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-              <el-form-item label="车辆所有人:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
+            <el-form-item label="车辆所有人:" prop="unitName">
+              <el-input v-model="createFormData.unitName" placeholder="请输入" />
+            </el-form-item>
           </el-row>
           <el-row>
             <!--            v-if="dialogStatus==='detail'"-->
@@ -508,12 +508,12 @@
           </el-row>
         </el-form>
         <el-form
-            v-show="indexs==2"
-            ref="threeForm"
-            :rules="threeRules"
-            :model="createFormData"
-            label-width="200px"
-          >
+          v-show="indexs==2"
+          ref="threeForm"
+          :rules="threeRules"
+          :model="createFormData"
+          label-width="200px"
+        >
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="道路运输证字号:" prop="shortName">
@@ -537,8 +537,8 @@
                 <el-date-picker
                   v-model="value1"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -548,8 +548,8 @@
                 <el-date-picker
                   v-model="value1"
                   type="date"
-                  placeholder="选择日期">
-                </el-date-picker>
+                  placeholder="选择日期"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -570,14 +570,14 @@
           </el-row>
           <el-row>
             <el-form-item label="经营范围:" prop="unitName">
-            <el-select v-model="value4" multiple placeholder="请选择">
-              <el-option
-                v-for="item in option4"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
+              <el-select v-model="value4" multiple placeholder="请选择">
+                <el-option
+                  v-for="item in option4"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </el-form-item>
           </el-row>
           <el-row>
@@ -603,7 +603,7 @@
               </div>
             </el-form-item>
           </el-row>
-          </el-form>
+        </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button v-show="indexs !== 0" type="primary" @click="lastStep()">上一步</el-button>
           <el-button v-show="indexs !== 2" type="primary" @click="nextStep()">下一步</el-button>
@@ -743,21 +743,21 @@
             </el-col>
           </el-row>
           <el-row>
-              <el-form-item label="视频通道数:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
+            <el-form-item label="视频通道数:" prop="unitName">
+              <el-input v-model="createFormData.unitName" placeholder="请输入" />
+            </el-form-item>
           </el-row>
           <el-row>
-              <el-form-item label="主要功能:" prop="minThings">
-                <el-select v-model="onLineFormData.minThings" multiple placeholder="请选择">
-                  <el-option
-                    v-for="item in optionGroup.minStyleList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
+            <el-form-item label="主要功能:" prop="minThings">
+              <el-select v-model="onLineFormData.minThings" multiple placeholder="请选择">
+                <el-option
+                  v-for="item in optionGroup.minStyleList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
           </el-row>
           <el-row>
             <!--            v-if="dialogStatus==='detail'"-->
@@ -785,21 +785,21 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
-            <el-button type="primary" :loading="buttonLoading" @click="createData()">
-              保存
+          <el-button type="primary" :loading="buttonLoading" @click="createData()">
+            保存
+          </el-button>
+          <el-button v-show="indexs === 2" type="primary" :loading="buttonLoading" @click="updateData()">
+            保存
+          </el-button>
+          <el-popconfirm
+            title="确认删除吗？"
+            style="margin-left:10px;margin-right:10px;"
+            @confirm="handleDelete()"
+          >
+            <el-button slot="reference" size="large" type="danger" style="margin-left: -5px">
+              删除
             </el-button>
-            <el-button v-show="indexs === 2" type="primary" :loading="buttonLoading" @click="updateData()">
-              保存
-            </el-button>
-            <el-popconfirm
-              title="确认删除吗？"
-              style="margin-left:10px;margin-right:10px;"
-              @confirm="handleDelete()"
-            >
-              <el-button slot="reference" size="large" type="danger" style="margin-left: -5px">
-                删除
-              </el-button>
-            </el-popconfirm>
+          </el-popconfirm>
         </div>
       </el-dialog>
     </el-card>
