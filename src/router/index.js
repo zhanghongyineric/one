@@ -59,7 +59,13 @@ export const asyncRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/official-website/carousel-images'
+    redirect: '/home',
+    children: [{
+      path: 'home',
+      name: 'InformationHome',
+      component: () => import('@/views/information-manage/home'),
+      meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin'] }
+    }]
   },
   // companyManageRouter, // 企业管理路由
   // companyRouter, // 企业路由
