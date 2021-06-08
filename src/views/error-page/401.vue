@@ -12,7 +12,7 @@
         <ul class="list-unstyled">
           <li>或者你可以去:</li>
           <li class="link-type">
-            <router-link to="/home">
+            <router-link to="/InformationHome">
               回首页
             </router-link>
           </li>

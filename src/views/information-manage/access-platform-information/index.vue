@@ -492,24 +492,24 @@ export default {
     //     item.functions = fnText.join(',')
     //   })
     // },
-    recordStatus: function(newVal, oldVal) {
-      const recordsMap = new Map()
-      newVal.forEach(item => {
-        recordsMap.set(parseInt(item.label), item.value)
-      })
-      this.tableData.forEach(item => {
-        item.keepOnRecord = recordsMap.get(item.keepOnRecord)
-      })
-    },
-    platformStatus: function(newVal, oldVal) {
-      const statusMap = new Map()
-      newVal.forEach(item => {
-        statusMap.set(parseInt(item.label), item.value)
-      })
-      this.tableData.forEach(item => {
-        item.status = statusMap.get(item.status)
-      })
-    }
+    // recordStatus: function(newVal, oldVal) {
+    //   const recordsMap = new Map()
+    //   newVal.forEach(item => {
+    //     recordsMap.set(parseInt(item.label), item.value)
+    //   })
+    //   this.tableData.forEach(item => {
+    //     item.keepOnRecord = recordsMap.get(item.keepOnRecord)
+    //   })
+    // },
+    // platformStatus: function(newVal, oldVal) {
+    //   const statusMap = new Map()
+    //   newVal.forEach(item => {
+    //     statusMap.set(parseInt(item.label), item.value)
+    //   })
+    //   this.tableData.forEach(item => {
+    //     item.status = statusMap.get(item.status)
+    //   })
+    // }
   },
   created() {
     this.getQueryConditions()

@@ -16,6 +16,9 @@ import '@/permission' // permission control
 
 Vue.use(ElementUI)
 
+import * as Echarts from 'echarts'
+Vue.prototype.$echarts = Echarts
+
 // register global utility filters
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])

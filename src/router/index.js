@@ -59,9 +59,9 @@ export const asyncRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/home',
+    redirect: '/InformationHome',
     children: [{
-      path: 'home',
+      path: 'InformationHome',
       name: 'InformationHome',
       component: () => import('@/views/information-manage/home'),
       meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin'] }
