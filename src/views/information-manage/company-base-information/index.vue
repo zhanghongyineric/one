@@ -122,6 +122,7 @@
         :visible.sync="dialogFormVisible"
         :close-on-click-modal="false"
         custom-class="base-dialog"
+        top="10px"
       >
         <el-form
           ref="dataForm"

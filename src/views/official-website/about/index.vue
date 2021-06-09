@@ -71,7 +71,7 @@
         :visible.sync="visible"
         custom-class="base-dialog"
         :before-close="closeDialog"
-        top="6vh"
+        top="10px"
       >
         <el-form
           ref="addForm"

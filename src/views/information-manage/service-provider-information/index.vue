@@ -85,7 +85,13 @@
         top="20px"
         :before-close="closeDialog"
       >
-        <el-form ref="dialogForm" :rules="rules" :model="dialogData" label-width="150px">
+        <el-form
+          ref="dialogForm"
+          :rules="rules"
+          :model="dialogData"
+          label-width="150px"
+          :disabled="detail"
+        >
           <el-form-item label="服务商名称：" prop="unitName">
             <el-input v-model="dialogData.unitName" placeholder="请输入服务商名称" size="small" />
           </el-form-item>
@@ -134,7 +140,7 @@
           </div>
         </el-form>
         <span v-if="detail" style="margin-left: 35%">
-          <el-button type="primary" @click="delData()">删除</el-button>
+          <el-button type="danger" @click="delData()">删除</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
         <span v-else style="margin-left: 35%">
@@ -261,6 +267,7 @@ export default {
       this.getList()
     },
     showDetails(row) {
+      this.dialogData = { ...row }
       this.currentRow = row
       this.dialogVisible = true
       this.detail = true
@@ -387,6 +394,7 @@ export default {
     },
     closeDialog() {
       this.dialogVisible = false
+      this.resetForm()
       this.fileList = []
     },
     getTitle() {

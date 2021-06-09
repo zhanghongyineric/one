@@ -9,7 +9,7 @@
             <div class="chart-box-left">
               <div id="driverCol" class="chart-style" />
             </div>
-            
+
             <div class="text-box">
               <span class="num">988</span>
               <span>
@@ -43,7 +43,7 @@
             </div>
 
             <div class="chart-box-right">
-            <div id="car" class="chart-style" />
+              <div id="car" class="chart-style" />
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default {
         all: 0,
         normal: 0,
         pause: 0
-      },
+      }
 
     }
   },
@@ -144,16 +144,16 @@ export default {
     this.getPlatformNum()
   },
   mounted() {
-    let dc = this.driverChart = this.$echarts.init(document.getElementById('driver'))
-    let dcc = this.driverColChart = this.$echarts.init(document.getElementById('driverCol'))
-    let cc = this.carChart = this.$echarts.init(document.getElementById('car'))
-    let ccc = this.carColChart = this.$echarts.init(document.getElementById('carCol'))
+    const dc = this.driverChart = this.$echarts.init(document.getElementById('driver'))
+    const dcc = this.driverColChart = this.$echarts.init(document.getElementById('driverCol'))
+    const cc = this.carChart = this.$echarts.init(document.getElementById('car'))
+    const ccc = this.carColChart = this.$echarts.init(document.getElementById('carCol'))
     this.companyChart = this.$echarts.init(document.getElementById('company'))
     this.platformChart = this.$echarts.init(document.getElementById('platform'))
     this.serviceChart = this.$echarts.init(document.getElementById('service'))
     this.updateEcharts()
 
-    window.addEventListener('resize',function () {
+    window.addEventListener('resize', function() {
       dcc.resize()
       dc.resize()
       cc.resize()
@@ -262,7 +262,7 @@ export default {
               { value: 235, name: '注销' },
               { value: 580, name: '转出' },
               { value: 980, name: '正常' },
-              { value: 580, name: '暂停服务' }
+              { value: 580, name: '暂停' }
             ],
             emphasis: {
               itemStyle: {
@@ -277,7 +277,7 @@ export default {
       this.carColOption = {
         xAxis: {
           type: 'category',
-          data: ['停运', '注销', '转出', '正常', '暂停服务']
+          data: ['停运', '注销', '转出', '正常', '暂停']
         },
         yAxis: {
           type: 'value'

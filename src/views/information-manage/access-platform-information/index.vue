@@ -181,10 +181,16 @@
       <el-dialog
         :title="modify ? '更新' : '添加'"
         :visible.sync="dialogVisible"
-        top="20px"
+        top="10px"
         :before-close="closeDialog"
       >
-        <el-form ref="dialogForm" :rules="rules" :model="dialogData" label-width="120px">
+        <el-form
+          ref="dialogForm"
+          :rules="rules"
+          :model="dialogData"
+          label-width="120px"
+          :disabled="detail"
+        >
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="平台名称：" prop="platformName">
@@ -383,7 +389,7 @@
           </el-form-item>
         </el-form>
         <span v-if="detail" style="margin-left: 35%">
-          <el-button type="primary" @click="delData()">删除</el-button>
+          <el-button type="danger" @click="delData()">删除</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
         <span v-else style="margin-left: 35%">
