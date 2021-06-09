@@ -329,7 +329,8 @@ body {
     display: flex;
     width: 1156px;
     height: 600px;
-    margin: 12% auto 0px;
+    // margin: 12% auto 0px;
+    margin: auto;
     overflow: hidden;
     box-shadow: 0px 0px 13px 5px rgb(14 25 80 / 20%);
     border-radius: 10px;
