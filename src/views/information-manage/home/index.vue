@@ -5,6 +5,11 @@
         <div class="box" @click="gotoPage('/information-manage/driver-base-information')">
           <p>驾驶员信息</p>
           <div class="top-box">
+
+            <div class="chart-box-left">
+              <div id="driverCol" class="chart-style" />
+            </div>
+            
             <div class="text-box">
               <span class="num">988</span>
               <span>
@@ -12,7 +17,11 @@
                 驾驶员总数
               </span>
             </div>
-            <div id="driver" class="chart" />
+
+            <div class="chart-box-right">
+              <div id="driver" class="chart-style" />
+            </div>
+
           </div>
         </div>
       </el-col>
@@ -20,6 +29,11 @@
         <div class="box" @click="gotoPage('/information-manage/car-base-information')">
           <p>车辆信息</p>
           <div class="top-box">
+
+            <div class="chart-box-left">
+              <div id="carCol" class="chart-style" />
+            </div>
+
             <div class="text-box">
               <span class="num">2641</span>
               <span>
@@ -27,7 +41,10 @@
                 车辆总数
               </span>
             </div>
-            <div id="car" class="chart" />
+
+            <div class="chart-box-right">
+            <div id="car" class="chart-style" />
+            </div>
           </div>
         </div>
       </el-col>
@@ -38,7 +55,7 @@
           <p>企业信息</p>
           <div class="top-box">
             <div class="text-box bottom-box">
-              <span class="num">461</span>
+              <span class="num">{{ companyData.all }}</span>
               <span>
                 <svg-icon :icon-class="'company'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
                 企业总数
@@ -53,7 +70,7 @@
           <p>接入平台信息</p>
           <div class="top-box">
             <div class="text-box bottom-box">
-              <span class="num">35</span>
+              <span class="num">{{ platformData.all }}</span>
               <span>
                 <svg-icon :icon-class="'platform'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
                 平台总数
@@ -68,7 +85,7 @@
           <p>服务商信息</p>
           <div class="top-box">
             <div class="text-box bottom-box">
-              <span class="num">42</span>
+              <span class="num">{{ serviceData.all }}</span>
               <span>
                 <svg-icon :icon-class="'service'" style="width: 15px;height: 15px;" />
                 服务商总数
@@ -83,31 +100,103 @@
 </template>
 
 <script>
+import { companyNumber, serviceNumber, platformNumber } from '@/api/information-manage/home'
+
 export default {
   name: 'InformationHome',
   data() {
     return {
       driverChart: {},
+      driverColChart: {},
       carChart: {},
+      carColChart: {},
       companyChart: {},
       platformChart: {},
       serviceChart: {},
       driverOption: {},
+      driverColOption: {},
       carOption: {},
+      carColOption: {},
       companyOption: {},
       platformOption: {},
-      serviceOption: {}
+      serviceOption: {},
+      companyData: {
+        all: 0,
+        normal: 0,
+        pause: 0
+      },
+      serviceData: {
+        all: 0,
+        normal: 0,
+        pause: 0
+      },
+      platformData: {
+        all: 0,
+        normal: 0,
+        pause: 0
+      },
+
     }
   },
+  created() {
+    this.getCompanyNum()
+    this.getServiceNum()
+    this.getPlatformNum()
+  },
   mounted() {
-    this.driverChart = this.$echarts.init(document.getElementById('driver'))
-    this.carChart = this.$echarts.init(document.getElementById('car'))
+    let dc = this.driverChart = this.$echarts.init(document.getElementById('driver'))
+    let dcc = this.driverColChart = this.$echarts.init(document.getElementById('driverCol'))
+    let cc = this.carChart = this.$echarts.init(document.getElementById('car'))
+    let ccc = this.carColChart = this.$echarts.init(document.getElementById('carCol'))
     this.companyChart = this.$echarts.init(document.getElementById('company'))
     this.platformChart = this.$echarts.init(document.getElementById('platform'))
     this.serviceChart = this.$echarts.init(document.getElementById('service'))
     this.updateEcharts()
+
+    window.addEventListener('resize',function () {
+      dcc.resize()
+      dc.resize()
+      cc.resize()
+      ccc.resize()
+    })
   },
   methods: {
+    getCompanyNum() {
+      companyNumber()
+        .then(res => {
+          const { data } = res
+          this.companyData.all = data['全部']
+          this.companyData.normal = data['运营']
+          this.companyData.pause = data['歇业']
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    getServiceNum() {
+      serviceNumber()
+        .then(res => {
+          const { data } = res
+          this.serviceData.all = data['全部']
+          this.serviceData.normal = data['正常']
+          this.serviceData.pause = data['注销']
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    getPlatformNum() {
+      platformNumber()
+        .then(res => {
+          const { data } = res
+          this.platformData.all = data['全部']
+          this.platformData.normal = data['正常']
+          this.platformData.pause = data['歇业']
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     updateEcharts() {
       this.driverOption = {
         tooltip: {
@@ -136,6 +225,23 @@ export default {
             }
           }
         ]
+      }
+      this.driverColOption = {
+        xAxis: {
+          type: 'category',
+          data: ['从业', '待业', '注销']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: [1048, 735, 580],
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          }
+        }]
       }
       this.carOption = {
         tooltip: {
@@ -168,6 +274,23 @@ export default {
           }
         ]
       }
+      this.carColOption = {
+        xAxis: {
+          type: 'category',
+          data: ['停运', '注销', '转出', '正常', '暂停服务']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: [348, 235, 580, 980, 580],
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          }
+        }]
+      }
       this.companyOption = {
         tooltip: {
           trigger: 'item'
@@ -183,8 +306,8 @@ export default {
               borderWidth: 2
             },
             data: [
-              { value: 312, name: '营运', itemStyle: { color: '#9FE080' }},
-              { value: 149, name: '歇业', itemStyle: { color: '#FF7070' }}
+              { value: this.companyData.normal, name: '营运', itemStyle: { color: '#9FE080' }},
+              { value: this.companyData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
             ]
           }
         ]
@@ -204,8 +327,8 @@ export default {
               borderWidth: 2
             },
             data: [
-              { value: 25, name: '正常', itemStyle: { color: '#9FE080' }},
-              { value: 10, name: '歇业', itemStyle: { color: '#FF7070' }}
+              { value: this.platformData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
+              { value: this.platformData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
             ]
           }
         ]
@@ -225,14 +348,16 @@ export default {
               borderWidth: 2
             },
             data: [
-              { value: 34, name: '正常', itemStyle: { color: '#9FE080' }},
-              { value: 8, name: '注销', itemStyle: { color: '#FF7070' }}
+              { value: this.serviceData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
+              { value: this.serviceData.pause, name: '注销', itemStyle: { color: '#FF7070' }}
             ]
           }
         ]
       }
       this.driverChart.setOption(this.driverOption)
+      this.driverColChart.setOption(this.driverColOption)
       this.carChart.setOption(this.carOption)
+      this.carColChart.setOption(this.carColOption)
       this.companyChart.setOption(this.companyOption)
       this.platformChart.setOption(this.platformOption)
       this.serviceChart.setOption(this.serviceOption)
@@ -261,6 +386,8 @@ export default {
 .top-box {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  height: 90%;
 }
 
 .bottom-box {
@@ -275,7 +402,7 @@ export default {
 }
 
 .sm-chart {
-  width: 250px;
+  width: 300px;
   height: 250px;
   position: absolute;
   right: 40px;
@@ -290,7 +417,7 @@ export default {
 .text-box {
   position: absolute;
   top: 40%;
-  left: 20%;
+  left: 45%;
 }
 
 .text-box span {
@@ -307,13 +434,39 @@ p {
   color: #464646;
 }
 
+.chart-box-left {
+  width: 45%;
+  height: 70%;
+  position: absolute;
+  left: 1%;
+  /* min-width: 390px; */
+}
+
+.chart-box-right {
+  width: 40%;
+  height: 70%;
+  position: absolute;
+  right: 1%;
+}
+
+.chart-style {
+  width: 100%;
+  height: 100%;
+}
+
 @media screen and (max-width: 1300px) and (min-width: 990px) {
-  .text-box {
+  /* .text-box {
     left: 5%;
-  }
+  } */
 
   .bottom-box {
-    left: 5% !important;
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 1450px) {
+  .bottom-box {
+    left: 1% !important;
   }
 }
 

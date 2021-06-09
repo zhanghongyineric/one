@@ -74,6 +74,11 @@ export const asyncRoutes = [
   // bigScreen, // 大屏路由
   // governmentReportRouter, // 政府端（日志报备）
   // notDetectedRouter, // 未检测到（日志报备）
+  informationManageRouter, // 信息管理
+  liveMonitorRouter, // 实时监控
+  statisticsInquireRouter, // 统计查询
+  businessManagementRouter, // 业务管理
+  systemManageRouter, // 系统管理路由 <<<<<<<这个放最下面，新增的放上面>>>>>>>
   officialWebsite, // 官网管理
   {
     path: '/advertising-management',
@@ -95,11 +100,6 @@ export const asyncRoutes = [
       }
     ]
   },
-  informationManageRouter, // 信息管理
-  liveMonitorRouter, // 实时监控
-  statisticsInquireRouter, // 统计查询
-  businessManagementRouter, // 业务管理
-  systemManageRouter, // 系统管理路由 <<<<<<<这个放最下面，新增的放上面>>>>>>>
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
