@@ -37,7 +37,7 @@
         <div class="box" @click="gotoPage('/information-manage/company-base-information')">
           <p>企业信息</p>
           <div class="top-box">
-            <div class="text-box" style="left: 10%">
+            <div class="text-box bottom-box">
               <span class="num">461</span>
               <span>
                 <svg-icon :icon-class="'company'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
@@ -52,7 +52,7 @@
         <div class="box" @click="gotoPage('/information-manage/access-platform-information')">
           <p>接入平台信息</p>
           <div class="top-box">
-            <div class="text-box" style="left: 10%">
+            <div class="text-box bottom-box">
               <span class="num">35</span>
               <span>
                 <svg-icon :icon-class="'platform'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
@@ -67,7 +67,7 @@
         <div class="box" @click="gotoPage('/information-manage/service-provider-information')">
           <p>服务商信息</p>
           <div class="top-box">
-            <div class="text-box" style="left: 10%">
+            <div class="text-box bottom-box">
               <span class="num">42</span>
               <span>
                 <svg-icon :icon-class="'service'" style="width: 15px;height: 15px;" />
@@ -263,6 +263,10 @@ export default {
   flex-direction: row;
 }
 
+.bottom-box {
+  left: 10% !important;
+}
+
 .chart {
   width: 350px;
   height: 350px;
@@ -305,7 +309,11 @@ p {
 
 @media screen and (max-width: 1300px) and (min-width: 990px) {
   .text-box {
-    display: none;
+    left: 5%;
+  }
+
+  .bottom-box {
+    left: 5% !important;
   }
 }
 

@@ -140,9 +140,18 @@
         <el-table-column prop="platformCode" label="平台编码" min-width="80" show-overflow-tooltip />
         <el-table-column prop="developerName" label="服务商名称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="serviceArea" label="服务地区范围" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="keepOnRecord" label="是否备案" min-width="100" show-overflow-tooltip />
-        <!-- <el-table-column prop="number" label="传真" min-width="130" /> -->
-        <el-table-column prop="status" label="平台状态" min-width="90" />
+        <el-table-column prop="keepOnRecord" label="是否备案" min-width="100" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.keepOnRecord === 907000">已备案</span>
+            <span v-else>未备案</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="平台状态" width="90">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 901000" style="color: #3CB371">正常</span>
+            <span v-else style="color: #EE6666">歇业</span>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -316,7 +325,13 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="服务商名称：" prop="developerName">
-                <el-input v-model="dialogData.developerName" placeholder="请输入服务商名称" size="small" />
+                <el-autocomplete
+                  v-model="dialogData.developerName"
+                  :fetch-suggestions="searchTypeService"
+                  placeholder="请输入服务商名称"
+                  :debounce="500"
+                  @select="selectService"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -522,6 +537,26 @@ export default {
   methods: {
     searchType(queryString, cb) {
       if (queryString) {
+        this.listQuery.platformName = queryString
+        selectList({ ...this.listQuery })
+          .then(res => {
+            const { data } = res
+            data.list.forEach(item => {
+              item.label = item.platformName
+              item.value = item.platformName
+            })
+            cb(data.list)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    searchTypeService(queryString, cb) {
+      if (queryString) {
         facilitatorName({ developerName: queryString })
           .then(res => {
             const { data } = res
@@ -529,7 +564,7 @@ export default {
               item.label = item.unitName
               item.value = item.unitName
             })
-            cb(res.data)
+            cb(data)
           })
           .catch(err => {
             throw err
@@ -555,17 +590,25 @@ export default {
       this.listQuery.platformName = item.value
       this.getList()
     },
+    selectService(item) {
+      this.dialogData.developerName = item.value
+    },
     getQueryConditions() {
       queryConditions()
         .then(res => {
           const { data } = res
-          console.log(res)
           this.serviceCarKinds = data['服务车辆类型']
           this.accessPlatformBelong = data['接入平台性质']
           this.accessPlatformKinds = data['接入平台类型']
           this.platformSupportFeatures = data['平台支持功能']
           this.platformStatus = data['平台状态']
           this.recordStatus = data['备案状态']
+          this.recordStatus.forEach(item => {
+            item.label = parseInt(item.label)
+          })
+          this.platformStatus.forEach(item => {
+            item.label = parseInt(item.label)
+          })
         })
         .catch(err => {
           throw err
