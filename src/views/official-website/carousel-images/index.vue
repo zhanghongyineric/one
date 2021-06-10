@@ -61,7 +61,7 @@
 
       <!-- 新增轮播图弹框 -->
       <el-dialog
-        title="新增"
+        :title="modify ? '修改' : '新增'"
         :visible.sync="visible"
         custom-class="base-dialog dialog-col-1"
         :before-close="closeDialog"
@@ -196,11 +196,12 @@ export default {
       else {
         this.modify = true
         this.addFormData.type = row.type
-        console.log(row)
-        const urlArr = row.imageUrl.split(';')
-        urlArr.forEach(item => {
-          this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
-        })
+        if (row.imageUrl) {
+          const urlArr = row.imageUrl.split(';')
+          urlArr.forEach(item => {
+            this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
+          })
+        }
       }
     },
     previewImg(file) {
@@ -281,7 +282,7 @@ export default {
               save(req)
                 .then(res => {
                   this.$message({
-                    message: '新增成功',
+                    message: `${this.modify ? '修改成功!' : '新增成功!'}`,
                     type: 'success'
                   })
                   this.visible = false

@@ -364,7 +364,7 @@ export default {
               save(req)
                 .then(res => {
                   this.$message({
-                    message: '添加成功',
+                    message: `${this.modify ? '修改成功!' : '新增成功!'}`,
                     type: 'success'
                   })
                   this.visible = false

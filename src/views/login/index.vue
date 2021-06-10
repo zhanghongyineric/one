@@ -5,7 +5,7 @@
         <div class="description">
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
-          <h2>{{version}}</h2>
+          <h2>{{ version }}</h2>
           <h3>监测·管理端</h3>
         </div>
       </div>

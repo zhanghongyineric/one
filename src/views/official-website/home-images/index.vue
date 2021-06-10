@@ -315,7 +315,7 @@ export default {
                 save(req)
                   .then(res => {
                     this.$message({
-                      message: '新增成功',
+                      message: `${this.modify ? '修改成功!' : '新增成功!'}`,
                       type: 'success'
                     })
                     this.visible = false
@@ -362,7 +362,7 @@ export default {
         this.modify = true
         this.addFormData.name = row.name
         this.addFormData.type = row.type
-        this.fileList.push({ url: `https://www.image.gosmooth.com.cn${row.imgUrl}` })
+        if (row.imgUrl) this.fileList.push({ url: `https://www.image.gosmooth.com.cn${row.imgUrl}` })
       }
     },
     deleteData(row) {

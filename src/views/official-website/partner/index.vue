@@ -271,10 +271,12 @@ export default {
       else {
         this.modify = true
         this.addFormData.summary = row.summary
-        const urlArr = row.imgUrl.split(';')
-        urlArr.forEach(item => {
-          this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
-        })
+        if (row.imgUrl) {
+          const urlArr = row.imgUrl.split(';')
+          urlArr.forEach(item => {
+            this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
+          })
+        }
       }
     },
     deleteParter(row) {
