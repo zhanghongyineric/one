@@ -157,6 +157,14 @@ export default {
       }
     }
   },
+  watch: {
+    driverData: {
+      deep: true,
+      handler(val) {
+        this.updateEcharts()
+      }
+    }
+  },
   created() {
     this.getCompanyNum()
     this.getServiceNum()
@@ -172,7 +180,7 @@ export default {
     this.companyChart = this.$echarts.init(document.getElementById('company'))
     this.platformChart = this.$echarts.init(document.getElementById('platform'))
     this.serviceChart = this.$echarts.init(document.getElementById('service'))
-    this.updateEcharts()
+    // this.updateEcharts()
 
     window.addEventListener('resize', function() {
       dcc.resize()
@@ -180,6 +188,10 @@ export default {
       cc.resize()
       ccc.resize()
     })
+
+    // this.$nextTick(() => {
+
+    // })
   },
   methods: {
     getCompanyNum() {
@@ -237,6 +249,7 @@ export default {
       driverNumber()
         .then(res => {
           const { data } = res
+          console.log('222')
           this.driverData.all = data['全部']
           this.driverData.work = data['从业']
           this.driverData.unwork = data['待业']
@@ -247,6 +260,11 @@ export default {
         })
     },
     updateEcharts() {
+      console.log(this.driverData, '000')
+      // this.$nextTick(() => {
+
+      // })
+
       this.driverOption = {
         tooltip: {
           trigger: 'item'
@@ -282,6 +300,9 @@ export default {
         },
         yAxis: {
           type: 'value'
+        },
+        grid: {
+          containLabel: true
         },
         series: [{
           data: [
@@ -342,6 +363,9 @@ export default {
         },
         yAxis: {
           type: 'value'
+        },
+        grid: {
+          containLabel: true
         },
         series: [{
           data: [
@@ -492,7 +516,7 @@ export default {
 .text-box {
   position: absolute;
   top: 40%;
-  left: 45%;
+  left: 47%;
 }
 
 .text-box span {
@@ -510,10 +534,10 @@ p {
 }
 
 .chart-box-left {
-  width: 45%;
-  height: 70%;
+  width: 55%;
+  height: 80%;
   position: absolute;
-  left: 1%;
+  left: -5%;
   /* min-width: 390px; */
 }
 
