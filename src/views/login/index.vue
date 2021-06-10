@@ -5,6 +5,7 @@
         <div class="description">
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
+          <h2>{{version}}</h2>
           <h3>监测·管理端</h3>
         </div>
       </div>
@@ -127,7 +128,11 @@ export default {
   computed: {
     title() {
       return this.$store.state.settings.title
+    },
+    version() {
+      return process.env.VUE_APP_SYSTEM_VERSION
     }
+
   },
   watch: {
     $route: {
@@ -367,7 +372,7 @@ body {
         }
 
         h3 {
-          padding-top: 160px;
+          padding-top: 90px;
           font-size: 24px;
           line-height: 70px;
           letter-spacing: 3px;
