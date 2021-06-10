@@ -26,3 +26,21 @@ export function platformNumber(data) {
     data
   })
 }
+
+// 车辆信息
+export function carNumber(data) {
+  return request({
+    url: '/vehicle/selectNumber',
+    method: 'POST',
+    data
+  })
+}
+
+// 驾驶员信息
+export function driverNumber(data) {
+  return request({
+    url: '/driver/selectNumber',
+    method: 'POST',
+    data
+  })
+}

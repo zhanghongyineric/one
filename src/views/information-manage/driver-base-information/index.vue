@@ -132,6 +132,7 @@
           :model="dialogData"
           label-width="120px"
           style="margin-top: 20px"
+          :disabled="detail"
         >
           <el-row>
             <el-col :md="12" :sm="24">
@@ -223,8 +224,8 @@
               <el-input v-model="dialogData.test" placeholder="请输入详细居住地址" size="small" />
             </el-form-item>
           </el-row>
-          <div style="margin-left: 53px;margin-bottom: 30px">
-            <p><b>服务商logo：</b></p>
+          <div style="margin-left: 23px;margin-bottom: 30px">
+            <p><b>上传证件照：</b></p>
             <el-upload
               ref="upload"
               action
@@ -249,6 +250,7 @@
           :model="dialogData"
           label-width="130px"
           style="margin-top: 20px"
+          :disabled="detail"
         >
           <el-row>
             <el-col :md="12" :sm="24">
@@ -320,6 +322,7 @@
           :model="dialogData"
           label-width="120px"
           style="margin-top: 20px"
+          :disabled="detail"
         >
           <el-row>
             <el-col :md="12" :sm="24">
@@ -447,7 +450,8 @@ export default {
         testArr: []
       },
       fileList: [],
-      stepIndex: 1
+      stepIndex: 1,
+      detail: false
     }
   },
   methods: {

@@ -11,7 +11,7 @@
             </div>
 
             <div class="text-box">
-              <span class="num">988</span>
+              <span class="num">{{ driverData.all }}</span>
               <span>
                 <svg-icon :icon-class="'driver'" style="width: 25px;height: 25px;position:relative;top: 5px;" />
                 驾驶员总数
@@ -35,7 +35,7 @@
             </div>
 
             <div class="text-box">
-              <span class="num">2641</span>
+              <span class="num">{{ carData.all }}</span>
               <span>
                 <svg-icon :icon-class="'car'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
                 车辆总数
@@ -100,7 +100,13 @@
 </template>
 
 <script>
-import { companyNumber, serviceNumber, platformNumber } from '@/api/information-manage/home'
+import {
+  companyNumber,
+  serviceNumber,
+  platformNumber,
+  carNumber,
+  driverNumber
+} from '@/api/information-manage/home'
 
 export default {
   name: 'InformationHome',
@@ -134,14 +140,29 @@ export default {
         all: 0,
         normal: 0,
         pause: 0
+      },
+      carData: {
+        stop: 0,
+        all: 0,
+        pause: 0,
+        normal: 0,
+        logout: 0,
+        out: 0
+      },
+      driverData: {
+        all: 0,
+        work: 0,
+        unwork: 0,
+        logout: 0
       }
-
     }
   },
   created() {
     this.getCompanyNum()
     this.getServiceNum()
     this.getPlatformNum()
+    this.getCarNum()
+    this.getDriverNum()
   },
   mounted() {
     const dc = this.driverChart = this.$echarts.init(document.getElementById('driver'))
@@ -197,6 +218,34 @@ export default {
           throw err
         })
     },
+    getCarNum() {
+      carNumber()
+        .then(res => {
+          const { data } = res
+          this.carData.stop = data['停运']
+          this.carData.all = data['全部']
+          this.carData.pause = data['暂停服务']
+          this.carData.normal = data['正常']
+          this.carData.logout = data['注销']
+          this.carData.out = data['转出']
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    getDriverNum() {
+      driverNumber()
+        .then(res => {
+          const { data } = res
+          this.driverData.all = data['全部']
+          this.driverData.work = data['从业']
+          this.driverData.unwork = data['待业']
+          this.driverData.logout = data['注销']
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     updateEcharts() {
       this.driverOption = {
         tooltip: {
@@ -212,9 +261,9 @@ export default {
             type: 'pie',
             radius: '50%',
             data: [
-              { value: 1048, name: '从业' },
-              { value: 735, name: '待业' },
-              { value: 580, name: '注销' }
+              { value: this.driverData.work, name: '从业', itemStyle: { color: '#A9DF96' }},
+              { value: this.driverData.unwork, name: '待业', itemStyle: { color: '#FAC858' }},
+              { value: this.driverData.logout, name: '注销', itemStyle: { color: '#FF7070' }}
             ],
             emphasis: {
               itemStyle: {
@@ -235,11 +284,23 @@ export default {
           type: 'value'
         },
         series: [{
-          data: [1048, 735, 580],
+          data: [
+            this.driverData.work,
+            this.driverData.unwork,
+            this.driverData.logout
+          ],
           type: 'bar',
           showBackground: true,
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)'
+          },
+          itemStyle: {
+            normal: {
+              color: function(params) {
+                const colorList = ['#A9DF96', '#FAC858', '#FF7070']
+                return colorList[params.dataIndex]
+              }
+            }
           }
         }]
       }
@@ -258,11 +319,11 @@ export default {
             radius: '50%',
             center: ['40%', '50%'],
             data: [
-              { value: 348, name: '停运' },
-              { value: 235, name: '注销' },
-              { value: 580, name: '转出' },
-              { value: 980, name: '正常' },
-              { value: 580, name: '暂停' }
+              { value: this.carData.stop, name: '停运', itemStyle: { color: '#FF7070' }},
+              { value: this.carData.logout, name: '注销', itemStyle: { color: '#5C7BD9' }},
+              { value: this.carData.out, name: '转出', itemStyle: { color: '#FFDC60' }},
+              { value: this.carData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
+              { value: this.carData.pause, name: '暂停', itemStyle: { color: '#7ED3F4' }}
             ],
             emphasis: {
               itemStyle: {
@@ -283,11 +344,25 @@ export default {
           type: 'value'
         },
         series: [{
-          data: [348, 235, 580, 980, 580],
+          data: [
+            this.carData.stop,
+            this.carData.logout,
+            this.carData.out,
+            this.carData.normal,
+            this.carData.pause
+          ],
           type: 'bar',
           showBackground: true,
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)'
+          },
+          itemStyle: {
+            normal: {
+              color: function(params) {
+                const colorList = ['#FF7070', '#5C7BD9', '#FFDC60', '#9FE080', '#7ED3F4']
+                return colorList[params.dataIndex]
+              }
+            }
           }
         }]
       }
@@ -405,7 +480,7 @@ export default {
   width: 300px;
   height: 250px;
   position: absolute;
-  right: 40px;
+  right: 5%;
   top: 80px;
 }
 
@@ -467,6 +542,10 @@ p {
 @media screen and (max-width: 1450px) {
   .bottom-box {
     left: 1% !important;
+  }
+
+  .text-box {
+    left: 42%;
   }
 }
 
