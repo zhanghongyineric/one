@@ -5,11 +5,9 @@
         <div class="box" @click="gotoPage('/information-manage/driver-base-information')">
           <p>驾驶员信息</p>
           <div class="top-box">
-
             <div class="chart-box-left">
               <div id="driverCol" class="chart-style" />
             </div>
-
             <div class="text-box">
               <span class="num">{{ driverData.all }}</span>
               <span>
@@ -17,11 +15,9 @@
                 驾驶员总数
               </span>
             </div>
-
             <div class="chart-box-right">
               <div id="driver" class="chart-style" />
             </div>
-
           </div>
         </div>
       </el-col>
@@ -29,11 +25,9 @@
         <div class="box" @click="gotoPage('/information-manage/car-base-information')">
           <p>车辆信息</p>
           <div class="top-box">
-
             <div class="chart-box-left">
               <div id="carCol" class="chart-style" />
             </div>
-
             <div class="text-box">
               <span class="num">{{ carData.all }}</span>
               <span>
@@ -41,7 +35,6 @@
                 车辆总数
               </span>
             </div>
-
             <div class="chart-box-right">
               <div id="car" class="chart-style" />
             </div>
@@ -54,6 +47,9 @@
         <div class="box" @click="gotoPage('/information-manage/company-base-information')">
           <p>企业信息</p>
           <div class="top-box">
+            <div class="bottom-chart-box-left bottom-box-position">
+              <div id="companyCol" class="chart-style" />
+            </div>
             <div class="text-box bottom-box">
               <span class="num">{{ companyData.all }}</span>
               <span>
@@ -61,7 +57,9 @@
                 企业总数
               </span>
             </div>
-            <div id="company" class="sm-chart" />
+            <div class="bottom-chart-box-right">
+              <div id="company" class="chart-style" />
+            </div>
           </div>
         </div>
       </el-col>
@@ -69,6 +67,9 @@
         <div class="box" @click="gotoPage('/information-manage/access-platform-information')">
           <p>接入平台信息</p>
           <div class="top-box">
+            <div class="bottom-chart-box-left bottom-box-position">
+              <div id="platformCol" class="chart-style" />
+            </div>
             <div class="text-box bottom-box">
               <span class="num">{{ platformData.all }}</span>
               <span>
@@ -76,7 +77,9 @@
                 平台总数
               </span>
             </div>
-            <div id="platform" class="sm-chart" />
+            <div class="bottom-chart-box-right">
+              <div id="platform" class="chart-style" />
+            </div>
           </div>
         </div>
       </el-col>
@@ -84,6 +87,9 @@
         <div class="box" @click="gotoPage('/information-manage/service-provider-information')">
           <p>服务商信息</p>
           <div class="top-box">
+            <div class="bottom-chart-box-left bottom-box-position">
+              <div id="serviceCol" class="chart-style" />
+            </div>
             <div class="text-box bottom-box">
               <span class="num">{{ serviceData.all }}</span>
               <span>
@@ -91,7 +97,9 @@
                 服务商总数
               </span>
             </div>
-            <div id="service" class="sm-chart" />
+            <div class="bottom-chart-box-right">
+              <div id="service" class="chart-style" />
+            </div>
           </div>
         </div>
       </el-col>
@@ -114,18 +122,34 @@ export default {
     return {
       driverChart: {},
       driverColChart: {},
+
       carChart: {},
       carColChart: {},
+
       companyChart: {},
+      companyColChart: {},
+
       platformChart: {},
+      platformColChart: {},
+
       serviceChart: {},
+      serviceColChart: {},
+
       driverOption: {},
       driverColOption: {},
+
       carOption: {},
       carColOption: {},
+
       companyOption: {},
+      companyColOption: {},
+
       platformOption: {},
+      platformColOption: {},
+
       serviceOption: {},
+      serviceColOption: {},
+
       companyData: {
         all: 0,
         normal: 0,
@@ -177,15 +201,24 @@ export default {
     const dcc = this.driverColChart = this.$echarts.init(document.getElementById('driverCol'))
     const cc = this.carChart = this.$echarts.init(document.getElementById('car'))
     const ccc = this.carColChart = this.$echarts.init(document.getElementById('carCol'))
-    this.companyChart = this.$echarts.init(document.getElementById('company'))
-    this.platformChart = this.$echarts.init(document.getElementById('platform'))
-    this.serviceChart = this.$echarts.init(document.getElementById('service'))
+    const comc = this.companyChart = this.$echarts.init(document.getElementById('company'))
+    const comcc = this.companyColChart = this.$echarts.init(document.getElementById('companyCol'))
+    const pc = this.platformChart = this.$echarts.init(document.getElementById('platform'))
+    const pcc = this.platformColChart = this.$echarts.init(document.getElementById('platformCol'))
+    const sc = this.serviceChart = this.$echarts.init(document.getElementById('service'))
+    const scc = this.serviceColChart = this.$echarts.init(document.getElementById('serviceCol'))
 
     window.addEventListener('resize', function() {
       dcc.resize()
       dc.resize()
       cc.resize()
       ccc.resize()
+      comc.resize()
+      comcc.resize()
+      pc.resize()
+      pcc.resize()
+      sc.resize()
+      scc.resize()
     })
   },
   methods: {
@@ -383,6 +416,10 @@ export default {
         tooltip: {
           trigger: 'item'
         },
+        legend: {
+          orient: 'vertical',
+          left: 'right'
+        },
         series: [
           {
             name: '营运状态',
@@ -400,9 +437,44 @@ export default {
           }
         ]
       }
+      this.companyColOption = {
+        xAxis: {
+          type: 'category',
+          data: ['营运', '歇业']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        grid: {
+          containLabel: true
+        },
+        series: [{
+          data: [
+            this.companyData.normal,
+            this.companyData.pause
+          ],
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          },
+          itemStyle: {
+            normal: {
+              color: function(params) {
+                const colorList = ['#A9DF96', '#FF7070']
+                return colorList[params.dataIndex]
+              }
+            }
+          }
+        }]
+      }
       this.platformOption = {
         tooltip: {
           trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'right'
         },
         series: [
           {
@@ -421,9 +493,44 @@ export default {
           }
         ]
       }
+      this.platformColOption = {
+        xAxis: {
+          type: 'category',
+          data: ['正常', '歇业']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        grid: {
+          containLabel: true
+        },
+        series: [{
+          data: [
+            this.serviceData.normal,
+            this.serviceData.pause
+          ],
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          },
+          itemStyle: {
+            normal: {
+              color: function(params) {
+                const colorList = ['#A9DF96', '#FF7070']
+                return colorList[params.dataIndex]
+              }
+            }
+          }
+        }]
+      }
       this.serviceOption = {
         tooltip: {
           trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'right'
         },
         series: [
           {
@@ -442,13 +549,47 @@ export default {
           }
         ]
       }
+      this.serviceColOption = {
+        xAxis: {
+          type: 'category',
+          data: ['正常', '注销']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        grid: {
+          containLabel: true
+        },
+        series: [{
+          data: [
+            this.serviceData.normal,
+            this.serviceData.pause
+          ],
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          },
+          itemStyle: {
+            normal: {
+              color: function(params) {
+                const colorList = ['#A9DF96', '#FF7070']
+                return colorList[params.dataIndex]
+              }
+            }
+          }
+        }]
+      }
       this.driverChart.setOption(this.driverOption)
       this.driverColChart.setOption(this.driverColOption)
       this.carChart.setOption(this.carOption)
       this.carColChart.setOption(this.carColOption)
       this.companyChart.setOption(this.companyOption)
+      this.companyColChart.setOption(this.companyColOption)
       this.platformChart.setOption(this.platformOption)
+      this.platformColChart.setOption(this.platformColOption)
       this.serviceChart.setOption(this.serviceOption)
+      this.serviceColChart.setOption(this.serviceColOption)
     },
     gotoPage(path) {
       this.$router.push(path)
@@ -479,22 +620,7 @@ export default {
 }
 
 .bottom-box {
-  left: 10% !important;
-}
-
-.chart {
-  width: 350px;
-  height: 350px;
-  position: absolute;
-  right: 40px;
-}
-
-.sm-chart {
-  width: 300px;
-  height: 250px;
-  position: absolute;
-  right: 5%;
-  top: 80px;
+  left: 45% !important;
 }
 
 .num {
@@ -527,7 +653,17 @@ p {
   height: 80%;
   position: absolute;
   left: -5%;
-  /* min-width: 390px; */
+}
+
+.bottom-chart-box-left {
+  width: 50%;
+  height: 70%;
+  position: absolute;
+  left: -4%;
+}
+
+.bottom-box-position {
+  margin-top: 30px;
 }
 
 .chart-box-right {
@@ -537,26 +673,19 @@ p {
   right: 1%;
 }
 
+.bottom-chart-box-right {
+  width: 40%;
+  height: 80%;
+  position: absolute;
+  right: 1%;
+}
+
 .chart-style {
   width: 100%;
   height: 100%;
 }
 
-@media screen and (max-width: 1300px) and (min-width: 990px) {
-  /* .text-box {
-    left: 5%;
-  } */
-
-  .bottom-box {
-    display: none !important;
-  }
-}
-
 @media screen and (max-width: 1450px) {
-  .bottom-box {
-    left: 1% !important;
-  }
-
   .text-box {
     left: 42%;
   }
