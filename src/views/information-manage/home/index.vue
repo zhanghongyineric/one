@@ -424,7 +424,7 @@ export default {
           {
             name: '营运状态',
             type: 'pie',
-            radius: ['30%', '50%'],
+            radius: '50%',
             itemStyle: {
               borderRadius: 10,
               borderColor: '#fff',
@@ -480,7 +480,7 @@ export default {
           {
             name: '营运状态',
             type: 'pie',
-            radius: ['30%', '50%'],
+            radius: '50%',
             itemStyle: {
               borderRadius: 10,
               borderColor: '#fff',
@@ -536,7 +536,7 @@ export default {
           {
             name: '服务商状态',
             type: 'pie',
-            radius: ['30%', '50%'],
+            radius: '50%',
             itemStyle: {
               borderRadius: 10,
               borderColor: '#fff',
