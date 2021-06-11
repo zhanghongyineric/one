@@ -929,3 +929,61 @@ export const doubleStatusOption = {
     2: '双驾 '
   }
 }
+
+// 驾驶员基本信息-从业资格范围
+export const qualificationRangeOption = {
+  list: [
+    {
+      label: '道路旅客运输',
+      value: '1'
+    },
+    {
+      label: '道路货物运输',
+      value: '2'
+    },
+    {
+      label: '道路危险品运输',
+      value: '3'
+    }
+  ]
+}
+
+// 驾驶员基本信息-状态
+export const driverStatusOption = {
+  list: [
+    {
+      label: '从业',
+      value: '1'
+    },
+    {
+      label: '待业',
+      value: '2'
+    },
+    {
+      label: '注销',
+      value: '3'
+    }
+  ]
+}
+
+// 驾驶员基本信息-文化程度
+export const cultureOptions = {
+  list: [
+    {
+      label: '初中',
+      value: '1'
+    },
+    {
+      label: '高中',
+      value: '2'
+    },
+    {
+      label: '大学',
+      value: '3'
+    },
+    {
+      label: '其他',
+      value: '4'
+    }
+  ]
+}

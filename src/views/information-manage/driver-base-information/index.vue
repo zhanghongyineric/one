@@ -2,23 +2,23 @@
   <div class="layout-content account-manage">
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="150px" size="small">
+        <el-form :model="listQuery" label-width="110px" size="small">
           <el-row :gutter="48">
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
               <el-form-item label="所属地区:">
-                <el-select v-model="listQuery.accountType" placeholder="请选择所属地区" />
+                <el-cascader v-model="listQuery.zoneCity" size="small" :options="cityOptions" @change="handleChange" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="从业资格范围:">
                 <el-select v-model="listQuery.accountType" placeholder="请选择从业资格范围">
-                  <!-- <el-option
-                    v-for="item in serviceCarKinds"
+                  <el-option
+                    v-for="item in qualificationRangeOption"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                  /> -->
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -27,28 +27,28 @@
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
                 <el-form-item label="状态:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择状态">
-                    <!-- <el-option
-                      v-for="item in accessPlatformBelong"
+                  <el-select v-model="listQuery.status" placeholder="请选择状态">
+                    <el-option
+                      v-for="item in driverStatusOption"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
-                    /> -->
+                    />
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <!-- <el-col :md="8" :sm="24">
                 <el-form-item label="从业资格证初领日期:">
                   <el-select v-model="listQuery.accountType" placeholder="请选择从业资格证初领日期">
-                    <!-- <el-option
+                    <el-option
                       v-for="item in accessPlatformKinds"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
-                    /> -->
+                    />
                   </el-select>
                 </el-form-item>
-              </el-col>
+              </el-col> -->
             </template>
 
             <!--查询操作按钮-->
@@ -59,7 +59,7 @@
                 :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
               >
                 <el-button size="small" @click="resetQuery">重置</el-button>
-                <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
+                <el-button type="primary" size="small" @click="getList">查询</el-button>
                 <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
                 <el-button type="text" @click="advanced=!advanced">
                   {{ advanced ? '收起' : '展开' }}
@@ -81,14 +81,19 @@
         highlight-current-row
       >
         <el-table-column type="index" label="编号" width="50" />
-        <el-table-column prop="name" label="名字" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="code" label="性别" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="feature" label="地区" min-width="110" show-overflow-tooltip />
-        <el-table-column prop="adress" label="准驾类型" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="beian" label="运输类别" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="number" label="身份证号" min-width="130" />
-        <el-table-column prop="status" label="所属公司" min-width="130" />
-        <el-table-column fixed="right" label="操作" min-width="200" align="center">
+        <el-table-column prop="personName" label="名字" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="code" label="性别" min-width="100" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.sex === '1'">男</span>
+            <span v-else>女</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="zoneCity" label="籍贯" min-width="110" show-overflow-tooltip />
+        <el-table-column prop="driverVelType" label="准驾类型" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="qualificationRange" label="运输类别" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="idCardNum" label="身份证号" min-width="180" />
+        <el-table-column prop="unitId" label="所属企业ID" min-width="130" />
+        <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
               class="btn"
@@ -113,9 +118,10 @@
         @pagination="getList"
       />
       <el-dialog
-        title="新增"
+        :title="showTitle()"
         :visible.sync="dialogVisible"
         top="20px"
+        :before-close="closeDialog"
       >
         <!-- 弹框上方步骤条 -->
         <el-steps :active="stepIndex" align-center>
@@ -136,80 +142,87 @@
         >
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="姓名：" prop="platformName">
-                <el-input v-model="dialogData.test" placeholder="请输入姓名" size="small" />
+              <el-form-item label="姓名：" prop="personName">
+                <el-input v-model="dialogData.personName" placeholder="请输入姓名" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="性别：" prop="platformCode">
-                <el-checkbox v-model="dialogData.test">男</el-checkbox>
-                <el-checkbox v-model="dialogData.test">女</el-checkbox>
+              <el-form-item label="性别：" prop="sex">
+                <el-checkbox-group
+                  v-model="dialogData.sex"
+                  :max="1"
+                  @change="changeSex"
+                >
+                  <el-checkbox label="男" />
+                  <el-checkbox label="女" />
+                </el-checkbox-group>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="民族：" prop="userName">
-                <el-input v-model="dialogData.test" placeholder="请输入民族" size="small" />
+              <el-form-item label="民族：" prop="nation">
+                <el-input v-model="dialogData.nation" placeholder="请输入民族" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="文化程度：" prop="password">
-                <el-select v-model="dialogData.test" placeholder="请选择文化程度">
-                  <!-- <el-option
-                        v-for="item in accessPlatformKinds"
-                        :key="item.label"
-                        :label="item.value"
-                        :value="item.label"
-                      /> -->
+              <el-form-item label="文化程度：" prop="culture">
+                <el-select v-model="dialogData.culture" size="small" placeholder="请选择文化程度">
+                  <el-option
+                    v-for="item in cultureOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="籍贯：" prop="contact">
-              <el-select v-model="dialogData.test" placeholder="请选择籍贯" />
+            <el-form-item label="籍贯：" prop="zoneCity">
+              <el-cascader
+                v-model="dialogData.zoneCity"
+                size="small"
+                :options="cityOptions"
+                @change="handleChangeAdd"
+              />
             </el-form-item>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="健康状况：" prop="typeCode ">
-                <el-select v-model="dialogData.test" placeholder="请选择健康状况">
-                  <!-- <el-option
-                        v-for="item in accessPlatformKinds"
-                        :key="item.label"
-                        :label="item.value"
-                        :value="item.label"
-                      /> -->
+              <el-form-item label="健康状况：" prop="physicalStatus">
+                <el-select v-model="dialogData.physicalStatus" size="small" placeholder="请选择健康状况">
+                  <el-option key="1" label="健康" value="1" />
+                  <el-option key="2" label="不健康" value="2" />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="身份证号码：" prop="deviceIp">
-                <el-input v-model="dialogData.test" placeholder="请输入身份证号码" size="small" />
+              <el-form-item label="身份证号码：" prop="idCardNum">
+                <el-input v-model="dialogData.idCardNum" placeholder="请输入身份证号码" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="手机号码：" prop="status">
-                <el-input v-model="dialogData.test" placeholder="请输入手机号码" size="small" />
+              <el-form-item label="手机号码：" prop="tel">
+                <el-input v-model="dialogData.tel" placeholder="请输入手机号码" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="所属运输企业：" prop="ip">
-                <el-input v-model="dialogData.test" placeholder="请输入所属运输企业" size="small" />
+              <el-form-item label="所属运输企业：" prop="unitId">
+                <el-input v-model="dialogData.unitId" placeholder="请输入所属运输企业" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="所属地区：" prop="m1">
-              <el-select v-model="dialogData.test" placeholder="请选择所属地区" />
+            <el-form-item label="所属地区：" prop="qualificationCity">
+              <el-select v-model="dialogData.qualificationCity" placeholder="请选择所属地区" />
             </el-form-item>
           </el-row>
           <el-row>
-            <el-form-item label="居住地址：" prop="allowConnect">
-              <el-select v-model="dialogData.test" placeholder="请选择居住地址">
+            <el-form-item label="居住地址：" prop="addressCity">
+              <el-select v-model="dialogData.addressCity" placeholder="请选择居住地址">
                 <!-- <el-option
                       v-for="item in allowConnectOptions"
                       :key="item.label"
@@ -220,8 +233,8 @@
             </el-form-item>
           </el-row>
           <el-row>
-            <el-form-item label="详细居住地址：" prop="keepOnRecord">
-              <el-input v-model="dialogData.test" placeholder="请输入详细居住地址" size="small" />
+            <el-form-item label="详细居住地址：" prop="addressDetail">
+              <el-input v-model="dialogData.addressDetail" placeholder="请输入详细居住地址" size="small" />
             </el-form-item>
           </el-row>
           <div style="margin-left: 23px;margin-bottom: 30px">
@@ -320,7 +333,7 @@
           ref="threeForm"
           :rules="threeRules"
           :model="dialogData"
-          label-width="120px"
+          label-width="130px"
           style="margin-top: 20px"
           :disabled="detail"
         >
@@ -426,42 +439,123 @@
 </template>
 
 <script>
+import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
+import {
+  qualificationRangeOption,
+  driverStatusOption,
+  cultureOptions
+} from '@/options'
+import { selectList, driverSave, selectDriverLic } from '@/api/information-manage/driver-base-information'
 
 export default {
   name: 'DriverBaseInformation',
   components: { Pagination },
   data() {
     return {
+      cultureOptions: cultureOptions.list,
+      cityOptions: provinceAndCityData,
+      qualificationRangeOption: qualificationRangeOption.list,
+      driverStatusOption: driverStatusOption.list,
       advanced: false,
       listLoading: false,
       total: 1,
       listQuery: {
         pageSize: 10,
-        pageNum: 1
+        pageNum: 1,
+        personName: '',
+        zoneCity: null,
+        status: '',
+        qualificationRange: ''
       },
       dialogVisible: false,
       tableData: [],
-      oneRules: [],
-      twoRules: [],
-      threeRules: [],
+      oneRules: {
+        personName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
+        nation: [{ required: true, message: '请输入民族', trigger: 'blur' }],
+        culture: [{ required: true, message: '请选择文化程度', trigger: 'change' }],
+        zoneCity: [{ required: true, message: '请选择籍贯', trigger: 'change' }],
+        physicalStatus: [{ required: true, message: '请选择健康状况', trigger: 'change' }],
+        idCardNum: [{ required: true, message: '请输入身份证号码', trigger: 'blur' }],
+        tel: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
+        unitId: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
+        qualificationCity: [{ required: true, message: '请选择所属地区', trigger: 'change' }],
+        addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
+        addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]
+      },
+      twoRules: {},
+      threeRules: {},
       dialogData: {
-        test: '',
-        testArr: []
+        personName: '',
+        sex: [],
+        zoneCity: '',
+        idCardNum: '',
+        nation: '',
+        tel: '',
+        culture: '',
+        status: '',
+        personPic: '',
+        unitId: '',
+        physicalStatus: '',
+        addressDetail: '',
+        addressCity: '',
+        qualificationCity: ''
       },
       fileList: [],
       stepIndex: 1,
-      detail: false
+      detail: false,
+      modify: false
     }
   },
+  mounted() {
+    this.getList()
+  },
   methods: {
-    showDetails() {},
-    modifyData() {},
-    getList() {},
+    showDetails() {
+      this.dialogVisible = true
+      this.detail = true
+    },
+    showTitle() {
+      if (this.detail && !this.modify) return '详情'
+      else if (!this.detail && this.modify) return '修改'
+      else if (!this.detail && !this.modify) return '新增'
+    },
+    modifyData() {
+      this.dialogVisible = true
+      this.modify = true
+    },
+    getList() {
+      this.listLoading = true
+      selectList({ ...this.listQuery })
+        .then(res => {
+          const { data } = res
+          this.tableData = data.list
+          data.list.forEach(item => {
+            item.zoneCity = CodeToText[item.zoneCity]
+          })
+          this.total = data.total
+          this.listLoading = false
+        })
+        .catch(err => {
+          this.listLoading = false
+          throw err
+        })
+    },
     handleCreate() {
       this.dialogVisible = true
     },
-    resetQuery() {},
+    resetQuery() {
+      this.listQuery = {
+        pageSize: 10,
+        pageNum: 1,
+        personName: '',
+        zoneCity: null,
+        status: '',
+        qualificationRange: ''
+      }
+      this.getList()
+    },
     handleSearch() {},
     previewImg() {},
     handleRemove() {},
@@ -469,12 +563,31 @@ export default {
       this.stepIndex -= 1
     },
     nextStep() {
+      // if (this.stepIndex === 1) {
+
+      // }
       this.stepIndex += 1
     },
     submit() {},
     closeDialog() {
       this.stepIndex = 1
       this.dialogVisible = false
+      // 不设置延时的话，点击关闭的一瞬间，弹框标题会改变，影响观感
+      setTimeout(() => {
+        this.detail = false
+        this.modify = false
+      }, 500)
+    },
+    handleChange(val) {
+      this.listQuery.zoneCity = parseInt(val[1])
+    },
+    handleChangeAdd(val) {
+      this.dialogData.zoneCity = parseInt(val[1])
+    },
+    changeSex() {
+      this.dialogData.sex[0] === '男'
+        ? this.dialogData.sex = '1'
+        : this.dialogData.sex = '2'
     }
   }
 }
