@@ -216,7 +216,7 @@ import {
   fetchDictionaryItem,
   updateDictionaryItem,
   deleteDictionaryItem
-} from '@/api/user/user'
+} from '@/api/system-manage/account-manage'
 import Pagination from '@/components/Pagination'
 import { parseTime } from '@/utils' // 分页
 

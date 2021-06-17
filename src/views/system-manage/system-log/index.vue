@@ -112,7 +112,7 @@
 // import { fetchList, createAccount, updateAccount } from '@/api/demo-page.js' fixme:替换为你的接口地址
 import Pagination from '@/components/Pagination' // 分页
 import DateRange from '@/components/DateRange'
-import { fetchAllLog } from '@/api/user/user' // 分页
+import { fetchAllLog } from '@/api/system-manage/account-manage' // 分页
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
 export default {

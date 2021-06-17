@@ -221,7 +221,7 @@ export default {
         if (valid) {
           if (this.passed) {
             this.loading = true
-            this.$store.dispatch('user/login', this.loginForm).then((role) => {
+            this.$store.dispatch('user/login', this.loginForm).then(() => {
               this.$router.push({ path: this.redirect || '/', query: this.query })
               this.loading = false
             }).catch((e) => {

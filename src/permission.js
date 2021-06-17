@@ -31,9 +31,14 @@ router.beforeEach(async(to, from, next) => {
       } else {
         try {
           // get user info
-          const { role } = await store.dispatch('user/getInfo')
-          // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/generateRoutes', role)
+          const { sysUser, permissions, roles } = await store.dispatch('user/getInfo')
+
+          if (!sysUser.username) {
+            throw new Error('没有用户信息')
+          }
+
+          // fixme:暂时写死，后面菜单配置好了换成数组
+          const accessRoutes = await store.dispatch('permission/generateRoutes', 'admin')
 
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)

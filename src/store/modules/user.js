@@ -1,11 +1,13 @@
-import { login, logout, getInfo, fetchAllDictionary } from '@/api/user/user'
+import { getInfo, fetchAllDictionary } from '@/api/system-manage/account-manage'
+import { login, logout } from '@/api/user/oauth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
-    name: '',
+    name: '', // 账号名
+    unitName: '', // 企业名称 不一定有
     role: '',
     province: '',
     city: '',
@@ -25,8 +27,9 @@ const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
   },
-  SET_NAME: (state, name) => {
-    state.name = name
+  SET_NAME: (state, { alias, deptName }) => {
+    state.name = alias
+    state.unitName = deptName
   },
   SET_ROLE: (state, role) => {
     state.role = role
@@ -51,11 +54,17 @@ const actions = {
     const { username, password } = userInfo
 
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      const formData = new FormData()
+      formData.append('username', username.trim())
+      formData.append('password', password)
+      formData.append('grant_type', 'password')
+      formData.append('client_id', 'admin')
+      formData.append('client_secret', 'admin')
+      login(formData).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve(data.role)// 由于需要判断当前角色是否能访问首页，在此提前获取一次role
+        commit('SET_TOKEN', data.accessToken)
+        setToken(data.accessToken)
+        resolve()
       }).catch(error => {
         reject(error)
       })
@@ -68,7 +77,7 @@ const actions = {
       if (dictRes.status === 'fulfilled') {
         // 存储字典数据
         localStorage.setItem('onlineOption', JSON.stringify(dictRes.value.data))
-        // console.log('字典数据', dictRes.value.data)
+        console.log('字典数据', dictRes.value.data)
       }
       if (userRes.status === 'fulfilled') {
         // 设置用户信息
@@ -78,13 +87,13 @@ const actions = {
           return Promise.reject(new Error('Verification failed, please Login again.'))
         }
 
-        const { username, role, unitId, province, city, region, area, userId } = data
-
-        commit('SET_NAME', username)
-        commit('SET_ROLE', role)
-        commit('SET_UNIT_ID', unitId)
-        commit('SET_LOCATION', { province, city, region, area })
-        commit('SET_USER_ID', userId)
+        const { sysUser, permissions, roles } = data
+        const { alias, deptId, deptName, id } = sysUser
+        commit('SET_NAME', { alias, deptName })
+        commit('SET_ROLE', 'admin')
+        commit('SET_UNIT_ID', deptId)
+        // commit('SET_LOCATION', { province, city, region, area })
+        commit('SET_USER_ID', id)
 
         return data
       } else {
