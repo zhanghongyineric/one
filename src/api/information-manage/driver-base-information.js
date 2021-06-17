@@ -26,3 +26,39 @@ export function selectDriverLic(data) {
     data
   })
 }
+
+// 根据驾驶员id，查询从业资格证信息
+export function selectQualificationLic(data) {
+  return request({
+    url: '/driver/selectQualificationLic',
+    method: 'POST',
+    data
+  })
+}
+
+// 删除驾驶员的信息
+export function deleteDriver(data) {
+  return request({
+    url: '/driver/delete',
+    method: 'POST',
+    data
+  })
+}
+
+// 从业资格证类型
+export function queryQualification(data) {
+  return request({
+    url: '/driver/queryQualification',
+    method: 'POST',
+    data
+  })
+}
+
+// 输入关键字返回企业名
+export function enterpriseName(data) {
+  return request({
+    url: '/driver/enterpriseName',
+    method: 'POST',
+    data
+  })
+}

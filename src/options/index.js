@@ -987,3 +987,37 @@ export const cultureOptions = {
     }
   ]
 }
+
+// 驾驶员基本信息-准驾车型
+export const driverVelTyeOptions = {
+  list: [
+    {
+      label: 'A1',
+      value: '1'
+    },
+    {
+      label: 'A2',
+      value: '2'
+    },
+    {
+      label: 'A3',
+      value: '3'
+    },
+    {
+      label: 'B1',
+      value: '4'
+    },
+    {
+      label: 'B2',
+      value: '5'
+    },
+    {
+      label: 'C1',
+      value: '6'
+    },
+    {
+      label: 'C2',
+      value: '7'
+    }
+  ]
+}

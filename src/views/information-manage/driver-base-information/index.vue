@@ -7,7 +7,7 @@
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
               <el-form-item label="所属地区:">
-                <el-cascader v-model="listQuery.zoneCity" size="small" :options="cityOptions" @change="handleChange" />
+                <el-cascader v-model="listQuery.zoneCity" size="small" :options="cityOptions" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
@@ -99,7 +99,7 @@
               class="btn"
               type="primary"
               size="small"
-              @click="showDetails(scope.row.id,scope.$index)"
+              @click="showDetails(scope.row)"
             >查看详情</el-button>
             <el-button
               class="btn"
@@ -151,7 +151,6 @@
                 <el-checkbox-group
                   v-model="dialogData.sex"
                   :max="1"
-                  @change="changeSex"
                 >
                   <el-checkbox label="男" />
                   <el-checkbox label="女" />
@@ -184,7 +183,6 @@
                 v-model="dialogData.zoneCity"
                 size="small"
                 :options="cityOptions"
-                @change="handleChangeAdd"
               />
             </el-form-item>
           </el-row>
@@ -217,19 +215,20 @@
           </el-row>
           <el-row>
             <el-form-item label="所属地区：" prop="qualificationCity">
-              <el-select v-model="dialogData.qualificationCity" placeholder="请选择所属地区" />
+              <el-cascader
+                v-model="dialogData.qualificationCity"
+                size="small"
+                :options="cityOptions"
+              />
             </el-form-item>
           </el-row>
           <el-row>
             <el-form-item label="居住地址：" prop="addressCity">
-              <el-select v-model="dialogData.addressCity" placeholder="请选择居住地址">
-                <!-- <el-option
-                      v-for="item in allowConnectOptions"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
-                    /> -->
-              </el-select>
+              <el-cascader
+                v-model="dialogData.addressCity"
+                size="small"
+                :options="cityOptions"
+              />
             </el-form-item>
           </el-row>
           <el-row>
@@ -245,7 +244,6 @@
               list-type="picture-card"
               :auto-upload="false"
               :limit="1"
-              :multiple="true"
               :on-change="previewImg"
               :on-remove="handleRemove"
               :before-upload="previewImg"
@@ -261,68 +259,77 @@
           ref="twoForm"
           :rules="twoRules"
           :model="dialogData"
-          label-width="130px"
+          label-width="140px"
           style="margin-top: 20px"
           :disabled="detail"
         >
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="机动车驾驶证号：" prop="number">
-                <el-input v-model="dialogData.test" placeholder="请输入机动车驾驶证号" size="small" />
+              <el-form-item label="机动车驾驶证号：" prop="driverLicNum">
+                <el-input v-model="dialogData.driverLicNum" placeholder="请输入机动车驾驶证号" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="准驾车型：" prop="password">
-                <el-select v-model="dialogData.test" placeholder="请选择准驾车型">
-                  <!-- <el-option
-                        v-for="item in accessPlatformKinds"
-                        :key="item.label"
-                        :label="item.value"
-                        :value="item.label"
-                      /> -->
+              <el-form-item label="准驾车型：" prop="driverVelType">
+                <el-select v-model="dialogData.driverVelType" size="small" placeholder="请选择准驾车型">
+                  <el-option
+                    v-for="item in driverVelTyeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="初次领证日期：" prop="password">
+              <el-form-item label="初次领证日期：" prop="firstDate">
                 <el-date-picker
-                  v-model="dialogData.test"
+                  v-model="dialogData.firstDate"
                   type="date"
                   placeholder="初次领证日期"
+                  size="small"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="有效期开始日期：" prop="password">
+              <el-form-item label="有效期开始日期：" prop="validDate">
                 <el-date-picker
-                  v-model="dialogData.test"
+                  v-model="dialogData.validDate"
                   type="date"
                   placeholder="有效期开始日期"
+                  size="small"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="有效期截止日期：" prop="password">
+              <el-form-item label="有效期截止日期：" prop="loseDate">
                 <el-date-picker
-                  v-model="dialogData.test"
+                  v-model="dialogData.loseDate"
                   type="date"
                   placeholder="有效期截止日期"
+                  size="small"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="发证机关：" prop="password">
-                <el-input v-model="dialogData.test" placeholder="请输入发证机关" size="small" />
+              <el-form-item label="发证机关：" prop="licAuthor">
+                <el-input v-model="dialogData.licAuthor" placeholder="请输入发证机关" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -333,51 +340,54 @@
           ref="threeForm"
           :rules="threeRules"
           :model="dialogData"
-          label-width="130px"
+          label-width="140px"
           style="margin-top: 20px"
           :disabled="detail"
         >
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="从业资格证号：" prop="number">
-                <el-input v-model="dialogData.test" placeholder="请输入从业资格证号" size="small" />
+              <el-form-item label="从业资格证号：" prop="qualificationNum">
+                <el-input v-model="dialogData.qualificationNum" placeholder="请输入从业资格证号" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="从业资格证类型：" prop="password">
-                <el-select v-model="dialogData.test" placeholder="请选择从业资格证类型">
-                  <!-- <el-option
-                        v-for="item in accessPlatformKinds"
-                        :key="item.label"
-                        :label="item.value"
-                        :value="item.label"
-                      /> -->
+              <el-form-item label="从业资格证类型：" prop="qualificationType">
+                <el-select v-model="dialogData.qualificationType" size="small" placeholder="请选择从业资格证类型">
+                  <el-option
+                    v-for="item in queryQualificationOptions"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="从业资格范围：" prop="password">
-                <el-select v-model="dialogData.test" placeholder="请选择从业资格范围">
-                  <!-- <el-option
-                        v-for="item in accessPlatformKinds"
-                        :key="item.label"
-                        :label="item.value"
-                        :value="item.label"
-                      /> -->
+              <el-form-item label="从业资格范围：" prop="qualificationRange">
+                <el-select v-model="dialogData.qualificationRange" size="small" placeholder="请选择从业资格范围">
+                  <el-option
+                    v-for="item in qualificationRangeOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="初次领证日期：" prop="password">
+              <el-form-item label="初次领证日期：" prop="qualificationFirstDate">
                 <el-date-picker
-                  v-model="dialogData.test"
+                  v-model="dialogData.qualificationFirstDate"
                   type="date"
+                  size="small"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   placeholder="初次领证日期"
                 />
               </el-form-item>
@@ -385,44 +395,50 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="有效期开始日期：" prop="password">
+              <el-form-item label="有效期开始日期：" prop="qualificationValidDate">
                 <el-date-picker
-                  v-model="dialogData.test"
+                  v-model="dialogData.qualificationValidDate"
                   type="date"
                   placeholder="有效期开始日期"
+                  size="small"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="有效期截止日期：" prop="password">
+              <el-form-item label="有效期截止日期：" prop="qualificationLoseDate">
                 <el-date-picker
-                  v-model="dialogData.test"
+                  v-model="dialogData.qualificationLoseDate"
                   type="date"
                   placeholder="有效期截止日期"
+                  size="small"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="营运状态：" prop="password">
-                <el-select v-model="dialogData.test" placeholder="请选择营运状态">
-                  <!-- <el-option
-                        v-for="item in accessPlatformKinds"
-                        :key="item.label"
-                        :label="item.value"
-                        :value="item.label"
-                      /> -->
+              <el-form-item label="营运状态：" prop="status">
+                <el-select v-model="dialogData.status" size="small" placeholder="请选择营运状态">
+                  <el-option
+                    v-for="item in driverStatusOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="发证机关：" prop="password">
-                <el-input v-model="dialogData.test" placeholder="请输入发证机关" size="small" />
+              <el-form-item label="发证机关：" prop="qualificationAuthor">
+                <el-input v-model="dialogData.qualificationAuthor" placeholder="请输入发证机关" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -430,7 +446,8 @@
         <span style="margin-left: 35%">
           <el-button v-show="stepIndex !== 1" type="primary" @click="lastStep()">上一步</el-button>
           <el-button v-show="stepIndex !== 3" type="primary" @click="nextStep()">下一步</el-button>
-          <el-button v-show="stepIndex === 3" type="primary" @click="submit()">保存</el-button>
+          <el-button v-show="stepIndex === 3 && !detail" type="primary" @click="submit()">保存</el-button>
+          <el-button v-show="stepIndex === 3 && detail" type="danger" @click="delData()">删除</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
       </el-dialog>
@@ -444,15 +461,26 @@ import Pagination from '@/components/Pagination'
 import {
   qualificationRangeOption,
   driverStatusOption,
-  cultureOptions
+  cultureOptions,
+  driverVelTyeOptions
 } from '@/options'
-import { selectList, driverSave, selectDriverLic } from '@/api/information-manage/driver-base-information'
+import {
+  selectList,
+  driverSave,
+  selectDriverLic,
+  selectQualificationLic,
+  deleteDriver,
+  queryQualification,
+  enterpriseName
+} from '@/api/information-manage/driver-base-information'
 
 export default {
   name: 'DriverBaseInformation',
   components: { Pagination },
   data() {
     return {
+      queryQualificationOptions: [],
+      driverVelTyeOptions: driverVelTyeOptions.list,
       cultureOptions: cultureOptions.list,
       cityOptions: provinceAndCityData,
       qualificationRangeOption: qualificationRangeOption.list,
@@ -484,8 +512,23 @@ export default {
         addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
         addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]
       },
-      twoRules: {},
-      threeRules: {},
+      twoRules: {
+        driverLicNum: [{ required: true, message: '请输入机动车驾驶证号', trigger: 'blur' }],
+        driverVelType: [{ required: true, message: '请选择准驾车型', trigger: 'change' }],
+        firstDate: [{ required: true, message: '请输入初次领证日期', trigger: 'blur' }],
+        validDate: [{ required: true, message: '请输入有效期开始日期', trigger: 'blur' }],
+        loseDate: [{ required: true, message: '请输入有效期截止日期', trigger: 'blur' }],
+        licAuthor: [{ required: true, message: '请输入发证机关', trigger: 'blur' }]
+      },
+      threeRules: {
+        qualificationNum: [{ required: true, message: '请输入从业资格证号', trigger: 'blur' }],
+        qualificationType: [{ required: true, message: '请选择从业资格证类型', trigger: 'change' }],
+        status: [{ required: true, message: '请选择营运状态', trigger: 'change' }],
+        qualificationFirstDate: [{ required: true, message: '请输入初次领证日期', trigger: 'blur' }],
+        qualificationValidDate: [{ required: true, message: '请输入有效期开始日期', trigger: 'blur' }],
+        qualificationLoseDate: [{ required: true, message: '请输入有效期截止日期', trigger: 'blur' }],
+        qualificationAuthor: [{ required: true, message: '请输入发证机关', trigger: 'blur' }]
+      },
       dialogData: {
         personName: '',
         sex: [],
@@ -503,27 +546,64 @@ export default {
         qualificationCity: ''
       },
       fileList: [],
+      imgsFiles: [],
       stepIndex: 1,
       detail: false,
-      modify: false
+      modify: false,
+      currentRow: {}
     }
+  },
+  created() {
+    this.getQueryQualification()
   },
   mounted() {
     this.getList()
   },
   methods: {
-    showDetails() {
+    getQueryQualification() {
+      queryQualification()
+        .then(res => {
+          const { data } = res
+          data.forEach(item => {
+            this.queryQualificationOptions.push(item)
+          })
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    showDetails(row) {
+      this.currentRow = row
       this.dialogVisible = true
       this.detail = true
+      this.dialogData = { ...row }
+    },
+    delData() {
+      this.listLoading = true
+      deleteDriver({ id: this.currentRow.id })
+        .then(res => {
+        // const { data } = res
+          this.$message({
+            type: 'success',
+            message: '删除成功！'
+          })
+          this.dialogVisible = false
+          this.getList()
+        })
+        .catch(err => {
+          throw err
+        })
     },
     showTitle() {
       if (this.detail && !this.modify) return '详情'
       else if (!this.detail && this.modify) return '修改'
       else if (!this.detail && !this.modify) return '新增'
     },
-    modifyData() {
+    modifyData(row) {
+      this.currentRow = row
       this.dialogVisible = true
       this.modify = true
+      this.detail = false
     },
     getList() {
       this.listLoading = true
@@ -557,18 +637,75 @@ export default {
       this.getList()
     },
     handleSearch() {},
-    previewImg() {},
-    handleRemove() {},
+    previewImg(file) {
+      this.imgsFiles.push(file.raw)
+      this.fileList.push(file)
+    },
+    handleRemove(file) {
+      if (!file.raw) {
+        this.fileList.forEach((item, index) => {
+          if (file.url === item.url) {
+            this.fileList.splice(index, 1)
+          }
+        })
+      } else {
+        this.imgsFiles.forEach((item, index) => {
+          if (file.raw.uid === item.uid) {
+            this.imgsFiles.splice(index, 1)
+          }
+        })
+      }
+    },
     lastStep() {
       this.stepIndex -= 1
     },
     nextStep() {
-      // if (this.stepIndex === 1) {
-
-      // }
-      this.stepIndex += 1
+      if (!this.detail) {
+        if (this.stepIndex === 1) {
+          this.$refs['oneForm'].validate(valid => {
+            if (valid) {
+              this.stepIndex += 1
+            }
+          })
+        } else if (this.stepIndex === 2) {
+          this.$refs['twoForm'].validate(valid => {
+            if (valid) {
+              this.stepIndex += 1
+            }
+          })
+        }
+      } else {
+        this.stepIndex += 1
+      }
     },
-    submit() {},
+    dataChange() {
+      // this.dialogData.addressCity = CodeToText[this.dialogData.addressCity[0]] + CodeToText[this.dialogData.addressCity[1]]
+      // this.dialogData.qualificationCity = CodeToText[this.dialogData.qualificationCity[0]] + CodeToText[this.dialogData.qualificationCity[1]]
+      // this.dialogData.zoneCity = CodeToText[this.dialogData.zoneCity[0]] + CodeToText[this.dialogData.zoneCity[1]]
+      this.dialogData.sex[0] === '男' ? this.dialogData.sex = '1' : this.dialogData.sex = '0'
+      this.dialogData.zoneCity = parseInt(this.dialogData.zoneCity[1])
+      this.dialogData.addressCity = parseInt(this.dialogData.addressCity[1])
+      this.dialogData.qualificationCity = parseInt(this.dialogData.qualificationCity[1])
+      this.dialogData.qualificationRange = parseInt(this.dialogData.qualificationCity)
+    },
+    submit() {
+      this.$refs['threeForm'].validate(valid => {
+        if (valid) {
+          this.dataChange()
+          if (this.modify) {
+            this.dialogData.updator = this.$store.state.user.name
+            this.dialogData.id = this.currentRow.id
+          }
+          driverSave({ ...this.dialogData })
+            .then(res => {
+              const { data } = res
+            })
+            .catch(err => {
+              throw err
+            })
+        }
+      })
+    },
     closeDialog() {
       this.stepIndex = 1
       this.dialogVisible = false
@@ -577,12 +714,6 @@ export default {
         this.detail = false
         this.modify = false
       }, 500)
-    },
-    handleChange(val) {
-      this.listQuery.zoneCity = parseInt(val[1])
-    },
-    handleChangeAdd(val) {
-      this.dialogData.zoneCity = parseInt(val[1])
     },
     changeSex() {
       this.dialogData.sex[0] === '男'
