@@ -601,6 +601,7 @@ export default {
     },
     modifyData(row) {
       this.currentRow = row
+      this.dialogData = { ...row }
       this.dialogVisible = true
       this.modify = true
       this.detail = false
