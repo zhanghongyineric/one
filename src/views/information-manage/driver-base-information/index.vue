@@ -467,11 +467,11 @@ import {
 import {
   selectList,
   driverSave,
-  selectDriverLic,
-  selectQualificationLic,
+  // selectDriverLic,
+  // selectQualificationLic,
   deleteDriver,
-  queryQualification,
-  enterpriseName
+  queryQualification
+  // enterpriseName
 } from '@/api/information-manage/driver-base-information'
 
 export default {
@@ -699,7 +699,13 @@ export default {
           }
           driverSave({ ...this.dialogData })
             .then(res => {
-              const { data } = res
+              // const { data } = res
+              this.dialogVisible = false
+              this.$message({
+                type: 'success',
+                message: '新增成功！'
+              })
+              this.getList()
             })
             .catch(err => {
               throw err
