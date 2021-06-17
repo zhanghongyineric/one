@@ -15,15 +15,9 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
-    // do something before request is sent
+    // 配置token
     if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['token'] = getToken()
-      // if (config.method === 'get') {
-      //   config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-      // }
+      config.headers['Authorization'] = `bearer ${getToken()}`
     }
     return config
   },
