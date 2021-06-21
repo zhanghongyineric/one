@@ -1,9 +1,3 @@
-/*
- * FileName: 基础路由
- * @author: ZhouJiaXing
- * @date: 2021/4/15 下午2:07
- */
-
 import Layout from '@/layout'
 
 const baseRouter = [

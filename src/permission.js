@@ -31,7 +31,7 @@ router.beforeEach(async(to, from, next) => {
       } else {
         try {
           // get user info
-          const { sysUser, permissions, roles } = await store.dispatch('user/getInfo')
+          const { sysUser } = await store.dispatch('user/getInfo')
 
           if (!sysUser.username) {
             throw new Error('没有用户信息')

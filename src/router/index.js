@@ -6,14 +6,7 @@ import Layout from '@/layout'
   引入路由模块
 */
 import baseRouter from './modules/base'
-// import companyManageRouter from './modules/company-manage'
-// import companyRouter from './modules/company'
-// import safeCodeRouter from './modules/safe-code'
 import systemManageRouter from './modules/system-manage'
-// import companyReportRouter from './modules/company-report'
-// import bigScreen from '@/router/modules/big-screen'
-// import governmentReportRouter from '@/router/modules/government-report'
-// import notDetectedRouter from '@/router/modules/not-detected'
 import informationManageRouter from '@/router/modules/information-manage'
 import officialWebsite from '@/router/modules/official-website'
 import liveMonitorRouter from '@/router/modules/live-monitor'
@@ -67,13 +60,6 @@ export const asyncRoutes = [
       meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin'] }
     }]
   },
-  // companyManageRouter, // 企业管理路由
-  // companyRouter, // 企业路由
-  // safeCodeRouter, // 安全码管理路由
-  // companyReportRouter, // 企业报备路由
-  // bigScreen, // 大屏路由
-  // governmentReportRouter, // 政府端（日志报备）
-  // notDetectedRouter, // 未检测到（日志报备）
   informationManageRouter, // 信息管理
   liveMonitorRouter, // 实时监控
   statisticsInquireRouter, // 统计查询

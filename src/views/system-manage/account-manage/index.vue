@@ -184,8 +184,8 @@
 
 import {
   fetchList,
-  createAccount,
-  updateAccount,
+  // createAccount,
+  // updateAccount,
   fetchDeptTree,
   fetchRoleList, updateCount
 } from '@/api/system-manage/account-manage'
@@ -356,20 +356,20 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          createApi(this.createFormData).then(() => {
-            this.dialogFormVisible = false
-            this.buttonLoading = false
-            this.getList()
-            this.$notify({
-              title: '成功',
-              message: '新增成功',
-              type: 'success',
-              duration: 2000
-            })
-          }).catch((e) => {
-            this.buttonLoading = false
-            console.log(e)
-          })
+          // createApi(this.createFormData).then(() => {
+          //   this.dialogFormVisible = false
+          //   this.buttonLoading = false
+          //   this.getList()
+          //   this.$notify({
+          //     title: '成功',
+          //     message: '新增成功',
+          //     type: 'success',
+          //     duration: 2000
+          //   })
+          // }).catch((e) => {
+          //   this.buttonLoading = false
+          //   console.log(e)
+          // })
         }
       })
     },
@@ -417,23 +417,23 @@ export default {
     // 删除数据
     handleDelete(row) {
       this.listLoading = true
-      deleteApi(row.id).then(() => {
-        this.dialogFormVisible = false
-        this.listLoading = false
-        if (this.list.length === 1 && this.listQuery.pageNumber !== 1) {
-          this.listQuery.pageNumber--
-        }
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
-        })
-      }).catch((e) => {
-        this.listLoading = false
-        console.log(e)
-      })
+      // deleteApi(row.id).then(() => {
+      //   this.dialogFormVisible = false
+      //   this.listLoading = false
+      //   if (this.list.length === 1 && this.listQuery.pageNumber !== 1) {
+      //     this.listQuery.pageNumber--
+      //   }
+      //   this.getList()
+      //   this.$notify({
+      //     title: '成功',
+      //     message: '删除成功',
+      //     type: 'success',
+      //     duration: 2000
+      //   })
+      // }).catch((e) => {
+      //   this.listLoading = false
+      //   console.log(e)
+      // })
     }
   }
 }

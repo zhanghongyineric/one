@@ -87,7 +87,7 @@ const actions = {
           return Promise.reject(new Error('Verification failed, please Login again.'))
         }
 
-        const { sysUser, permissions, roles } = data
+        const { sysUser } = data
         const { alias, deptId, deptName, id } = sysUser
         commit('SET_NAME', { alias, deptName })
         commit('SET_ROLE', 'admin')
