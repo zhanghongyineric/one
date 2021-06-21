@@ -25,7 +25,7 @@ export default function createRequest(baseUrl) {
     config => {
       // 配置token
       if (store.getters.token) {
-        config.headers['Authorization'] = `bearer ${getToken()}`
+        config.headers['Authorization'] = `Bearer ${getToken()}`
       }
       return config
     },

@@ -19,7 +19,7 @@ service.interceptors.request.use(
     // 配置token
     if (store.getters.token) {
       // config.headers['token'] = getToken()
-      config.headers['Authorization'] = `bearer ${getToken()}`
+      config.headers['Authorization'] = `Bearer ${getToken()}`
     }
     return config
   },

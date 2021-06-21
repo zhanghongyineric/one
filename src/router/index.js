@@ -60,12 +60,13 @@ export const asyncRoutes = [
       meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin'] }
     }]
   },
-  informationManageRouter, // 信息管理
+
   liveMonitorRouter, // 实时监控
   statisticsInquireRouter, // 统计查询
   businessManagementRouter, // 业务管理
-  systemManageRouter, // 系统管理路由 <<<<<<<这个放最下面，新增的放上面>>>>>>>
+  informationManageRouter, // 信息管理
   officialWebsite, // 官网管理
+  systemManageRouter, // 系统管理路由 <<<<<<<这个放最下面，新增的放上面>>>>>>>
   {
     path: '/advertising-management',
     component: Layout,

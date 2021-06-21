@@ -42,6 +42,12 @@ const informationManageRouter = {
       name: 'DriverBaseInformation',
       component: () => import('@/views/information-manage/driver-base-information'),
       meta: { title: '驾驶员基础信息' }
+    },
+    {
+      path: 'base-information-sync',
+      name: 'BaseInformationSync',
+      component: () => import('@/views/information-manage/base-information-sync'),
+      meta: { title: '基础信息同步' }
     }
   ]
 }

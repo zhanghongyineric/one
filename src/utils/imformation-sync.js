@@ -7,7 +7,7 @@ let messageBox = null // 存放弹窗实例，避免重复弹窗
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_OFFICIAL_WEBSITE, // url = base url + request url
+  baseURL: process.env.VUE_APP_BASE_INFORMATION_SYNC, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
@@ -17,7 +17,8 @@ service.interceptors.request.use(
   config => {
     // 配置token
     if (store.getters.token) {
-      config.headers['Authorization'] = `Bearer ${getToken()}`
+      // 登录时产生的验证有问题，并且重新登录也不会改变，所以暂时这里写死
+      config.headers['Authorization'] = `Bearer 98bb3611-cdf5-4f9a-9bb4-cb8ebbe041d6`
     }
     return config
   },
