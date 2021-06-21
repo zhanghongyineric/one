@@ -413,11 +413,10 @@ import {
   allowConnect,
   facilitatorName
 } from '@/api/information-manage/access-platform'
-import RemoteSearch from '../../../components/RemoteSearch/select'
 
 export default {
   name: 'AccessPlatformInformation',
-  components: { Pagination, RemoteSearch },
+  components: { Pagination },
   data() {
     return {
       advanced: false,

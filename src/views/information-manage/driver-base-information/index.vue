@@ -209,7 +209,14 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="所属运输企业：" prop="unitId">
-                <el-input v-model="dialogData.unitId" placeholder="请输入所属运输企业" size="small" />
+                <el-autocomplete
+                  v-model="dialogData.unitId"
+                  :fetch-suggestions="searchType"
+                  placeholder="请输入企业名称关键字"
+                  :debounce="500"
+                  size="small"
+                  @select="selectCompany"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -467,12 +474,13 @@ import {
 import {
   selectList,
   driverSave,
-  // selectDriverLic,
-  // selectQualificationLic,
+  selectDriverLic,
+  selectQualificationLic,
   deleteDriver,
-  queryQualification
-  // enterpriseName
+  queryQualification,
+  enterpriseName
 } from '@/api/information-manage/driver-base-information'
+import { upload } from '@/api/information-manage/service-provider'
 
 export default {
   name: 'DriverBaseInformation',
@@ -550,7 +558,8 @@ export default {
       stepIndex: 1,
       detail: false,
       modify: false,
-      currentRow: {}
+      currentRow: {},
+      imgsUpload: []
     }
   },
   created() {
@@ -560,6 +569,28 @@ export default {
     this.getList()
   },
   methods: {
+    searchType(queryString, cb) {
+      if (queryString) {
+        enterpriseName({ unitName: queryString })
+          .then(res => {
+            const { data } = res
+            data.forEach(item => {
+              item.label = item.unitName
+              item.value = item.unitName
+            })
+            cb(data)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectCompany(val) {
+      this.dialogData.unitId = val.id
+    },
     getQueryQualification() {
       queryQualification()
         .then(res => {
@@ -576,22 +607,43 @@ export default {
       this.currentRow = row
       this.dialogVisible = true
       this.detail = true
-      this.dialogData = { ...row }
-    },
-    delData() {
-      this.listLoading = true
-      deleteDriver({ id: this.currentRow.id })
+      let driverLic = {}
+      selectDriverLic({ personId: JSON.stringify(row.id) })
         .then(res => {
-        // const { data } = res
-          this.$message({
-            type: 'success',
-            message: '删除成功！'
-          })
-          this.dialogVisible = false
-          this.getList()
+          driverLic = { ...res.data }
         })
         .catch(err => {
           throw err
+        })
+      selectQualificationLic({ personId: JSON.stringify(row.id) })
+        .then(res => {
+          this.dialogData = { ...row, ...driverLic, ...res.data }
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    delData() {
+      this.$confirm('确定删除该条数据？删除后不可恢复')
+        .then(() => {
+          deleteDriver({ id: this.currentRow.id })
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '删除成功！'
+              })
+              this.dialogVisible = false
+              this.getList()
+            })
+            .catch(err => {
+              throw err
+            })
+        })
+        .catch(() => {
+          this.$message({
+            message: '已取消删除',
+            type: 'info'
+          })
         })
     },
     showTitle() {
@@ -680,9 +732,6 @@ export default {
       }
     },
     dataChange() {
-      // this.dialogData.addressCity = CodeToText[this.dialogData.addressCity[0]] + CodeToText[this.dialogData.addressCity[1]]
-      // this.dialogData.qualificationCity = CodeToText[this.dialogData.qualificationCity[0]] + CodeToText[this.dialogData.qualificationCity[1]]
-      // this.dialogData.zoneCity = CodeToText[this.dialogData.zoneCity[0]] + CodeToText[this.dialogData.zoneCity[1]]
       this.dialogData.sex[0] === '男' ? this.dialogData.sex = '1' : this.dialogData.sex = '0'
       this.dialogData.zoneCity = parseInt(this.dialogData.zoneCity[1])
       this.dialogData.addressCity = parseInt(this.dialogData.addressCity[1])
@@ -692,22 +741,37 @@ export default {
     submit() {
       this.$refs['threeForm'].validate(valid => {
         if (valid) {
-          this.dataChange()
-          if (this.modify) {
-            this.dialogData.updator = this.$store.state.user.name
-            this.dialogData.id = this.currentRow.id
-          }
-          driverSave({ ...this.dialogData })
+          this.listLoading = true
+
+          const form = new FormData()
+          form.append('fileName', this.imgsFiles[0])
+          this.imgsUpload.push(upload(form))
+
+          Promise.all(this.imgsUpload)
             .then(res => {
-              // const { data } = res
-              this.dialogVisible = false
-              this.$message({
-                type: 'success',
-                message: '新增成功！'
-              })
-              this.getList()
+              this.dataChange()
+              if (this.modify) {
+                this.dialogData.updator = this.$store.state.user.name
+                this.dialogData.id = this.currentRow.id
+              }
+              driverSave({ ...this.dialogData })
+                .then(res => {
+                  this.dialogVisible = false
+                  this.$message({
+                    type: 'success',
+                    message: '新增成功！'
+                  })
+                  this.getList()
+                })
+                .catch(err => {
+                  throw err
+                })
             })
             .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '图片过大，上传失败'
+              })
               throw err
             })
         }
