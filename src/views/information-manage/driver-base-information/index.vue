@@ -30,9 +30,9 @@
                   <el-select v-model="listQuery.status" placeholder="请选择状态">
                     <el-option
                       v-for="item in driverStatusOption"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
@@ -434,9 +434,9 @@
                 <el-select v-model="dialogData.status" size="small" placeholder="请选择营运状态">
                   <el-option
                     v-for="item in driverStatusOption"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -467,7 +467,6 @@ import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import {
   qualificationRangeOption,
-  driverStatusOption,
   cultureOptions,
   driverVelTyeOptions
 } from '@/options'
@@ -478,7 +477,8 @@ import {
   selectQualificationLic,
   deleteDriver,
   queryQualification,
-  enterpriseName
+  enterpriseName,
+  driverStatus
 } from '@/api/information-manage/driver-base-information'
 import { upload } from '@/api/information-manage/service-provider'
 
@@ -492,7 +492,7 @@ export default {
       cultureOptions: cultureOptions.list,
       cityOptions: provinceAndCityData,
       qualificationRangeOption: qualificationRangeOption.list,
-      driverStatusOption: driverStatusOption.list,
+      driverStatusOption: [],
       advanced: false,
       listLoading: false,
       total: 1,
@@ -564,11 +564,22 @@ export default {
   },
   created() {
     this.getQueryQualification()
+    this.getDriverStatus()
   },
   mounted() {
     this.getList()
   },
   methods: {
+    getDriverStatus() {
+      driverStatus()
+        .then(res => {
+          const { data } = res
+          this.driverStatusOption = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     searchType(queryString, cb) {
       if (queryString) {
         enterpriseName({ unitName: queryString })

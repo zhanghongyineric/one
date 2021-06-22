@@ -551,24 +551,6 @@ export const qualificationRangeOption = {
   ]
 }
 
-// 驾驶员基本信息-状态
-export const driverStatusOption = {
-  list: [
-    {
-      label: '从业',
-      value: '1'
-    },
-    {
-      label: '待业',
-      value: '2'
-    },
-    {
-      label: '注销',
-      value: '3'
-    }
-  ]
-}
-
 // 驾驶员基本信息-文化程度
 export const cultureOptions = {
   list: [

@@ -62,3 +62,11 @@ export function enterpriseName(data) {
     data
   })
 }
+
+// 驾驶员状态
+export function driverStatus() {
+  return request({
+    url: '/driver/driverStatus',
+    method: 'POST'
+  })
+}
