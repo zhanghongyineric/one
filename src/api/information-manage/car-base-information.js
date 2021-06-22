@@ -25,3 +25,47 @@ export function queryConditions() {
     method: 'POST'
   })
 }
+
+// 车牌颜色
+export function queryColor() {
+  return request({
+    url: '/vehicle/queryColor',
+    method: 'POST'
+  })
+}
+
+// 根据车辆id查询车载入网信息
+export function selectAccessInstallation(data) {
+  return request({
+    url: '/vehicle/selectAccessInstallation',
+    method: 'POST',
+    data
+  })
+}
+
+// 输入关键字 返回平台名称
+export function platformInfoName(data) {
+  return request({
+    url: '/vehicle/platformInfoName',
+    method: 'POST',
+    data
+  })
+}
+
+// 输入关键字 返回平台名称
+export function facilitatorName(data) {
+  return request({
+    url: '/vehicle/facilitatorName',
+    method: 'POST',
+    data
+  })
+}
+
+// 车载入网信息 新增 和 修改
+export function AccessInstallationSave(data) {
+  return request({
+    url: '/vehicle/AccessInstallationSave',
+    method: 'POST',
+    data
+  })
+}

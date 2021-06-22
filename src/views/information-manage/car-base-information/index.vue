@@ -29,7 +29,12 @@
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
                 <el-form-item label="所属地区:">
-                  <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
+                  <el-cascader
+                    v-model="listQuery.zoneId"
+                    size="small"
+                    :options="cityOptions"
+                    placeholder="请选择所属地区"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
@@ -103,9 +108,21 @@
           align="center"
         />
         <el-table-column label="车牌号" prop="plateNum" min-width="100" show-overflow-tooltip align="center" />
-        <el-table-column label="车辆类型" prop="plateColor" min-width="250" align="center" />
-        <el-table-column label="运营状态" prop="operateStatus" min-width="200" align="center" />
-        <el-table-column label="车辆颜色" prop="color" min-width="100" align="center" />
+        <el-table-column label="车辆类型" prop="vehicleType" min-width="250" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.vehicleType === 0 ? '不确定类型' : scope.row.vehicleType }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="运营状态" prop="operateStatus" min-width="200" align="center">
+          <template v-if="scope.row.operateStatus" slot-scope="scope">
+            <span>{{ operateStatusMap.get(scope.row.operateStatus.toString()) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="车牌颜色" prop="plateColor" min-width="100" align="center">
+          <template slot-scope="scope">
+            <span>{{ plateColorMap.get(scope.row.plateColor.toString()) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="是否双驾" prop="doubleDrivers" width="100" align="center">
           <template slot-scope="scope">
             {{ scope.row.doubleDrivers === 0 ? '是' : '否' }}
@@ -117,7 +134,7 @@
             <el-button type="primary" size="mini" @click="handleUpdate(row)">
               更新信息
             </el-button>
-            <el-button type="primary" size="mini" @click="handleDetail(row)">
+            <el-button type="primary" size="mini" @click="handleAccess(row)">
               入网信息
             </el-button>
             <el-popconfirm
@@ -605,6 +622,7 @@
         :visible.sync="dialogFormVisible"
         :close-on-click-modal="false"
         custom-class="base-dialog"
+        top="50px"
       >
         <el-form
           ref="fourForm"
@@ -631,8 +649,16 @@
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="平台名称:" prop="platformId">
-                <el-input v-model="accessFormData.platformId" size="small" placeholder="请输入" />
+              <el-form-item label="平台名称:" prop="platformName">
+                <el-autocomplete
+                  v-model="accessFormData.platformName"
+                  :fetch-suggestions="searchPlatform"
+                  placeholder="请输入平台名称关键字"
+                  :debounce="500"
+                  size="small"
+                  clearable
+                  @select="selectPlatform"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -649,11 +675,19 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <!-- <el-col :md="12" :sm="24">
-              <el-form-item label="服务商名称:" prop="shortName">
-                <el-input v-model="accessFormData.unitName" placeholder="请输入" />
+            <el-col :md="12" :sm="24">
+              <el-form-item label="服务商名称:" prop="unitName">
+                <el-autocomplete
+                  v-model="accessFormData.unitName"
+                  :fetch-suggestions="searchService"
+                  placeholder="请输入平台名称关键字"
+                  :debounce="500"
+                  size="small"
+                  clearable
+                  @select="selectService"
+                />
               </el-form-item>
-            </el-col> -->
+            </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
@@ -779,41 +813,25 @@
 import {
   selectList,
   enterpriseName,
-  queryConditions
+  queryConditions,
+  queryColor,
+  selectAccessInstallation,
+  platformInfoName,
+  facilitatorName,
+  AccessInstallationSave
 } from '@/api/information-manage/car-base-information'
 import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import AreaSelect from '@/components/AreaSelect'
 import RemoteSearch from '@/components/RemoteSearch/select'
 // import { isPhoneNumber, parseTime } from '@/utils'
-import { carRoleOption, runStatusOption, companyLevel, doubleStatusOption } from '@/options'
 import ChoosePoint from '@/components/ChoosePoint'
-
-// const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
 export default {
   name: 'CarBaseInformation',
-  components: { Pagination, AreaSelect, RemoteSearch, ChoosePoint },
-  filters: {
-    companyRoleFilter: function(role) {
-      return carRoleOption.map[role]
-    }, // 车辆类型
-    companyStatusFilter: function(status) {
-      return runStatusOption.map[status]
-    }, // 运营状态
-    companyLevelFilter: function(status) {
-      return doubleStatusOption.map[status]
-    } // 单双驾
-    // companyEconomyFilter: function(status) {
-    //   return companyEconomy.map[status]
-    // }
-  },
+  components: { Pagination, AreaSelect },
   data() {
     return {
-      value1: '',
-      value2: '',
-      value3: '',
-      value4: [],
       indexs: 1,
       cityOptions: provinceAndCityData,
       unitAddress: null,
@@ -905,12 +923,18 @@ export default {
       poiPicker: null,
       operatingPermitImage: [],
       dialogVisible: false,
-      accessFormData: []
+      accessFormData: {},
+      operateStatusMap: new Map(),
+      plateColorMap: new Map(),
+      currentAccessInfo: false
     }
   },
   created() {
-    this.getList()
     this.getQueryConditions()
+    this.getPlateColor()
+  },
+  mounted() {
+    this.getList()
   },
   methods: {
     getList() {
@@ -927,15 +951,34 @@ export default {
           throw err
         })
     },
+    getPlateColor() {
+      queryColor()
+        .then(res => {
+          this.$nextTick(() => {
+            const { data } = res
+            data.forEach(item => {
+              this.plateColorMap.set(item.label, item.value)
+            })
+          })
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     getQueryConditions() {
       this.listLoading = true
       queryConditions()
         .then(res => {
-          const { data } = res
-          this.operateStatusOptions = data['运营状态']
-          this.vehicleTypeOptions = data['车辆类型']
-          this.functionsOptions = data['具备功能']
-          this.listLoading = false
+          this.$nextTick(() => {
+            const { data } = res
+            this.operateStatusOptions = data['运营状态']
+            data['运营状态'].forEach(item => {
+              this.operateStatusMap.set(item.label, item.value)
+            })
+            this.vehicleTypeOptions = data['车辆类型']
+            this.functionsOptions = data['具备功能']
+            this.listLoading = false
+          })
         })
         .catch(err => {
           this.listLoading = false
@@ -963,6 +1006,51 @@ export default {
     },
     selectCompany(val) {
       this.listQuery.unitName = val.unitName
+    },
+    searchPlatform(queryString, cb) {
+      if (queryString) {
+        platformInfoName({ platformName: queryString })
+          .then(res => {
+            const { data } = res
+            data.forEach(item => {
+              item.label = item.id
+              item.value = item.platformName
+            })
+            cb(data)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectPlatform(val) {
+      this.accessFormData.platformId = val.id.toString()
+    },
+    searchService(queryString, cb) {
+      if (queryString) {
+        facilitatorName({ unitName: queryString })
+          .then(res => {
+            const { data } = res
+            console.log(data)
+            data.forEach(item => {
+              item.label = item.id
+              item.value = item.unitName
+            })
+            cb(data)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectService(val) {
+      this.accessFormData.unitName = val.unitName
     },
     // 点击搜索
     handleSearch() {
@@ -1012,6 +1100,21 @@ export default {
     handleUpdate(row) {
       this.dialogStatus = 'update'
       this.dialogVisible = true
+    },
+    handleAccess(row) {
+      this.onLineTitle = row.plateNum + '：入网信息'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['fourForm'].clearValidate()
+      })
+      selectAccessInstallation({ vehicleId: row.id.toString() })
+        .then(res => {
+          const { data } = res
+          if (data) this.accessFormData = { ...data, id: row.id.toString() }
+        })
+        .catch(err => {
+          throw err
+        })
     }
   }
 }
