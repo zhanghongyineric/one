@@ -326,6 +326,10 @@ export default {
         grid: {
           containLabel: true
         },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
+        },
         series: [{
           data: [
             this.driverData.work,
@@ -389,6 +393,10 @@ export default {
         grid: {
           containLabel: true
         },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
+        },
         series: [{
           data: [
             this.carData.stop,
@@ -448,6 +456,10 @@ export default {
         grid: {
           containLabel: true
         },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
+        },
         series: [{
           data: [
             this.companyData.normal,
@@ -504,6 +516,10 @@ export default {
         grid: {
           containLabel: true
         },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
+        },
         series: [{
           data: [
             this.serviceData.normal,
@@ -559,6 +575,10 @@ export default {
         },
         grid: {
           containLabel: true
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
         },
         series: [{
           data: [
