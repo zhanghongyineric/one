@@ -10,28 +10,23 @@
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
               <el-form-item label="车牌号:">
-                <el-input v-model="listQuery.unitName" placeholder="请输入车牌号" @keyup.enter.native="handleSearch" />
+                <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" clearable />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="企业名称:">
-                <el-input v-model="listQuery.unitName" placeholder="请输入企业名称" @keyup.enter.native="handleSearch" />
+              <el-form-item label="营运状态:">
+                <el-select v-model="listQuery.operateStatus" placeholder="请选择运营状态">
+                  <el-option
+                    v-for="item in operateStatusOptions"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
-                <el-form-item label="运营状态:">
-                  <el-select v-model="listQuery.status" placeholder="请选择运营状态">
-                    <el-option
-                      v-for="item in optionGroup.accountTypeList"
-                      :key="item.label"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="所属地区:">
                   <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
@@ -39,73 +34,33 @@
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="具备功能:">
-                  <el-select v-model="listQuery.myFunction" placeholder="请选择具备功能">
+                  <el-select v-model="listQuery.functions" placeholder="请选择具备功能">
                     <el-option
-                      v-for="item in optionGroup.myFunctionList"
+                      v-for="item in functionsOptions"
                       :key="item.label"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="入网方式:">
-                  <el-select v-model="listQuery.networkStyle" placeholder="请选择入网方式">
-                    <el-option
-                      v-for="item in optionGroup.networkStyleList"
-                      :key="item.label"
-                      :label="item.label"
-                      :value="item.value"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="车辆类型:">
-                  <el-select v-model="listQuery.networkStyle" placeholder="请选择车辆类型">
+                  <el-select v-model="listQuery.vehicleType" placeholder="请选择车辆类型">
                     <el-option
-                      v-for="item in optionGroup.carKindList"
+                      v-for="item in vehicleTypeOptions"
                       :key="item.label"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="运行状态:">
-                  <el-select v-model="listQuery.networkStyle" placeholder="请选择运行状态">
-                    <el-option
-                      v-for="item in optionGroup.runStatusList"
-                      :key="item.label"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="安装时间:">
-                  <el-select v-model="listQuery.networkStyle" placeholder="请选择入网安装时间">
-                    <el-option
-                      v-for="item in optionGroup.networkPlayList"
-                      :key="item.label"
-                      :label="item.label"
-                      :value="item.value"
+                      :label="item.value"
+                      :value="item.label"
                     />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="是否双驾:">
-                  <el-select v-model="listQuery.networkStyle" placeholder="请选择">
-                    <el-option
-                      v-for="item in optionGroup.driveList"
-                      :key="item.label"
-                      :label="item.label"
-                      :value="item.value"
-                    />
+                  <el-select v-model="listQuery.doubleDrivers" placeholder="请选择是否双驾">
+                    <el-option key="0" label="是" value="0" />
+                    <el-option key="1" label="否" value="1" />
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -147,20 +102,14 @@
           width="50"
           align="center"
         />
-        <el-table-column v-slot="{row}" label="车牌号" prop="unitName" min-width="100" show-overflow-tooltip align="center">
-          {{ row.unitName || '-' }}
-        </el-table-column>
-        <el-table-column v-slot="{row}" label="车辆类型" prop="operationType" min-width="250" align="center">
-          {{ row.operationType | companyRoleFilter }}
-        </el-table-column>
-        <el-table-column v-slot="{row}" label="运营状态" prop="status" min-width="200" align="center">
-          {{ row.status | companyStatusFilter }}
-        </el-table-column>
-        <el-table-column label="保险信息" prop="baoxian" min-width="100" align="center">
-          <a href="#">保险信息</a>
-        </el-table-column>
-        <el-table-column v-slot="{row}" label="驾驶类型" prop="carStatus" width="100" align="center">
-          {{ row.carStatus | companyLevelFilter }}
+        <el-table-column label="车牌号" prop="plateNum" min-width="100" show-overflow-tooltip align="center" />
+        <el-table-column label="车辆类型" prop="plateColor" min-width="250" align="center" />
+        <el-table-column label="运营状态" prop="operateStatus" min-width="200" align="center" />
+        <el-table-column label="车辆颜色" prop="color" min-width="100" align="center" />
+        <el-table-column label="是否双驾" prop="doubleDrivers" width="100" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.doubleDrivers === 0 ? '是' : '否' }}
+          </template>
         </el-table-column>
         <!--表格操作列-->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="300">
@@ -196,17 +145,18 @@
       <!--新增、更新信息共用弹窗-->
       <el-dialog
         :title="textMap[dialogStatus]"
-        :visible.sync="dialogFormVisible"
+        :visible.sync="dialogVisible"
         :close-on-click-modal="false"
+        top="50px"
         custom-class="base-dialog"
       >
         <el-steps :active="indexs" align-center>
           <el-step title="车辆基础信息" />
-          <el-step title="机动车驾驶证信息" />
-          <el-step title="从业资格证信息" />
+          <el-step title="机动车行驶证信息" />
+          <el-step title="道路运输证信息" />
         </el-steps>
         <el-form
-          v-show="indexs===0"
+          v-show="indexs===1"
           ref="oneForm"
           :rules="oneRules"
           :model="createFormData"
@@ -214,18 +164,18 @@
         >
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item v-if="createFormData.role==='admin'" label="车牌号:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入车牌号" />
+              <el-form-item size="small" clearable label="车牌号:" prop="plateNum">
+                <el-input v-model="createFormData.plateNum" placeholder="请输入车牌号" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="车辆营运类型:" prop="shortName">
-                <el-select v-model="listQuery.shortName" placeholder="请选择车辆类型">
+              <el-form-item size="small" label="车辆营运类型:" prop="operateType">
+                <el-select v-model="createFormData.operateType" placeholder="请选择车辆类型">
                   <el-option
-                    v-for="item in optionGroup.carKindList"
+                    v-for="item in vehicleTypeOptions"
                     :key="item.label"
-                    :label="item.label"
-                    :value="item.value"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -233,160 +183,177 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="所属企业:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入所属企业" />
+              <el-form-item size="small" label="所属企业:" prop="unitId">
+                <el-autocomplete
+                  v-model="createFormData.unitId"
+                  :fetch-suggestions="searchType"
+                  placeholder="请输入企业名称关键字"
+                  :debounce="500"
+                  size="small"
+                  clearable
+                  @select="selectCompany"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="所属区域:" prop="shortName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入所属区域" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="生产日期:" prop="unitName">
-                <el-date-picker
-                  v-model="value1"
-                  type="date"
-                  placeholder="选择日期"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="出厂日期:" prop="shortName">
-                <el-date-picker
-                  v-model="value2"
-                  type="date"
-                  placeholder="选择日期"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="检验有效期止:" prop="shortName">
-                <el-date-picker
-                  v-model="value3"
-                  type="date"
-                  placeholder="选择日期"
+              <el-form-item label="所属区域:" prop="zoneId" size="small">
+                <el-cascader
+                  v-model="createFormData.zoneId"
+                  size="small"
+                  :options="cityOptions"
+                  placeholder="请选择车辆所属区域"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
-              <el-form-item label="车牌颜色:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入车牌颜色" />
+              <el-form-item label="生产日期:" prop="producedDate" size="small">
+                <el-date-picker
+                  v-model="createFormData.producedDate"
+                  type="date"
+                  placeholder="请选择生产日期"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="车身颜色:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入车身颜色" />
+              <el-form-item label="出厂日期:" prop="productionDate" size="small">
+                <el-date-picker
+                  v-model="createFormData.productionDate"
+                  type="date"
+                  placeholder="请选择出厂日期"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="燃料类型:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入燃料类型" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="准牵引总质量:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入车牌颜色" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="总质量:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入车身颜色" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="整备质量:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入燃料类型" />
+              <el-form-item label="检验有效期止:" prop="inspectionDate" size="small">
+                <el-date-picker
+                  v-model="createFormData.inspectionDate"
+                  type="date"
+                  placeholder="请选择检验有效期截止日期"
+                />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
-              <el-form-item label="核定载质量:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="车牌颜色:" prop="plateColor" size="small">
+                <el-select
+                  v-model="createFormData.plateColor"
+                  placeholder="请选择车牌颜色"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="发动机排量" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="车身颜色:" prop="color" size="small">
+                <el-select
+                  v-model="createFormData.color"
+                  placeholder="请选择车身颜色"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="核定载人数:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="车长:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="车宽" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="车高:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="燃料类型:" prop="fuelType" size="small">
+                <el-select
+                  v-model="createFormData.fuelType"
+                  placeholder="请选择燃料类型"
+                />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
-              <el-form-item label="轴距:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="准牵引总质量:" prop="tractionQuality" size="small">
+                <el-input v-model="createFormData.tractionQuality" placeholder="请输入准牵引总质量（kg）" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="车轴数" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="总质量:" prop="grossQuality" size="small">
+                <el-input v-model="createFormData.grossQuality" placeholder="请输入总质量（kg）" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="整备质量:" prop="curbQuality" size="small">
+                <el-input v-model="createFormData.curbQuality" placeholder="请输入整备质量（kg）" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
-              <el-form-item label="是否双驾:" prop="unitName">
-                <el-select v-model="listQuery.networkStyle" placeholder="请选择">
-                  <el-option
-                    v-for="item in optionGroup.driveList"
-                    :key="item.label"
-                    :label="item.label"
-                    :value="item.value"
-                  />
+              <el-form-item label="核定载质量:" prop="loadQuality" size="small">
+                <el-input v-model="createFormData.loadQuality" placeholder="请输入核定载质量（kg）" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="发动机排量" prop="engineDisplacement" size="small">
+                <el-input v-model="createFormData.engineDisplacement" placeholder="请输入发动机排量" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="核定载人数:" prop="passengerNum" size="small">
+                <el-input v-model="createFormData.passengerNum" placeholder="请输入核定载人数" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="车长:" prop="length" size="small">
+                <el-input v-model="createFormData.length" placeholder="请输入车长（mm）" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="车宽" prop="wide" size="small">
+                <el-input v-model="createFormData.wide" placeholder="请输入车宽（mm）" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="车高:" prop="high" size="small">
+                <el-input v-model="createFormData.high" placeholder="请输入车高（mm）" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="轴距:" prop="wheelBase" size="small">
+                <el-input v-model="createFormData.wheelBase" placeholder="请输入轴距（mm）" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="车轴数" prop="axleNum" size="small">
+                <el-input v-model="createFormData.axleNum" placeholder="请输入车轴数（个）" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="8" :sm="24">
+              <el-form-item label="是否双驾:" prop="doubleDrivers" size="small">
+                <el-select v-model="createFormData.doubleDrivers" placeholder="请选择是否双驾">
+                  <el-option key="0" label="是" value="0" />
+                  <el-option key="1" label="否" value="1" />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="开始时间" prop="unitName">
+              <el-form-item label="开始时间" prop="doubleDriversBeginTime" size="small">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="createFormData.doubleDriversBeginTime"
                   type="date"
-                  placeholder="选择日期"
+                  placeholder="请选择双驾开始时间"
                 />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="结束时间" prop="unitName">
+              <el-form-item label="结束时间" prop="doubleDriversEndTime" size="small">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="createFormData.doubleDriversEndTime"
                   type="date"
-                  placeholder="选择日期"
+                  placeholder="请选择双驾结束时间"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <!--            v-if="dialogStatus==='detail'"-->
-            <el-form-item label="有关图片:" prop="operatingPermitImage">
+            <el-form-item label="有关图片:" prop="operatingPermitImage" size="small">
               <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
               </p>
@@ -408,8 +375,9 @@
             </el-form-item>
           </el-row>
         </el-form>
+
         <el-form
-          v-show="indexs===1"
+          v-show="indexs===2"
           ref="twoForm"
           :rules="twoRules"
           :model="createFormData"
@@ -417,74 +385,85 @@
         >
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="机动车车辆类型:" prop="shortName">
-                <el-select v-model="listQuery.shortName" placeholder="请选择机动车车辆类型">
-                  <el-option
-                    v-for="item in optionGroup.carKindList"
+              <el-form-item label="机动车车辆类型:" prop="vehicleType">
+                <el-select v-model="listQuery.vehicleType" size="small" placeholder="请选择机动车车辆类型">
+                  <!-- <el-option
+                    v-for="item in carKindList"
                     :key="item.label"
                     :label="item.label"
                     :value="item.value"
-                  />
+                  /> -->
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item v-if="createFormData.role==='admin'" label="车籍所在地:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请选择" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :md="12" :sm="24">
-              <el-form-item label="使用性质:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请选择" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="12" :sm="24">
-              <el-form-item label="品牌型号:" prop="shortName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :md="12" :sm="24">
-              <el-form-item label="车辆识别代码VIN:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="12" :sm="24">
-              <el-form-item label="发动机号:" prop="shortName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :md="12" :sm="24">
-              <el-form-item label="注册日期:" prop="unitName">
-                <el-date-picker
-                  v-model="value1"
-                  type="date"
-                  placeholder="选择日期"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :md="12" :sm="24">
-              <el-form-item label="发证日期:" prop="unitName">
-                <el-date-picker
-                  v-model="value1"
-                  type="date"
-                  placeholder="选择日期"
+              <el-form-item label="车籍所在地:" prop="registerZoneId">
+                <el-cascader
+                  v-model="createFormData.registerZoneId"
+                  size="small"
+                  :options="cityOptions"
+                  placeholder="请选择车籍所在地"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="车辆所有人:" prop="unitName">
-              <el-input v-model="createFormData.unitName" placeholder="请输入" />
+            <el-col :md="12" :sm="24">
+              <el-form-item label="使用性质:" prop="useNature">
+                <el-select v-model="createFormData.useNature" size="small" placeholder="请选择车辆使用性质" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="品牌型号:" prop="factoryType">
+                <el-input v-model="createFormData.factoryType" size="small" placeholder="请输入品牌型号" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="车辆识别代码VIN:" prop="vin">
+                <el-input v-model="createFormData.vin" size="small" placeholder="请输入车辆识别代码VIN" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="发动机号:" prop="motorNum">
+                <el-input v-model="createFormData.motorNum" size="small" placeholder="请输入发动机号" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="注册日期:" prop="registerDate">
+                <el-date-picker
+                  v-model="createFormData.registerDate"
+                  size="small"
+                  type="date"
+                  placeholder="请选择注册日期"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="发证日期:" prop="openingDate">
+                <el-date-picker
+                  v-model="createFormData.openingDate"
+                  size="small"
+                  type="date"
+                  placeholder="请选择发证日期"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-form-item label="车辆所有人:" prop="owner">
+              <el-input v-model="createFormData.owner" size="small" placeholder="请输入车辆所有人" />
             </el-form-item>
           </el-row>
           <el-row>
-            <!--            v-if="dialogStatus==='detail'"-->
+            <el-form-item label="所有人住址:" prop="ownerAddr">
+              <el-input v-model="createFormData.ownerAddr" size="small" placeholder="请输入车辆所有人详细住址" />
+            </el-form-item>
+          </el-row>
+          <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage">
               <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
@@ -507,8 +486,9 @@
             </el-form-item>
           </el-row>
         </el-form>
+
         <el-form
-          v-show="indexs==2"
+          v-show="indexs==3"
           ref="threeForm"
           :rules="threeRules"
           :model="createFormData"
@@ -516,72 +496,73 @@
         >
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="道路运输证字号:" prop="shortName">
-                <el-input v-model="listQuery.shortName" placeholder="请输入" />
+              <el-form-item label="道路运输证字号:" prop="transportLicenceNum">
+                <el-input v-model="createFormData.transportLicenceNum" size="small" placeholder="请输入道路运输证字号" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item v-if="createFormData.role==='admin'" label="道路运输证编码:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请选择" />
+              <el-form-item label="道路运输证编码:" prop="transportLicenceCode">
+                <el-input v-model="createFormData.transportLicenceCode" size="small" placeholder="请输入道路运输证编码" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="所属区域:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请选择" />
+              <el-form-item label="所属区域:" prop="transportZoneId">
+                <el-cascader
+                  v-model="createFormData.transportZoneId"
+                  size="small"
+                  :options="cityOptions"
+                  placeholder="请选择所属区域"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="有效开始日期:" prop="unitName">
+              <el-form-item label="有效开始日期:" prop="transportBeginDate">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="createFormData.transportBeginDate"
+                  size="small"
                   type="date"
-                  placeholder="选择日期"
+                  placeholder="请选择有效开始日期"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="有效截止日期:" prop="unitName">
+              <el-form-item label="有效截止日期:" prop="transportEndDate">
                 <el-date-picker
-                  v-model="value1"
+                  v-model="createFormData.transportEndDate"
+                  size="small"
                   type="date"
-                  placeholder="选择日期"
+                  placeholder="请选择有效截止日期"
                 />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="发证机关名称:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请选择" />
+              <el-form-item label="发证机关名称:" prop="licenceIssuingAuthority">
+                <el-input v-model="createFormData.licenceIssuingAuthority" size="small" placeholder="请输入发证机关名称" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="提前提醒天数:" prop="unitName">
-              <el-input v-model="createFormData.unitName" placeholder="请输入" />
+            <el-form-item label="提前提醒天数:" prop="transportRemindDate">
+              <el-input v-model="createFormData.transportRemindDate" size="small" placeholder="请输入提前提醒天数" />
             </el-form-item>
           </el-row>
           <el-row>
-            <el-form-item label="车辆所有人:" prop="unitName">
-              <el-input v-model="createFormData.unitName" placeholder="请输入" />
-            </el-form-item>
-          </el-row>
-          <el-row>
-            <el-form-item label="经营范围:" prop="unitName">
-              <el-select v-model="value4" multiple placeholder="请选择">
-                <el-option
+            <el-form-item label="经营范围:" prop="transportBusinessScope">
+              <el-select v-model="createFormData.transportBusinessScope" size="small" multiple placeholder="请选择经营范围">
+                <!-- <el-option
                   v-for="item in option4"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                />
+                /> -->
               </el-select>
             </el-form-item>
           </el-row>
           <el-row>
-            <!--            v-if="dialogStatus==='detail'"-->
             <el-form-item label="有关图片:" prop="operatingPermitImage">
               <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
@@ -604,31 +585,20 @@
             </el-form-item>
           </el-row>
         </el-form>
+
         <div slot="footer" class="dialog-footer">
-          <el-button v-show="indexs !== 0" type="primary" @click="lastStep()">上一步</el-button>
-          <el-button v-show="indexs !== 2" type="primary" @click="nextStep()">下一步</el-button>
+          <el-button v-show="indexs !== 1" type="primary" @click="lastStep()">上一步</el-button>
+          <el-button v-show="indexs !== 3" type="primary" @click="nextStep()">下一步</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
-          <div v-if="dialogStatus==='create'">
-            <el-button v-show="indexs === 2" type="primary" :loading="buttonLoading" @click="createData()">
-              保存
-            </el-button>
-          </div>
-          <div v-else-if="dialogStatus==='update'">
-            <el-button v-show="indexs === 2" type="primary" :loading="buttonLoading" @click="updateData()">
-              保存
-            </el-button>
-            <el-popconfirm
-              title="确认删除吗？"
-              style="margin-left:10px;margin-right:10px;"
-              @confirm="handleDelete()"
-            >
-              <el-button v-show="indexs === 2" slot="reference" size="large" type="danger" style="margin-left: -5px">
-                删除
-              </el-button>
-            </el-popconfirm>
-          </div>
+          <el-button v-show="indexs === 3 && dialogStatus==='create'" type="primary" @click="createData()">
+            保存
+          </el-button>
+          <el-button v-show="indexs === 3 && dialogStatus==='update'" type="primary" @click="updateData()">
+            保存
+          </el-button>
         </div>
       </el-dialog>
+
       <!--入网信息弹窗-->
       <el-dialog
         :title="onLineTitle"
@@ -637,130 +607,129 @@
         custom-class="base-dialog"
       >
         <el-form
-          ref="twoForm"
-          :rules="onlineRules"
-          :model="onLineFormData"
+          ref="fourForm"
+          :rules="fourRules"
+          :model="accessFormData"
           label-width="200px"
         >
           <el-row>
             <el-form-item label="入网方式:" prop="shortName">
-              <el-select v-model="listQuery.shortName" placeholder="请选择">
-                <el-option
-                  v-for="item in optionGroup.networkStyleList"
+              <el-select v-model="accessFormData.accessWay" size="small" placeholder="请选择入网方式">
+                <!-- <el-option
+                  v-for="item in networkStyleList"
                   :key="item.label"
                   :label="item.label"
                   :value="item.value"
-                />
+                /> -->
               </el-select>
             </el-form-item>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="车载终端名称:" prop="shortName">
-                <el-input v-model="createFormData.shortName" placeholder="请输入" />
+              <el-form-item label="车载终端名称:" prop="terminalName">
+                <el-input v-model="accessFormData.terminalName" size="small" placeholder="请输入" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item v-if="createFormData.role==='admin'" label="平台名称:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="平台名称:" prop="platformId">
+                <el-input v-model="accessFormData.platformId" size="small" placeholder="请输入" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="服务器域名及端口:" prop="unitName">
-                <el-select v-model="listQuery.shortName" placeholder="请选择">
-                  <el-option
-                    v-for="item in optionGroup.networkStyleList"
+              <el-form-item label="服务器域名及端口:" prop="serverIpPort">
+                <el-select v-model="accessFormData.serverIpPort" size="small" placeholder="请选择服务器域名及端口">
+                  <!-- <el-option
+                    v-for="item in networkStyleList"
                     :key="item.label"
                     :label="item.label"
                     :value="item.value"
-                  />
+                  /> -->
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :md="12" :sm="24">
+            <!-- <el-col :md="12" :sm="24">
               <el-form-item label="服务商名称:" prop="shortName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+                <el-input v-model="accessFormData.unitName" placeholder="请输入" />
               </el-form-item>
-            </el-col>
+            </el-col> -->
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="通讯协议版本:" prop="unitName">
-                <el-select v-model="listQuery.shortName" placeholder="请选择">
-                  <el-option
-                    v-for="item in optionGroup.networkStyleList"
+              <el-form-item label="通讯协议版本:" prop="communicationProtocolVersion">
+                <el-select v-model="accessFormData.communicationProtocolVersion" size="small" placeholder="请选择通讯协议版本">
+                  <!-- <el-option
+                    v-for="item in networkStyleList"
                     :key="item.label"
                     :label="item.label"
                     :value="item.value"
-                  />
+                  /> -->
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="定位模式:" prop="shortName">
-                <el-select v-model="listQuery.shortName" placeholder="请选择">
-                  <el-option
-                    v-for="item in optionGroup.networkStyleList"
+              <el-form-item label="定位模式:" prop="locateMode">
+                <el-select v-model="accessFormData.locateMode" size="small" placeholder="请选择定位模式">
+                  <!-- <el-option
+                    v-for="item in networkStyleList"
                     :key="item.label"
                     :label="item.label"
                     :value="item.value"
-                  />
+                  /> -->
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="通讯模式:" prop="unitName">
-                <el-select v-model="listQuery.shortName" placeholder="请选择">
-                  <el-option
-                    v-for="item in optionGroup.networkStyleList"
+              <el-form-item label="通讯模式:" prop="communicationMode">
+                <el-select v-model="accessFormData.communicationMode" size="small" placeholder="请选择通讯模式">
+                  <!-- <el-option
+                    v-for="item in networkStyleList"
                     :key="item.label"
                     :label="item.label"
                     :value="item.value"
-                  />
+                  /> -->
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="制造商名称:" prop="shortName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="制造商名称:" prop="manufacturerName">
+                <el-input v-model="accessFormData.manufacturerName" size="small" placeholder="请输入制造商名称" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="主机型号:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="主机型号:" prop="hostType">
+                <el-input v-model="accessFormData.hostType" size="small" placeholder="请输入主机型号" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="物联网卡号:" prop="shortName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入" />
+              <el-form-item label="物联网卡号:" prop="internetCard">
+                <el-input v-model="accessFormData.internetCard" size="small" placeholder="请输入物联网卡号" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="视频通道数:" prop="unitName">
-              <el-input v-model="createFormData.unitName" placeholder="请输入" />
+            <el-form-item label="视频通道数:" prop="cameraNum">
+              <el-input v-model="accessFormData.cameraNum" size="small" placeholder="请输入视频通道数" />
             </el-form-item>
           </el-row>
           <el-row>
-            <el-form-item label="主要功能:" prop="minThings">
-              <el-select v-model="onLineFormData.minThings" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in optionGroup.minStyleList"
+            <el-form-item label="主要功能:" prop="functions">
+              <el-select v-model="accessFormData.functions" size="small" multiple placeholder="请选择主要功能">
+                <!-- <el-option
+                  v-for="item in minStyleList"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                />
+                /> -->
               </el-select>
             </el-form-item>
           </el-row>
           <el-row>
-            <!--            v-if="dialogStatus==='detail'"-->
             <el-form-item label="有关图片:" prop="operatingPermitImage">
               <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
@@ -807,11 +776,16 @@
 </template>
 
 <script>
-// import { fetchList, companyStatus, companyRoleStatus, companyEconomyStatus, updateCount } from '@/api/information-manage/company-base-information'
-import Pagination from '@/components/Pagination' // 分页
+import {
+  selectList,
+  enterpriseName,
+  queryConditions
+} from '@/api/information-manage/car-base-information'
+import { provinceAndCityData, CodeToText } from 'element-china-area-data'
+import Pagination from '@/components/Pagination'
 import AreaSelect from '@/components/AreaSelect'
 import RemoteSearch from '@/components/RemoteSearch/select'
-import { isPhoneNumber, parseTime } from '@/utils'
+// import { isPhoneNumber, parseTime } from '@/utils'
 import { carRoleOption, runStatusOption, companyLevel, doubleStatusOption } from '@/options'
 import ChoosePoint from '@/components/ChoosePoint'
 
@@ -835,66 +809,28 @@ export default {
     // }
   },
   data() {
-    const validateUnitTel = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请输入企业电话'))
-      } else if (!isPhoneNumber(value)) {
-        callback(new Error('请输入正确企业电话'))
-      } else {
-        callback()
-      }
-    }
-    // const self = this
     return {
       value1: '',
       value2: '',
       value3: '',
       value4: [],
-      indexs: 0,
+      indexs: 1,
+      cityOptions: provinceAndCityData,
       unitAddress: null,
       dialogFormVisible: false,
       rowId: '',
-      list: [
-        {
-          unitName: '川A34567',
-          operationType: 1,
-          status: 2,
-          baoxian: '',
-          carStatus: 2
-        },
-        {
-          unitName: '川A34567',
-          operationType: 2,
-          status: 1,
-          baoxian: '',
-          carStatus: 1
-        },
-        {
-          unitName: '川A34567',
-          operationType: 1,
-          status: 2,
-          baoxian: '',
-          carStatus: 2
-        },
-        {
-          unitName: '川A34567',
-          operationType: 4,
-          status: 1,
-          baoxian: '',
-          carStatus: 1
-        }
-      ], // 表格数据
+      list: [], // 表格数据
       listLoading: true, // 表格加载状态
       buttonLoading: false, // 弹窗按钮加载状态
       listQuery: {
         pageNum: 1,
         pageSize: 10,
-        status: '',
-        operationType: '',
-        unitName: '',
-        // zoneId: 0,
-        place: [],
-        area: ''
+        plateNum: '',
+        operateStatus: null,
+        functions: '',
+        vehicleType: '',
+        doubleDrivers: null,
+        zoneId: null
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -909,342 +845,53 @@ export default {
       area: [],
       total: 0, // 总数据条数
       advanced: false, // 是否展开高级搜索条件
-      optionGroup: {
-        minStyleList: [
-          {
-            value: '选项1',
-            label: '行驶记录'
-          }, {
-            value: '选项2',
-            label: '视频监控'
-          }
-        ],
-        option4: [
-          {
-            value: '选项1',
-            label: '县内班车'
-          }, {
-            value: '选项2',
-            label: '县际班车'
-          }],
-        // runList: companyRoleOption.list,
-        // newStateList: companyStatusOption.list,
-        roleList: companyLevel.list,
-        // economyList: [
-        //   {
-        //     label: '集体',
-        //     value: null
-        //   },
-        //   {
-        //     label: '私营',
-        //     value: null
-        //   },
-        //   {
-        //     label: '个体',
-        //     value: null
-        //   },
-        //   {
-        //     label: '联营',
-        //     value: null
-        //   },
-        //   {
-        //     label: '股份制',
-        //     value: null
-        //   },
-        //   {
-        //     label: '外商独资',
-        //     value: null
-        //   },
-        //   {
-        //     label: '港,澳,台商投资企业',
-        //     value: null
-        //   },
-        //   {
-        //     label: '有限责任',
-        //     value: null
-        //   },
-        //   {
-        //     label: '其他经济',
-        //     value: null
-        //   },
-        //   {
-        //     label: '有限',
-        //     value: null
-        //   },
-        //   {
-        //     label: '个人独资',
-        //     value: null
-        //   },
-        //   {
-        //     label: '普通合伙',
-        //     value: null
-        //   },
-        //   {
-        //     label: '其他有限责任公司',
-        //     value: null
-        //   },
-        //   {
-        //     label: '国有',
-        //     value: null
-        //   }
-        // ],
-        accountTypeList: [
-          {
-            label: '全部',
-            value: null
-          },
-          {
-            label: '停运',
-            value: null
-          },
-          {
-            label: '注销',
-            value: null
-          },
-          {
-            label: '转出',
-            value: null
-          },
-          {
-            label: '正常',
-            value: null
-          },
-          {
-            label: '暂停服务',
-            value: null
-          }
-        ], // 运营状态
-        myFunctionList: [
-          {
-            label: '全部',
-            value: null
-          },
-          {
-            label: '行驶记录',
-            value: null
-          },
-          {
-            label: '视频监控',
-            value: null
-          },
-          {
-            label: '高级驾驶辅助ADAS',
-            value: null
-          },
-          {
-            label: '驾驶员状态监测LKP',
-            value: null
-          }
-        ], // 具备功能
-        networkStyleList: [
-          {
-            label: '全部',
-            value: null
-          },
-          {
-            label: '终端设备接入',
-            value: null
-          },
-          {
-            label: '平台服务接入',
-            value: null
-          }
-        ], // 入网方式
-        carKindList: [
-          {
-            label: '全部',
-            value: null
-          },
-          {
-            label: '三类以上班线客运',
-            value: null
-          },
-          {
-            label: '旅游包车客运',
-            value: null
-          },
-          {
-            label: '危险货物运输',
-            value: null
-          }
-        ], // 车辆类型
-        runStatusList: [
-          {
-            label: '全部',
-            value: null
-          },
-          {
-            label: '未入网',
-            value: null
-          },
-          {
-            label: '已入网',
-            value: null
-          },
-          {
-            label: '当日上线',
-            value: null
-          },
-          {
-            label: '当月上线',
-            value: null
-          },
-          {
-            label: '卫星定位实时在线',
-            value: null
-          }
-        ], // 运行状态
-        networkPlayList: [
-          {
-            label: '全部',
-            value: null
-          },
-          {
-            label: '当天',
-            value: null
-          },
-          {
-            label: '本周',
-            value: null
-          },
-          {
-            label: '本月',
-            value: null
-          },
-          {
-            label: '上月',
-            value: null
-          },
-          {
-            label: '自定义',
-            value: null
-          }
-        ], // 入网安装时间
-        driveList: [
-          // {
-          //   label: '全部',
-          //   value: null
-          // },
-          {
-            label: '是',
-            value: 2
-          },
-          {
-            label: '否',
-            value: 1
-          }
-        ] // 是否双驾
-        // companyTypes: [
-        //   {
-        //     label: '班线客运企业',
-        //     value: null
-        //   },
-        //   {
-        //     label: '农村客运企业',
-        //     value: null
-        //   },
-        //   {
-        //     label: '旅游客运企业',
-        //     value: null
-        //   },
-        //   {
-        //     label: '危险品运输企业',
-        //     value: null
-        //   },
-        //   {
-        //     label: '普通货运企业',
-        //     value: null
-        //   },
-        //   {
-        //     label: '个体户',
-        //     value: null
-        //   },
-        //   {
-        //     label: '公交',
-        //     value: null
-        //   },
-        //   {
-        //     label: '出租',
-        //     value: null
-        //   },
-        //   {
-        //     label: '其他',
-        //     value: null
-        //   }
-        // ]
-        // value: ''
-        // accountTypeList: onlineOption.account_type.list
-      }, // 存放选项的数据
-      createFormData: {
-        // role: 'admin',
-        unitName: '',
-        shortName: '',
-        aptitudeLevel: '',
-        upUnitName: '',
-        zoneId: [],
-        businessLicence: '',
-        enconomicType: '',
-        unitAddress: '',
-        lrname: '',
-        telephone: '',
-        contact: '',
-        contactphone: '',
-        postcode: '',
-        registerZoneId: '',
-        businesScopeCode: '',
-        businesScopeScript: '',
-        operationType: '',
-        remark: '',
-        status: '',
-        transportLincense: '',
-        transportStartDate: '',
-        transportEndDate: '',
-        operatingPermitImage: ''
-      }, // 存储新增和编辑框的数据
-      createFormDataTemp: {
-        // role: 'admin',
-        unitName: '',
-        shortName: '',
-        aptitudeLevel: '',
-        upUnitName: '',
-        zoneId: [],
-        businessLicence: '',
-        enconomicType: '',
-        unitAddress: '',
-        lrname: '',
-        telephone: '',
-        contact: '',
-        contactphone: '',
-        postcode: '',
-        registerZoneId: '',
-        businesScopeCode: '',
-        businesScopeScript: '',
-        operationType: '',
-        remark: '',
-        status: '',
-        transportLincense: '',
-        transportStartDate: '',
-        transportEndDate: '',
-        operatingPermitImage: ''
-      }, // 存储新增和编辑框的数据
+      operateStatusOptions: [],
+      vehicleTypeOptions: [],
+      functionsOptions: [],
+      createFormData: {},
       // 用于重置新增的数据
       oneRules: {
-        unitName: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
-        telephone: [{ required: true, trigger: 'blur', validator: validateUnitTel }],
-        shortName: [{ required: true, message: '请输入企业简称', trigger: 'blur' }],
-        aptitudeLevel: [{ required: true, message: '请选择企业级别', trigger: 'change' }],
-        // beforeName: [{ required: true, message: '请输入上级企业单位', trigger: 'change' }],
-        zoneId: [{ required: true, message: '请选择行政区域', trigger: 'change' }],
-        businessLicence: [{ required: true, message: '请选择社会统一信用代码', trigger: 'change' }],
-        enconomicType: [{ required: true, message: '请选择企业经济类型', trigger: 'change' }],
-        lrname: [{ required: true, message: '请选择法人', trigger: 'change' }],
-        // contactPeople: [{ required: true, message: '请选择联系人', trigger: 'change' }],
-        // contactPeoplePhone: [{ required: true, message: '请选择联系电话', trigger: 'change' }],
-        // fexNum: [{ required: true, message: '请选择传真号码', trigger: 'change' }],
-        registerZoneId: [{ required: true, message: '请选择企业注册地', trigger: 'change' }],
-        businesScopeCode: [{ required: true, message: '请选择道路运输经营范围代码', trigger: 'change' }]
-        // address: [{ required: true, message: '请选择地址', trigger: 'change' }],
-      }, // 新增和编辑框的规则
+        plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
+        unitId: [{ required: true, message: '请输入所属企业', trigger: 'blur' }],
+        vehicleType: [{ required: true, message: '请选择车辆营运类型', trigger: 'change' }],
+        zoneId: [{ required: true, message: '请选择所属区域', trigger: 'change' }],
+        plateColor: [{ required: true, message: '请选择车牌颜色', trigger: 'change' }]
+      },
+      twoRules: {
+        vehicleType: [{ required: true, message: '请选择机动车车辆类型', trigger: 'change' }],
+        registerZoneId: [{ required: true, message: '请选择车籍所在地', trigger: 'change' }],
+        useNature: [{ required: true, message: '请选择使用性质', trigger: 'change' }],
+        factoryType: [{ required: true, message: '请输入品牌型号', trigger: 'blur' }],
+        vin: [{ required: true, message: '请输入车辆车辆所有人', trigger: 'blur' }],
+        owner: [{ required: true, message: '请输入车辆识别代码VIN', trigger: 'blur' }],
+        ownerAddr: [{ required: true, message: '请输入车辆所有人住址', trigger: 'blur' }],
+        registerDate: [{ required: true, message: '请选择注册日期', trigger: 'change' }],
+        openingDate: [{ required: true, message: '请选择发证日期', trigger: 'change' }]
+      },
+      threeRules: {
+        transportLicenceNum: [{ required: true, message: '请输入道路运输证字号', trigger: 'blur' }],
+        transportLicenceCode: [{ required: true, message: '请输入道路运输证编码', trigger: 'blur' }],
+        licenceIssuingAuthority: [{ required: true, message: '请输入发证机关名称', trigger: 'blur' }],
+        transportRemindDate: [{ required: true, message: '请输入提前提醒天数', trigger: 'blur' }],
+        transportZoneId: [{ required: true, message: '请选择所属区域', trigger: 'change' }],
+        transportBeginDate: [{ required: true, message: '请选择有效开始日期', trigger: 'change' }],
+        transportEndDate: [{ required: true, message: '请选择有效截止日期', trigger: 'change' }],
+        transportBusinessScope: [{ required: true, message: '请选择经营范围', trigger: 'change' }]
+      },
+      fourRules: {
+        shortName: [{ required: true, message: '请选择入网方式', trigger: 'change' }],
+        terminalName: [{ required: true, message: '请输入车载终端名称', trigger: 'blur' }],
+        platformId: [{ required: true, message: '请输入平台名称', trigger: 'blur' }],
+        serverIpPort: [{ required: true, message: '请选择服务器域名及端口', trigger: 'change' }],
+        communicationProtocolVersion: [{ required: true, message: '请选择通讯协议版本', trigger: 'change' }],
+        locateMode: [{ required: true, message: '请选择定位模式', trigger: 'change' }],
+        communicationMode: [{ required: true, message: '请选择通讯模式', trigger: 'change' }],
+        manufacturerName: [{ required: true, message: '请输入制造商名称', trigger: 'blur' }],
+        hostType: [{ required: true, message: '请输入主机型号', trigger: 'blur' }],
+        internetCard: [{ required: true, message: '请输入物联网卡号', trigger: 'blur' }],
+        cameraNum: [{ required: true, message: '请输入视频通道数', trigger: 'blur' }],
+        functions: [{ required: true, message: '请选择主要功能', trigger: 'change' }]
+      },
       textMap: {
         update: '更新信息',
         create: '新增'
@@ -1256,30 +903,23 @@ export default {
       dialogStatus: '',
       onLineTitle: '入网信息',
       poiPicker: null,
-      operatingPermitImage: []
+      operatingPermitImage: [],
+      dialogVisible: false,
+      accessFormData: []
     }
   },
   created() {
-    this.listLoading = false// fixme:对好接口后移除这行代码
-    this.handleSearch()
-    this.getStatusCode()
-    this.companyRole()
-    this.economyListCode()
+    this.getList()
+    this.getQueryConditions()
   },
   methods: {
-    // 运营转态
-    getStatusCode() {
+    getList() {
       this.listLoading = true
-      companyStatus()
+      selectList({ ...this.listQuery })
         .then(res => {
           const { data } = res
-          data.forEach(item => {
-            if (item.value === '营运') {
-              this.optionGroup.accountTypeList[1].value = parseInt(item.label)
-            } else {
-              this.optionGroup.accountTypeList[2].value = parseInt(item.label)
-            }
-          })
+          this.list = data.list
+          this.total = data.total
           this.listLoading = false
         })
         .catch(err => {
@@ -1287,34 +927,14 @@ export default {
           throw err
         })
     },
-    // 企业运营类型
-    companyRole() {
+    getQueryConditions() {
       this.listLoading = true
-      companyRoleStatus()
+      queryConditions()
         .then(res => {
           const { data } = res
-          data.forEach(item => {
-            // console.log(item)
-            if (item.value === '班线客运') {
-              this.optionGroup.companyTypes[0].value = parseInt(item.label)
-            } else if (item.value === '农村客运') {
-              this.optionGroup.companyTypes[1].value = parseInt(item.label)
-            } else if (item.value === '旅游客运') {
-              this.optionGroup.companyTypes[2].value = parseInt(item.label)
-            } else if (item.value === '危险品运输') {
-              this.optionGroup.companyTypes[3].value = parseInt(item.label)
-            } else if (item.value === '普通货运') {
-              this.optionGroup.companyTypes[4].value = parseInt(item.label)
-            } else if (item.value === '个体户') {
-              this.optionGroup.companyTypes[5].value = parseInt(item.label)
-            } else if (item.value === '公交') {
-              this.optionGroup.companyTypes[6].value = parseInt(item.label)
-            } else if (item.value === '出租') {
-              this.optionGroup.companyTypes[7].value = parseInt(item.label)
-            } else if (item.value === '其他') {
-              this.optionGroup.companyTypes[8].value = parseInt(item.label)
-            }
-          })
+          this.operateStatusOptions = data['运营状态']
+          this.vehicleTypeOptions = data['车辆类型']
+          this.functionsOptions = data['具备功能']
           this.listLoading = false
         })
         .catch(err => {
@@ -1322,106 +942,32 @@ export default {
           throw err
         })
     },
-    // 企业经济类型
-    economyListCode() {
-      this.listLoading = true
-      companyEconomyStatus()
-        .then(res => {
-          const { data } = res
-          data.forEach(item => {
-            // console.log(item)
-            if (item.value === '集体') {
-              this.optionGroup.economyList[0].value = parseInt(item.label)
-            } else if (item.value === '私营') {
-              this.optionGroup.economyList[1].value = parseInt(item.label)
-            } else if (item.value === '个体') {
-              this.optionGroup.economyList[2].value = parseInt(item.label)
-            } else if (item.value === '联营') {
-              this.optionGroup.economyList[3].value = parseInt(item.label)
-            } else if (item.value === '股份制') {
-              this.optionGroup.economyList[4].value = parseInt(item.label)
-            } else if (item.value === '外商独资') {
-              this.optionGroup.economyList[5].value = parseInt(item.label)
-            } else if (item.value === '港,澳,台商投资企业') {
-              this.optionGroup.economyList[6].value = parseInt(item.label)
-            } else if (item.value === '有限责任') {
-              this.optionGroup.economyList[7].value = parseInt(item.label)
-            } else if (item.value === '其他经济') {
-              this.optionGroup.economyList[8].value = parseInt(item.label)
-            } else if (item.value === '有限') {
-              this.optionGroup.economyList[9].value = parseInt(item.label)
-            } else if (item.value === '个人独资') {
-              this.optionGroup.economyList[10].value = parseInt(item.label)
-            } else if (item.value === '普通合伙') {
-              this.optionGroup.economyList[11].value = parseInt(item.label)
-            } else if (item.value === '其他有限责任公司') {
-              this.optionGroup.economyList[12].value = parseInt(item.label)
-            } else if (item.value === '国有') {
-              this.optionGroup.economyList[13].value = parseInt(item.label)
-            }
+    searchType(queryString, cb) {
+      if (queryString) {
+        enterpriseName({ unitName: queryString })
+          .then(res => {
+            const { data } = res
+            data.forEach(item => {
+              item.label = item.unitName
+              item.value = item.unitName
+            })
+            cb(data)
           })
-          this.listLoading = false
-        })
-        .catch(err => {
-          this.listLoading = false
-          throw err
-        })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
     },
-    // setAreaText(data) {
-    //   this.listQuery.zoneId = data
-    //   this.handleSearch()
-    // },
-    // 将数据格式化后传递给remote-select组件
-    // formatter(data) {
-    //   console.log(data)
-    //   return data.map(item => {
-    //     return {
-    //       ...item,
-    //       label: item.value
-    //     }
-    //   })
-    // },
-    // 选择公司
-    toChoosePoint() {
-      this.pickLocation = true
-      this.searchKey = this.createFormData.unitAddress
+    selectCompany(val) {
+      this.listQuery.unitName = val.unitName
     },
-    // 选择公司
-    // selectCompany(item) {
-    //   // 自动填充部分表单
-    //   // this.createFormData.unitTel = item.phone
-    //   this.createFormData.unitId = item.id
-    // },
-    // 搜索公司
-    // searchCompany(query) {
-    //   return searchCompany(query)
-    // },
     // 点击搜索
     handleSearch() {
       this.listQuery.pageNum = 1 // 重置pageNum
       this.getList()
-    },
-    // 获取列表
-    getList() {
-      // this.listLoading = true
-      fetchList(
-        {
-          pageNum: this.listQuery.pageNum,
-          pageSize: this.listQuery.pageSize,
-          // zoneId: this.listQuery.area - 0,
-          status: this.listQuery.status,
-          operationType: this.listQuery.operationType,
-          unitName: this.listQuery.unitName
-        }).then((res) => {
-        const { data: { list, total }} = res
-        console.log({ data: { list, total }})
-        // console.log(list.forEach(item => { console.log(item.id) }))
-        this.list = list
-        this.total = total
-        this.listLoading = false
-      }).catch(() => {
-        this.listLoading = false
-      })
     },
     // 重置搜索条件
     resetQuery() {
@@ -1430,164 +976,27 @@ export default {
     },
     // 点击新增按钮
     handleCreate() {
-      this.resetCreateFormData()
       this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+      this.dialogVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    // 重置新增表单数据
-    resetCreateFormData() {
-      this.createFormData = { ...this.createFormDataTemp }
-    },
-    // 新增数据
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.buttonLoading = true
-
-          // 将zoneId拆分成后端需要的数据
-          // const zoneId = this.createFormData.zoneId
-          const requestData = {
-            ...this.createFormData
-            // province: zoneId[0] || '',
-            // city: zoneId[1] || '',
-            // region: zoneId[2] || '',
-            // area: this.createFormData.areaText
-          }
-
-          addCount(requestData).then(() => {
-            this.dialogFormVisible = false
-            this.buttonLoading = false
-            this.getList()
-            this.$notify({
-              title: '成功',
-              message: '新增成功',
-              type: 'success',
-              duration: 2000
-            })
-          }).catch((e) => {
-            this.buttonLoading = false
-            console.log(e)
-          })
-        }
+        this.$refs['oneForm'].clearValidate()
       })
     },
     // 点击查看详情
     handleDetail(row) {
-      // let zoneId = [row.province, row.city, row.region]
-
-      // 剔除多余的空字符串，方便组件回显
-      // if (zoneId.indexOf('') !== -1) {
-      //   zoneId = zoneId.slice(0, zoneId.indexOf('') + 1)
-      // }
       const zoneId = [row.zoneId]
-      this.createFormData = { ...row, zoneId } // 由于表格没有密码，不设置会为undefined
       this.dialogStatus = 'detail'
       this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    // showDetails(id, index) {
-    //   this.dialogVisible = true
-    //   this.operatingPermitImage = []
-    //   this.listLoading = true
-    //   this.rowId = id
-    //   details({ id })
-    //     .then((res) => {
-    //       const { data } = res
-    //       this.createFormData = { ...data }
-    //       this.createFormData.index = index + 1
-    //       let pathArr = []
-    //       if (data.contentPic) { pathArr = data.contentPic.split('；') }
-    //       for (let i = 0; i < pathArr.length; i++) {
-    //         pathArr[i] = 'https://www.image.gosmooth.com.cn' + pathArr[i]
-    //       }
-    //       this.dialogInfo.operatingPermitImage = pathArr
-    //       console.log(this.dialogInfo.operatingPermitImage, '申诉图片')
-    //       this.listLoading = false
-    //     })
-    //     .catch((err) => {
-    //       this.listLoading = false
-    //       throw err
-    //     })
-    // },
-    // 点击编辑
-    // 点击更新信息
-    handleUpdate(row) {
-      this.rowId = row.id
-      console.log(row.zoneId)
-      // let zoneId = [row.province, row.city, row.region]
-      const zoneId = [row.zoneId]
-
-      // 剔除多余的空字符串，方便组件回显
-      // if (zoneId.indexOf('') !== -1) {
-      //   zoneId = zoneId.slice(0, zoneId.indexOf('') + 1)
-      // }
-
-      this.createFormData = { ...row, zoneId } // 由于表格没有密码，不设置会为undefined
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs['oneForm'].clearValidate()
       })
     },
     // 保存编辑
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.buttonLoading = true
-          // 将zoneId拆分成后端需要的数据
-          // const zoneId = this.createFormData.zoneId
-          const zoneId = this.createFormData.zoneId
-          const requestData = {
-            id: this.rowId,
-            ...this.createFormData,
-            zoneId: zoneId[0] || ''
-            // city: zoneId[1] || '',
-            // region: zoneId[2] || '',
-            // area: this.createFormData.areaText
-          }
-
-          updateCount(requestData).then(() => {
-            this.dialogFormVisible = false
-            this.buttonLoading = false
-            this.getList()
-            this.$notify({
-              title: '成功',
-              message: '编辑成功',
-              type: 'success',
-              duration: 2000
-            })
-          }).catch((e) => {
-            this.buttonLoading = false
-            console.log(e)
-          })
-        }
-      })
     },
     // 更新数据-删除数据
     handleDelete() {
       this.listLoading = true
-      deleteCount({ id: this.rowId }).then(() => {
-        this.dialogFormVisible = false
-        this.listLoading = false
-        if (this.list.length === 1 && this.listQuery.pageNumber !== 1) {
-          this.listQuery.pageNumber--
-        }
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
-        })
-      }).catch((e) => {
-        this.listLoading = false
-        console.log(e)
-      })
     },
     // 弹框
     lastStep() {
@@ -1597,63 +1006,22 @@ export default {
       this.indexs += 1
     },
     closeDialog() {
-      this.dialogFormVisible = false
+      this.dialogVisible = false
       this.indexs = 1
+    },
+    handleUpdate(row) {
+      this.dialogStatus = 'update'
+      this.dialogVisible = true
     }
   }
 }
 </script>
-<!--局部样式-->
-<style lang="scss" scoped>
-.container {
-  width: 700px;
-  height: 500px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  border: 1px solid #999;
+<style scoped>
+::v-deep .el-dialog__body {
+  padding: 20px 20px;
 }
 
-::v-deep {
-  .dialog-footer{
-    display: flex;
-    justify-content: flex-end;
-    :nth-child(4){
-      margin-left: 10px;
-    }
-  }
-  .amap-box {
-  height: 100vh !important;
+::v-deep .el-form {
+  margin-top: 20px;
 }
-  .el-dialog__headerbtn{
-    right: -273px;
-  }
-  .el-dialog__header{
-    width: 1000px;
-    background-color: white;
-  }
-  .el-dialog__footer{
-    width: 1000px;
-    background-color: white;
-  }
-  .table-page-search-wrapper .el-dialog__body, .base-dialog .el-dialog__body{
-    width: 1000px;
-    background-color: white;}
-  .el-steps--horizontal{
-    margin-bottom:33px;
-  }
-}
-
-.company-information .address ::v-deep.el-form-item__content {
-  display: flex;
-
-  .el-input {
-    flex: 1;
-    margin-right: 10px;
-  }
-
-}
-
 </style>
-

@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
 
 let messageBox = null // 存放弹窗实例，避免重复弹窗
 
