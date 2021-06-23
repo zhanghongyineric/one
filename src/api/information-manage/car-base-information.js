@@ -118,3 +118,84 @@ export function selectTransport(data) {
     data
   })
 }
+
+// 车辆信息删除
+export function vehicleDelete(data) {
+  return request({
+    url: '/vehicle/vehicleDelete',
+    method: 'POST',
+    data
+  })
+}
+
+// 车辆运营类型
+export function queryOperationType(data) {
+  return request({
+    url: '/vehicle/queryOperationType',
+    method: 'POST',
+    data
+  })
+}
+
+// 车辆入网信息删除
+export function AccessInstallationDelete(data) {
+  return request({
+    url: '/vehicle/AccessInstallationDelete',
+    method: 'POST',
+    data
+  })
+}
+
+// 保险信息新增和修改
+export function InsuranceSave(data) {
+  return request({
+    url: '/vehicle/InsuranceSave',
+    method: 'POST',
+    data
+  })
+}
+
+// 保险信息删除
+export function InsuranceDelete(data) {
+  return request({
+    url: '/vehicle/InsuranceDelete',
+    method: 'POST',
+    data
+  })
+}
+
+// 根据车辆id 查询保险信息
+export function selectInsurance(data) {
+  return request({
+    url: '/vehicle/selectInsurance',
+    method: 'POST',
+    data
+  })
+}
+
+// 保险类型
+export function queryInsuranceType(data) {
+  return request({
+    url: '/vehicle/queryInsuranceType',
+    method: 'POST',
+    data
+  })
+}
+
+// 保险险别
+export function queryInsurance(data) {
+  return request({
+    url: '/vehicle/queryInsurance',
+    method: 'POST',
+    data
+  })
+}
+
+// 文件上传
+export function upload(data) {
+  return request({
+    url: '/file/upload',
+    method: 'POST',
+    data
+  })
+}

@@ -129,7 +129,7 @@
           </template>
         </el-table-column>
         <!--表格操作列-->
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="300">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="400">
           <template v-slot="{row}">
             <el-button type="primary" size="mini" @click="handleUpdate(row)">
               更新信息
@@ -140,15 +140,9 @@
             <el-button type="primary" size="mini" @click="handleDetail(row)">
               查看详情
             </el-button>
-            <el-popconfirm
-              title="确认删除吗？"
-              style="margin-left:10px;margin-right:10px;"
-              @confirm="handleDelete(row)"
-            >
-              <el-button slot="reference" size="mini" type="danger">
-                删除
-              </el-button>
-            </el-popconfirm>
+            <el-button type="primary" size="mini" @click="handleInsurance(row)">
+              保险信息
+            </el-button>
           </template>
         </el-table-column>
 
@@ -166,10 +160,10 @@
       <el-dialog
         :title="textMap[dialogStatus]"
         :visible.sync="dialogVisible"
-        :disabled="dialogStatus === 'detail'"
         :close-on-click-modal="false"
         top="50px"
         custom-class="base-dialog"
+        :before-close="closeDialog"
       >
         <el-steps :active="indexs" align-center>
           <el-step title="车辆基础信息" />
@@ -182,6 +176,7 @@
           :rules="oneRules"
           :model="createFormData"
           label-width="120px"
+          :disabled="dialogStatus === 'detail'"
         >
           <el-row>
             <el-col :md="12" :sm="24">
@@ -409,7 +404,8 @@
           ref="twoForm"
           :rules="twoRules"
           :model="createFormData"
-          label-width="200px"
+          label-width="150px"
+          :disabled="dialogStatus === 'detail'"
         >
           <el-row>
             <el-col :md="12" :sm="24">
@@ -520,7 +516,8 @@
           ref="threeForm"
           :rules="threeRules"
           :model="createFormData"
-          label-width="200px"
+          label-width="150px"
+          :disabled="dialogStatus === 'detail'"
         >
           <el-row>
             <el-col :md="12" :sm="24">
@@ -639,17 +636,17 @@
           ref="fourForm"
           :rules="fourRules"
           :model="accessFormData"
-          label-width="200px"
+          label-width="150px"
         >
           <el-row>
             <el-form-item label="入网方式:" prop="shortName">
               <el-select v-model="accessFormData.accessWay" size="small" placeholder="请选择入网方式">
-                <!-- <el-option
-                  v-for="item in networkStyleList"
+                <el-option
+                  v-for="item in accessWayOptions"
                   :key="item.label"
-                  :label="item.label"
-                  :value="item.value"
-                /> -->
+                  :label="item.value"
+                  :value="item.label"
+                />
               </el-select>
             </el-form-item>
           </el-row>
@@ -765,12 +762,12 @@
           <el-row>
             <el-form-item label="主要功能:" prop="functions">
               <el-select v-model="accessFormData.functions" size="small" multiple placeholder="请选择主要功能">
-                <!-- <el-option
-                  v-for="item in minStyleList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                /> -->
+                <el-option
+                  v-for="item in functionsOptions"
+                  :key="item.label"
+                  :label="item.value"
+                  :value="item.label"
+                />
               </el-select>
             </el-form-item>
           </el-row>
@@ -816,6 +813,173 @@
           </el-popconfirm>
         </div>
       </el-dialog>
+
+      <!-- 保险信息弹窗 -->
+      <el-dialog
+        title="保险信息"
+        :visible.sync="dialogInsuranceVisible"
+        :close-on-click-modal="false"
+        custom-class="base-dialog"
+        top="50px"
+        :before-close="closeInsuranceDialog"
+      >
+        <div v-show="!addInsurance">
+          <el-table
+            :data="insuranceData"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;"
+          >
+            <el-table-column label="保险类型" prop="typeCode" min-width="100" show-overflow-tooltip align="center" />
+            <el-table-column label="险别" prop="riskTypeCode" min-width="100" show-overflow-tooltip align="center" />
+            <el-table-column label="保险金额" prop="money" min-width="100" show-overflow-tooltip align="center" />
+            <el-table-column label="保险费小计" prop="cost" min-width="100" show-overflow-tooltip align="center" />
+            <el-table-column label="相关说明" prop="remark" min-width="100" show-overflow-tooltip align="center" />
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
+              <template v-slot="{row}">
+                <el-button type="primary" size="mini">详情</el-button>
+                <el-button type="primary" size="mini">修改</el-button>
+                <el-button type="primary" size="mini">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="insurance-footer">
+            <el-button type="primary" size="mini" @click="addInsuranceData">添加</el-button>
+            <el-button type="danger" size="mini" @click="closeInsuranceDialog">关闭</el-button>
+          </div>
+        </div>
+        <div v-show="addInsurance">
+          <el-form
+            ref="fiveForm"
+            :rules="fiveRules"
+            :model="insuranceFormData"
+            label-width="150px"
+          >
+            <el-row>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="保险单号:" prop="number">
+                  <el-input v-model="insuranceFormData.number" size="small" placeholder="请输入保险单号" />
+                </el-form-item>
+              </el-col>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="保险公司:" prop="companyName">
+                  <el-input v-model="insuranceFormData.companyName" size="small" placeholder="请输入保险公司" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="被保险人姓名:" prop="number">
+                  <el-input v-model="insuranceFormData.number" size="small" placeholder="请输入被保险人姓名" />
+                </el-form-item>
+              </el-col>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="投保人姓名:" prop="number">
+                  <el-input v-model="insuranceFormData.number" size="small" placeholder="请输入投保人姓名" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="有效开始日期:" prop="effectiveStartDate">
+                  <el-date-picker
+                    v-model="insuranceFormData.effectiveStartDate"
+                    type="date"
+                    placeholder="请选择有效开始日期"
+                    size="small"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="有效截止日期:" prop="effectiveEndDate">
+                  <el-date-picker
+                    v-model="insuranceFormData.effectiveEndDate"
+                    type="date"
+                    placeholder="请选择有效截止日期"
+                    size="small"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="受益人名称:" prop="beneficiaryName">
+                  <el-input v-model="insuranceFormData.beneficiaryName" size="small" placeholder="请输入受益人名称" />
+                </el-form-item>
+              </el-col>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="提前提醒天数:" prop="advanceRemindDay">
+                  <el-input v-model="insuranceFormData.advanceRemindDay" size="small" placeholder="请输入提前提醒天数（天）" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="保险类型:" prop="typeCode">
+                  <el-select
+                    v-model="insuranceFormData.typeCode"
+                    placeholder="请选择保险类型"
+                    size="small"
+                  >
+                    <el-option
+                      v-for="item in insuranceTypeOptions"
+                      :key="item.label"
+                      :value="item.label"
+                      :label="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="险别:" prop="riskTypeCode">
+                  <el-select
+                    v-model="insuranceFormData.riskTypeCode"
+                    placeholder="请选择险别"
+                    size="small"
+                  >
+                    <el-option
+                      v-for="item in riskTypeOptions"
+                      :key="item.label"
+                      :value="item.label"
+                      :label="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="保险金额:" prop="money">
+                  <el-input v-model="insuranceFormData.money" size="small" placeholder="请输入保险金额" />
+                </el-form-item>
+              </el-col>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="险费小计:" prop="cost">
+                  <el-input v-model="insuranceFormData.cost" size="small" placeholder="请输入险费小计" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :md="12" :sm="24">
+                <el-form-item label="备注:" prop="remark">
+                  <el-input
+                    v-model="insuranceFormData.remark"
+                    type="textarea"
+                    :rows="2"
+                    size="small"
+                    placeholder="请输入备注"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <div class="insurance-footer">
+            <el-button type="primary" size="mini" @click="saveInsurance">保存</el-button>
+            <el-button type="danger" size="mini" @click="cancelInsurance">取消</el-button>
+          </div>
+        </div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -835,7 +999,15 @@ import {
   queryProtocol,
   queryMode,
   queryPositioningMode,
-  selectTransport
+  selectTransport,
+  vehicleDelete,
+  queryOperationType,
+  AccessInstallationDelete,
+  InsuranceSave,
+  InsuranceDelete,
+  selectInsurance,
+  queryInsuranceType,
+  queryInsurance
 } from '@/api/information-manage/car-base-information'
 import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
@@ -927,6 +1099,14 @@ export default {
         cameraNum: [{ required: true, message: '请输入视频通道数', trigger: 'blur' }],
         functions: [{ required: true, message: '请选择主要功能', trigger: 'change' }]
       },
+      fiveRules: {
+        number: [{ required: true, message: '请输入保险单号', trigger: 'blur' }],
+        advanceRemindDay: [{ required: true, message: '请输入提前提醒天数', trigger: 'blur' }],
+        cost: [{ required: true, message: '请输入险费小计', trigger: 'blur' }],
+        money: [{ required: true, message: '请输入保险金额', trigger: 'blur' }],
+        typeCode: [{ required: true, message: '请选择保险类型', trigger: 'change' }],
+        riskTypeCode: [{ required: true, message: '请选择险别', trigger: 'change' }]
+      },
       textMap: {
         update: '更新信息',
         create: '新增',
@@ -944,11 +1124,20 @@ export default {
       operateStatusMap: new Map(),
       plateColorMap: new Map(),
       currentAccessInfo: false,
+      insuranceTypeOptions: [], // 保险类型
+      riskTypeOptions: [], // 险别
+      insuranceFormData: {}, // 添加保险信息数据
+      currentRow: {}, // 当前正在操作的数据
+      addInsurance: false, // 判断是否是在添加保险信息
+      insuranceLoading: false, // 保险表格加载
+      insuranceData: [], // 保险信息表格数据
+      dialogInsuranceVisible: false, // 保险信息弹窗
       fuelTypeOptions: [], // 燃料类型
       portOptions: [], // 域名及端口
       protocolOptions: [], // 通讯协议版本
       modeOptions: [], // 通讯模式
-      positionModeOptions: [] // 定位模式
+      positionModeOptions: [], // 定位模式
+      accessWayOptions: [] // 接入方式
     }
   },
   created() {
@@ -959,6 +1148,8 @@ export default {
     this.getProtocol()
     this.getMode()
     this.getPositionMode()
+    this.getInsuranceType()
+    this.getRiskType()
   },
   mounted() {
     this.getList()
@@ -975,6 +1166,28 @@ export default {
         })
         .catch(err => {
           this.listLoading = false
+          throw err
+        })
+    },
+    // 保险类型
+    getInsuranceType() {
+      queryInsuranceType()
+        .then(res => {
+          const { data } = res
+          this.insuranceTypeOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 险别
+    getRiskType() {
+      queryInsurance()
+        .then(res => {
+          const { data } = res
+          this.riskTypeOptions = data
+        })
+        .catch(err => {
           throw err
         })
     },
@@ -1059,6 +1272,7 @@ export default {
             })
             this.vehicleTypeOptions = data['车辆类型']
             this.functionsOptions = data['具备功能']
+            this.accessWayOptions = data['入网方式']
             this.listLoading = false
           })
         })
@@ -1196,6 +1410,43 @@ export default {
         .catch(err => {
           throw err
         })
+    },
+    // 获取保险信息表格数据
+    getInsuranceData(vehicleId) {
+      this.insuranceLoading = true
+      selectInsurance({ vehicleId })
+        .then(res => {
+          const { data } = res
+          this.insuranceData = data
+          this.insuranceLoading = false
+        })
+        .catch(err => {
+          this.insuranceLoading = false
+          throw err
+        })
+    },
+    // 点击保险信息按钮
+    handleInsurance(row) {
+      this.dialogInsuranceVisible = true
+      this.currentRow = row
+      this.getInsuranceData(row.id.toString())
+    },
+    // 点击添加保险信息按钮
+    addInsuranceData() {
+      this.addInsurance = true
+    },
+    // 保存保险信息
+    saveInsurance() {
+
+    },
+    // 取消保险信息
+    cancelInsurance() {
+      this.addInsurance = false
+    },
+    // 关闭保险弹窗
+    closeInsuranceDialog() {
+      this.dialogInsuranceVisible = false
+      this.addInsurance = false
     }
   }
 }
@@ -1208,4 +1459,11 @@ export default {
 ::v-deep .el-form {
   margin-top: 20px;
 }
+
+.insurance-footer {
+  margin-top: 20px;
+  position: relative;
+  left: 44%;
+}
+
 </style>
