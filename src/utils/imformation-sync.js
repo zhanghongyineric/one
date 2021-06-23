@@ -17,7 +17,7 @@ service.interceptors.request.use(
     // 配置token
     if (store.getters.token) {
       // 登录时产生的验证有问题，并且重新登录也不会改变，所以暂时这里写死
-      config.headers['Authorization'] = `Bearer 98bb3611-cdf5-4f9a-9bb4-cb8ebbe041d6`
+      config.headers['Authorization'] = `Bearer f6b47caa-d96e-4d36-b593-84411931a587`
     }
     return config
   },

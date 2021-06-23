@@ -69,3 +69,43 @@ export function AccessInstallationSave(data) {
     data
   })
 }
+
+// 燃料类型
+export function queryFuel() {
+  return request({
+    url: '/vehicle/queryFuel',
+    method: 'POST'
+  })
+}
+
+// 域名及端口
+export function queryPort() {
+  return request({
+    url: '/vehicle/queryPort',
+    method: 'POST'
+  })
+}
+
+// 通讯协议版本
+export function queryProtocol() {
+  return request({
+    url: '/vehicle/queryProtocol',
+    method: 'POST'
+  })
+}
+
+// 通讯模式
+export function queryMode() {
+  return request({
+    url: '/vehicle/queryMode',
+    method: 'POST'
+  })
+}
+
+// 定位模式
+export function queryPositioningMode() {
+  return request({
+    url: '/vehicle/queryPositioningMode',
+    method: 'POST'
+  })
+}

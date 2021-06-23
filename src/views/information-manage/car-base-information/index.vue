@@ -274,7 +274,14 @@
                 <el-select
                   v-model="createFormData.fuelType"
                   placeholder="请选择燃料类型"
-                />
+                >
+                  <el-option
+                    v-for="item in fuelTypeOptions"
+                    :key="item.label"
+                    :value="item.label"
+                    :label="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -666,12 +673,12 @@
             <el-col :md="12" :sm="24">
               <el-form-item label="服务器域名及端口:" prop="serverIpPort">
                 <el-select v-model="accessFormData.serverIpPort" size="small" placeholder="请选择服务器域名及端口">
-                  <!-- <el-option
-                    v-for="item in networkStyleList"
+                  <el-option
+                    v-for="item in portOptions"
                     :key="item.label"
-                    :label="item.label"
-                    :value="item.value"
-                  /> -->
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -693,24 +700,24 @@
             <el-col :md="12" :sm="24">
               <el-form-item label="通讯协议版本:" prop="communicationProtocolVersion">
                 <el-select v-model="accessFormData.communicationProtocolVersion" size="small" placeholder="请选择通讯协议版本">
-                  <!-- <el-option
-                    v-for="item in networkStyleList"
+                  <el-option
+                    v-for="item in protocolOptions"
                     :key="item.label"
-                    :label="item.label"
-                    :value="item.value"
-                  /> -->
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="定位模式:" prop="locateMode">
                 <el-select v-model="accessFormData.locateMode" size="small" placeholder="请选择定位模式">
-                  <!-- <el-option
-                    v-for="item in networkStyleList"
+                  <el-option
+                    v-for="item in positionModeOptions"
                     :key="item.label"
-                    :label="item.label"
-                    :value="item.value"
-                  /> -->
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -719,12 +726,12 @@
             <el-col :md="12" :sm="24">
               <el-form-item label="通讯模式:" prop="communicationMode">
                 <el-select v-model="accessFormData.communicationMode" size="small" placeholder="请选择通讯模式">
-                  <!-- <el-option
-                    v-for="item in networkStyleList"
+                  <el-option
+                    v-for="item in modeOptions"
                     :key="item.label"
-                    :label="item.label"
-                    :value="item.value"
-                  /> -->
+                    :label="item.value"
+                    :value="item.label"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -818,18 +825,23 @@ import {
   selectAccessInstallation,
   platformInfoName,
   facilitatorName,
-  AccessInstallationSave
+  AccessInstallationSave,
+  queryFuel,
+  queryPort,
+  queryProtocol,
+  queryMode,
+  queryPositioningMode
 } from '@/api/information-manage/car-base-information'
 import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
-import AreaSelect from '@/components/AreaSelect'
-import RemoteSearch from '@/components/RemoteSearch/select'
+// import AreaSelect from '@/components/AreaSelect'
+// import RemoteSearch from '@/components/RemoteSearch/select'
 // import { isPhoneNumber, parseTime } from '@/utils'
-import ChoosePoint from '@/components/ChoosePoint'
+// import ChoosePoint from '@/components/ChoosePoint'
 
 export default {
   name: 'CarBaseInformation',
-  components: { Pagination, AreaSelect },
+  components: { Pagination },
   data() {
     return {
       indexs: 1,
@@ -926,12 +938,22 @@ export default {
       accessFormData: {},
       operateStatusMap: new Map(),
       plateColorMap: new Map(),
-      currentAccessInfo: false
+      currentAccessInfo: false,
+      fuelTypeOptions: [], // 燃料类型
+      portOptions: [], // 域名及端口
+      protocolOptions: [], // 通讯协议版本
+      modeOptions: [], // 通讯模式
+      positionModeOptions: [] // 定位模式
     }
   },
   created() {
     this.getQueryConditions()
     this.getPlateColor()
+    this.getFuelType()
+    this.getPort()
+    this.getProtocol()
+    this.getMode()
+    this.getPositionMode()
   },
   mounted() {
     this.getList()
@@ -948,6 +970,61 @@ export default {
         })
         .catch(err => {
           this.listLoading = false
+          throw err
+        })
+    },
+    // 获取燃料类型
+    getFuelType() {
+      queryFuel()
+        .then(res => {
+          const { data } = res
+          this.fuelTypeOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 获取域名及端口
+    getPort() {
+      queryPort()
+        .then(res => {
+          const { data } = res
+          this.portOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 获取通讯协议版本
+    getProtocol() {
+      queryProtocol()
+        .then(res => {
+          const { data } = res
+          this.protocolOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 通讯模式
+    getMode() {
+      queryMode()
+        .then(res => {
+          const { data } = res
+          this.modeOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 获取定位模式
+    getPositionMode() {
+      queryPositioningMode()
+        .then(res => {
+          const { data } = res
+          this.positionModeOptions = data
+        })
+        .catch(err => {
           throw err
         })
     },
@@ -1072,7 +1149,6 @@ export default {
     },
     // 点击查看详情
     handleDetail(row) {
-      const zoneId = [row.zoneId]
       this.dialogStatus = 'detail'
       this.dialogFormVisible = true
       this.$nextTick(() => {

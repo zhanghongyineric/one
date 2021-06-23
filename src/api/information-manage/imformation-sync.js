@@ -9,7 +9,7 @@ export function device() {
 
 export function driver() {
   return request({
-    url: '/baseInfoJob/processDriverData',
+    url: '/processDriverData',
     method: 'GET'
   })
 }
