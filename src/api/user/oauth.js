@@ -14,7 +14,7 @@ export function login(data) {
 // 退出登录
 export function logout() {
   return request({
-    url: '/logout',
+    url: '/oauth/logout/token',
     method: 'get'
   })
 }
