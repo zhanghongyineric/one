@@ -269,7 +269,7 @@ export default {
                 this.addFormData.imageUrl = lastarr.join(';')
               } else this.addFormData.imageUrl = this.imgArr.join(';')
 
-              this.addFormData.imageUrl = this.imgArr.join(';')
+              // this.addFormData.imageUrl = this.imgArr.join(';')
               this.addFormData.creator = this.$store.state.user.name
               this.addFormData.updator = this.$store.state.user.name
               this.addFormData.creatorNo = this.$store.state.user.userId

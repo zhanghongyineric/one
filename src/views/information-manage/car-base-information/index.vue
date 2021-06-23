@@ -229,6 +229,8 @@
                   v-model="createFormData.producedDate"
                   type="date"
                   placeholder="请选择生产日期"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
@@ -238,6 +240,8 @@
                   v-model="createFormData.productionDate"
                   type="date"
                   placeholder="请选择出厂日期"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
@@ -247,6 +251,8 @@
                   v-model="createFormData.inspectionDate"
                   type="date"
                   placeholder="请选择检验有效期截止日期"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
@@ -362,6 +368,8 @@
                   v-model="createFormData.doubleDriversBeginTime"
                   type="date"
                   placeholder="请选择双驾开始时间"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
@@ -371,13 +379,15 @@
                   v-model="createFormData.doubleDriversEndTime"
                   type="date"
                   placeholder="请选择双驾结束时间"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage" size="small">
-              <p class="img-tit">
+              <!-- <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
               </p>
               <div class="dialog-imgs">
@@ -394,7 +404,7 @@
                     :z-index="3000"
                   />
                 </div>
-              </div>
+              </div> -->
             </el-form-item>
           </el-row>
         </el-form>
@@ -462,6 +472,8 @@
                   v-model="createFormData.registerDate"
                   size="small"
                   type="date"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   placeholder="请选择注册日期"
                 />
               </el-form-item>
@@ -470,6 +482,8 @@
               <el-form-item label="发证日期:" prop="openingDate">
                 <el-date-picker
                   v-model="createFormData.openingDate"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   size="small"
                   type="date"
                   placeholder="请选择发证日期"
@@ -489,7 +503,7 @@
           </el-row>
           <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage">
-              <p class="img-tit">
+              <!-- <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
               </p>
               <div class="dialog-imgs">
@@ -506,7 +520,7 @@
                     :z-index="3000"
                   />
                 </div>
-              </div>
+              </div> -->
             </el-form-item>
           </el-row>
         </el-form>
@@ -549,6 +563,8 @@
                   size="small"
                   type="date"
                   placeholder="请选择有效开始日期"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
@@ -561,6 +577,8 @@
                   size="small"
                   type="date"
                   placeholder="请选择有效截止日期"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
@@ -589,7 +607,7 @@
           </el-row>
           <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage">
-              <p class="img-tit">
+              <!-- <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
               </p>
               <div class="dialog-imgs">
@@ -606,7 +624,7 @@
                     :z-index="3000"
                   />
                 </div>
-              </div>
+              </div> -->
             </el-form-item>
           </el-row>
         </el-form>
@@ -614,13 +632,16 @@
         <div slot="footer" class="dialog-footer">
           <el-button v-show="indexs !== 1" type="primary" @click="lastStep()">上一步</el-button>
           <el-button v-show="indexs !== 3" type="primary" @click="nextStep()">下一步</el-button>
-          <el-button type="primary" @click="closeDialog()">关闭</el-button>
           <el-button v-show="indexs === 3 && dialogStatus==='create'" type="primary" @click="createData()">
             保存
           </el-button>
           <el-button v-show="indexs === 3 && dialogStatus==='update'" type="primary" @click="updateData()">
             保存
           </el-button>
+          <el-button v-show="indexs === 3 && dialogStatus==='detail'" type="danger" @click="deleteData()">
+            删除
+          </el-button>
+          <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </div>
       </el-dialog>
 
@@ -773,7 +794,7 @@
           </el-row>
           <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage">
-              <p class="img-tit">
+              <!-- <p class="img-tit">
                 <span v-if="!operatingPermitImage.length">未上传图片</span>
               </p>
               <div class="dialog-imgs">
@@ -790,7 +811,7 @@
                     :z-index="3000"
                   />
                 </div>
-              </div>
+              </div> -->
             </el-form-item>
           </el-row>
         </el-form>
@@ -836,11 +857,11 @@
             <el-table-column label="保险金额" prop="money" min-width="100" show-overflow-tooltip align="center" />
             <el-table-column label="保险费小计" prop="cost" min-width="100" show-overflow-tooltip align="center" />
             <el-table-column label="相关说明" prop="remark" min-width="100" show-overflow-tooltip align="center" />
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="220">
               <template v-slot="{row}">
-                <el-button type="primary" size="mini">详情</el-button>
-                <el-button type="primary" size="mini">修改</el-button>
-                <el-button type="primary" size="mini">删除</el-button>
+                <el-button type="primary" size="mini" @click="showInsuranceDetail(row)">详情</el-button>
+                <el-button type="primary" size="mini" @click="updateInsurance(row)">修改</el-button>
+                <el-button type="primary" size="mini" @click="deleteInsurance(row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -854,29 +875,30 @@
             ref="fiveForm"
             :rules="fiveRules"
             :model="insuranceFormData"
-            label-width="150px"
+            label-width="120px"
+            :disabled="insuranceDetail"
           >
             <el-row>
               <el-col :md="12" :sm="24">
                 <el-form-item label="保险单号:" prop="number">
-                  <el-input v-model="insuranceFormData.number" size="small" placeholder="请输入保险单号" />
+                  <el-input v-model="insuranceFormData.number" clearable size="small" placeholder="请输入保险单号" />
                 </el-form-item>
               </el-col>
               <el-col :md="12" :sm="24">
                 <el-form-item label="保险公司:" prop="companyName">
-                  <el-input v-model="insuranceFormData.companyName" size="small" placeholder="请输入保险公司" />
+                  <el-input v-model="insuranceFormData.companyName" clearable size="small" placeholder="请输入保险公司" />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :md="12" :sm="24">
-                <el-form-item label="被保险人姓名:" prop="number">
-                  <el-input v-model="insuranceFormData.number" size="small" placeholder="请输入被保险人姓名" />
+                <el-form-item label="被保险人姓名:" prop="insuredName">
+                  <el-input v-model="insuranceFormData.insuredName" clearable size="small" placeholder="请输入被保险人姓名" />
                 </el-form-item>
               </el-col>
               <el-col :md="12" :sm="24">
-                <el-form-item label="投保人姓名:" prop="number">
-                  <el-input v-model="insuranceFormData.number" size="small" placeholder="请输入投保人姓名" />
+                <el-form-item label="投保人姓名:" prop="policyHolderName">
+                  <el-input v-model="insuranceFormData.policyHolderName" clearable size="small" placeholder="请输入投保人姓名" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -888,6 +910,8 @@
                     type="date"
                     placeholder="请选择有效开始日期"
                     size="small"
+                    format="yyyy 年 MM 月 dd 日"
+                    value-format="yyyy-MM-dd"
                   />
                 </el-form-item>
               </el-col>
@@ -898,6 +922,8 @@
                     type="date"
                     placeholder="请选择有效截止日期"
                     size="small"
+                    format="yyyy 年 MM 月 dd 日"
+                    value-format="yyyy-MM-dd"
                   />
                 </el-form-item>
               </el-col>
@@ -905,12 +931,12 @@
             <el-row>
               <el-col :md="12" :sm="24">
                 <el-form-item label="受益人名称:" prop="beneficiaryName">
-                  <el-input v-model="insuranceFormData.beneficiaryName" size="small" placeholder="请输入受益人名称" />
+                  <el-input v-model="insuranceFormData.beneficiaryName" clearable size="small" placeholder="请输入受益人名称" />
                 </el-form-item>
               </el-col>
               <el-col :md="12" :sm="24">
                 <el-form-item label="提前提醒天数:" prop="advanceRemindDay">
-                  <el-input v-model="insuranceFormData.advanceRemindDay" size="small" placeholder="请输入提前提醒天数（天）" />
+                  <el-input v-model="insuranceFormData.advanceRemindDay" clearable min="0" type="number" size="small" placeholder="请输入提前提醒天数（天）" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -921,6 +947,7 @@
                     v-model="insuranceFormData.typeCode"
                     placeholder="请选择保险类型"
                     size="small"
+                    clearable
                   >
                     <el-option
                       v-for="item in insuranceTypeOptions"
@@ -937,6 +964,7 @@
                     v-model="insuranceFormData.riskTypeCode"
                     placeholder="请选择险别"
                     size="small"
+                    clearable
                   >
                     <el-option
                       v-for="item in riskTypeOptions"
@@ -951,12 +979,26 @@
             <el-row>
               <el-col :md="12" :sm="24">
                 <el-form-item label="保险金额:" prop="money">
-                  <el-input v-model="insuranceFormData.money" size="small" placeholder="请输入保险金额" />
+                  <el-input
+                    v-model="insuranceFormData.money"
+                    clearable
+                    size="small"
+                    placeholder="请输入保险金额"
+                    type="number"
+                    min="0"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :md="12" :sm="24">
                 <el-form-item label="险费小计:" prop="cost">
-                  <el-input v-model="insuranceFormData.cost" size="small" placeholder="请输入险费小计" />
+                  <el-input
+                    v-model="insuranceFormData.cost"
+                    size="small"
+                    placeholder="请输入险费小计"
+                    clearable
+                    type="number"
+                    min="0"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -973,10 +1015,48 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row>
+              <el-form-item label="有关图片:" prop="operatingPermitImage">
+                <div v-if="insuranceDetail">
+                  <p class="img-tit">
+                    <span v-if="!fileList.length">未上传图片</span>
+                  </p>
+                  <div class="dialog-imgs">
+                    <div
+                      v-for="img in fileList"
+                      :key="img.url"
+                      class="img-con"
+                    >
+                      <el-image
+                        class="dialog-img"
+                        :src="img.url"
+                        fit="cover"
+
+                        :z-index="3000"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <el-upload
+                  v-else
+                  ref="upload"
+                  action
+                  list-type="picture-card"
+                  :auto-upload="false"
+                  :limit="2"
+                  :multiple="true"
+                  :on-change="previewImg"
+                  :on-remove="handleRemove"
+                  :file-list="fileList"
+                >
+                  <i slot="default" class="el-icon-plus" />
+                </el-upload>
+              </el-form-item>
+            </el-row>
           </el-form>
           <div class="insurance-footer">
             <el-button type="primary" size="mini" @click="saveInsurance">保存</el-button>
-            <el-button type="danger" size="mini" @click="cancelInsurance">取消</el-button>
+            <el-button type="danger" size="mini" @click="cancelInsurance">返回</el-button>
           </div>
         </div>
       </el-dialog>
@@ -1007,7 +1087,8 @@ import {
   InsuranceDelete,
   selectInsurance,
   queryInsuranceType,
-  queryInsurance
+  queryInsurance,
+  upload
 } from '@/api/information-manage/car-base-information'
 import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
@@ -1137,7 +1218,11 @@ export default {
       protocolOptions: [], // 通讯协议版本
       modeOptions: [], // 通讯模式
       positionModeOptions: [], // 定位模式
-      accessWayOptions: [] // 接入方式
+      accessWayOptions: [], // 接入方式
+      fileList: [], // 图片链接
+      insuranceDetail: false, // 是否查看保险详情
+      imgsFiles: [],
+      imgsUpload: []
     }
   },
   created() {
@@ -1150,6 +1235,7 @@ export default {
     this.getPositionMode()
     this.getInsuranceType()
     this.getRiskType()
+    this.getOprationTypeOptions()
   },
   mounted() {
     this.getList()
@@ -1166,6 +1252,16 @@ export default {
         })
         .catch(err => {
           this.listLoading = false
+          throw err
+        })
+    },
+    // 车辆营运类型
+    getOprationTypeOptions() {
+      queryOperationType()
+        .then(res => {
+          this.vehicleTypeOptions = res.data
+        })
+        .catch(err => {
           throw err
         })
     },
@@ -1270,7 +1366,7 @@ export default {
             data['运营状态'].forEach(item => {
               this.operateStatusMap.set(item.label, item.value)
             })
-            this.vehicleTypeOptions = data['车辆类型']
+            // this.vehicleTypeOptions = data['车辆类型']
             this.functionsOptions = data['具备功能']
             this.accessWayOptions = data['入网方式']
             this.listLoading = false
@@ -1370,8 +1466,11 @@ export default {
     handleDetail(row) {
       this.dialogStatus = 'detail'
       this.dialogVisible = true
+      this.currentRow = row
       this.$nextTick(() => {
         this.$refs['oneForm'].clearValidate()
+        this.$refs['twoForm'].clearValidate()
+        this.$refs['threeForm'].clearValidate()
       })
     },
     // 保存编辑
@@ -1411,6 +1510,47 @@ export default {
           throw err
         })
     },
+    // 保险信息详情
+    showInsuranceDetail(row) {
+      this.insuranceFormData = { ...row }
+      this.currentRow = row
+      this.addInsurance = true
+      this.insuranceDetail = true
+      if (row.photoUrl) {
+        const urlArr = row.photoUrl.split(';')
+        urlArr.forEach(item => {
+          this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
+        })
+      }
+    },
+    // 删除车辆信息
+    deleteData() {
+      this.$confirm('确定删除该车辆所有信息？删除后无法恢复')
+        .then(() => {
+          vehicleDelete({ id: parseInt(this.currentRow.id) })
+            .then(res => {
+              this.dialogVisible = false
+              this.getList()
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '删除失败'
+              })
+              throw err
+            })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
     // 获取保险信息表格数据
     getInsuranceData(vehicleId) {
       this.insuranceLoading = true
@@ -1433,20 +1573,152 @@ export default {
     },
     // 点击添加保险信息按钮
     addInsuranceData() {
+      this.insuranceFormData.modify = false
+      this.insuranceDetail = false
       this.addInsurance = true
+      this.$refs['fiveForm'].clearValidate()
     },
     // 保存保险信息
     saveInsurance() {
+      this.$refs['fiveForm'].validate(valid => {
+        if (valid) {
+          this.allImgReq()
+          Promise.all(this.imgsUpload)
+            .then(res => {
+              const urlArr = []
+              for (const item of res) {
+                const { fileUrl } = item.data
+                urlArr.push(fileUrl)
+              }
 
+              if (this.insuranceFormData.modify) {
+                this.insuranceFormData.id = parseInt(this.currentRow.id)
+                this.insuranceFormData.vehicleId = this.currentRow.vehicleId.toString()
+                this.insuranceFormData.photoUrl = urlArr.join(';')
+                const arr = []
+                this.fileList.forEach(item => {
+                  arr.push(item.url.split('.cn')[1])
+                })
+                this.insuranceFormData.photoUrl = this.insuranceFormData.photoUrl.concat(';', arr.join(';'))
+
+                const lastarr = this.insuranceFormData.photoUrl.split(';')
+                if (lastarr[lastarr.length - 1] === '')lastarr.pop()
+                this.insuranceFormData.photoUrl = lastarr.join(';')
+              } else {
+                this.insuranceFormData.vehicleId = this.currentRow.id.toString()
+                this.insuranceFormData.photoUrl = urlArr.join(';')
+              }
+
+              InsuranceSave({ ...this.insuranceFormData })
+                .then(res => {
+                  this.addInsurance = false
+                  this.insuranceFormData.modify
+                    ? this.getInsuranceData(this.currentRow.vehicleId.toString())
+                    : this.getInsuranceData(this.currentRow.id.toString())
+                  this.$message({
+                    type: 'success',
+                    message: '保存成功'
+                  })
+                  this.insuranceFormData = {}
+                })
+                .catch(err => {
+                  this.$message({
+                    type: 'error',
+                    message: '保存失败'
+                  })
+                  throw err
+                })
+            })
+            .catch(er => {
+              this.$message({
+                type: 'error',
+                message: '图片过大，上传失败'
+              })
+              throw er
+            })
+        }
+      })
+    },
+    // 删除保险信息
+    deleteInsurance(row) {
+      this.$confirm('确认删除该条数据？删除后不可恢复')
+        .then(() => {
+          InsuranceDelete({ id: parseInt(row.id) })
+            .then(res => {
+              this.getInsuranceData(row.id.toString())
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '删除失败'
+              })
+              throw err
+            })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     // 取消保险信息
     cancelInsurance() {
       this.addInsurance = false
+      this.fileList = []
     },
     // 关闭保险弹窗
     closeInsuranceDialog() {
       this.dialogInsuranceVisible = false
       this.addInsurance = false
+      this.fileList = []
+      this.insuranceFormData = {}
+    },
+    // 组成promise.all的参数数组
+    allImgReq() {
+      this.imgsFiles.forEach(item => {
+        const form = new FormData()
+        form.append('fileName', item)
+        this.imgsUpload.push(upload(form))
+      })
+    },
+    // 添加图片
+    previewImg(file) {
+      this.imgsFiles.push(file.raw)
+    },
+    // 修改保险信息
+    updateInsurance(row) {
+      this.addInsurance = true
+      this.insuranceDetail = false
+      this.insuranceFormData = { ...row }
+      this.insuranceFormData.modify = true
+      this.currentRow = row
+      if (row.photoUrl) {
+        const urlArr = row.photoUrl.split(';')
+        urlArr.forEach(item => {
+          this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
+        })
+      }
+    },
+    // 删除图片
+    handleRemove(file) {
+      if (!file.raw) {
+        this.fileList.forEach((item, index) => {
+          if (file.url === item.url) {
+            this.fileList.splice(index, 1)
+          }
+        })
+      } else {
+        this.imgsFiles.forEach((item, index) => {
+          if (file.raw.uid === item.uid) {
+            this.imgsFiles.splice(index, 1)
+          }
+        })
+      }
     }
   }
 }
