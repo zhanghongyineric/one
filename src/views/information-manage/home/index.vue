@@ -522,8 +522,8 @@ export default {
         },
         series: [{
           data: [
-            this.serviceData.normal,
-            this.serviceData.pause
+            this.platformData.normal,
+            this.platformData.pause
           ],
           type: 'bar',
           showBackground: true,
