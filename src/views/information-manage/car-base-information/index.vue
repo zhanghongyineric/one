@@ -137,6 +137,9 @@
             <el-button type="primary" size="mini" @click="handleAccess(row)">
               入网信息
             </el-button>
+            <el-button type="primary" size="mini" @click="handleDetail(row)">
+              查看详情
+            </el-button>
             <el-popconfirm
               title="确认删除吗？"
               style="margin-left:10px;margin-right:10px;"
@@ -163,6 +166,7 @@
       <el-dialog
         :title="textMap[dialogStatus]"
         :visible.sync="dialogVisible"
+        :disabled="dialogStatus === 'detail'"
         :close-on-click-modal="false"
         top="50px"
         custom-class="base-dialog"
@@ -830,7 +834,8 @@ import {
   queryPort,
   queryProtocol,
   queryMode,
-  queryPositioningMode
+  queryPositioningMode,
+  selectTransport
 } from '@/api/information-manage/car-base-information'
 import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
@@ -924,8 +929,8 @@ export default {
       },
       textMap: {
         update: '更新信息',
-        create: '新增'
-        // detail: '详情'
+        create: '新增',
+        detail: '详情'
       }, // 弹出框标题
       onLineFormData: {
         minThings: []
@@ -1150,7 +1155,7 @@ export default {
     // 点击查看详情
     handleDetail(row) {
       this.dialogStatus = 'detail'
-      this.dialogFormVisible = true
+      this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs['oneForm'].clearValidate()
       })

@@ -34,3 +34,10 @@ export function car() {
     method: 'GET'
   })
 }
+
+export function platform() {
+  return request({
+    url: '/processPlatformData',
+    method: 'GET'
+  })
+}

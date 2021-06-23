@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
+import { getToken } from '@/utils/auth'
 
 let messageBox = null // 存放弹窗实例，避免重复弹窗
 
@@ -17,7 +18,7 @@ service.interceptors.request.use(
     // 配置token
     if (store.getters.token) {
       // 登录时产生的验证有问题，并且重新登录也不会改变，所以暂时这里写死
-      config.headers['Authorization'] = `Bearer f6b47caa-d96e-4d36-b593-84411931a587`
+      config.headers['Authorization'] = `Bearer ${getToken()}`
     }
     return config
   },

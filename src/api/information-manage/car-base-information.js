@@ -109,3 +109,12 @@ export function queryPositioningMode() {
     method: 'POST'
   })
 }
+
+// 根据车辆id，查询车辆运输证信息
+export function selectTransport(data) {
+  return request({
+    url: '/vehicle/selectTransport',
+    method: 'POST',
+    data
+  })
+}

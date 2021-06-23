@@ -6,6 +6,7 @@
       <el-button type="primary" size="small" @click="company">企业</el-button>
       <el-button type="primary" size="small" @click="certificate">运输证</el-button>
       <el-button type="primary" size="small" @click="car">车辆</el-button>
+      <el-button type="primary" size="small" @click="platform">平台</el-button>
     </el-card>
   </div>
 </template>
@@ -16,7 +17,8 @@ import {
   driver,
   company,
   certificate,
-  car
+  car,
+  platform
 } from '@/api/information-manage/imformation-sync'
 
 export default {
@@ -91,6 +93,22 @@ export default {
     },
     car() {
       car()
+        .then(res => {
+          this.$message({
+            type: 'success',
+            message: '成功！'
+          })
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: '失败！'
+          })
+          throw err
+        })
+    },
+    platform() {
+      platform()
         .then(res => {
           this.$message({
             type: 'success',
