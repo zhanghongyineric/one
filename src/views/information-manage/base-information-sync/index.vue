@@ -28,99 +28,153 @@ export default {
   },
   methods: {
     device() {
-      device()
-        .then(res => {
-          this.$message({
-            type: 'success',
-            message: '成功！'
-          })
+      this.$confirm('确定同步设备信息？')
+        .then(() => {
+          device()
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '同步设备信息成功！'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '同步设备信息失败！'
+              })
+              throw err
+            })
         })
-        .catch(err => {
+        .catch(() => {
           this.$message({
-            type: 'error',
-            message: '失败！'
+            type: 'info',
+            message: '已取消同步'
           })
-          throw err
         })
     },
     driver() {
-      driver()
-        .then(res => {
-          this.$message({
-            type: 'success',
-            message: '成功！'
-          })
+      this.$confirm('确定同步司机信息？')
+        .then(() => {
+          driver()
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '同步司机信息成功！'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '同步司机信息失败！'
+              })
+              throw err
+            })
         })
-        .catch(err => {
+        .catch(() => {
           this.$message({
-            type: 'error',
-            message: '失败！'
+            type: 'info',
+            message: '已取消同步'
           })
-          throw err
         })
     },
     company() {
-      company()
-        .then(res => {
-          this.$message({
-            type: 'success',
-            message: '成功！'
-          })
+      this.$confirm('确定同步企业信息？')
+        .then(() => {
+          company()
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '同步企业信息成功！'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '同步企业信息失败！'
+              })
+              throw err
+            })
         })
-        .catch(err => {
+        .catch(() => {
           this.$message({
-            type: 'error',
-            message: '失败！'
+            type: 'info',
+            message: '已取消同步'
           })
-          throw err
         })
     },
     certificate() {
-      certificate()
-        .then(res => {
-          this.$message({
-            type: 'success',
-            message: '成功！'
-          })
+      this.$confirm('确定同步运输证信息？')
+        .then(() => {
+          certificate()
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '同步运输证信息成功！'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '同步运输证信息失败！'
+              })
+              throw err
+            })
         })
-        .catch(err => {
+        .catch(() => {
           this.$message({
-            type: 'error',
-            message: '失败！'
+            type: 'info',
+            message: '已取消同步'
           })
-          throw err
         })
     },
     car() {
-      car()
-        .then(res => {
-          this.$message({
-            type: 'success',
-            message: '成功！'
-          })
+      this.$confirm('确定同步车辆信息？')
+        .then(() => {
+          car()
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '同步车辆信息成功！'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '同步车辆信息失败！'
+              })
+              throw err
+            })
         })
-        .catch(err => {
+        .catch(() => {
           this.$message({
-            type: 'error',
-            message: '失败！'
+            type: 'info',
+            message: '已取消同步'
           })
-          throw err
         })
     },
     platform() {
-      platform()
-        .then(res => {
-          this.$message({
-            type: 'success',
-            message: '成功！'
-          })
+      this.$confirm('确定同步平台信息？')
+        .then(() => {
+          platform()
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '同步平台信息成功！'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '同步平台信息失败！'
+              })
+              throw err
+            })
         })
-        .catch(err => {
+        .catch(() => {
           this.$message({
-            type: 'error',
-            message: '失败！'
+            type: 'info',
+            message: '已取消同步'
           })
-          throw err
         })
     }
   }
