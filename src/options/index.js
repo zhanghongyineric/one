@@ -606,3 +606,53 @@ export const driverVelTyeOptions = {
     }
   ]
 }
+
+// 车辆基本信息-车身颜色
+export const carColorOptions = {
+  list: [
+    {
+      label: '白',
+      value: 'A'
+    },
+    {
+      label: '灰',
+      value: 'B'
+    },
+    {
+      label: '黄',
+      value: 'C'
+    },
+    {
+      label: '粉',
+      value: 'D'
+    },
+    {
+      label: '红',
+      value: 'E'
+    },
+    {
+      label: '紫',
+      value: 'F'
+    },
+    {
+      label: '绿',
+      value: 'G'
+    },
+    {
+      label: '蓝',
+      value: 'H'
+    },
+    {
+      label: '棕',
+      value: 'I'
+    },
+    {
+      label: '黑',
+      value: 'J'
+    },
+    {
+      label: '其他',
+      value: 'Z'
+    }
+  ]
+}

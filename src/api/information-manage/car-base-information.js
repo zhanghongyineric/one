@@ -9,6 +9,15 @@ export function selectList(data) {
   })
 }
 
+// 车辆信息新增和修改
+export function vehicleSave(data) {
+  return request({
+    url: '/vehicle/vehicleSave',
+    method: 'POST',
+    data
+  })
+}
+
 // 模糊查询企业名称
 export function enterpriseName(data) {
   return request({
@@ -195,6 +204,15 @@ export function queryInsurance(data) {
 export function upload(data) {
   return request({
     url: '/file/upload',
+    method: 'POST',
+    data
+  })
+}
+
+// 机动车的使用性质
+export function queryUseNature(data) {
+  return request({
+    url: '/vehicle/queryUseNature',
     method: 'POST',
     data
   })
