@@ -1,12 +1,10 @@
 <template>
   <div class="layout-content company-information">
     <el-card class="box-card">
-
       <!--搜索栏-->
       <div class="table-page-search-wrapper">
         <el-form :model="listQuery" label-width="80px" size="small">
           <el-row :gutter="48">
-
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
               <el-form-item label="车牌号:">
@@ -201,7 +199,7 @@
             <el-col :md="12" :sm="24">
               <el-form-item size="small" label="所属企业:" prop="unitId">
                 <el-autocomplete
-                  v-model="createFormData.unitId"
+                  v-model="createFormData.unitName"
                   :fetch-suggestions="searchType"
                   placeholder="请输入企业名称关键字"
                   :debounce="500"
@@ -408,7 +406,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage" size="small">
               <el-upload
                 ref="accessUpload"
@@ -424,7 +422,7 @@
                 <i slot="default" class="el-icon-plus" />
               </el-upload>
             </el-form-item>
-          </el-row>
+          </el-row> -->
         </el-form>
 
         <el-form
@@ -520,16 +518,18 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="车辆所有人:" prop="owner">
-              <el-input v-model="createFormData.owner" clearable size="small" placeholder="请输入车辆所有人" />
-            </el-form-item>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="车辆所有人:" prop="owner">
+                <el-input v-model="createFormData.owner" clearable size="small" placeholder="请输入车辆所有人" />
+              </el-form-item>
+            </el-col>
           </el-row>
           <el-row>
             <el-form-item label="所有人住址:" prop="ownerAddr">
               <el-input v-model="createFormData.ownerAddr" clearable size="small" placeholder="请输入车辆所有人详细住址" />
             </el-form-item>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage">
               <el-upload
                 ref="accessUpload"
@@ -545,7 +545,7 @@
                 <i slot="default" class="el-icon-plus" />
               </el-upload>
             </el-form-item>
-          </el-row>
+          </el-row> -->
         </el-form>
 
         <el-form
@@ -615,9 +615,18 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="提前提醒天数:" prop="transportRemindDate">
-              <el-input v-model="createFormData.transportRemindDate" clearable size="small" placeholder="请输入提前提醒天数" />
-            </el-form-item>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="提前提醒天数:" prop="transportRemindDate">
+                <el-input
+                  v-model="createFormData.transportRemindDate"
+                  clearable
+                  size="small"
+                  placeholder="请输入提前提醒天数"
+                  type="number"
+                  min="0"
+                />
+              </el-form-item>
+            </el-col>
           </el-row>
           <!-- <el-row>
             <el-form-item label="经营范围:" prop="transportBusinessScope">
@@ -631,7 +640,7 @@
               </el-select>
             </el-form-item>
           </el-row> -->
-          <el-row>
+          <!-- <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage">
               <el-upload
                 ref="accessUpload"
@@ -647,7 +656,7 @@
                 <i slot="default" class="el-icon-plus" />
               </el-upload>
             </el-form-item>
-          </el-row>
+          </el-row> -->
         </el-form>
 
         <div slot="footer" class="dialog-footer">
@@ -798,16 +807,18 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="视频通道数:" prop="cameraNum">
-              <el-input
-                v-model="accessFormData.cameraNum"
-                size="small"
-                placeholder="请输入视频通道数"
-                type="number"
-                min="0"
-                clearable
-              />
-            </el-form-item>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="视频通道数:" prop="cameraNum">
+                <el-input
+                  v-model="accessFormData.cameraNum"
+                  size="small"
+                  placeholder="请输入视频通道数"
+                  type="number"
+                  min="0"
+                  clearable
+                />
+              </el-form-item>
+            </el-col>
           </el-row>
           <el-row>
             <el-form-item label="主要功能:" prop="functions">
@@ -821,7 +832,7 @@
               </el-select>
             </el-form-item>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-form-item label="有关图片:" prop="operatingPermitImage">
               <el-upload
                 ref="accessUpload"
@@ -837,7 +848,7 @@
                 <i slot="default" class="el-icon-plus" />
               </el-upload>
             </el-form-item>
-          </el-row>
+          </el-row> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button v-if="!currentRow.hadAccess" type="primary" @click="createAccess()">
@@ -873,8 +884,8 @@
             highlight-current-row
             style="width: 100%;"
           >
-            <el-table-column label="保险类型" prop="typeCode" min-width="100" show-overflow-tooltip align="center" />
-            <el-table-column label="险别" prop="riskTypeCode" min-width="100" show-overflow-tooltip align="center" />
+            <el-table-column label="保险类型" prop="typeCode1" min-width="100" show-overflow-tooltip align="center" />
+            <el-table-column label="险别" prop="riskTypeCode1" min-width="100" show-overflow-tooltip align="center" />
             <el-table-column label="保险金额" prop="money" min-width="100" show-overflow-tooltip align="center" />
             <el-table-column label="保险费小计" prop="cost" min-width="100" show-overflow-tooltip align="center" />
             <el-table-column label="相关说明" prop="remark" min-width="100" show-overflow-tooltip align="center" />
@@ -1036,7 +1047,7 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row>
+            <!-- <el-row>
               <el-form-item label="有关图片:" prop="operatingPermitImage">
                 <div v-if="insuranceDetail">
                   <p class="img-tit">
@@ -1073,10 +1084,10 @@
                   <i slot="default" class="el-icon-plus" />
                 </el-upload>
               </el-form-item>
-            </el-row>
+            </el-row> -->
           </el-form>
           <div class="insurance-footer">
-            <el-button type="primary" size="mini" @click="saveInsurance">保存</el-button>
+            <el-button v-show="!insuranceDetail" type="primary" size="mini" @click="saveInsurance">保存</el-button>
             <el-button type="danger" size="mini" @click="cancelInsurance">返回</el-button>
           </div>
         </div>
@@ -1124,12 +1135,9 @@ export default {
     return {
       indexs: 1,
       cityOptions: provinceAndCityData,
-      unitAddress: null,
       dialogFormVisible: false,
-      rowId: '',
       list: [], // 表格数据
       listLoading: true, // 表格加载状态
-      buttonLoading: false, // 弹窗按钮加载状态
       listQuery: {
         pageNum: 1,
         pageSize: 10,
@@ -1143,14 +1151,13 @@ export default {
       listQueryTemp: {
         pageNum: 1,
         pageSize: 10,
-        status: '',
-        operationType: '',
-        unitName: '',
-        // zoneId: 0,
-        place: [],
-        area: ''
-      }, // 用于重置查询条件
-      area: [],
+        plateNum: '',
+        operateStatus: null,
+        functions: '',
+        vehicleType: '',
+        doubleDrivers: null,
+        zoneId: null
+      },
       useNatureOptions: [], // 使用性质
       carColorOptions: carColorOptions.list, // 车身颜色
       businessOptions: [], // 经营范围
@@ -1215,13 +1222,9 @@ export default {
         update: '更新信息',
         create: '新增',
         detail: '详情'
-      }, // 弹出框标题
-      onLineFormData: {
-        minThings: []
       },
       dialogStatus: '',
       onLineTitle: '入网信息',
-      poiPicker: null,
       operatingPermitImage: [],
       dialogVisible: false,
       accessFormData: {},
@@ -1229,7 +1232,9 @@ export default {
       plateColorMap: new Map(),
       currentAccessInfo: false,
       insuranceTypeOptions: [], // 保险类型
+      insuranceTypeMap: new Map(),
       riskTypeOptions: [], // 险别
+      riskTypeMap: new Map(),
       insuranceFormData: {}, // 添加保险信息数据
       currentRow: {}, // 当前正在操作的数据
       addInsurance: false, // 判断是否是在添加保险信息
@@ -1297,6 +1302,9 @@ export default {
         .then(res => {
           const { data } = res
           this.insuranceTypeOptions = data
+          data.forEach(item => {
+            this.insuranceTypeMap.set(item.label, item.value)
+          })
         })
         .catch(err => {
           throw err
@@ -1319,6 +1327,9 @@ export default {
         .then(res => {
           const { data } = res
           this.riskTypeOptions = data
+          data.forEach(item => {
+            this.riskTypeMap.set(item.label, item.value)
+          })
         })
         .catch(err => {
           throw err
@@ -1435,7 +1446,7 @@ export default {
       }
     },
     selectCompany(val) {
-      this.listQuery.unitName = val.id
+      this.createFormData.unitId = val.id.toString()
     },
     searchPlatform(queryString, cb) {
       if (queryString) {
@@ -1464,7 +1475,6 @@ export default {
         facilitatorName({ unitName: queryString })
           .then(res => {
             const { data } = res
-            console.log(data)
             data.forEach(item => {
               item.label = item.id
               item.value = item.unitName
@@ -1479,11 +1489,13 @@ export default {
         return
       }
     },
+    // 选择服务商
     selectService(val) {
       this.accessFormData.unitName = val.unitName
     },
     // 点击搜索
     handleSearch() {
+      if (this.listQuery.zoneId) { this.listQuery.zoneId = this.listQuery.zoneId[1] }
       this.listQuery.pageNum = 1 // 重置pageNum
       this.getList()
     },
@@ -1507,40 +1519,41 @@ export default {
       this.dialogStatus = 'detail'
       this.dialogVisible = true
       this.currentRow = row
+      row.plateColor = row.plateColor.toString()
+      row.vehicleType = row.vehicleType.toString()
+      row.useNature = row.useNature.toString()
+      selectTransport({ vehicleId: row.id })
+        .then(res => {
+          this.createFormData = { ...row, ...res.data }
+        })
+        .catch(err => {
+          throw err
+        })
       this.$nextTick(() => {
         this.$refs['oneForm'].clearValidate()
         this.$refs['twoForm'].clearValidate()
         this.$refs['threeForm'].clearValidate()
       })
     },
-    // 更新数据-删除数据
-    handleDelete() {
-      this.listLoading = true
-    },
-    // 弹框
+    // // 车辆信息弹框上一步
     lastStep() {
       this.indexs -= 1
     },
+    // 车辆信息弹框下一步
     nextStep() {
-      if (this.indexs === 3 && this.dialogStatus === 'detail') {
-        selectTransport({ vehicleId: this.currentRow.id })
-          .then(res => {
-            console.log(res, '车辆运输证')
+      if (this.dialogStatus !== 'detail') {
+        if (this.indexs === 1) {
+          this.$refs['oneForm'].validate(valid => {
+            if (valid) this.indexs += 1
           })
-          .catch(err => {
-            throw err
+        } else if (this.indexs === 2) {
+          this.$refs['twoForm'].validate(valid => {
+            if (valid) this.indexs += 1
           })
-      }
-      if (this.indexs === 1) {
-        this.$refs['oneForm'].validate(valid => {
-          if (valid) this.indexs += 1
-        })
-      } else if (this.indexs === 2) {
-        this.$refs['twoForm'].validate(valid => {
-          if (valid) this.indexs += 1
-        })
-      }
+        }
+      } else this.indexs += 1
     },
+    // 关闭车辆信息弹框
     closeDialog() {
       this.dialogVisible = false
       this.indexs = 1
@@ -1551,11 +1564,21 @@ export default {
       this.fileList = []
       this.imgsFiles = []
     },
+    // 点击更新信息按钮
     handleUpdate(row) {
       this.dialogStatus = 'update'
       this.dialogVisible = true
       this.currentRow = row
-      console.log(row)
+      row.plateColor = row.plateColor.toString()
+      row.vehicleType = row.vehicleType.toString()
+      row.useNature = row.useNature.toString()
+      selectTransport({ vehicleId: row.id })
+        .then(res => {
+          this.createFormData = { ...row, ...res.data }
+        })
+        .catch(err => {
+          throw err
+        })
     },
     // 删除入网信息
     deleteAccess() {
@@ -1651,6 +1674,12 @@ export default {
       selectInsurance({ vehicleId })
         .then(res => {
           const { data } = res
+          data.forEach(item => {
+            item.typeCode1 = this.insuranceTypeMap.get(item.typeCode.toString())
+            item.typeCode = item.typeCode.toString()
+            item.riskTypeCode1 = this.riskTypeMap.get(item.riskTypeCode.toString())
+            item.riskTypeCode = item.riskTypeCode.toString()
+          })
           this.insuranceData = data
           this.insuranceLoading = false
         })
@@ -1676,60 +1705,60 @@ export default {
     saveInsurance() {
       this.$refs['fiveForm'].validate(valid => {
         if (valid) {
-          this.allImgReq()
-          Promise.all(this.imgsUpload)
-            .then(res => {
-              const urlArr = []
-              for (const item of res) {
-                const { fileUrl } = item.data
-                urlArr.push(fileUrl)
-              }
+          // this.allImgReq()
+          // Promise.all(this.imgsUpload)
+          //   .then(res => {
+          const urlArr = []
+          // for (const item of res) {
+          //   const { fileUrl } = item.data
+          //   urlArr.push(fileUrl)
+          // }
 
-              if (this.insuranceFormData.modify) {
-                this.insuranceFormData.id = parseInt(this.currentRow.id)
-                this.insuranceFormData.vehicleId = this.currentRow.vehicleId.toString()
-                this.insuranceFormData.photoUrl = urlArr.join(';')
-                const arr = []
-                this.fileList.forEach(item => {
-                  arr.push(item.url.split('.cn')[1])
-                })
-                this.insuranceFormData.photoUrl = this.insuranceFormData.photoUrl.concat(';', arr.join(';'))
-
-                const lastarr = this.insuranceFormData.photoUrl.split(';')
-                if (lastarr[lastarr.length - 1] === '')lastarr.pop()
-                this.insuranceFormData.photoUrl = lastarr.join(';')
-              } else {
-                this.insuranceFormData.vehicleId = this.currentRow.id.toString()
-                this.insuranceFormData.photoUrl = urlArr.join(';')
-              }
-
-              InsuranceSave({ ...this.insuranceFormData })
-                .then(res => {
-                  this.addInsurance = false
-                  this.insuranceFormData.modify
-                    ? this.getInsuranceData(this.currentRow.vehicleId.toString())
-                    : this.getInsuranceData(this.currentRow.id.toString())
-                  this.$message({
-                    type: 'success',
-                    message: '保存成功'
-                  })
-                  this.insuranceFormData = {}
-                })
-                .catch(err => {
-                  this.$message({
-                    type: 'error',
-                    message: '保存失败'
-                  })
-                  throw err
-                })
+          if (this.insuranceFormData.modify) {
+            this.insuranceFormData.id = parseInt(this.currentRow.id)
+            this.insuranceFormData.vehicleId = this.currentRow.vehicleId.toString()
+            this.insuranceFormData.photoUrl = urlArr.join(';')
+            const arr = []
+            this.fileList.forEach(item => {
+              arr.push(item.url.split('.cn')[1])
             })
-            .catch(er => {
+            this.insuranceFormData.photoUrl = this.insuranceFormData.photoUrl.concat(';', arr.join(';'))
+
+            const lastarr = this.insuranceFormData.photoUrl.split(';')
+            if (lastarr[lastarr.length - 1] === '')lastarr.pop()
+            this.insuranceFormData.photoUrl = lastarr.join(';')
+          } else {
+            this.insuranceFormData.vehicleId = this.currentRow.id.toString()
+            this.insuranceFormData.photoUrl = urlArr.join(';')
+          }
+
+          InsuranceSave({ ...this.insuranceFormData })
+            .then(res => {
+              this.addInsurance = false
+              this.insuranceFormData.modify
+                ? this.getInsuranceData(this.currentRow.vehicleId.toString())
+                : this.getInsuranceData(this.currentRow.id.toString())
+              this.$message({
+                type: 'success',
+                message: '保存成功'
+              })
+              this.insuranceFormData = {}
+            })
+            .catch(err => {
               this.$message({
                 type: 'error',
-                message: '图片过大，上传失败'
+                message: '保存失败'
               })
-              throw er
+              throw err
             })
+            // })
+            // .catch(er => {
+            //   this.$message({
+            //     type: 'error',
+            //     message: '图片过大，上传失败'
+            //   })
+            //   throw er
+            // })
         }
       })
     },
@@ -1818,54 +1847,54 @@ export default {
     createAccess() {
       this.$refs['fourForm'].validate(valid => {
         if (valid) {
-          this.allImgReq()
-          Promise.all(this.imgsUpload)
-            .then(res => {
-              const urlArr = []
-              for (const item of res) {
-                const { fileUrl } = item.data
-                urlArr.push(fileUrl)
-              }
+          // this.allImgReq()
+          // Promise.all(this.imgsUpload)
+          //   .then(res => {
+          const urlArr = []
+          // for (const item of res) {
+          //   const { fileUrl } = item.data
+          //   urlArr.push(fileUrl)
+          // }
 
-              if (this.currentRow.hadAccess) {
-                this.accessFormData.id = this.currentRow.id
-                this.accessFormData.vehicleId = this.currentRow.vehicleId
-                this.accessFormData.terminalPhotos = urlArr.join(';')
-                const arr = []
-                this.fileList.forEach(item => {
-                  arr.push(item.url.split('.cn')[1])
-                })
-                this.accessFormData.terminalPhotos = this.accessFormData.terminalPhotos.concat(';', arr.join(';'))
-              } else {
-                this.accessFormData.terminalPhotos = urlArr.join(';')
-                this.accessFormData.vehicleId = this.currentRow.id
-              }
-
-              this.accessFormData.functions = this.accessFormData.functions.join(',')
-
-              AccessInstallationSave({ ...this.accessFormData })
-                .then(res => {
-                  this.closeAccessDialog()
-                  this.$message({
-                    type: 'success',
-                    message: '新增成功'
-                  })
-                })
-                .catch(err => {
-                  this.$message({
-                    type: 'error',
-                    message: '新增失败'
-                  })
-                  throw err
-                })
+          if (this.currentRow.hadAccess) {
+            this.accessFormData.id = this.currentRow.id
+            this.accessFormData.vehicleId = this.currentRow.vehicleId
+            this.accessFormData.terminalPhotos = urlArr.join(';')
+            const arr = []
+            this.fileList.forEach(item => {
+              arr.push(item.url.split('.cn')[1])
             })
-            .catch(er => {
+            this.accessFormData.terminalPhotos = this.accessFormData.terminalPhotos.concat(';', arr.join(';'))
+          } else {
+            this.accessFormData.terminalPhotos = urlArr.join(';')
+            this.accessFormData.vehicleId = this.currentRow.id
+          }
+
+          this.accessFormData.functions = this.accessFormData.functions.join(',')
+
+          AccessInstallationSave({ ...this.accessFormData })
+            .then(res => {
+              this.closeAccessDialog()
+              this.$message({
+                type: 'success',
+                message: '新增成功'
+              })
+            })
+            .catch(err => {
               this.$message({
                 type: 'error',
-                message: '图片过大，上传失败'
+                message: '新增失败'
               })
-              throw er
+              throw err
             })
+            // })
+            // .catch(er => {
+            //   this.$message({
+            //     type: 'error',
+            //     message: '图片过大，上传失败'
+            //   })
+            //   throw er
+            // })
         }
       })
     },
@@ -1886,6 +1915,7 @@ export default {
               })
               this.getList()
               this.createFormData = {}
+              this.indexs = 1
             })
             .catch(err => {
               this.$message({
@@ -1902,7 +1932,7 @@ export default {
       this.$refs['threeForm'].validate(valid => {
         if (valid) {
           const queryData = { ...this.createFormData }
-          queryData.id = this.currentRow.id
+          queryData.id = this.currentRow.id.toString()
           queryData.registerZoneId = queryData.registerZoneId[1]
           queryData.transportZoneId = queryData.transportZoneId[1]
           queryData.zoneId = queryData.zoneId[1]
@@ -1915,10 +1945,11 @@ export default {
               })
               this.getList()
               this.createFormData = {}
+              this.indexs = 1
             })
             .catch(err => {
               this.$message({
-                type: 'success',
+                type: 'error',
                 message: '修改失败'
               })
               throw err
@@ -1943,5 +1974,4 @@ export default {
   position: relative;
   left: 44%;
 }
-
 </style>
