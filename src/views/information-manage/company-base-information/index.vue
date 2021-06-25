@@ -122,24 +122,24 @@
         :visible.sync="dialogFormVisible"
         :close-on-click-modal="false"
         custom-class="base-dialog"
-        top="10px"
+        top="50px"
       >
         <el-form
           ref="dataForm"
           :rules="rules"
           :model="createFormData"
-          label-width="200px"
+          label-width="140px"
           :disabled="disableStatus"
         >
           <el-row>
             <el-col :md="8" :sm="24">
               <el-form-item label="企业名称:" prop="unitName">
-                <el-input v-model="createFormData.unitName" placeholder="请输入企业名称" />
+                <el-input v-model="createFormData.unitName" size="small" clearable placeholder="请输入企业名称" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="企业简称:" prop="shortName">
-                <el-input v-model="createFormData.shortName" placeholder="请输入企业简称" />
+                <el-input v-model="createFormData.shortName" size="small" clearable placeholder="请输入企业简称" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
@@ -149,6 +149,8 @@
               >
                 <el-select
                   v-model="createFormData.aptitudeLevel"
+                  size="small"
+                  clearable
                   placeholder="请选择企业级别"
                 >
                   <el-option
@@ -164,19 +166,19 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="上级企业单位:" prop="upUnitName">
-                <el-input v-model="createFormData.upUnitName" placeholder="请输入上级企业单位" />
+                <el-input v-model="createFormData.upUnitName" size="small" clearable placeholder="请输入上级企业单位" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="行政区域:" prop="zoneId">
-                <AreaSelect v-model="createFormData.zoneId" size="large" :area-text.sync="createFormData.areaText" />
+                <AreaSelect v-model="createFormData.zoneId" size="small" :area-text.sync="createFormData.areaText" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="社会统一信用代码:" prop="businessLicence">
-                <el-input v-model="createFormData.businessLicence" />
+                <el-input v-model="createFormData.businessLicence" size="small" clearable placeholder="请输入社会统一信用代码" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -186,6 +188,8 @@
               >
                 <el-select
                   v-model="createFormData.enconomicType"
+                  size="small"
+                  clearable
                   placeholder="请选择企业经济类型"
                 >
                   <el-option
@@ -203,54 +207,56 @@
               <el-form-item label="地址:" prop="unitAddress" class="address">
                 <el-input
                   v-model="createFormData.unitAddress"
+                  size="small"
+                  clearable
                   placeholder="请输入地址"
                 />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="法人:" prop="lrname">
-                <el-input v-model="createFormData.lrname" placeholder="请输入" />
+                <el-input v-model="createFormData.lrname" size="small" clearable placeholder="请输入法人" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="电话号码:" prop="telephone">
-                <el-input v-model="createFormData.telephone" placeholder="请输入" />
+                <el-input v-model="createFormData.telephone" size="small" clearable placeholder="请输入电话号码" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="8" :sm="24">
               <el-form-item label="联系人:" prop="contact">
-                <el-input v-model="createFormData.contact" placeholder="请输入" />
+                <el-input v-model="createFormData.contact" size="small" clearable placeholder="请输入联系人" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="联系电话:" prop="contactphone">
-                <el-input v-model="createFormData.contactphone" placeholder="请输入" />
+                <el-input v-model="createFormData.contactphone" size="small" clearable placeholder="请输入联系电话" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="传真号码:" prop="postcode">
-                <el-input v-model="createFormData.postcode" placeholder="请输入" />
+                <el-input v-model="createFormData.postcode" size="small" clearable placeholder="请输入传真号码" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="企业注册地代码:" prop="registerZoneId">
-                <el-input v-model="createFormData.registerZoneId" placeholder="请输入" />
+                <el-input v-model="createFormData.registerZoneId" size="small" clearable placeholder="请输入企业注册地代码" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="道路运输经营范围代码:" prop="businesScopeCode">
-                <el-input v-model="createFormData.businesScopeCode" placeholder="请输入" />
+              <el-form-item label="运输经营范围代码:" prop="businesScopeCode">
+                <el-input v-model="createFormData.businesScopeCode" size="small" clearable placeholder="请输入运输经营范围代码" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="道路运输经营范围描述:" prop="businesScopeScript">
-                <el-input v-model="createFormData.businesScopeScript" placeholder="请输入" />
+              <el-form-item label="经营范围描述:" prop="businesScopeScript">
+                <el-input v-model="createFormData.businesScopeScript" size="small" clearable placeholder="请输入经营范围描述" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -261,6 +267,8 @@
                 <el-select
                   v-model="createFormData.operationType"
                   placeholder="请选择企业类型"
+                  size="small"
+                  clearable
                 >
                   <el-option
                     v-for="item in optionGroup.companyTypes"
@@ -275,12 +283,12 @@
           <el-row>
             <el-col :md="8" :sm="24">
               <el-form-item label="备注信息:" prop="remark">
-                <el-input v-model="createFormData.remark" placeholder="请输入" />
+                <el-input v-model="createFormData.remark" size="small" clearable placeholder="请输入备注信息" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="排序编号:" prop="orderNumber">
-                <el-input v-model="createFormData.orderNumber" placeholder="请输入" />
+                <el-input v-model="createFormData.orderNumber" size="small" clearable placeholder="请输入排序编号" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
@@ -290,6 +298,8 @@
               >
                 <el-select
                   v-model="createFormData.status"
+                  size="small"
+                  clearable
                   placeholder="请选择"
                 >
                   <el-option
@@ -303,33 +313,37 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :md="24" :sm="24">
-              <el-form-item label="道路运输经营许可证号:" prop="transportLincense">
-                <el-input v-model="createFormData.transportLincense" placeholder="请输入" />
+            <el-col :md="12" :sm="24">
+              <el-form-item label="运输经营许可证号:" prop="transportLincense">
+                <el-input v-model="createFormData.transportLincense" size="small" clearable placeholder="请输入道路运输经营许可证号" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-col :md="24" :sm="24">
-              <el-form-item label="道路运输经营许可证有效期起:" prop="transportStartDate">
+            <el-col :md="12" :sm="24">
+              <el-form-item label="许可证有效期起:" prop="transportStartDate">
                 <el-date-picker
                   v-model="createFormData.transportStartDate"
+                  size="small"
+                  clearable
                   type="date"
-                  placeholder="选择日期"
+                  placeholder="请选择道路经营许可证有效期起"
                   format="yyyy 年 MM 月 dd 日"
                 />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
-            <el-form-item label="道路运输经营许可证有效期止:" prop="transportEndDate">
-              <el-date-picker
-                v-model="createFormData.transportEndDate"
-                type="date"
-                placeholder="选择日期"
-                format="yyyy 年 MM 月 dd 日"
-              />
-            </el-form-item>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="许可证有效期止:" prop="transportEndDate">
+                <el-date-picker
+                  v-model="createFormData.transportEndDate"
+                  size="small"
+                  clearable
+                  type="date"
+                  placeholder="请选择道路经营许可证有效期止"
+                  format="yyyy 年 MM 月 dd 日"
+                />
+              </el-form-item>
+            </el-col>
           </el-row>
           <el-row>
             <el-form-item v-if="dialogStatus==='detail'" label="有关图片:" prop="operatingPermitImage">

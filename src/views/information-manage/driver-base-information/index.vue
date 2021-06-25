@@ -12,7 +12,7 @@
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="从业资格范围:">
-                <el-select v-model="listQuery.accountType" placeholder="请选择从业资格范围">
+                <el-select v-model="listQuery.qualificationRange" placeholder="请选择从业资格范围">
                   <el-option
                     v-for="item in qualificationRangeOption"
                     :key="item.value"
@@ -89,10 +89,21 @@
           </template>
         </el-table-column>
         <el-table-column prop="zoneCity" label="籍贯" min-width="110" show-overflow-tooltip />
-        <el-table-column prop="driverVelType" label="准驾类型" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="qualificationRange" label="运输类别" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="driverVelType" label="准驾类型" min-width="150" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ velTypeMap.get(scope.row.driverVelType) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="qualificationRange" label="从业资格范围" min-width="150" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.qualificationRange == 0">其他范围</span>
+            <span v-else-if="scope.row.qualificationRange == 1">道路旅客运输</span>
+            <span v-else-if="scope.row.qualificationRange == 2">道路货物运输</span>
+            <span v-else-if="scope.row.qualificationRange == 3">道路危险品运输</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="idCardNum" label="身份证号" min-width="180" />
-        <el-table-column prop="unitId" label="所属企业ID" min-width="130" />
+        <!-- <el-table-column prop="unitId" label="所属企业ID" min-width="130" /> -->
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -148,13 +159,21 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="性别：" prop="sex">
-                <el-checkbox-group
+                <!-- <el-checkbox-group
                   v-model="dialogData.sex"
                   :max="1"
                 >
                   <el-checkbox label="男" />
                   <el-checkbox label="女" />
-                </el-checkbox-group>
+                </el-checkbox-group> -->
+                <el-select
+                  v-model="dialogData.sex"
+                  placeholder="请选择性别"
+                  size="small"
+                >
+                  <el-option key="1" label="男" value="1" />
+                  <el-option key="2" label="女" value="2" />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -210,7 +229,7 @@
             <el-col :md="12" :sm="24">
               <el-form-item label="所属运输企业：" prop="unitId">
                 <el-autocomplete
-                  v-model="dialogData.unitId"
+                  v-model="dialogData.unitId1"
                   :fetch-suggestions="searchType"
                   placeholder="请输入企业名称关键字"
                   :debounce="500"
@@ -243,7 +262,7 @@
               <el-input v-model="dialogData.addressDetail" placeholder="请输入详细居住地址" size="small" />
             </el-form-item>
           </el-row>
-          <div style="margin-left: 23px;margin-bottom: 30px">
+          <!-- <div style="margin-left: 23px;margin-bottom: 30px">
             <p><b>上传证件照：</b></p>
             <el-upload
               ref="upload"
@@ -258,7 +277,7 @@
             >
               <i slot="default" class="el-icon-plus" />
             </el-upload>
-          </div>
+          </div> -->
         </el-form>
         <!-- 机动车驾驶证信息 -->
         <el-form
@@ -463,7 +482,7 @@
 </template>
 
 <script>
-import { provinceAndCityData, CodeToText } from 'element-china-area-data'
+import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import {
   qualificationRangeOption,
@@ -489,8 +508,9 @@ export default {
     return {
       queryQualificationOptions: [],
       driverVelTyeOptions: driverVelTyeOptions.list,
+      velTypeMap: new Map(),
       cultureOptions: cultureOptions.list,
-      cityOptions: provinceAndCityData,
+      cityOptions: regionData,
       qualificationRangeOption: qualificationRangeOption.list,
       driverStatusOption: [],
       advanced: false,
@@ -515,7 +535,7 @@ export default {
         physicalStatus: [{ required: true, message: '请选择健康状况', trigger: 'change' }],
         idCardNum: [{ required: true, message: '请输入身份证号码', trigger: 'blur' }],
         tel: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
-        unitId: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
+        unitId1: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
         qualificationCity: [{ required: true, message: '请选择所属地区', trigger: 'change' }],
         addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
         addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]
@@ -531,6 +551,7 @@ export default {
       threeRules: {
         qualificationNum: [{ required: true, message: '请输入从业资格证号', trigger: 'blur' }],
         qualificationType: [{ required: true, message: '请选择从业资格证类型', trigger: 'change' }],
+        qualificationRange: [{ required: true, message: '请选择从业资格范围', trigger: 'change' }],
         status: [{ required: true, message: '请选择营运状态', trigger: 'change' }],
         qualificationFirstDate: [{ required: true, message: '请输入初次领证日期', trigger: 'blur' }],
         qualificationValidDate: [{ required: true, message: '请输入有效期开始日期', trigger: 'blur' }],
@@ -539,7 +560,7 @@ export default {
       },
       dialogData: {
         personName: '',
-        sex: [],
+        sex: '',
         zoneCity: '',
         idCardNum: '',
         nation: '',
@@ -565,11 +586,17 @@ export default {
   created() {
     this.getQueryQualification()
     this.getDriverStatus()
+    this.setVelTypeMap()
   },
   mounted() {
     this.getList()
   },
   methods: {
+    setVelTypeMap() {
+      driverVelTyeOptions.list.forEach(item => {
+        this.velTypeMap.set(item.value, item.label)
+      })
+    },
     getDriverStatus() {
       driverStatus()
         .then(res => {
@@ -618,21 +645,29 @@ export default {
       this.currentRow = row
       this.dialogVisible = true
       this.detail = true
-      let driverLic = {}
-      selectDriverLic({ personId: JSON.stringify(row.id) })
+      this.getLicInfo(row)
+      this.clearValidate()
+    },
+    // 获取驾驶证和资格证信息
+    getLicInfo(row) {
+      const reqArr = []
+      reqArr.push(selectDriverLic({ personId: JSON.stringify(row.id) }))
+      reqArr.push(selectQualificationLic({ personId: JSON.stringify(row.id) }))
+      Promise.all(reqArr)
         .then(res => {
-          driverLic = { ...res.data }
+          this.dialogData = { ...row, ...res[0].data, ...res[1].data }
+          this.dialogData.qualificationRange = this.dialogData.qualificationRange.toString()
         })
         .catch(err => {
           throw err
         })
-      selectQualificationLic({ personId: JSON.stringify(row.id) })
-        .then(res => {
-          this.dialogData = { ...row, ...driverLic, ...res.data }
-        })
-        .catch(err => {
-          throw err
-        })
+    },
+    clearValidate() {
+      this.$nextTick(() => {
+        this.$refs['oneForm'].clearValidate()
+        this.$refs['twoForm'].clearValidate()
+        this.$refs['threeForm'].clearValidate()
+      })
     },
     delData() {
       this.$confirm('确定删除该条数据？删除后不可恢复')
@@ -663,20 +698,25 @@ export default {
       else if (!this.detail && !this.modify) return '新增'
     },
     modifyData(row) {
+      this.stepIndex = 1
       this.currentRow = row
-      this.dialogData = { ...row }
       this.dialogVisible = true
       this.modify = true
       this.detail = false
+      this.getLicInfo(row)
+      this.clearValidate()
     },
     getList() {
       this.listLoading = true
+      if (this.listQuery.zoneCity) this.listQuery.zoneCity = parseInt(this.listQuery.zoneCity[1])
       selectList({ ...this.listQuery })
         .then(res => {
           const { data } = res
           this.tableData = data.list
-          data.list.forEach(item => {
-            item.zoneCity = CodeToText[item.zoneCity]
+          this.tableData.forEach(item => {
+            if (CodeToText[item.zoneCity.toString()]) {
+              item.zoneCity = CodeToText[item.zoneCity.toString()]
+            }
           })
           this.total = data.total
           this.listLoading = false
@@ -688,6 +728,7 @@ export default {
     },
     handleCreate() {
       this.dialogVisible = true
+      this.clearValidate()
     },
     resetQuery() {
       this.listQuery = {
@@ -743,7 +784,6 @@ export default {
       }
     },
     dataChange() {
-      this.dialogData.sex[0] === '男' ? this.dialogData.sex = '1' : this.dialogData.sex = '0'
       this.dialogData.zoneCity = parseInt(this.dialogData.zoneCity[1])
       this.dialogData.addressCity = parseInt(this.dialogData.addressCity[1])
       this.dialogData.qualificationCity = parseInt(this.dialogData.qualificationCity[1])
@@ -789,6 +829,7 @@ export default {
       })
     },
     closeDialog() {
+      this.dialogData = {}
       this.stepIndex = 1
       this.dialogVisible = false
       // 不设置延时的话，点击关闭的一瞬间，弹框标题会改变，影响观感
@@ -796,11 +837,6 @@ export default {
         this.detail = false
         this.modify = false
       }, 500)
-    },
-    changeSex() {
-      this.dialogData.sex[0] === '男'
-        ? this.dialogData.sex = '1'
-        : this.dialogData.sex = '2'
     }
   }
 }

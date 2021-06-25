@@ -537,6 +537,10 @@ export const doubleStatusOption = {
 export const qualificationRangeOption = {
   list: [
     {
+      label: '其他范围',
+      value: '0'
+    },
+    {
       label: '道路旅客运输',
       value: '1'
     },
