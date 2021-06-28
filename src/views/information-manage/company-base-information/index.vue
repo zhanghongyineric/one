@@ -97,11 +97,11 @@
         <!--表格操作列-->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
           <template v-slot="{row}">
-            <el-button type="primary" size="mini" @click="handleUpdate(row)">
-              更新信息
-            </el-button>
             <el-button type="primary" size="mini" @click="handleDetail(row)">
               查看详情
+            </el-button>
+            <el-button type="warning" size="mini" @click="handleUpdate(row)">
+              更新信息
             </el-button>
           </template>
         </el-table-column>

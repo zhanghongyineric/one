@@ -8,13 +8,6 @@
       >
         <el-row :gutter="48">
           <el-col :md="8" :sm="24">
-            <el-form-item label="状态:">
-              <el-select v-model="listQuery.status" placeholder="请选择申请状态">
-                <el-option v-for="item in optionGroup" :key="item.label" :label="item.label" :value="item.value" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :md="8" :sm="24">
             <el-form-item label="名称:">
               <el-autocomplete
                 v-model="listQuery.unitName"
@@ -24,6 +17,13 @@
                 clearable
                 @select="selectCompany"
               />
+            </el-form-item>
+          </el-col>
+          <el-col :md="8" :sm="24">
+            <el-form-item label="状态:">
+              <el-select v-model="listQuery.status" placeholder="请选择申请状态">
+                <el-option v-for="item in optionGroup" :key="item.label" :label="item.label" :value="item.value" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :md="8" :sm="24">
@@ -54,20 +54,20 @@
         <el-table-column prop="email" label="邮箱" min-width="120" show-overflow-tooltip />
         <el-table-column prop="postcode" label="传真" min-width="120" />
         <el-table-column prop="unitAddress" label="地址" min-width="150" show-overflow-tooltip />
-        <el-table-column fixed="right" label="操作" width="150" align="center">
+        <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
               class="btn"
               type="primary"
               size="small"
               @click="showDetails(scope.row)"
-            >详情</el-button>
+            >查看详情</el-button>
             <el-button
               class="btn"
               type="warning"
               size="small"
               @click="modifyData(scope.row)"
-            >更新</el-button>
+            >更新信息</el-button>
           </template>
         </el-table-column>
       </el-table>

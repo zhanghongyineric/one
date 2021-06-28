@@ -11,8 +11,9 @@
                 <el-autocomplete
                   v-model="listQuery.platformName"
                   :fetch-suggestions="searchType"
-                  placeholder="请输入平台名称"
+                  placeholder="请输入平台名称关键字"
                   :debounce="500"
+                  clearable
                   @select="selectPlatform"
                 />
               </el-form-item>
@@ -68,21 +69,9 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <!-- <el-col :md="8" :sm="24">
-                <el-form-item label="服务地区:">
-                  <el-select v-model="listQuery.serviceArea" placeholder="请选择服务地区范围">
-                    <el-option
-                      v-for="item in serviceArea"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col> -->
               <el-col :md="8" :sm="24">
                 <el-form-item label="平台状态:">
-                  <el-select v-model="listQuery.status" placeholder="请选择平台状态">
+                  <el-select v-model="listQuery.status" size="small" placeholder="请选择平台状态">
                     <el-option
                       v-for="item in platformStatus"
                       :key="item.label"
@@ -181,7 +170,7 @@
       <el-dialog
         :title="modify ? '更新' : '添加'"
         :visible.sync="dialogVisible"
-        top="10px"
+        top="40px"
         :before-close="closeDialog"
       >
         <el-form
@@ -216,7 +205,7 @@
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="版本协议：" prop="protocolVersion">
-                <el-select v-model="dialogData.protocolVersion" placeholder="请选择版本协议">
+                <el-select v-model="dialogData.protocolVersion" size="small" placeholder="请选择版本协议">
                   <el-option
                     v-for="item in protocolVersionOptions"
                     :key="item.label"
@@ -240,7 +229,7 @@
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="接入平台性质：" prop="characterCode">
-                <el-select v-model="dialogData.characterCode" placeholder="请选择接入平台性质">
+                <el-select v-model="dialogData.characterCode" size="small" placeholder="请选择接入平台性质">
                   <el-option
                     v-for="item in accessPlatformBelong"
                     :key="item.label"
@@ -254,7 +243,7 @@
           <el-row>
             <el-col :md="8" :sm="24">
               <el-form-item label="接入平台类型：" prop="typeCode ">
-                <el-select v-model="dialogData.typeCode" placeholder="请选择接入平台类型">
+                <el-select v-model="dialogData.typeCode" size="small" placeholder="请选择接入平台类型">
                   <el-option
                     v-for="item in accessPlatformKinds"
                     :key="item.label"
@@ -319,7 +308,7 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="是否可连接：" prop="allowConnect">
-                <el-select v-model="dialogData.allowConnect" placeholder="请选择是否可连接">
+                <el-select v-model="dialogData.allowConnect" size="small" placeholder="请选择是否可连接">
                   <el-option
                     v-for="item in allowConnectOptions"
                     :key="item.label"
@@ -334,8 +323,9 @@
                 <el-autocomplete
                   v-model="dialogData.developerName"
                   :fetch-suggestions="searchTypeService"
-                  placeholder="请输入服务商名称"
+                  placeholder="请输入服务商名称关键字"
                   :debounce="500"
+                  size="small"
                   @select="selectService"
                 />
               </el-form-item>
@@ -344,7 +334,7 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="备案状态：" prop="keepOnRecord">
-                <el-select v-model="dialogData.keepOnRecord" placeholder="请选择备案状态">
+                <el-select v-model="dialogData.keepOnRecord" size="small" placeholder="请选择备案状态">
                   <el-option
                     v-for="item in recordStatus"
                     :key="item.label"
@@ -354,12 +344,11 @@
                 </el-select>
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
-            <el-col :md="24" :sm="24">
+            <el-col :md="12" :sm="24">
               <el-form-item label="服务地区范围：" prop="serviceArea">
                 <el-select
                   v-model="dialogData.serviceArea"
+                  size="small"
                   multiple
                   placeholder="请选择服务地区范围"
                 >
@@ -373,28 +362,50 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="平台支持功能：" prop="functions">
-            <el-checkbox-group
-              v-model="dialogData.functions"
-            >
-              <el-checkbox v-for="item in platformSupportFeatures" :key="item.label" :label="item.label">{{ item.value }}</el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
-          <el-form-item label="服务车辆类型：" prop="serviceVehicleTypeCode">
-            <el-checkbox-group
-              v-model="dialogData.serviceVehicleTypeCode"
-            >
-              <el-checkbox v-for="item in serviceCarKinds" :key="item.label" :label="item.label">{{ item.value }}</el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="平台支持功能：" prop="functions">
+                <el-select
+                  v-model="dialogData.functions"
+                  size="small"
+                  multiple
+                  placeholder="请选择平台支持功能"
+                >
+                  <el-option
+                    v-for="item in platformSupportFeatures"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="服务车辆类型：" prop="serviceVehicleTypeCode">
+                <el-select
+                  v-model="dialogData.serviceVehicleTypeCode"
+                  size="small"
+                  multiple
+                  placeholder="请选择服务车辆类型"
+                >
+                  <el-option
+                    v-for="item in serviceCarKinds"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
-        <span v-if="detail" style="margin-left: 35%">
+        <span v-if="detail" style="margin-left: 40%">
           <el-button type="danger" @click="delData()">删除</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
-        <span v-else style="margin-left: 35%">
+        <span v-else style="margin-left: 40%">
           <el-button type="primary" @click="submit()">保存</el-button>
-          <el-button type="primary" @click="closeDialog()">关闭</el-button>
+          <el-button type="danger" @click="closeDialog()">关闭</el-button>
         </span>
       </el-dialog>
     </el-card>
@@ -413,6 +424,7 @@ import {
   allowConnect,
   facilitatorName
 } from '@/api/information-manage/access-platform'
+import { platformInfoName } from '@/api/information-manage/car-base-information'
 
 export default {
   name: 'AccessPlatformInformation',
@@ -497,40 +509,6 @@ export default {
       versionMap: new Map()
     }
   },
-  watch: {
-    // platformSupportFeatures: function(newVal, oldVal) {
-    //   const functionsMap = new Map()
-    //   newVal.forEach(item => {
-    //     functionsMap.set(item.label, item.value)
-    //   })
-    //   this.tableData.forEach(item => {
-    //     const fnArr = item.functions.split(',')
-    //   const fnText = []
-    //     fnArr.forEach(code => {
-    //       fnText.push(functionsMap.get(code))
-    //     })
-    //     item.functions = fnText.join(',')
-    //   })
-    // },
-    // recordStatus: function(newVal, oldVal) {
-    //   const recordsMap = new Map()
-    //   newVal.forEach(item => {
-    //     recordsMap.set(parseInt(item.label), item.value)
-    //   })
-    //   this.tableData.forEach(item => {
-    //     item.keepOnRecord = recordsMap.get(item.keepOnRecord)
-    //   })
-    // },
-    // platformStatus: function(newVal, oldVal) {
-    //   const statusMap = new Map()
-    //   newVal.forEach(item => {
-    //     statusMap.set(parseInt(item.label), item.value)
-    //   })
-    //   this.tableData.forEach(item => {
-    //     item.status = statusMap.get(item.status)
-    //   })
-    // }
-  },
   created() {
     this.getQueryConditions()
     this.getProtocolVersion()
@@ -543,14 +521,14 @@ export default {
     searchType(queryString, cb) {
       if (queryString) {
         this.listQuery.platformName = queryString
-        selectList({ ...this.listQuery })
+        platformInfoName({ platformName: queryString })
           .then(res => {
             const { data } = res
-            data.list.forEach(item => {
+            data.forEach(item => {
               item.label = item.platformName
               item.value = item.platformName
             })
-            cb(data.list)
+            cb(data)
           })
           .catch(err => {
             throw err
@@ -580,20 +558,7 @@ export default {
       }
     },
     selectPlatform(item) {
-      this.listQuery = {
-        pageNum: 1,
-        pageSize: 10,
-        platformName: '',
-        serviceVehicleTypeCode: '',
-        characterCode: '',
-        typeCode: '',
-        functions: '',
-        keepOnRecord: null,
-        status: null,
-        serviceArea: ''
-      }
       this.listQuery.platformName = item.value
-      this.getList()
     },
     selectService(item) {
       this.dialogData.developerName = item.value
@@ -645,10 +610,14 @@ export default {
           throw err
         })
     },
+    // 新增
     handleCreate() {
       this.modify = false
       this.dialogVisible = true
       this.detail = false
+      this.$nextTick(() => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     resetQuery() {
       this.listQuery = {
@@ -674,8 +643,8 @@ export default {
           this.tableData = data.list
           this.listLoading = false
           this.tableData.forEach(item => {
-            item.allowConnect = this.connectMap.get(item.allowConnect)
-            item.protocolVersion = this.versionMap.get(item.protocolVersion)
+            if (item.allowConnect)item.allowConnect = item.allowConnect.toString()
+            if (item.protocolVersion) item.protocolVersion = item.protocolVersion.toString()
           })
         })
         .catch(err => {
@@ -688,10 +657,13 @@ export default {
       this.dialogVisible = true
       this.currentRow = row
       const data = { ...row }
-      data.serviceArea = row.serviceArea.split(',')
-      data.functions = row.functions.split(',')
-      data.serviceVehicleTypeCode = row.serviceVehicleTypeCode.split(',')
+      if (row.serviceArea) data.serviceArea = row.serviceArea.split(',')
+      if (row.functions) data.functions = row.functions.split(',')
+      if (row.serviceVehicleTypeCode) data.serviceVehicleTypeCode = row.serviceVehicleTypeCode.split(',')
       this.dialogData = { ...data }
+      this.$nextTick(() => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     modifyData(row) {
       this.modify = true
@@ -699,10 +671,13 @@ export default {
       this.detail = false
       this.currentRow = row
       const data = { ...row }
-      data.serviceArea = row.serviceArea.split(',')
-      data.functions = row.functions.split(',')
-      data.serviceVehicleTypeCode = row.serviceVehicleTypeCode.split(',')
+      if (row.serviceArea) data.serviceArea = row.serviceArea.split(',')
+      if (row.functions) data.functions = row.functions.split(',')
+      if (row.serviceVehicleTypeCode)data.serviceVehicleTypeCode = row.serviceVehicleTypeCode.split(',')
       this.dialogData = { ...data }
+      this.$nextTick(() => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     resetDialogData() {
       this.dialogData = {
@@ -742,7 +717,7 @@ export default {
           this.dialogData.updatorNo = this.$store.state.user.userId
           this.dialogData.creatorName = this.$store.state.user.name
           this.dialogData.creatorNo = this.$store.state.user.userId
-          if (this.modify) this.dialogData.id = this.currentRow.platformId.toString()
+          if (this.modify) this.dialogData.platformId = this.currentRow.platformId.toString()
           const req = { ...this.dialogData }
           req.serviceArea = this.dialogData.serviceArea.join(',')
           req.functions = this.dialogData.functions.join(',')
@@ -765,11 +740,14 @@ export default {
       })
     },
     delData() {
-      this.$confirm('确定删除该条数据？')
+      this.$confirm('确定删除该条数据？删除后无法恢复')
         .then(() => {
-          deleteData({ id: this.currentRow.platformId.toString() })
+          deleteData({ platformId: this.currentRow.platformId.toString() })
             .then(res => {
               this.dialogVisible = false
+              if (this.listQuery.pageNum !== 1 && this.tableData.length === 1) {
+                this.listQuery.pageNum--
+              }
               this.getList()
               this.$message({
                 type: 'success',
@@ -780,11 +758,12 @@ export default {
               throw err
             })
         })
-        .catch(() => {
+        .catch((err) => {
           this.$message({
             type: 'info',
             message: '已取消删除'
           })
+          throw err
         })
     }
   }
