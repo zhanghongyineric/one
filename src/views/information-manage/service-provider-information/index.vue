@@ -16,10 +16,13 @@
           </el-col>
           <el-col :md="8" :sm="24">
             <el-form-item label="名称:">
-              <el-input
+              <el-autocomplete
                 v-model="listQuery.unitName"
-                placeholder="请输入服务商名称"
+                :fetch-suggestions="searchCompany"
+                placeholder="请输入服务商名称关键字"
+                :debounce="500"
                 clearable
+                @select="selectCompany"
               />
             </el-form-item>
           </el-col>
@@ -82,7 +85,7 @@
         custom-class="base-dialog dialog-col-1"
         :title="getTitle()"
         :visible.sync="dialogVisible"
-        top="20px"
+        top="50px"
         :before-close="closeDialog"
       >
         <el-form
@@ -93,35 +96,35 @@
           :disabled="detail"
         >
           <el-form-item label="服务商名称：" prop="unitName">
-            <el-input v-model="dialogData.unitName" placeholder="请输入服务商名称" size="small" />
+            <el-input v-model="dialogData.unitName" placeholder="请输入服务商名称" size="small" clearable />
           </el-form-item>
           <el-form-item label="社会统一信用代码：" prop="businessLicenseCode">
-            <el-input v-model="dialogData.businessLicenseCode" placeholder="请输入社会统一信用代码" size="small" />
+            <el-input v-model="dialogData.businessLicenseCode" placeholder="请输入社会统一信用代码" clearable size="small" />
           </el-form-item>
           <el-form-item label="地址：" prop="unitAddress">
-            <el-input v-model="dialogData.unitAddress" placeholder="请输入详细地址" clearable />
+            <el-input v-model="dialogData.unitAddress" placeholder="请输入详细地址" clearable size="small" />
           </el-form-item>
           <el-form-item label="联系人：" prop="contact">
-            <el-input v-model="dialogData.contact" placeholder="请输入联系人名字" size="small" />
+            <el-input v-model="dialogData.contact" clearable placeholder="请输入联系人名字" size="small" />
           </el-form-item>
           <el-form-item label="联系电话：" prop="telephone">
-            <el-input v-model="dialogData.telephone" placeholder="请输入联系电话" size="small" />
+            <el-input v-model="dialogData.telephone" clearable placeholder="请输入联系电话" size="small" />
           </el-form-item>
           <el-form-item label="联系手机：" prop="mobilePhone">
-            <el-input v-model="dialogData.mobilePhone" placeholder="请输入联系手机" size="small" />
+            <el-input v-model="dialogData.mobilePhone" clearable placeholder="请输入联系手机" size="small" />
           </el-form-item>
           <el-form-item label="联系邮箱：" prop="email">
-            <el-input v-model="dialogData.email" placeholder="请输入联系邮箱" size="small" />
+            <el-input v-model="dialogData.email" clearable placeholder="请输入联系邮箱" size="small" />
           </el-form-item>
           <el-form-item label="联系传真：" prop="postcode">
-            <el-input v-model="dialogData.postcode" placeholder="请输入联系传真" size="small" />
+            <el-input v-model="dialogData.postcode" clearable placeholder="请输入联系传真" size="small" />
           </el-form-item>
           <el-form-item label="状态：" prop="status">
             <el-select v-model="dialogData.status" placeholder="请选择状态" size="small">
-              <el-option v-for="item in optionGroup" :key="item.label" :label="item.label" :value="item.value" />
+              <el-option v-for="item in statusOption" :key="item.label" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
-          <div style="margin-left: 53px;margin-bottom: 30px">
+          <!-- <div style="margin-left: 53px;margin-bottom: 30px">
             <p><b>服务商logo：</b></p>
             <el-upload
               ref="upload"
@@ -137,7 +140,7 @@
             >
               <i slot="default" class="el-icon-plus" />
             </el-upload>
-          </div>
+          </div> -->
         </el-form>
         <span v-if="detail" style="margin-left: 35%">
           <el-button type="danger" @click="delData()">删除</el-button>
@@ -161,11 +164,20 @@ import {
   deleteData,
   upload
 } from '@/api/information-manage/service-provider'
+import { isPhoneNumber } from '@/utils'
+import { facilitatorName } from '@/api/information-manage/car-base-information'
 
 export default {
   name: 'ServiceProviderInformation',
   components: { Pagination },
   data() {
+    const validateUnitTel = (rule, value, callback) => {
+      if (!isPhoneNumber(value)) {
+        callback(new Error('请输入正确的手机号码'))
+      } else {
+        callback()
+      }
+    }
     return {
       advanced: false,
       listQuery: {
@@ -189,6 +201,7 @@ export default {
           value: null
         }
       ],
+      statusOption: [],
       total: 1,
       listLoading: false,
       tableData: [],
@@ -196,7 +209,9 @@ export default {
       rules: {
         unitName: [{ required: true, message: '请输入服务商名称', trigger: 'blur' }],
         businessLicenseCode: [{ required: true, message: '请输入社会统一信用代码', trigger: 'blur' }],
-        unitAddress: [{ required: true, message: '请选择地址', trigger: 'change' }]
+        unitAddress: [{ required: true, message: '请选择地址', trigger: 'change' }],
+        mobilePhone: [{ required: false, trigger: 'blur', validator: validateUnitTel }],
+        status: [{ required: true, trigger: 'change', message: '请选择状态' }]
       },
       dialogData: {
         unitName: '',
@@ -224,6 +239,28 @@ export default {
     this.getList()
   },
   methods: {
+    searchCompany(queryString, cb) {
+      if (queryString) {
+        facilitatorName({ unitName: queryString })
+          .then(res => {
+            const { data } = res
+            data.forEach(item => {
+              item.label = item.id
+              item.value = item.unitName
+            })
+            cb(data)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectCompany(val) {
+      this.listQuery.unitName = val.unitName
+    },
     getStatusCode() {
       this.listLoading = true
       getStatus()
@@ -236,6 +273,8 @@ export default {
               this.optionGroup[2].value = parseInt(item.label)
             }
           })
+          this.statusOption.push(this.optionGroup[1])
+          this.statusOption.push(this.optionGroup[2])
           this.listLoading = false
         })
         .catch(err => {
@@ -271,12 +310,18 @@ export default {
       this.currentRow = row
       this.dialogVisible = true
       this.detail = true
-      if (row.logo) this.fileList.push({ url: 'http://192.168.0.80:8866' + row.logo })
+      if (row.logo) this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + row.logo })
+      this.$nextTick(() => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     addCompany() {
       this.modify = false
       this.dialogVisible = true
       this.detail = false
+      this.$nextTick(() => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     previewImg(file) {
       this.imgsFiles.push(file.raw)
@@ -314,44 +359,44 @@ export default {
       this.$refs.dialogForm.validate(valid => {
         if (valid) {
           // 上传图片
-          const uploadReq = []
-          const form = new FormData()
-          form.append('fileName', this.imgsFiles[0])
-          uploadReq.push(upload(form))
+          // const uploadReq = []
+          // const form = new FormData()
+          // form.append('fileName', this.imgsFiles[0])
+          // uploadReq.push(upload(form))
 
-          Promise.all(uploadReq)
+          // Promise.all(uploadReq)
+          //   .then(res => {
+          //     this.dialogData.logo = res[0].data.fileUrl
+          // 提交数据
+          this.dialogData.facilitatorId = this.currentRow.facilitatorId
+          this.dialogData.updatorName = this.$store.state.user.name
+          this.dialogData.updatorNo = this.$store.state.user.userId
+          this.dialogData.creatorName = this.$store.state.user.name
+          this.dialogData.creatorNo = this.$store.state.user.userId
+
+          save({ ...this.dialogData })
             .then(res => {
-              this.dialogData.logo = res[0].data.fileUrl
-              // 提交数据
-              this.dialogData.id = this.currentRow.facilitatorId
-              this.dialogData.updatorName = this.$store.state.user.name
-              this.dialogData.updatorNo = this.$store.state.user.userId
-              this.dialogData.creatorName = this.$store.state.user.name
-              this.dialogData.creatorNo = this.$store.state.user.userId
-
-              save({ ...this.dialogData })
-                .then(res => {
-                  this.dialogVisible = false
-                  this.$message({
-                    type: 'success',
-                    message: this.modify ? '修改成功' : '添加成功！'
-                  })
-                  this.imgsFiles = []
-                  this.fileList = []
-                  this.resetForm()
-                  this.getList()
-                })
-                .catch(err => {
-                  throw err
-                })
+              this.dialogVisible = false
+              this.$message({
+                type: 'success',
+                message: this.modify ? '修改成功' : '添加成功！'
+              })
+              this.imgsFiles = []
+              this.fileList = []
+              this.resetForm()
+              this.getList()
             })
             .catch(err => {
-              this.$message({
-                type: 'error',
-                message: '图片过大，上传失败'
-              })
               throw err
             })
+            // })
+            // .catch(err => {
+            //   this.$message({
+            //     type: 'error',
+            //     message: '图片过大，上传失败'
+            //   })
+            //   throw err
+            // })
         }
       })
     },
@@ -359,9 +404,12 @@ export default {
       this.$confirm('确认删除该条数据吗？')
         .then(() => {
           this.listLoading = true
-          deleteData({ id: this.currentRow.facilitatorId })
+          deleteData({ facilitatorId: this.currentRow.facilitatorId })
             .then(res => {
               this.dialogVisible = false
+              if (this.tableData.length === 1 && this.listQuery.pageNum !== 1) {
+                this.listQuery.pageNum--
+              }
               this.$message({
                 type: 'success',
                 message: '删除成功！'
@@ -390,11 +438,14 @@ export default {
       this.dialogVisible = true
       this.currentRow = row
       this.detail = false
-      if (row.logo) this.fileList.push({ url: 'http://192.168.0.80:8866' + row.logo })
+      if (row.logo) this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + row.logo })
+      this.$nextTick(() => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     closeDialog() {
       this.dialogVisible = false
-      this.resetForm()
+      setTimeout(() => this.resetForm(), 500)
       this.fileList = []
     },
     getTitle() {

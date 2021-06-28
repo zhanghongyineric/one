@@ -166,7 +166,6 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="上级企业单位:" prop="upUnitName">
-                <!-- <el-input v-model="createFormData.upUnitName" size="small" clearable placeholder="请输入上级企业单位" /> -->
                 <el-autocomplete
                   v-model="createFormData.upUnitName"
                   :fetch-suggestions="searchCompany"
