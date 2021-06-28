@@ -323,7 +323,7 @@ export default {
             .then(res => {
               this.dialogData.logo = res[0].data.fileUrl
               // 提交数据
-              this.dialogData.id = this.currentRow.id
+              this.dialogData.id = this.currentRow.facilitatorId
               this.dialogData.updatorName = this.$store.state.user.name
               this.dialogData.updatorNo = this.$store.state.user.userId
               this.dialogData.creatorName = this.$store.state.user.name
@@ -359,7 +359,7 @@ export default {
       this.$confirm('确认删除该条数据吗？')
         .then(() => {
           this.listLoading = true
-          deleteData({ id: this.currentRow.id })
+          deleteData({ id: this.currentRow.facilitatorId })
             .then(res => {
               this.dialogVisible = false
               this.$message({

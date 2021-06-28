@@ -404,16 +404,16 @@
 import { fetchList, companyStatus, companyRoleStatus, companyEconomyStatus, updateCount, deleteCount, addCount } from '@/api/information-manage/company-base-information'
 import Pagination from '@/components/Pagination' // 分页
 import AreaSelect from '@/components/AreaSelect'
-import RemoteSearch from '@/components/RemoteSearch/select'
-import { isPhoneNumber, parseTime } from '@/utils'
+// import RemoteSearch from '@/components/RemoteSearch/select'
+import { isPhoneNumber } from '@/utils'
 import { companyRoleOption, companyStatusOption, companyLevel, companyEconomy } from '@/options'
-import ChoosePoint from '@/components/ChoosePoint'
+// import ChoosePoint from '@/components/ChoosePoint'
 
 // const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
 export default {
   name: 'CompanyBaseInformation',
-  components: { Pagination, AreaSelect, RemoteSearch, ChoosePoint },
+  components: { Pagination, AreaSelect },
   filters: {
     companyRoleFilter: function(role) {
       return companyRoleOption.map[role]
@@ -893,7 +893,7 @@ export default {
       // if (zoneId.indexOf('') !== -1) {
       //   zoneId = zoneId.slice(0, zoneId.indexOf('') + 1)
       // }
-      this.rowId = row.id
+      this.rowId = row.unitId
       const zoneId = [row.zoneId]
       this.createFormData = { ...row, zoneId } // 由于表格没有密码，不设置会为undefined
       this.dialogStatus = 'detail'
@@ -930,7 +930,7 @@ export default {
     // 点击编辑
     // 点击更新信息
     handleUpdate(row) {
-      this.rowId = row.id
+      this.rowId = row.unitId
       // console.log(row.zoneId)
       // let zoneId = [row.province, row.city, row.region]
       const zoneId = [row.zoneId]

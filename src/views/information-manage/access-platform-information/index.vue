@@ -742,7 +742,7 @@ export default {
           this.dialogData.updatorNo = this.$store.state.user.userId
           this.dialogData.creatorName = this.$store.state.user.name
           this.dialogData.creatorNo = this.$store.state.user.userId
-          if (this.modify) this.dialogData.id = this.currentRow.id
+          if (this.modify) this.dialogData.id = this.currentRow.platformId.toString()
           const req = { ...this.dialogData }
           req.serviceArea = this.dialogData.serviceArea.join(',')
           req.functions = this.dialogData.functions.join(',')
@@ -767,7 +767,7 @@ export default {
     delData() {
       this.$confirm('确定删除该条数据？')
         .then(() => {
-          deleteData({ id: this.currentRow.id })
+          deleteData({ id: this.currentRow.platformId.toString() })
             .then(res => {
               this.dialogVisible = false
               this.getList()

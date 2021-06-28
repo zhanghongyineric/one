@@ -651,8 +651,8 @@ export default {
     // 获取驾驶证和资格证信息
     getLicInfo(row) {
       const reqArr = []
-      reqArr.push(selectDriverLic({ personId: JSON.stringify(row.id) }))
-      reqArr.push(selectQualificationLic({ personId: JSON.stringify(row.id) }))
+      reqArr.push(selectDriverLic({ personId: row.personId }))
+      reqArr.push(selectQualificationLic({ personId: row.personId }))
       Promise.all(reqArr)
         .then(res => {
           this.dialogData = { ...row, ...res[0].data, ...res[1].data }
@@ -672,7 +672,7 @@ export default {
     delData() {
       this.$confirm('确定删除该条数据？删除后不可恢复')
         .then(() => {
-          deleteDriver({ id: this.currentRow.id })
+          deleteDriver({ id: this.currentRow.personId })
             .then(res => {
               this.$message({
                 type: 'success',
@@ -803,7 +803,7 @@ export default {
               this.dataChange()
               if (this.modify) {
                 this.dialogData.updator = this.$store.state.user.name
-                this.dialogData.id = this.currentRow.id
+                this.dialogData.id = this.currentRow.personId
               }
               driverSave({ ...this.dialogData })
                 .then(res => {
