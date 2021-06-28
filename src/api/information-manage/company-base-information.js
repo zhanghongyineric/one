@@ -56,3 +56,12 @@ export function deleteCount(data) {
     data
   })
 }
+
+// 输入关键字 返回上级企业单位
+export function upUnitName(data) {
+  return request({
+    url: '/enterprose/upUnitName',
+    method: 'post',
+    data
+  })
+}

@@ -1522,7 +1522,7 @@ export default {
       row.plateColor = row.plateColor.toString()
       row.vehicleType = row.vehicleType.toString()
       row.useNature = row.useNature.toString()
-      selectTransport({ vehicleId: row.id })
+      selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
         })
@@ -1572,7 +1572,7 @@ export default {
       row.plateColor = row.plateColor.toString()
       row.vehicleType = row.vehicleType.toString()
       row.useNature = row.useNature.toString()
-      selectTransport({ vehicleId: row.id })
+      selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
         })
@@ -1582,7 +1582,7 @@ export default {
     },
     // 删除入网信息
     deleteAccess() {
-      AccessInstallationDelete({ id: this.accessFormData.id })
+      AccessInstallationDelete({ terminalId: this.accessFormData.terminalId })
         .then(res => {
           this.dialogFormVisible = false
           this.accessFormData = {}
@@ -1606,7 +1606,7 @@ export default {
       this.$nextTick(() => {
         this.$refs['fourForm'].clearValidate()
       })
-      selectAccessInstallation({ vehicleId: row.id.toString() })
+      selectAccessInstallation({ vehicleId: row.vehicleId.toString() })
         .then(res => {
           const { data } = res
           if (data) {
@@ -1617,7 +1617,7 @@ export default {
             this.accessFormData = { ...data, id: data.id }
             const urlArr = data.terminalPhotos.split(';')
             urlArr.forEach(item => {
-              this.fileList.push({ url: 'https://www.image.gosmooth.com.cn' + item })
+              this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + item })
             })
             row.hadAccess = true
           } else row.hadAccess = false
@@ -1636,7 +1636,7 @@ export default {
       if (row.photoUrl) {
         const urlArr = row.photoUrl.split(';')
         urlArr.forEach(item => {
-          this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
+          this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + item })
         })
       }
     },
@@ -1644,7 +1644,7 @@ export default {
     deleteData() {
       this.$confirm('确定删除该车辆所有信息？删除后无法恢复')
         .then(() => {
-          vehicleDelete({ id: parseInt(this.currentRow.id) })
+          vehicleDelete({ vehicleId: this.currentRow.vehicleId })
             .then(res => {
               this.dialogVisible = false
               this.getList()
@@ -1823,7 +1823,7 @@ export default {
       if (row.photoUrl) {
         const urlArr = row.photoUrl.split(';')
         urlArr.forEach(item => {
-          this.fileList.push({ url: `https://www.image.gosmooth.com.cn${item}` })
+          this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + item })
         })
       }
     },
@@ -1859,6 +1859,7 @@ export default {
           if (this.currentRow.hadAccess) {
             this.accessFormData.id = this.currentRow.id
             this.accessFormData.vehicleId = this.currentRow.vehicleId
+            this.accessFormData.terminalId = this.currentRow.terminalId
             this.accessFormData.terminalPhotos = urlArr.join(';')
             const arr = []
             this.fileList.forEach(item => {
@@ -1932,7 +1933,7 @@ export default {
       this.$refs['threeForm'].validate(valid => {
         if (valid) {
           const queryData = { ...this.createFormData }
-          queryData.id = this.currentRow.id.toString()
+          queryData.vehicleId = this.currentRow.vehicleId.toString()
           queryData.registerZoneId = queryData.registerZoneId[1]
           queryData.transportZoneId = queryData.transportZoneId[1]
           queryData.zoneId = queryData.zoneId[1]
