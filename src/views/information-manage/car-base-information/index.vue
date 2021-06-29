@@ -108,38 +108,43 @@
         <el-table-column label="车牌号" prop="plateNum" min-width="100" show-overflow-tooltip align="center" />
         <el-table-column label="车辆类型" prop="vehicleType" min-width="250" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.vehicleType === 0 ? '不确定类型' : scope.row.vehicleType }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="运营状态" prop="operateStatus" min-width="200" align="center">
-          <template v-if="scope.row.operateStatus" slot-scope="scope">
-            <span>{{ operateStatusMap.get(scope.row.operateStatus.toString()) }}</span>
+            <span>{{ scope.row.vehicleType | showVehicleType }}</span>
           </template>
         </el-table-column>
         <el-table-column label="车牌颜色" prop="plateColor" min-width="100" align="center">
-          <template slot-scope="scope">
+          <template v-if="scope.row.plateColor" slot-scope="scope">
             <span>{{ plateColorMap.get(scope.row.plateColor.toString()) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="是否双驾" prop="doubleDrivers" width="100" align="center">
           <template slot-scope="scope">
-            {{ scope.row.doubleDrivers === 0 ? '是' : '否' }}
+            {{ scope.row.doubleDrivers | showDoubleDrivers }}
+          </template>
+        </el-table-column>
+        <el-table-column label="运营状态" prop="operateStatus" min-width="150" align="center">
+          <template v-if="scope.row.operateStatus" slot-scope="scope">
+            <span v-if="operateStatusMap.get(scope.row.operateStatus.toString()) === '正常'" style="color: green">
+              {{ operateStatusMap.get(scope.row.operateStatus.toString()) }}
+            </span>
+            <span v-else style="color: red">
+              {{ operateStatusMap.get(scope.row.operateStatus.toString()) }}
+            </span>
           </template>
         </el-table-column>
         <!--表格操作列-->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="400">
           <template v-slot="{row}">
-            <el-button type="primary" size="mini" @click="handleUpdate(row)">
-              更新信息
+            <el-button type="primary" size="mini" @click="handleDetail(row)">
+              查看详情
             </el-button>
             <el-button type="primary" size="mini" @click="handleAccess(row)">
               入网信息
             </el-button>
-            <el-button type="primary" size="mini" @click="handleDetail(row)">
-              查看详情
-            </el-button>
             <el-button type="primary" size="mini" @click="handleInsurance(row)">
               保险信息
+            </el-button>
+            <el-button type="warning" size="mini" @click="handleUpdate(row)">
+              更新信息
             </el-button>
           </template>
         </el-table-column>
@@ -197,7 +202,7 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item size="small" label="所属企业:" prop="unitId">
+              <el-form-item size="small" label="所属企业:" prop="unitName">
                 <el-autocomplete
                   v-model="createFormData.unitName"
                   :fetch-suggestions="searchType"
@@ -851,7 +856,7 @@
           </el-row> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button v-if="!currentRow.hadAccess" type="primary" @click="createAccess()">
+          <el-button type="primary" @click="createAccess()">
             保存
           </el-button>
           <el-popconfirm
@@ -1128,9 +1133,30 @@ import { provinceAndCityData } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import { carColorOptions } from '@/options'
 
+let that
+
 export default {
   name: 'CarBaseInformation',
   components: { Pagination },
+  filters: {
+    showVehicleType(type) {
+      let typeText
+      if (type === 0 || type === '0') {
+        return '不确定类型'
+      } else {
+        that.carKindOptions.forEach(item => {
+          if (type && type.toString() === item.label) {
+            typeText = item.value
+          }
+        })
+        return typeText
+      }
+    },
+    showDoubleDrivers(temp) {
+      if (temp === 0 || temp === '0') return '是'
+      if (temp === 1 || temp === '1') return '否'
+    }
+  },
   data() {
     return {
       indexs: 1,
@@ -1170,7 +1196,7 @@ export default {
       // 用于重置新增的数据
       oneRules: {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
-        unitId: [{ required: true, message: '请输入所属企业', trigger: 'blur' }],
+        unitName: [{ required: true, message: '请输入所属企业', trigger: 'blur' }],
         operateType: [{ required: true, message: '请选择车辆营运类型', trigger: 'change' }],
         zoneId: [{ required: true, message: '请选择所属区域', trigger: 'change' }],
         plateColor: [{ required: true, message: '请选择车牌颜色', trigger: 'change' }]
@@ -1254,6 +1280,9 @@ export default {
       carKindOptions: [], // 车辆类型
       plateColorOptions: [] // 车牌颜色
     }
+  },
+  beforeCreate() {
+    that = this
   },
   created() {
     this.getQueryConditions()
@@ -1390,6 +1419,7 @@ export default {
           throw err
         })
     },
+    // 车牌颜色
     getPlateColor() {
       queryColor()
         .then(res => {
@@ -1447,6 +1477,7 @@ export default {
     },
     selectCompany(val) {
       this.createFormData.unitId = val.id.toString()
+      this.createFormData.unitName = val.unitName
     },
     searchPlatform(queryString, cb) {
       if (queryString) {
@@ -1519,9 +1550,9 @@ export default {
       this.dialogStatus = 'detail'
       this.dialogVisible = true
       this.currentRow = row
-      row.plateColor = row.plateColor.toString()
-      row.vehicleType = row.vehicleType.toString()
-      row.useNature = row.useNature.toString()
+      if (row.plateColor) row.plateColor = row.plateColor.toString()
+      if (row.vehicleType) row.vehicleType = row.vehicleType.toString()
+      if (row.useNature) row.useNature = row.useNature.toString()
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
@@ -1535,7 +1566,7 @@ export default {
         this.$refs['threeForm'].clearValidate()
       })
     },
-    // // 车辆信息弹框上一步
+    // 车辆信息弹框上一步
     lastStep() {
       this.indexs -= 1
     },
@@ -1563,15 +1594,16 @@ export default {
       this.dialogFormVisible = false
       this.fileList = []
       this.imgsFiles = []
+      this.accessFormData = {}
     },
     // 点击更新信息按钮
     handleUpdate(row) {
       this.dialogStatus = 'update'
       this.dialogVisible = true
       this.currentRow = row
-      row.plateColor = row.plateColor.toString()
-      row.vehicleType = row.vehicleType.toString()
-      row.useNature = row.useNature.toString()
+      if (row.plateColor) row.plateColor = row.plateColor.toString()
+      if (row.vehicleType) row.vehicleType = row.vehicleType.toString()
+      if (row.useNature) row.useNature = row.useNature.toString()
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
@@ -1579,10 +1611,18 @@ export default {
         .catch(err => {
           throw err
         })
+      this.$nextTick(() => {
+        this.$refs['oneForm'].clearValidate()
+        this.$refs['twoForm'].clearValidate()
+        this.$refs['threeForm'].clearValidate()
+      })
     },
     // 删除入网信息
     deleteAccess() {
-      AccessInstallationDelete({ terminalId: this.accessFormData.terminalId })
+      AccessInstallationDelete({
+        terminalId: this.accessFormData.terminalId,
+        vehicleId: this.accessFormData.vehicleId
+      })
         .then(res => {
           this.dialogFormVisible = false
           this.accessFormData = {}
@@ -1590,6 +1630,7 @@ export default {
             type: 'success',
             message: '删除成功'
           })
+          this.indexs = 1
         })
         .catch(err => {
           this.$message({
@@ -1614,18 +1655,24 @@ export default {
             data.communicationMode = data.communicationMode.toString()
             data.communicationProtocolVersion = data.communicationProtocolVersion.toString()
             data.functions = data.functions.split(',')
-            this.accessFormData = { ...data, id: data.id }
-            const urlArr = data.terminalPhotos.split(';')
-            urlArr.forEach(item => {
-              this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + item })
-            })
-            row.hadAccess = true
-          } else row.hadAccess = false
+            this.accessFormData = {
+              ...data,
+              id: data.id,
+              vehicleId: row.vehicleId,
+              terminalId: data.terminalId
+            }
+            this.currentRow = row
+            this.currentRow.hadAccess = true
+          } else {
+            this.currentRow = row
+            this.currentRow.hadAccess = false
+          }
         })
         .catch(err => {
           throw err
         })
-      this.currentRow = row
+
+      console.log(row, this.currentRow)
     },
     // 保险信息详情
     showInsuranceDetail(row) {
@@ -1633,12 +1680,6 @@ export default {
       this.currentRow = row
       this.addInsurance = true
       this.insuranceDetail = true
-      if (row.photoUrl) {
-        const urlArr = row.photoUrl.split(';')
-        urlArr.forEach(item => {
-          this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + item })
-        })
-      }
     },
     // 删除车辆信息
     deleteData() {
@@ -1647,6 +1688,9 @@ export default {
           vehicleDelete({ vehicleId: this.currentRow.vehicleId })
             .then(res => {
               this.dialogVisible = false
+              if (this.list.length === 1 && this.listQuery.pageNum !== 1) {
+                this.listQuery.pageNum--
+              }
               this.getList()
               this.$message({
                 type: 'success',
@@ -1705,31 +1749,11 @@ export default {
     saveInsurance() {
       this.$refs['fiveForm'].validate(valid => {
         if (valid) {
-          // this.allImgReq()
-          // Promise.all(this.imgsUpload)
-          //   .then(res => {
-          const urlArr = []
-          // for (const item of res) {
-          //   const { fileUrl } = item.data
-          //   urlArr.push(fileUrl)
-          // }
-
           if (this.insuranceFormData.modify) {
             this.insuranceFormData.id = parseInt(this.currentRow.id)
             this.insuranceFormData.vehicleId = this.currentRow.vehicleId.toString()
-            this.insuranceFormData.photoUrl = urlArr.join(';')
-            const arr = []
-            this.fileList.forEach(item => {
-              arr.push(item.url.split('.cn')[1])
-            })
-            this.insuranceFormData.photoUrl = this.insuranceFormData.photoUrl.concat(';', arr.join(';'))
-
-            const lastarr = this.insuranceFormData.photoUrl.split(';')
-            if (lastarr[lastarr.length - 1] === '')lastarr.pop()
-            this.insuranceFormData.photoUrl = lastarr.join(';')
           } else {
             this.insuranceFormData.vehicleId = this.currentRow.id.toString()
-            this.insuranceFormData.photoUrl = urlArr.join(';')
           }
 
           InsuranceSave({ ...this.insuranceFormData })
@@ -1751,14 +1775,6 @@ export default {
               })
               throw err
             })
-            // })
-            // .catch(er => {
-            //   this.$message({
-            //     type: 'error',
-            //     message: '图片过大，上传失败'
-            //   })
-            //   throw er
-            // })
         }
       })
     },
@@ -1820,57 +1836,27 @@ export default {
       this.insuranceFormData = { ...row }
       this.insuranceFormData.modify = true
       this.currentRow = row
-      if (row.photoUrl) {
-        const urlArr = row.photoUrl.split(';')
-        urlArr.forEach(item => {
-          this.fileList.push({ url: process.env.VUE_APP_IMAGES_BASE_URL + item })
-        })
-      }
     },
     // 删除图片
-    handleRemove(file) {
-      if (!file.raw) {
-        this.fileList.forEach((item, index) => {
-          if (file.url === item.url) {
-            this.fileList.splice(index, 1)
-          }
-        })
-      } else {
-        this.imgsFiles.forEach((item, index) => {
-          if (file.raw.uid === item.uid) {
-            this.imgsFiles.splice(index, 1)
-          }
-        })
-      }
-    },
+    // handleRemove(file) {
+    //   if (!file.raw) {
+    //     this.fileList.forEach((item, index) => {
+    //       if (file.url === item.url) {
+    //         this.fileList.splice(index, 1)
+    //       }
+    //     })
+    //   } else {
+    //     this.imgsFiles.forEach((item, index) => {
+    //       if (file.raw.uid === item.uid) {
+    //         this.imgsFiles.splice(index, 1)
+    //       }
+    //     })
+    //   }
+    // },
     // 新增和修改入网信息
     createAccess() {
       this.$refs['fourForm'].validate(valid => {
         if (valid) {
-          // this.allImgReq()
-          // Promise.all(this.imgsUpload)
-          //   .then(res => {
-          const urlArr = []
-          // for (const item of res) {
-          //   const { fileUrl } = item.data
-          //   urlArr.push(fileUrl)
-          // }
-
-          if (this.currentRow.hadAccess) {
-            this.accessFormData.id = this.currentRow.id
-            this.accessFormData.vehicleId = this.currentRow.vehicleId
-            this.accessFormData.terminalId = this.currentRow.terminalId
-            this.accessFormData.terminalPhotos = urlArr.join(';')
-            const arr = []
-            this.fileList.forEach(item => {
-              arr.push(item.url.split('.cn')[1])
-            })
-            this.accessFormData.terminalPhotos = this.accessFormData.terminalPhotos.concat(';', arr.join(';'))
-          } else {
-            this.accessFormData.terminalPhotos = urlArr.join(';')
-            this.accessFormData.vehicleId = this.currentRow.id
-          }
-
           this.accessFormData.functions = this.accessFormData.functions.join(',')
 
           AccessInstallationSave({ ...this.accessFormData })
@@ -1888,14 +1874,6 @@ export default {
               })
               throw err
             })
-            // })
-            // .catch(er => {
-            //   this.$message({
-            //     type: 'error',
-            //     message: '图片过大，上传失败'
-            //   })
-            //   throw er
-            // })
         }
       })
     },
