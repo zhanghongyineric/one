@@ -217,3 +217,12 @@ export function queryUseNature(data) {
     data
   })
 }
+
+// 车身颜色
+export function queryCarColor(data) {
+  return request({
+    url: '/vehicle/queryCarColor',
+    method: 'POST',
+    data
+  })
+}

@@ -15,9 +15,9 @@
                 <el-select v-model="listQuery.qualificationRange" placeholder="请选择从业资格范围">
                   <el-option
                     v-for="item in qualificationRangeOption"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -81,14 +81,19 @@
         highlight-current-row
       >
         <el-table-column type="index" label="编号" width="50" />
-        <el-table-column prop="personName" label="名字" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="code" label="性别" min-width="100" show-overflow-tooltip>
+        <el-table-column prop="personName" label="名字" width="120" show-overflow-tooltip />
+        <el-table-column prop="code" label="性别" width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="scope.row.sex === '1'">男</span>
             <span v-else>女</span>
           </template>
         </el-table-column>
-        <el-table-column prop="zoneCity" label="籍贯" min-width="110" show-overflow-tooltip />
+        <el-table-column prop="idCardNum" label="身份证号" width="200" />
+        <el-table-column prop="zoneCity" label="籍贯" min-width="110" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.zoneCity | showZoneText }}
+          </template>
+        </el-table-column>
         <el-table-column prop="driverVelType" label="准驾类型" min-width="150" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ velTypeMap.get(scope.row.driverVelType) }}
@@ -102,8 +107,6 @@
             <span v-else-if="scope.row.qualificationRange == 3">道路危险品运输</span>
           </template>
         </el-table-column>
-        <el-table-column prop="idCardNum" label="身份证号" min-width="180" />
-        <!-- <el-table-column prop="unitId" label="所属企业ID" min-width="130" /> -->
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -131,7 +134,7 @@
       <el-dialog
         :title="showTitle()"
         :visible.sync="dialogVisible"
-        top="20px"
+        top="50px"
         :before-close="closeDialog"
       >
         <!-- 弹框上方步骤条 -->
@@ -154,18 +157,11 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="姓名：" prop="personName">
-                <el-input v-model="dialogData.personName" placeholder="请输入姓名" size="small" />
+                <el-input v-model="dialogData.personName" clearable placeholder="请输入姓名" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="性别：" prop="sex">
-                <!-- <el-checkbox-group
-                  v-model="dialogData.sex"
-                  :max="1"
-                >
-                  <el-checkbox label="男" />
-                  <el-checkbox label="女" />
-                </el-checkbox-group> -->
                 <el-select
                   v-model="dialogData.sex"
                   placeholder="请选择性别"
@@ -180,7 +176,7 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="民族：" prop="nation">
-                <el-input v-model="dialogData.nation" placeholder="请输入民族" size="small" />
+                <el-input v-model="dialogData.nation" clearable placeholder="请输入民族" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -216,24 +212,25 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="身份证号码：" prop="idCardNum">
-                <el-input v-model="dialogData.idCardNum" placeholder="请输入身份证号码" size="small" />
+                <el-input v-model="dialogData.idCardNum" clearable placeholder="请输入身份证号码" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="手机号码：" prop="tel">
-                <el-input v-model="dialogData.tel" placeholder="请输入手机号码" size="small" />
+                <el-input v-model="dialogData.tel" clearable placeholder="请输入手机号码" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="所属运输企业：" prop="unitId">
+              <el-form-item label="所属运输企业：" prop="unitName">
                 <el-autocomplete
-                  v-model="dialogData.unitId1"
+                  v-model="dialogData.unitName"
                   :fetch-suggestions="searchType"
                   placeholder="请输入企业名称关键字"
                   :debounce="500"
                   size="small"
+                  clearable
                   @select="selectCompany"
                 />
               </el-form-item>
@@ -259,7 +256,7 @@
           </el-row>
           <el-row>
             <el-form-item label="详细居住地址：" prop="addressDetail">
-              <el-input v-model="dialogData.addressDetail" placeholder="请输入详细居住地址" size="small" />
+              <el-input v-model="dialogData.addressDetail" clearable placeholder="请输入详细居住地址" size="small" />
             </el-form-item>
           </el-row>
           <!-- <div style="margin-left: 23px;margin-bottom: 30px">
@@ -292,7 +289,7 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="机动车驾驶证号：" prop="driverLicNum">
-                <el-input v-model="dialogData.driverLicNum" placeholder="请输入机动车驾驶证号" size="small" />
+                <el-input v-model="dialogData.driverLicNum" clearable placeholder="请输入机动车驾驶证号" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -355,7 +352,7 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="发证机关：" prop="licAuthor">
-                <el-input v-model="dialogData.licAuthor" placeholder="请输入发证机关" size="small" />
+                <el-input v-model="dialogData.licAuthor" clearable placeholder="请输入发证机关" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -373,7 +370,7 @@
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="从业资格证号：" prop="qualificationNum">
-                <el-input v-model="dialogData.qualificationNum" placeholder="请输入从业资格证号" size="small" />
+                <el-input v-model="dialogData.qualificationNum" clearable placeholder="请输入从业资格证号" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -397,9 +394,9 @@
                 <el-select v-model="dialogData.qualificationRange" size="small" placeholder="请选择从业资格范围">
                   <el-option
                     v-for="item in qualificationRangeOption"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.label"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -485,7 +482,6 @@
 import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import {
-  qualificationRangeOption,
   cultureOptions,
   driverVelTyeOptions
 } from '@/options'
@@ -497,21 +493,38 @@ import {
   deleteDriver,
   queryQualification,
   enterpriseName,
-  driverStatus
+  driverStatus,
+  queryRange
 } from '@/api/information-manage/driver-base-information'
-import { upload } from '@/api/information-manage/service-provider'
+import { isPhoneNumber } from '@/utils'
+import getAreaText from '@/utils/AreaCodeToText'
 
 export default {
   name: 'DriverBaseInformation',
   components: { Pagination },
+  filters: {
+    showZoneText(zoneid) {
+      const text = CodeToText[zoneid]
+      return text
+    }
+  },
   data() {
+    const validateTel = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入手机号码'))
+      } else if (!isPhoneNumber(value)) {
+        callback(new Error('请输入正确的手机号码'))
+      } else {
+        callback()
+      }
+    }
     return {
       queryQualificationOptions: [],
       driverVelTyeOptions: driverVelTyeOptions.list,
       velTypeMap: new Map(),
       cultureOptions: cultureOptions.list,
       cityOptions: regionData,
-      qualificationRangeOption: qualificationRangeOption.list,
+      qualificationRangeOption: [],
       driverStatusOption: [],
       advanced: false,
       listLoading: false,
@@ -534,8 +547,8 @@ export default {
         zoneCity: [{ required: true, message: '请选择籍贯', trigger: 'change' }],
         physicalStatus: [{ required: true, message: '请选择健康状况', trigger: 'change' }],
         idCardNum: [{ required: true, message: '请输入身份证号码', trigger: 'blur' }],
-        tel: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
-        unitId1: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
+        tel: [{ required: true, trigger: 'blur', validator: validateTel }],
+        unitName: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
         qualificationCity: [{ required: true, message: '请选择所属地区', trigger: 'change' }],
         addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
         addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]
@@ -574,19 +587,17 @@ export default {
         addressCity: '',
         qualificationCity: ''
       },
-      fileList: [],
-      imgsFiles: [],
       stepIndex: 1,
       detail: false,
       modify: false,
-      currentRow: {},
-      imgsUpload: []
+      currentRow: {}
     }
   },
   created() {
     this.getQueryQualification()
     this.getDriverStatus()
     this.setVelTypeMap()
+    this.getDriverRange()
   },
   mounted() {
     this.getList()
@@ -596,6 +607,15 @@ export default {
       driverVelTyeOptions.list.forEach(item => {
         this.velTypeMap.set(item.value, item.label)
       })
+    },
+    getDriverRange() {
+      queryRange()
+        .then(res => {
+          this.qualificationRangeOption = res.data
+        })
+        .catch(err => {
+          throw err
+        })
     },
     getDriverStatus() {
       driverStatus()
@@ -627,7 +647,8 @@ export default {
       }
     },
     selectCompany(val) {
-      this.dialogData.unitId = val.id
+      this.dialogData.unitId = val.unitId
+      this.dialogData.unitName = val.unitName
     },
     getQueryQualification() {
       queryQualification()
@@ -646,7 +667,6 @@ export default {
       this.dialogVisible = true
       this.detail = true
       this.getLicInfo(row)
-      this.clearValidate()
     },
     // 获取驾驶证和资格证信息
     getLicInfo(row) {
@@ -656,7 +676,14 @@ export default {
       Promise.all(reqArr)
         .then(res => {
           this.dialogData = { ...row, ...res[0].data, ...res[1].data }
-          this.dialogData.qualificationRange = this.dialogData.qualificationRange.toString()
+          if (this.dialogData.qualificationRange) {
+            this.dialogData.qualificationRange = this.dialogData.qualificationRange.toString()
+          }
+          const { zoneCity, addressCity, qualificationCity } = this.dialogData
+          if (zoneCity) this.dialogData.zoneCity = getAreaText(zoneCity.toString())
+          if (addressCity) this.dialogData.addressCity = getAreaText(addressCity.toString())
+          if (qualificationCity) this.dialogData.qualificationCity = getAreaText(qualificationCity.toString())
+          this.clearValidate()
         })
         .catch(err => {
           throw err
@@ -672,14 +699,18 @@ export default {
     delData() {
       this.$confirm('确定删除该条数据？删除后不可恢复')
         .then(() => {
-          deleteDriver({ id: this.currentRow.personId })
+          deleteDriver({ personId: this.currentRow.personId })
             .then(res => {
               this.$message({
                 type: 'success',
                 message: '删除成功！'
               })
+              if (this.tableData.length === 1 && this.listQuery.pageNum !== 1) {
+                this.listQuery.pageNum--
+              }
               this.dialogVisible = false
               this.getList()
+              this.stepIndex = 1
             })
             .catch(err => {
               throw err
@@ -708,16 +739,11 @@ export default {
     },
     getList() {
       this.listLoading = true
-      if (this.listQuery.zoneCity) this.listQuery.zoneCity = parseInt(this.listQuery.zoneCity[1])
+      if (this.listQuery.zoneCity) this.listQuery.zoneCity = parseInt(this.listQuery.zoneCity[2])
       selectList({ ...this.listQuery })
         .then(res => {
           const { data } = res
           this.tableData = data.list
-          this.tableData.forEach(item => {
-            if (CodeToText[item.zoneCity.toString()]) {
-              item.zoneCity = CodeToText[item.zoneCity.toString()]
-            }
-          })
           this.total = data.total
           this.listLoading = false
         })
@@ -740,26 +766,6 @@ export default {
         qualificationRange: ''
       }
       this.getList()
-    },
-    handleSearch() {},
-    previewImg(file) {
-      this.imgsFiles.push(file.raw)
-      this.fileList.push(file)
-    },
-    handleRemove(file) {
-      if (!file.raw) {
-        this.fileList.forEach((item, index) => {
-          if (file.url === item.url) {
-            this.fileList.splice(index, 1)
-          }
-        })
-      } else {
-        this.imgsFiles.forEach((item, index) => {
-          if (file.raw.uid === item.uid) {
-            this.imgsFiles.splice(index, 1)
-          }
-        })
-      }
     },
     lastStep() {
       this.stepIndex -= 1
@@ -784,44 +790,33 @@ export default {
       }
     },
     dataChange() {
-      this.dialogData.zoneCity = parseInt(this.dialogData.zoneCity[1])
-      this.dialogData.addressCity = parseInt(this.dialogData.addressCity[1])
-      this.dialogData.qualificationCity = parseInt(this.dialogData.qualificationCity[1])
-      this.dialogData.qualificationRange = parseInt(this.dialogData.qualificationCity)
+      this.dialogData.zoneCity = parseInt(this.dialogData.zoneCity[2]) || parseInt(this.dialogData.zoneCity[1])
+      this.dialogData.addressCity = parseInt(this.dialogData.addressCity[2]) || parseInt(this.dialogData.zoneCity[1])
+      this.dialogData.qualificationCity = parseInt(this.dialogData.qualificationCity[2]) || parseInt(this.dialogData.qualificationCity[1])
     },
     submit() {
       this.$refs['threeForm'].validate(valid => {
         if (valid) {
           this.listLoading = true
-
-          const form = new FormData()
-          form.append('fileName', this.imgsFiles[0])
-          this.imgsUpload.push(upload(form))
-
-          Promise.all(this.imgsUpload)
+          this.dataChange()
+          if (this.modify) {
+            this.dialogData.updator = this.$store.state.user.name
+            this.dialogData.personId = this.currentRow.personId
+          }
+          driverSave({ ...this.dialogData })
             .then(res => {
-              this.dataChange()
-              if (this.modify) {
-                this.dialogData.updator = this.$store.state.user.name
-                this.dialogData.id = this.currentRow.personId
-              }
-              driverSave({ ...this.dialogData })
-                .then(res => {
-                  this.dialogVisible = false
-                  this.$message({
-                    type: 'success',
-                    message: '新增成功！'
-                  })
-                  this.getList()
-                })
-                .catch(err => {
-                  throw err
-                })
+              this.dialogVisible = false
+              this.$message({
+                type: 'success',
+                message: '新增成功！'
+              })
+              this.getList()
+              this.stepIndex = 1
             })
             .catch(err => {
               this.$message({
                 type: 'error',
-                message: '图片过大，上传失败'
+                message: '新增失败！'
               })
               throw err
             })

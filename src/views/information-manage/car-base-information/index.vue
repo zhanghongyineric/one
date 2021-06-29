@@ -290,9 +290,9 @@
                 >
                   <el-option
                     v-for="item in carColorOptions"
-                    :key="item.value"
-                    :value="item.value"
-                    :label="item.label"
+                    :key="item.label"
+                    :value="item.label"
+                    :label="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -411,23 +411,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <!-- <el-row>
-            <el-form-item label="有关图片:" prop="operatingPermitImage" size="small">
-              <el-upload
-                ref="accessUpload"
-                action
-                list-type="picture-card"
-                :auto-upload="false"
-                :limit="2"
-                :multiple="true"
-                :on-change="previewImg"
-                :on-remove="handleRemove"
-                :file-list="fileList"
-              >
-                <i slot="default" class="el-icon-plus" />
-              </el-upload>
-            </el-form-item>
-          </el-row> -->
         </el-form>
 
         <el-form
@@ -534,23 +517,6 @@
               <el-input v-model="createFormData.ownerAddr" clearable size="small" placeholder="请输入车辆所有人详细住址" />
             </el-form-item>
           </el-row>
-          <!-- <el-row>
-            <el-form-item label="有关图片:" prop="operatingPermitImage">
-              <el-upload
-                ref="accessUpload"
-                action
-                list-type="picture-card"
-                :auto-upload="false"
-                :limit="2"
-                :multiple="true"
-                :on-change="previewImg"
-                :on-remove="handleRemove"
-                :file-list="fileList"
-              >
-                <i slot="default" class="el-icon-plus" />
-              </el-upload>
-            </el-form-item>
-          </el-row> -->
         </el-form>
 
         <el-form
@@ -633,37 +599,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <!-- <el-row>
-            <el-form-item label="经营范围:" prop="transportBusinessScope">
-              <el-select v-model="createFormData.transportBusinessScope" clearable size="small" multiple placeholder="请选择经营范围">
-                <el-option
-                  v-for="item in businessOptions"
-                  :key="item.label"
-                  :label="item.value"
-                  :value="item.label"
-                />
-              </el-select>
-            </el-form-item>
-          </el-row> -->
-          <!-- <el-row>
-            <el-form-item label="有关图片:" prop="operatingPermitImage">
-              <el-upload
-                ref="accessUpload"
-                action
-                list-type="picture-card"
-                :auto-upload="false"
-                :limit="2"
-                :multiple="true"
-                :on-change="previewImg"
-                :on-remove="handleRemove"
-                :file-list="fileList"
-              >
-                <i slot="default" class="el-icon-plus" />
-              </el-upload>
-            </el-form-item>
-          </el-row> -->
         </el-form>
-
         <div slot="footer" class="dialog-footer">
           <el-button v-show="indexs !== 1" type="primary" @click="lastStep()">上一步</el-button>
           <el-button v-show="indexs !== 3" type="primary" @click="nextStep()">下一步</el-button>
@@ -837,23 +773,6 @@
               </el-select>
             </el-form-item>
           </el-row>
-          <!-- <el-row>
-            <el-form-item label="有关图片:" prop="operatingPermitImage">
-              <el-upload
-                ref="accessUpload"
-                action
-                list-type="picture-card"
-                :auto-upload="false"
-                :limit="2"
-                :multiple="true"
-                :on-change="previewImg"
-                :on-remove="handleRemove"
-                :file-list="fileList"
-              >
-                <i slot="default" class="el-icon-plus" />
-              </el-upload>
-            </el-form-item>
-          </el-row> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="createAccess()">
@@ -1052,44 +971,6 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <!-- <el-row>
-              <el-form-item label="有关图片:" prop="operatingPermitImage">
-                <div v-if="insuranceDetail">
-                  <p class="img-tit">
-                    <span v-if="!fileList.length">未上传图片</span>
-                  </p>
-                  <div class="dialog-imgs">
-                    <div
-                      v-for="img in fileList"
-                      :key="img.url"
-                      class="img-con"
-                    >
-                      <el-image
-                        class="dialog-img"
-                        :src="img.url"
-                        fit="cover"
-
-                        :z-index="3000"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <el-upload
-                  v-else
-                  ref="upload"
-                  action
-                  list-type="picture-card"
-                  :auto-upload="false"
-                  :limit="2"
-                  :multiple="true"
-                  :on-change="previewImg"
-                  :on-remove="handleRemove"
-                  :file-list="fileList"
-                >
-                  <i slot="default" class="el-icon-plus" />
-                </el-upload>
-              </el-form-item>
-            </el-row> -->
           </el-form>
           <div class="insurance-footer">
             <el-button v-show="!insuranceDetail" type="primary" size="mini" @click="saveInsurance">保存</el-button>
@@ -1126,12 +1007,12 @@ import {
   queryInsuranceType,
   queryInsurance,
   vehicleSave,
-  upload,
-  queryUseNature
+  queryUseNature,
+  queryCarColor
 } from '@/api/information-manage/car-base-information'
 import { provinceAndCityData } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
-import { carColorOptions } from '@/options'
+import getAreaText from '@/utils/AreaCodeToText'
 
 let that
 
@@ -1185,7 +1066,7 @@ export default {
         zoneId: null
       },
       useNatureOptions: [], // 使用性质
-      carColorOptions: carColorOptions.list, // 车身颜色
+      carColorOptions: [], // 车身颜色
       businessOptions: [], // 经营范围
       total: 0, // 总数据条数
       advanced: false, // 是否展开高级搜索条件
@@ -1193,7 +1074,6 @@ export default {
       vehicleTypeOptions: [],
       functionsOptions: [],
       createFormData: {},
-      // 用于重置新增的数据
       oneRules: {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
         unitName: [{ required: true, message: '请输入所属企业', trigger: 'blur' }],
@@ -1251,7 +1131,6 @@ export default {
       },
       dialogStatus: '',
       onLineTitle: '入网信息',
-      operatingPermitImage: [],
       dialogVisible: false,
       accessFormData: {},
       operateStatusMap: new Map(),
@@ -1273,10 +1152,7 @@ export default {
       modeOptions: [], // 通讯模式
       positionModeOptions: [], // 定位模式
       accessWayOptions: [], // 接入方式
-      fileList: [], // 图片链接
       insuranceDetail: false, // 是否查看保险详情
-      imgsFiles: [],
-      imgsUpload: [],
       carKindOptions: [], // 车辆类型
       plateColorOptions: [] // 车牌颜色
     }
@@ -1296,6 +1172,7 @@ export default {
     this.getRiskType()
     this.getOprationTypeOptions()
     this.getUseNature()
+    this.getCarColor()
   },
   mounted() {
     this.getList()
@@ -1320,6 +1197,16 @@ export default {
       queryOperationType()
         .then(res => {
           this.vehicleTypeOptions = res.data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 车身颜色
+    getCarColor() {
+      queryCarColor()
+        .then(res => {
+          this.carColorOptions = res.data
         })
         .catch(err => {
           throw err
@@ -1476,9 +1363,10 @@ export default {
       }
     },
     selectCompany(val) {
-      this.createFormData.unitId = val.id.toString()
+      this.createFormData.unitId = val.unitId.toString()
       this.createFormData.unitName = val.unitName
     },
+    // 模糊搜索平台
     searchPlatform(queryString, cb) {
       if (queryString) {
         platformInfoName({ platformName: queryString })
@@ -1499,8 +1387,9 @@ export default {
       }
     },
     selectPlatform(val) {
-      this.accessFormData.platformId = val.id.toString()
+      this.accessFormData.platformId = val.platformId.toString()
     },
+    // 模糊搜索服务商
     searchService(queryString, cb) {
       if (queryString) {
         facilitatorName({ unitName: queryString })
@@ -1556,15 +1445,31 @@ export default {
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
+          this.translateCode()
+          this.$nextTick(() => {
+            this.$refs['oneForm'].clearValidate()
+            this.$refs['twoForm'].clearValidate()
+            this.$refs['threeForm'].clearValidate()
+          })
         })
         .catch(err => {
           throw err
         })
-      this.$nextTick(() => {
-        this.$refs['oneForm'].clearValidate()
-        this.$refs['twoForm'].clearValidate()
-        this.$refs['threeForm'].clearValidate()
-      })
+    },
+    // 转换地区编码
+    translateCode() {
+      if (this.createFormData.zoneId) {
+        this.createFormData.zoneId = getAreaText(this.createFormData.zoneId.toString())
+        this.createFormData.zoneId.pop()
+      }
+      if (this.createFormData.registerZoneId) {
+        this.createFormData.registerZoneId = getAreaText(this.createFormData.registerZoneId.toString())
+        this.createFormData.registerZoneId.pop()
+      }
+      if (this.createFormData.transportZoneId) {
+        this.createFormData.transportZoneId = getAreaText(this.createFormData.transportZoneId.toString())
+        this.createFormData.transportZoneId.pop()
+      }
     },
     // 车辆信息弹框上一步
     lastStep() {
@@ -1587,13 +1492,14 @@ export default {
     // 关闭车辆信息弹框
     closeDialog() {
       this.dialogVisible = false
-      this.indexs = 1
+      setTimeout(() => {
+        this.indexs = 1
+        this.createFormData = {}
+      }, 500)
     },
     // 关闭入网信息弹窗
     closeAccessDialog() {
       this.dialogFormVisible = false
-      this.fileList = []
-      this.imgsFiles = []
       this.accessFormData = {}
     },
     // 点击更新信息按钮
@@ -1607,6 +1513,7 @@ export default {
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
+          this.translateCode()
         })
         .catch(err => {
           throw err
@@ -1644,9 +1551,6 @@ export default {
     handleAccess(row) {
       this.onLineTitle = row.plateNum + '：入网信息'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['fourForm'].clearValidate()
-      })
       selectAccessInstallation({ vehicleId: row.vehicleId.toString() })
         .then(res => {
           const { data } = res
@@ -1667,12 +1571,13 @@ export default {
             this.currentRow = row
             this.currentRow.hadAccess = false
           }
+          this.$nextTick(() => {
+            this.$refs['fourForm'].clearValidate()
+          })
         })
         .catch(err => {
           throw err
         })
-
-      console.log(row, this.currentRow)
     },
     // 保险信息详情
     showInsuranceDetail(row) {
@@ -1755,7 +1660,6 @@ export default {
           } else {
             this.insuranceFormData.vehicleId = this.currentRow.id.toString()
           }
-
           InsuranceSave({ ...this.insuranceFormData })
             .then(res => {
               this.addInsurance = false
@@ -1808,26 +1712,12 @@ export default {
     // 取消保险信息
     cancelInsurance() {
       this.addInsurance = false
-      this.fileList = []
     },
     // 关闭保险弹窗
     closeInsuranceDialog() {
       this.dialogInsuranceVisible = false
       this.addInsurance = false
-      this.fileList = []
       this.insuranceFormData = {}
-    },
-    // 组成promise.all的参数数组
-    allImgReq() {
-      this.imgsFiles.forEach(item => {
-        const form = new FormData()
-        form.append('fileName', item)
-        this.imgsUpload.push(upload(form))
-      })
-    },
-    // 添加图片
-    previewImg(file) {
-      this.imgsFiles.push(file.raw)
     },
     // 修改保险信息
     updateInsurance(row) {
@@ -1837,28 +1727,11 @@ export default {
       this.insuranceFormData.modify = true
       this.currentRow = row
     },
-    // 删除图片
-    // handleRemove(file) {
-    //   if (!file.raw) {
-    //     this.fileList.forEach((item, index) => {
-    //       if (file.url === item.url) {
-    //         this.fileList.splice(index, 1)
-    //       }
-    //     })
-    //   } else {
-    //     this.imgsFiles.forEach((item, index) => {
-    //       if (file.raw.uid === item.uid) {
-    //         this.imgsFiles.splice(index, 1)
-    //       }
-    //     })
-    //   }
-    // },
     // 新增和修改入网信息
     createAccess() {
       this.$refs['fourForm'].validate(valid => {
         if (valid) {
           this.accessFormData.functions = this.accessFormData.functions.join(',')
-
           AccessInstallationSave({ ...this.accessFormData })
             .then(res => {
               this.closeAccessDialog()

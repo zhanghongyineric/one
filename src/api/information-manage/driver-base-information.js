@@ -70,3 +70,11 @@ export function driverStatus() {
     method: 'POST'
   })
 }
+
+// 从业资格证范围
+export function queryRange() {
+  return request({
+    url: '/driver/queryRange',
+    method: 'POST'
+  })
+}

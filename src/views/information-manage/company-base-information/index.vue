@@ -123,6 +123,7 @@
         :close-on-click-modal="false"
         custom-class="base-dialog"
         top="40px"
+        :before-close="closeDialog"
       >
         <el-form
           ref="dataForm"
@@ -179,7 +180,7 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="行政区域:" prop="zoneId">
-                <AreaSelect v-model="createFormData.zoneId" size="small" :area-text.sync="createFormData.areaText" />
+                <AreaSelect v-model="createFormData.zoneId" size="small" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -377,7 +378,7 @@
           </el-row> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
+          <el-button @click="closeDialog">
             取消
           </el-button>
           <div v-if="dialogStatus==='create'">
@@ -423,6 +424,7 @@ import Pagination from '@/components/Pagination'
 import AreaSelect from '@/components/AreaSelect'
 import { isPhoneNumber } from '@/utils'
 import { companyLevel } from '@/options'
+import getAreaText from '@/utils/AreaCodeToText'
 
 let that
 export default {
@@ -578,7 +580,6 @@ export default {
         operatingPermitImage: ''
       },
       createFormDataTemp: {
-        role: 'admin',
         unitName: '',
         shortName: '',
         aptitudeLevel: '',
@@ -636,6 +637,11 @@ export default {
     this.economyListCode()
   },
   methods: {
+    closeDialog() {
+      this.dialogFormVisible = false
+      this.createFormData = { ...this.createFormDataTemp }
+      console.log(this.createFormData, '关闭')
+    },
     // 运营状态
     getStatusCode() {
       this.listLoading = true
@@ -804,10 +810,12 @@ export default {
     },
     // 点击查看详情
     handleDetail(row) {
-      row.enconomicType = parseInt(row.enconomicType)
+      if (row.enconomicType) row.enconomicType = parseInt(row.enconomicType)
       this.rowId = row.unitId
-      const zoneId = [row.zoneId]
-      this.createFormData = { ...row, zoneId }
+      this.createFormData = { ...row }
+      if (this.createFormData.zoneId) {
+        this.createFormData.zoneId = getAreaText(this.createFormData.zoneId.toString())
+      }
       this.dialogStatus = 'detail'
       this.dialogFormVisible = true
       this.disableStatus = true
@@ -817,10 +825,12 @@ export default {
     },
     // 点击更新信息
     handleUpdate(row) {
-      row.enconomicType = parseInt(row.enconomicType)
+      if (row.enconomicType) row.enconomicType = parseInt(row.enconomicType)
       this.rowId = row.unitId
-      row.zoneId = [row.zoneId]
       this.createFormData = { ...row }
+      if (this.createFormData.zoneId) {
+        this.createFormData.zoneId = getAreaText(this.createFormData.zoneId.toString())
+      }
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.disableStatus = false
