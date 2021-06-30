@@ -124,18 +124,18 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" />
-        <el-table-column prop="platformName" label="平台名称" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="platformCode" label="平台编码" min-width="80" show-overflow-tooltip />
-        <el-table-column prop="developerName" label="服务商名称" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="serviceArea" label="服务地区范围" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="keepOnRecord" label="是否备案" min-width="100" show-overflow-tooltip>
+        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column prop="platformName" label="平台名称" min-width="150" show-overflow-tooltip align="center" />
+        <el-table-column prop="platformCode" label="平台编码" min-width="80" show-overflow-tooltip align="center" />
+        <el-table-column prop="developerName" label="服务商名称" min-width="150" show-overflow-tooltip align="center" />
+        <el-table-column prop="serviceArea" label="服务地区范围" min-width="150" show-overflow-tooltip align="center" />
+        <el-table-column prop="keepOnRecord" label="是否备案" min-width="100" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.keepOnRecord === 907000">已备案</span>
             <span v-else>未备案</span>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="平台状态" width="90">
+        <el-table-column prop="status" label="平台状态" width="90" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.status === 901000" style="color: #3CB371">正常</span>
             <span v-else style="color: #EE6666">歇业</span>

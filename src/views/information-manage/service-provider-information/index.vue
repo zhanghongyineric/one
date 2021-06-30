@@ -46,14 +46,14 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" />
-        <el-table-column prop="unitName" label="服务商名称" min-width="130" show-overflow-tooltip />
+        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column prop="unitName" label="服务商名称" min-width="130" show-overflow-tooltip align="center" />
         <el-table-column prop="contact" label="联系人" min-width="70" />
-        <el-table-column prop="businessLicenseCode" label="社会统一信用代码" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="mobilePhone" label="手机号" min-width="110" />
-        <el-table-column prop="email" label="邮箱" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="postcode" label="传真" min-width="120" />
-        <el-table-column prop="unitAddress" label="地址" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="businessLicenseCode" label="社会统一信用代码" min-width="150" show-overflow-tooltip align="center" />
+        <el-table-column prop="mobilePhone" label="手机号" min-width="110" align="center" />
+        <el-table-column prop="email" label="邮箱" min-width="120" show-overflow-tooltip align="center" />
+        <el-table-column prop="postcode" label="传真" min-width="120" align="center" />
+        <el-table-column prop="unitAddress" label="地址" min-width="150" show-overflow-tooltip align="center" />
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -161,8 +161,7 @@ import {
   selectList,
   getStatus,
   save,
-  deleteData,
-  upload
+  deleteData
 } from '@/api/information-manage/service-provider'
 import { isPhoneNumber } from '@/utils'
 import { facilitatorName } from '@/api/information-manage/car-base-information'

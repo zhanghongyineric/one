@@ -37,18 +37,6 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <!-- <el-col :md="8" :sm="24">
-                <el-form-item label="从业资格证初领日期:">
-                  <el-select v-model="listQuery.accountType" placeholder="请选择从业资格证初领日期">
-                    <el-option
-                      v-for="item in accessPlatformKinds"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col> -->
             </template>
 
             <!--查询操作按钮-->
@@ -80,26 +68,26 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" />
-        <el-table-column prop="personName" label="名字" width="120" show-overflow-tooltip />
-        <el-table-column prop="code" label="性别" width="100" show-overflow-tooltip>
+        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column prop="personName" label="名字" width="120" show-overflow-tooltip align="center" />
+        <el-table-column prop="code" label="性别" width="100" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.sex === '1'">男</span>
             <span v-else>女</span>
           </template>
         </el-table-column>
-        <el-table-column prop="idCardNum" label="身份证号" width="200" />
-        <el-table-column prop="zoneCity" label="籍贯" min-width="110" show-overflow-tooltip>
+        <el-table-column prop="idCardNum" label="身份证号" width="200" align="center" />
+        <el-table-column prop="zoneCity" label="籍贯" min-width="110" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             {{ scope.row.zoneCity | showZoneText }}
           </template>
         </el-table-column>
-        <el-table-column prop="driverVelType" label="准驾类型" min-width="150" show-overflow-tooltip>
+        <el-table-column prop="driverVelType" label="准驾类型" min-width="150" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             {{ velTypeMap.get(scope.row.driverVelType) }}
           </template>
         </el-table-column>
-        <el-table-column prop="qualificationRange" label="从业资格范围" min-width="150" show-overflow-tooltip>
+        <el-table-column prop="qualificationRange" label="从业资格范围" min-width="150" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.qualificationRange == 0">其他范围</span>
             <span v-else-if="scope.row.qualificationRange == 1">道路旅客运输</span>
@@ -259,22 +247,6 @@
               <el-input v-model="dialogData.addressDetail" clearable placeholder="请输入详细居住地址" size="small" />
             </el-form-item>
           </el-row>
-          <!-- <div style="margin-left: 23px;margin-bottom: 30px">
-            <p><b>上传证件照：</b></p>
-            <el-upload
-              ref="upload"
-              action
-              list-type="picture-card"
-              :auto-upload="false"
-              :limit="1"
-              :on-change="previewImg"
-              :on-remove="handleRemove"
-              :before-upload="previewImg"
-              :file-list="fileList"
-            >
-              <i slot="default" class="el-icon-plus" />
-            </el-upload>
-          </div> -->
         </el-form>
         <!-- 机动车驾驶证信息 -->
         <el-form
