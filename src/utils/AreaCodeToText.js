@@ -1,5 +1,3 @@
-import { CodeToText } from 'element-china-area-data'
-
 // 四川省所有市级城市的编码
 const SiChuanCityCode = new Map([
   ['510100', '成都市'],

@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { updatePassword } from '@/api/safe-code/password-update'
+import { updatePassword } from '@/api/user/password-update'
 export default {
   name: 'ChangePassword',
   props: {
