@@ -1,9 +1,3 @@
-/*
- * FileName: 新的账号管理
- * @author: ZhouJiaXing
- * @date: 2021/6/11 下午2:39
- */
-
 import createRequest from '@/utils/createRequest'
 
 const request = createRequest('/admin')
@@ -51,7 +45,7 @@ export function changeCountState(data) {
 // 新增账号
 export function addCount(data) {
   return request({
-    url: '/user/add',
+    url: '/sys/user/addUser',
     method: 'post',
     data
   })
@@ -68,7 +62,23 @@ export function updateCount(data) {
 // 删除账号
 export function deleteCount(data) {
   return request({
-    url: '/user/delete',
+    url: '/sys/user/delete',
+    method: 'post',
+    data
+  })
+}
+// 修改密码
+export function updatePassword(data) {
+  return request({
+    url: '/sys/user/edit/password',
+    method: 'post',
+    data
+  })
+}
+// 重置某个账号密码
+export function resetPassword(data) {
+  return request({
+    url: '/sys/user/resit/password',
     method: 'post',
     data
   })

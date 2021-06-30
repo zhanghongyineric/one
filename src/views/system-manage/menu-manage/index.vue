@@ -1,9 +1,3 @@
-<!--
-  - FileName: 菜单管理
-  - @author: ZhouJiaXing
-  - @date: 2021/6/8 上午10:52
-  -->
-
 <template>
   <div class="layout-content menu-manage">
     <el-card class="box-card">
@@ -94,7 +88,6 @@
                   placeholder="选择上级菜单"
                   :props="{ checkStrictly: true }"
                   style="width: 100%;"
-                  @change="change"
                 />
               </el-form-item>
             </el-col>
@@ -109,7 +102,24 @@
             </el-col>
             <el-col :span="12">
               <el-form-item v-if="form.type === '2'" label="目录图标" prop="icon">
-                <el-input v-model="form.icon" placeholder="请输入目录图标" />
+                <el-popover
+                  placement="bottom-start"
+                  width="460"
+                  trigger="click"
+                  @show="$refs['iconSelect'].reset()"
+                >
+                  <IconSelect ref="iconSelect" @selected="selected" />
+                  <el-input slot="reference" v-model="form.icon" placeholder="点击选择图标" readonly>
+                    <svg-icon
+                      v-if="form.icon"
+                      slot="prefix"
+                      :icon-class="form.icon"
+                      class="el-input__icon"
+                      style="height: 32px;width: 16px;margin-top: 4px;"
+                    />
+                    <i v-else slot="prefix" class="el-icon-search el-input__icon" />
+                  </el-input>
+                </el-popover>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -155,10 +165,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item v-if="form.noCache === '0'" label="是否缓存">
+              <el-form-item v-if="form.type === '0'" label="是否缓存">
                 <el-radio-group v-model="form.noCache">
-                  <el-radio label="0">缓存</el-radio>
-                  <el-radio label="1">不缓存</el-radio>
+                  <el-radio label="1">缓存</el-radio>
+                  <el-radio label="0">不缓存</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -175,12 +185,13 @@
 
 <script>
 import { addMenu, deleteMenu, getMenuList, updateMenu } from '@/api/system-manage/menu-manage'
+import IconSelect from '@/components/IconSelect'
 
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
 export default {
   name: 'MenuManage',
-  components: {},
+  components: { IconSelect },
   data() {
     return {
       // 遮罩层
@@ -352,6 +363,7 @@ export default {
                 message: '修改成功'
               })
               this.getList()
+              this.open = false
             })
           } else {
             const parentId = Array.isArray(this.form.parentId) ? this.form.parentId[this.form.parentId.length - 1] : this.form.parentId

@@ -1,8 +1,3 @@
-/*
- * FileName: 系统管理路由
- * @author: ZhouJiaXing
- * @date: 2021/4/15 下午2:11
- */
 import Layout from '@/layout'
 
 const systemManageRouter = {
@@ -22,6 +17,22 @@ const systemManageRouter = {
       component: () => import('@/views/system-manage/account-manage'),
       meta: {
         title: '账号管理'
+      }
+    },
+    {
+      path: 'role',
+      name: 'RoleManage',
+      component: () => import('@/views/system-manage/role-manage'),
+      meta: {
+        title: '角色管理'
+      }
+    },
+    {
+      path: 'menu',
+      name: 'MenuManage',
+      component: () => import('@/views/system-manage/menu-manage'),
+      meta: {
+        title: '菜单管理'
       }
     },
     {

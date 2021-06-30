@@ -1,9 +1,3 @@
-<!--
-  - FileName: 系统日志
-  - @author: ZhouJiaXing
-  - @date: 2021/5/11 下午4:56
-  -->
-
 <template>
   <div class="layout-content demo-page">
     <el-card class="box-card">
@@ -84,8 +78,8 @@
         <el-table-column label="操作用户" prop="username" />
         <el-table-column label="操作人ID" prop="createBy" />
         <el-table-column label="操作说明" prop="title" />
-        <el-table-column label="操作时间" prop="createTime" min-width="110px" />
-        <el-table-column label="IP" prop="remoteAddr" />
+        <el-table-column label="操作时间" prop="createTime" min-width="110px" show-overflow-tooltip />
+        <el-table-column label="IP" prop="remoteAddr" show-overflow-tooltip />
         <el-table-column label="浏览器" prop="userAgent" min-width="100px" show-overflow-tooltip />
         <el-table-column label="请求地址" prop="requestUri" min-width="100px" show-overflow-tooltip />
         <el-table-column label="请求方法" prop="method" />

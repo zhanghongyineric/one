@@ -1,9 +1,3 @@
-<!--
-  - FileName: 账号管理
-  - @author: ZhouJiaXing
-  - @date: 2021/6/9 上午11:02
-  -->
-
 <template>
   <div class="layout-content demo-page">
     <el-card class="box-card">
@@ -68,8 +62,8 @@
             {{ row.status | statusFilter }}
           </span>
         </el-table-column>
-        <el-table-column label="电话" prop="phone" />
-        <el-table-column label="创建日期" prop="createTime" />
+        <el-table-column label="电话" prop="phone" show-overflow-tooltip />
+        <el-table-column label="创建日期" prop="createTime" show-overflow-tooltip />
 
         <!--表格操作列-->
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
@@ -77,17 +71,20 @@
             <el-button type="primary" size="mini" @click="handleUpdate(row)">
               编辑
             </el-button>
-            <el-button
-              v-if="row.status === '0'"
-              size="mini"
-              type="warning"
-              @click="handleToggle(row, false)"
-            >
-              禁用
+            <el-button type="warning" size="mini" @click="handleReset(row)">
+              重置
             </el-button>
-            <el-button v-else size="mini" type="success" @click="handleToggle(row, true)">
-              启用
-            </el-button>
+            <!--<el-button-->
+            <!--  v-if="row.status === '0'"-->
+            <!--  size="mini"-->
+            <!--  type="warning"-->
+            <!--  @click="handleToggle(row, false)"-->
+            <!--&gt;-->
+            <!--  禁用-->
+            <!--</el-button>-->
+            <!--<el-button v-else size="mini" type="success" @click="handleToggle(row, true)">-->
+            <!--  启用-->
+            <!--</el-button>-->
 
             <el-popconfirm
               title="确认删除吗？"
@@ -165,6 +162,9 @@
               <el-option v-for="{label,value} in optionGroup.statusList" :key="value" :label="label" :value="value" />
             </el-select>
           </el-form-item>
+          <el-form-item label="密码:" prop="password">
+            <el-input v-model="createFormData.password" show-password placeholder="请输入密码" />
+          </el-form-item>
 
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -184,10 +184,12 @@
 
 import {
   fetchList,
-  // createAccount,
-  // updateAccount,
   fetchDeptTree,
-  fetchRoleList, updateCount
+  fetchRoleList,
+  updateCount,
+  resetPassword,
+  addCount,
+  deleteCount
 } from '@/api/system-manage/account-manage'
 import Pagination from '@/components/Pagination'
 import { isPhoneNumber } from '@/utils' // 分页
@@ -244,24 +246,27 @@ export default {
         username: '',
         alias: '',
         roleIds: '',
-        status: '',
+        status: '0',
         phone: '',
-        deptId: ''
+        deptId: '',
+        password: ''
       }, // 存储新增和编辑框的数据
       createFormDataTemp: {
         username: '',
         alias: '',
         roleIds: '',
-        status: '',
+        status: '0',
         phone: '',
-        deptId: ''
+        deptId: '',
+        password: ''
       }, // 用于重置新增的数据
       rules: {
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         alias: [{ required: true, message: '请输入别名	', trigger: 'blur' }],
         roleIds: [{ required: true, message: '请选择角色', trigger: 'blur' }],
         deptId: [{ required: true, message: '请选择部门', trigger: 'blur' }],
-        phone: [{ required: false, trigger: 'blur', validator: validateUnitTel }]
+        phone: [{ required: false, trigger: 'blur', validator: validateUnitTel }],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }, { min: 6, message: '密码长度必须大于6位', trigger: 'blur' }]
       }, // 新增和编辑框的规则
       textMap: {
         update: '编辑',
@@ -277,6 +282,24 @@ export default {
     this.getDeptList()
   },
   methods: {
+    // 重置密码
+    handleReset({ userId }) {
+      this.$prompt('请输入密码', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /[0-9A-Za-z]{6,}/,
+        inputErrorMessage: '密码需要大于6位'
+      }).then(({ value }) => {
+        resetPassword({ userId, newPassword: value }).then(_ => {
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+        })
+      }).catch(_ => {
+        console.log('操作取消')
+      })
+    },
     // 获取角色列表
     getRoleList() {
       fetchRoleList().then(res => {
@@ -356,20 +379,24 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          // createApi(this.createFormData).then(() => {
-          //   this.dialogFormVisible = false
-          //   this.buttonLoading = false
-          //   this.getList()
-          //   this.$notify({
-          //     title: '成功',
-          //     message: '新增成功',
-          //     type: 'success',
-          //     duration: 2000
-          //   })
-          // }).catch((e) => {
-          //   this.buttonLoading = false
-          //   console.log(e)
-          // })
+
+          const { deptId } = this.createFormData
+          const deptId_format = Array.isArray(deptId) ? deptId[deptId.length - 1] : deptId
+
+          addCount({ ...this.createFormData, deptId: deptId_format }).then(() => {
+            this.dialogFormVisible = false
+            this.buttonLoading = false
+            this.getList()
+            this.$notify({
+              title: '成功',
+              message: '新增成功',
+              type: 'success',
+              duration: 2000
+            })
+          }).catch((e) => {
+            this.buttonLoading = false
+            console.log(e)
+          })
         }
       })
     },
@@ -417,23 +444,23 @@ export default {
     // 删除数据
     handleDelete(row) {
       this.listLoading = true
-      // deleteApi(row.id).then(() => {
-      //   this.dialogFormVisible = false
-      //   this.listLoading = false
-      //   if (this.list.length === 1 && this.listQuery.pageNumber !== 1) {
-      //     this.listQuery.pageNumber--
-      //   }
-      //   this.getList()
-      //   this.$notify({
-      //     title: '成功',
-      //     message: '删除成功',
-      //     type: 'success',
-      //     duration: 2000
-      //   })
-      // }).catch((e) => {
-      //   this.listLoading = false
-      //   console.log(e)
-      // })
+      deleteCount({ id: row.userId }).then(_ => {
+        this.dialogFormVisible = false
+        this.listLoading = false
+        if (this.list.length === 1 && this.listQuery.pageNumber !== 1) {
+          this.listQuery.pageNumber--
+        }
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
+      }).catch((e) => {
+        this.listLoading = false
+        console.log(e)
+      })
     }
   }
 }
