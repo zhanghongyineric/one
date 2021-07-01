@@ -9,15 +9,16 @@
 
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
-              <el-form-item label="所属地区:">
-                <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
+              <el-form-item label="企业名称:">
+                <el-input v-model="listQuery.unitName" clearable placeholder="请输入企业名称" @keyup.enter.native="handleSearch" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="运营状态:">
-                <el-select v-model="listQuery.status" placeholder="请选择运营状态">
+              <el-form-item label="运营类型:">
+                <el-select v-model="listQuery.operationType" placeholder="请选择企业类型">
+                  <!-- <el-option value="" label="全部" /> -->
                   <el-option
-                    v-for="item in optionGroup.accountTypeList"
+                    v-for="item in optionGroup.companyTypes"
                     :key="item.label"
                     :label="item.value"
                     :value="item.label"
@@ -29,11 +30,10 @@
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
-                <el-form-item label="企业类型:">
-                  <el-select v-model="listQuery.operationType" placeholder="请选择企业类型">
-                    <!-- <el-option value="" label="全部" /> -->
+                <el-form-item label="运营状态:">
+                  <el-select v-model="listQuery.status" placeholder="请选择运营状态">
                     <el-option
-                      v-for="item in optionGroup.companyTypes"
+                      v-for="item in optionGroup.accountTypeList"
                       :key="item.label"
                       :label="item.value"
                       :value="item.label"
@@ -42,8 +42,8 @@
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
-                <el-form-item label="企业名称:">
-                  <el-input v-model="listQuery.unitName" clearable placeholder="请输入企业名称" @keyup.enter.native="handleSearch" />
+                <el-form-item label="所属地区:">
+                  <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
                 </el-form-item>
               </el-col>
             </template>
@@ -89,6 +89,9 @@
         </el-table-column>
         <el-table-column v-slot="{row}" label="运营类型" prop="operationType" min-width="300" align="center">
           {{ row.operationType | companyRoleFilter }}
+        </el-table-column>
+        <el-table-column v-slot="{row}" label="所属地区" prop="zoneId" min-width="200" align="center">
+          {{ row.zoneId | companyZoneFilter }}
         </el-table-column>
         <el-table-column v-slot="{row}" label="运营状态" prop="status" width="300" align="center">
           {{ row.status | companyStatusFilter }}
@@ -354,28 +357,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <!-- <el-row>
-            <el-form-item v-if="dialogStatus==='detail'" label="有关图片:" prop="operatingPermitImage">
-              <p class="img-tit">
-                <span v-if="!operatingPermitImage.length">未上传图片</span>
-              </p>
-              <div class="dialog-imgs">
-                <div
-                  v-for="img in operatingPermitImage"
-                  :key="img"
-                  class="img-con"
-                >
-                  <el-image
-                    class="dialog-img"
-                    :src="img"
-                    fit="cover"
-                    :preview-src-list="operatingPermitImage"
-                    :z-index="3000"
-                  />
-                </div>
-              </div>
-            </el-form-item>
-          </el-row> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="closeDialog">
@@ -425,6 +406,7 @@ import AreaSelect from '@/components/AreaSelect'
 import { isPhoneNumber } from '@/utils'
 import { companyLevel } from '@/options'
 import getAreaText from '@/utils/AreaCodeToText'
+import { CodeToText } from 'element-china-area-data'
 
 let that
 export default {
@@ -450,6 +432,12 @@ export default {
         }
       })
       return statusText
+    },
+    companyZoneFilter: function(zoneid) {
+      if (zoneid) {
+        const zoneText = CodeToText[zoneid.toString()]
+        return zoneText
+      } else return ''
     }
   },
   data() {

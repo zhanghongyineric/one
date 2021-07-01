@@ -54,6 +54,11 @@
         <el-table-column prop="email" label="邮箱" min-width="120" show-overflow-tooltip align="center" />
         <el-table-column prop="postcode" label="传真" min-width="120" align="center" />
         <el-table-column prop="unitAddress" label="地址" min-width="150" show-overflow-tooltip align="center" />
+        <el-table-column prop="status" label="状态" min-width="150" align="center">
+          <template slot-scope="scope">
+            <span :style="scope.row.status | styleFilter">{{ scope.row.status | statusFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -124,23 +129,6 @@
               <el-option v-for="item in statusOption" :key="item.label" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
-          <!-- <div style="margin-left: 53px;margin-bottom: 30px">
-            <p><b>服务商logo：</b></p>
-            <el-upload
-              ref="upload"
-              action
-              list-type="picture-card"
-              :auto-upload="false"
-              :limit="1"
-              :multiple="true"
-              :on-change="previewImg"
-              :on-remove="handleRemove"
-              :before-upload="previewImg"
-              :file-list="fileList"
-            >
-              <i slot="default" class="el-icon-plus" />
-            </el-upload>
-          </div> -->
         </el-form>
         <span v-if="detail" style="margin-left: 35%">
           <el-button type="danger" @click="delData()">删除</el-button>
@@ -166,9 +154,39 @@ import {
 import { isPhoneNumber } from '@/utils'
 import { facilitatorName } from '@/api/information-manage/car-base-information'
 
+let that
+
 export default {
   name: 'ServiceProviderInformation',
   components: { Pagination },
+  filters: {
+    statusFilter(status) {
+      let statusText
+      that.statusOption.forEach(item => {
+        if (item.value === status) {
+          statusText = item.label
+        }
+      })
+      return statusText
+    },
+    styleFilter(status) {
+      let statusText
+      that.statusOption.forEach(item => {
+        if (item.value === status) {
+          statusText = item.label
+        }
+      })
+      if (statusText === '正常') {
+        return {
+          'color': 'green'
+        }
+      } else {
+        return {
+          'color': 'red'
+        }
+      }
+    }
+  },
   data() {
     const validateUnitTel = (rule, value, callback) => {
       if (!isPhoneNumber(value)) {
@@ -230,6 +248,9 @@ export default {
       currentRow: {},
       fileList: []
     }
+  },
+  beforeCreate() {
+    that = this
   },
   created() {
     this.getStatusCode()
