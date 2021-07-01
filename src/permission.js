@@ -38,7 +38,6 @@ router.beforeEach(async(to, from, next) => {
           }
 
           const accessRoutes = await store.dispatch('permission/generateRoutes')
-          console.log('当前用户的菜单', JSON.parse(JSON.stringify(accessRoutes)))
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
 

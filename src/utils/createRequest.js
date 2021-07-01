@@ -40,7 +40,6 @@ export default function createRequest(baseUrl) {
   service.interceptors.response.use(
     response => {
       const res = response.data
-      // 捕获文件流，直接下载
       if (res instanceof Blob) {
         if (response.headers['content-file'] === 'no') {
           Message({

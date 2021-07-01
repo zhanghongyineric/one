@@ -37,6 +37,11 @@ const baseRouter = [
     path: '/401',
     component: () => import('@/views/error-page/401'),
     hidden: true
+  },
+  {
+    path: '/nopermission',
+    component: () => import('@/views/error-page/noPermission'),
+    hidden: true
   }
 ]
 
