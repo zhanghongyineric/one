@@ -5,13 +5,11 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div v-if="role" class="right-menu">
-      <div class="role">
-        当前身份:{{ role |roleFilter }}
-      </div>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
+          <span style="font-weight: bold;margin-right: 15px">当前身份:{{ roleName }}</span>
           <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px" />
-          <span class="username">{{ name }}</span>
+          <span class="username">{{ name || '-' }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <el-dropdown-item @click.native="handleUpdate">
@@ -36,7 +34,6 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import ChangePassword from './ChangePassword'
 import Hamburger from '@/components/Hamburger'
-import { roleOption } from '@/options'
 import connect from '@/utils/mqtt'
 
 export default {
@@ -44,11 +41,6 @@ export default {
     Breadcrumb,
     Hamburger,
     ChangePassword
-  },
-  filters: {
-    roleFilter: function(role) {
-      return roleOption.map[role]
-    }
   },
   data() {
     return {
@@ -59,15 +51,11 @@ export default {
     ...mapGetters([
       'sidebar',
       'name',
-      'role'
+      'role',
+      'roleName',
+      'unitName',
+      'area'
     ])
-  },
-  created() {
-    // this.initMqtt() //初始化mqtt
-  },
-  beforeDestroy() {
-    // this.client.end(true)// passing it to true will close the client right away, without waiting for the in-flight messages to be acked. This parameter is optional.
-    // console.log('关闭链接')
   },
   methods: {
     initMqtt() {
