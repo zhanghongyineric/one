@@ -9,6 +9,7 @@ const getDefaultState = () => {
     name: '', // 账号名
     unitName: '', // 企业名称 不一定有
     role: '',
+    roleName: '',
     province: '',
     city: '',
     region: '',
@@ -33,6 +34,9 @@ const mutations = {
   },
   SET_ROLE: (state, role) => {
     state.role = role
+  },
+  SET_ROLE_NAME: (state, roleName) => {
+    state.roleName = roleName
   },
   SET_UNIT_ID: (state, unitId) => {
     state.unitId = unitId
@@ -86,10 +90,16 @@ const actions = {
           return Promise.reject(new Error('Verification failed, please Login again.'))
         }
 
-        const { sysUser } = data
+        const { sysUser, roles } = data
         const { alias, deptId, deptName, id } = sysUser
+
+        if (roles.length === 0) {
+          return Promise.reject('未获取到账号角色,请联系管理员进行分配')
+        }
+
         commit('SET_NAME', { alias, deptName })
-        commit('SET_ROLE', 'admin')
+        commit('SET_ROLE', roles[0].roleCode) // 系统暂时使用单角色，将配置的第一个角色作为账号角色
+        commit('SET_ROLE_NAME', roles[0].roleName) // 系统暂时使用单角色，将配置的第一个角色作为账号角色
         commit('SET_UNIT_ID', deptId)
         // commit('SET_LOCATION', { province, city, region, area })
         commit('SET_USER_ID', id)

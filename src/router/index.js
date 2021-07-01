@@ -1,17 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Layout from '@/layout'
+// import Layout from '@/layout'
 
 /*
   引入路由模块
 */
 import baseRouter from './modules/base'
-import systemManageRouter from './modules/system-manage'
-import informationManageRouter from '@/router/modules/information-manage'
-import officialWebsite from '@/router/modules/official-website'
-import liveMonitorRouter from '@/router/modules/live-monitor'
-import statisticsInquireRouter from '@/router/modules/statistics-inquire'
-import businessManagementRouter from '@/router/modules/business-management'
+// import systemManageRouter from './modules/system-manage'
+// import informationManageRouter from '@/router/modules/information-manage'
+// import officialWebsite from '@/router/modules/official-website'
+// import liveMonitorRouter from '@/router/modules/live-monitor'
+// import statisticsInquireRouter from '@/router/modules/statistics-inquire'
+// import businessManagementRouter from '@/router/modules/business-management'
 
 Vue.use(Router)
 
@@ -48,48 +48,48 @@ export const constantRoutes = [
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
  */
-export const asyncRoutes = [
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/InformationHome',
-    children: [{
-      path: 'InformationHome',
-      name: 'InformationHome',
-      component: () => import('@/views/information-manage/home'),
-      meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin'] }
-    }]
-  },
+// export const asyncRoutes = [
+//   {
+//     path: '/',
+//     component: Layout,
+//     redirect: '/InformationHome',
+//     children: [{
+//       path: 'InformationHome',
+//       name: 'InformationHome',
+//       component: () => import('@/views/information-manage/home'),
+//       meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin'] }
+//     }]
+//   },
 
-  liveMonitorRouter, // 实时监控
-  statisticsInquireRouter, // 统计查询
-  businessManagementRouter, // 业务管理
-  informationManageRouter, // 信息管理
-  officialWebsite, // 官网管理
-  systemManageRouter, // 系统管理路由 <<<<<<<这个放最下面，新增的放上面>>>>>>>
-  {
-    path: '/advertising-management',
-    component: Layout,
-    redirect: 'noRedirect',
-    hidden: false,
-    alwaysShow: false,
-    meta: {
-      title: '广告管理',
-      icon: 'el-icon-star-on',
-      roles: ['admin']
-    },
-    children: [
-      {
-        path: 'advertising-management1',
-        name: 'AdvertisingManagement',
-        component: () => import('@/views/advertising-management'),
-        meta: { title: '广告管理' }
-      }
-    ]
-  },
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
-]
+//   liveMonitorRouter, // 实时监控
+//   statisticsInquireRouter, // 统计查询
+//   businessManagementRouter, // 业务管理
+//   informationManageRouter, // 信息管理
+//   officialWebsite, // 官网管理
+//   systemManageRouter, // 系统管理路由
+//   {
+//     path: '/advertising-management',
+//     component: Layout,
+//     redirect: 'noRedirect',
+//     hidden: false,
+//     alwaysShow: false,
+//     meta: {
+//       title: '广告管理',
+//       icon: 'el-icon-star-on',
+//       roles: ['admin']
+//     },
+//     children: [
+//       {
+//         path: 'advertising-management1',
+//         name: 'AdvertisingManagement',
+//         component: () => import('@/views/advertising-management'),
+//         meta: { title: '广告管理' }
+//       }
+//     ]
+//   },
+//   // 404 page must be placed at the end !!!
+//   { path: '*', redirect: '/404', hidden: true }
+// ]
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support

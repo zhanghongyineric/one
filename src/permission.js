@@ -4,11 +4,11 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import { Message } from 'element-ui'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
-
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
@@ -34,12 +34,11 @@ router.beforeEach(async(to, from, next) => {
           const { sysUser } = await store.dispatch('user/getInfo')
 
           if (!sysUser.username) {
-            throw new Error('没有用户信息')
+            Promise.reject('没有获取到用户信息')
           }
 
-          // fixme:暂时写死，后面菜单配置好了换成数组
-          const accessRoutes = await store.dispatch('permission/generateRoutes', 'admin')
-
+          const accessRoutes = await store.dispatch('permission/generateRoutes')
+          console.log('当前用户的菜单', JSON.parse(JSON.stringify(accessRoutes)))
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
 
@@ -48,6 +47,11 @@ router.beforeEach(async(to, from, next) => {
           next({ ...to, replace: true })
         } catch (error) {
           console.log(error)
+          Message({
+            message: error,
+            type: 'error',
+            duration: 5 * 1000
+          })
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
           next(`/login?redirect=${to.path}`)

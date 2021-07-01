@@ -34,10 +34,17 @@ export function deleteMenu(id) {
     method: 'get'
   })
 }
-// 返回角色的菜单ID集合
+// 返回角色已分配的菜单ID集合
 export function getMenuByRole(id) {
   return request({
     url: `/sys/menu/tree/${id}`,
+    method: 'get'
+  })
+}
+// 返回账号已分配的菜单ID集合
+export function getMenuByAccount() {
+  return request({
+    url: `/sys/menu`,
     method: 'get'
   })
 }
