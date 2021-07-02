@@ -78,3 +78,11 @@ export function queryRange() {
     method: 'POST'
   })
 }
+
+// 准驾车型
+export function queryPermitType() {
+  return request({
+    url: '/driver/queryPermitType',
+    method: 'POST'
+  })
+}

@@ -34,10 +34,10 @@
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
-                <el-form-item label="接入平台性质:">
-                  <el-select v-model="listQuery.characterCode" placeholder="请选择接入平台性质">
+                <el-form-item label="平台支持功能:">
+                  <el-select v-model="listQuery.functions" placeholder="请选择平台支持功能">
                     <el-option
-                      v-for="item in accessPlatformBelong"
+                      v-for="item in platformSupportFeatures"
                       :key="item.label"
                       :label="item.value"
                       :value="item.label"
@@ -58,10 +58,10 @@
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
-                <el-form-item label="平台支持功能:">
-                  <el-select v-model="listQuery.functions" placeholder="请选择平台支持功能">
+                <el-form-item label="接入平台性质:">
+                  <el-select v-model="listQuery.characterCode" placeholder="请选择接入平台性质">
                     <el-option
-                      v-for="item in platformSupportFeatures"
+                      v-for="item in accessPlatformBelong"
                       :key="item.label"
                       :label="item.value"
                       :value="item.label"
@@ -126,19 +126,38 @@
       >
         <el-table-column type="index" label="编号" width="50" align="center" />
         <el-table-column prop="platformName" label="平台名称" min-width="150" show-overflow-tooltip align="center" />
-        <el-table-column prop="platformCode" label="平台编码" min-width="80" show-overflow-tooltip align="center" />
+        <el-table-column prop="characterCode" label="接入平台性质" min-width="120" show-overflow-tooltip align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.characterCode | characterCodeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="typeCode" label="接入平台类型" min-width="120" show-overflow-tooltip align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.typeCode | typeCodeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="functions" label="平台支持功能" min-width="120" show-overflow-tooltip align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.functions | functionsFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="serviceVehicleTypeCode" label="服务车辆类型" min-width="120" show-overflow-tooltip align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.serviceVehicleTypeCode | serviceVehicleTypeCodeFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="developerName" label="服务商名称" min-width="150" show-overflow-tooltip align="center" />
         <el-table-column prop="serviceArea" label="服务地区范围" min-width="150" show-overflow-tooltip align="center" />
-        <el-table-column prop="keepOnRecord" label="是否备案" min-width="100" show-overflow-tooltip align="center">
+        <el-table-column prop="keepOnRecord" label="备案状态" min-width="100" show-overflow-tooltip align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.keepOnRecord === 907000">已备案</span>
-            <span v-else>未备案</span>
+            <span>{{ scope.row.keepOnRecord | keepOnRecordFilter }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="平台状态" width="90" align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.status === 901000" style="color: #3CB371">正常</span>
-            <span v-else style="color: #EE6666">歇业</span>
+            <span
+              :style="scope.row.status | styleFilter"
+            >{{ scope.row.status | statusFilter }}</span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200" align="center">
@@ -426,9 +445,110 @@ import {
 } from '@/api/information-manage/access-platform'
 import { platformInfoName } from '@/api/information-manage/car-base-information'
 
+let that
+
 export default {
   name: 'AccessPlatformInformation',
   components: { Pagination },
+  filters: {
+    characterCodeFilter(code) {
+      if (code) {
+        let text
+        that.accessPlatformBelong.forEach(item => {
+          // eslint-disable-next-line eqeqeq
+          if (item.label == code) {
+            text = item.value
+          }
+        })
+        return text
+      }
+    },
+    typeCodeFilter(code) {
+      if (code) {
+        let text
+        that.accessPlatformKinds.forEach(item => {
+          // eslint-disable-next-line eqeqeq
+          if (item.label == code) {
+            text = item.value
+          }
+        })
+        return text
+      }
+    },
+    functionsFilter(fn) {
+      if (fn) {
+        let text = ''; const fnArr = fn.split(','); const textArr = []
+        fnArr.forEach(f => {
+          that.platformSupportFeatures.forEach(item => {
+            // eslint-disable-next-line eqeqeq
+            if (item.label == f) {
+              const temp = item.value
+              textArr.push(temp)
+            }
+          })
+        })
+        text = textArr.join(',')
+        return text
+      }
+    },
+    serviceVehicleTypeCodeFilter(fn) {
+      if (fn) {
+        let text = ''; const fnArr = fn.split(','); const textArr = []
+        fnArr.forEach(f => {
+          that.serviceCarKinds.forEach(item => {
+            // eslint-disable-next-line eqeqeq
+            if (item.label == f) {
+              const temp = item.value
+              textArr.push(temp)
+            }
+          })
+        })
+        text = textArr.join(',')
+        return text
+      }
+    },
+    statusFilter(status) {
+      if (status) {
+        let text
+        that.platformStatus.forEach(item => {
+          if (item.label === status) {
+            text = item.value
+          }
+        })
+
+        return text
+      }
+    },
+    styleFilter(status) {
+      if (status) {
+        let text
+        that.platformStatus.forEach(item => {
+          if (item.label === status) {
+            text = item.value
+          }
+        })
+        if (text === '正常') {
+          return {
+            'color': '#3CB371'
+          }
+        } else {
+          return {
+            'color': '#EE6666'
+          }
+        }
+      }
+    },
+    keepOnRecordFilter(record) {
+      let text
+      that.recordStatus.forEach(item => {
+        // eslint-disable-next-line eqeqeq
+        if (item.label == record) {
+          text = item.value
+        }
+      })
+      return text
+    }
+  },
   data() {
     return {
       advanced: false,
@@ -508,6 +628,9 @@ export default {
       connectMap: new Map(),
       versionMap: new Map()
     }
+  },
+  beforeCreate() {
+    that = this
   },
   created() {
     this.getQueryConditions()

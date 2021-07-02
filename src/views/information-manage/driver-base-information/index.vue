@@ -6,25 +6,61 @@
           <el-row :gutter="48">
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
-              <el-form-item label="所属地区:">
-                <el-cascader v-model="listQuery.zoneCity" size="small" :options="cityOptions" />
+              <el-form-item label="驾驶员名字:">
+                <el-input v-model="listQuery.personName" placeholder="请输入驾驶员名字" size="small" clearable />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="从业资格范围:">
-                <el-select v-model="listQuery.qualificationRange" placeholder="请选择从业资格范围">
-                  <el-option
-                    v-for="item in qualificationRangeOption"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
-                  />
-                </el-select>
+              <el-form-item label="身份证号:">
+                <el-input v-model="listQuery.idCardNum" placeholder="请输入驾驶员身份证号" size="small" clearable />
               </el-form-item>
             </el-col>
 
             <!--高级搜索条件-->
             <template v-if="advanced">
+              <el-col :md="8" :sm="24">
+                <el-form-item label="所属运输企业:">
+                  <el-autocomplete
+                    v-model="listQuery.unitName"
+                    :fetch-suggestions="searchType"
+                    placeholder="请输入企业名称关键字"
+                    :debounce="500"
+                    size="small"
+                    clearable
+                    @select="searchCompany"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="8" :sm="24">
+                <el-form-item label="准驾车型:">
+                  <el-select v-model="listQuery.driverVelType" size="small" placeholder="请选择准驾车型">
+                    <el-option
+                      v-for="item in driverVelTyeOptions"
+                      :key="item.value"
+                      :label="item.value"
+                      :value="item.label"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+
+              <el-col :md="8" :sm="24">
+                <el-form-item label="从业资格范围:">
+                  <el-select v-model="listQuery.qualificationRange" placeholder="请选择从业资格范围">
+                    <el-option
+                      v-for="item in qualificationRangeOption"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="8" :sm="24">
+                <el-form-item label="所属地区:">
+                  <el-cascader v-model="listQuery.qualificationCity" size="small" :options="cityOptions" />
+                </el-form-item>
+              </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="状态:">
                   <el-select v-model="listQuery.status" placeholder="请选择状态">
@@ -77,22 +113,25 @@
           </template>
         </el-table-column>
         <el-table-column prop="idCardNum" label="身份证号" width="200" align="center" />
-        <el-table-column prop="zoneCity" label="籍贯" min-width="110" show-overflow-tooltip align="center">
+
+        <el-table-column prop="qualificationCity" label="所属地区" min-width="110" show-overflow-tooltip align="center">
           <template slot-scope="scope">
-            {{ scope.row.zoneCity | showZoneText }}
+            {{ scope.row.qualificationCity | showZoneText }}
           </template>
         </el-table-column>
-        <el-table-column prop="driverVelType" label="准驾类型" min-width="150" show-overflow-tooltip align="center">
+        <el-table-column prop="driverVelType" label="准驾车型" min-width="150" show-overflow-tooltip align="center">
           <template slot-scope="scope">
-            {{ velTypeMap.get(scope.row.driverVelType) }}
+            <span>{{ scope.row.driverVelType | driverVelTypeFilter }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="qualificationRange" label="从业资格范围" min-width="150" show-overflow-tooltip align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.qualificationRange == 0">其他范围</span>
-            <span v-else-if="scope.row.qualificationRange == 1">道路旅客运输</span>
-            <span v-else-if="scope.row.qualificationRange == 2">道路货物运输</span>
-            <span v-else-if="scope.row.qualificationRange == 3">道路危险品运输</span>
+            <span>{{ scope.row.qualificationRange | qualificationRangeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" min-width="80" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.status | statusFilter }}</span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200" align="center">
@@ -272,8 +311,8 @@
                   <el-option
                     v-for="item in driverVelTyeOptions"
                     :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :label="item.value"
+                    :value="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -453,10 +492,7 @@
 <script>
 import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
-import {
-  cultureOptions,
-  driverVelTyeOptions
-} from '@/options'
+import { cultureOptions } from '@/options'
 import {
   selectList,
   driverSave,
@@ -466,10 +502,13 @@ import {
   queryQualification,
   enterpriseName,
   driverStatus,
-  queryRange
+  queryRange,
+  queryPermitType
 } from '@/api/information-manage/driver-base-information'
 import { isPhoneNumber } from '@/utils'
 import getAreaText from '@/utils/AreaCodeToText'
+
+let that
 
 export default {
   name: 'DriverBaseInformation',
@@ -477,6 +516,33 @@ export default {
   filters: {
     showZoneText(zoneid) {
       const text = CodeToText[zoneid]
+      return text
+    },
+    statusFilter(status) {
+      let text
+      that.driverStatusOption.forEach(item => {
+        if (item.label === status) {
+          text = item.value
+        }
+      })
+      return text
+    },
+    driverVelTypeFilter(type) {
+      let text
+      that.driverVelTyeOptions.forEach(item => {
+        if (item.label === type) {
+          text = item.value
+        }
+      })
+      return text
+    },
+    qualificationRangeFilter(range) {
+      let text
+      that.qualificationRangeOption.forEach(item => {
+        if (item.label === range.toString()) {
+          text = item.value
+        }
+      })
       return text
     }
   },
@@ -492,8 +558,7 @@ export default {
     }
     return {
       queryQualificationOptions: [],
-      driverVelTyeOptions: driverVelTyeOptions.list,
-      velTypeMap: new Map(),
+      driverVelTyeOptions: [],
       cultureOptions: cultureOptions.list,
       cityOptions: regionData,
       qualificationRangeOption: [],
@@ -507,7 +572,9 @@ export default {
         personName: '',
         zoneCity: null,
         status: '',
-        qualificationRange: ''
+        qualificationRange: '',
+        idCardNum: '',
+        unitId: ''
       },
       dialogVisible: false,
       tableData: [],
@@ -565,20 +632,25 @@ export default {
       currentRow: {}
     }
   },
+  beforeCreate() { that = this },
   created() {
+    this.getPermitType()
     this.getQueryQualification()
     this.getDriverStatus()
-    this.setVelTypeMap()
     this.getDriverRange()
   },
   mounted() {
     this.getList()
   },
   methods: {
-    setVelTypeMap() {
-      driverVelTyeOptions.list.forEach(item => {
-        this.velTypeMap.set(item.value, item.label)
-      })
+    getPermitType() {
+      queryPermitType()
+        .then(res => {
+          this.driverVelTyeOptions = res.data
+        })
+        .catch(err => {
+          throw err
+        })
     },
     getDriverRange() {
       queryRange()
@@ -621,6 +693,10 @@ export default {
     selectCompany(val) {
       this.dialogData.unitId = val.unitId
       this.dialogData.unitName = val.unitName
+    },
+    searchCompany(val) {
+      this.listQuery.unitId = val.unitId
+      this.listQuery.unitName = val.unitName
     },
     getQueryQualification() {
       queryQualification()
@@ -711,7 +787,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      if (this.listQuery.zoneCity) this.listQuery.zoneCity = parseInt(this.listQuery.zoneCity[2])
+      if (this.listQuery.qualificationCity) this.listQuery.qualificationCity = parseInt(this.listQuery.qualificationCity[2])
       selectList({ ...this.listQuery })
         .then(res => {
           const { data } = res
@@ -764,6 +840,9 @@ export default {
     dataChange() {
       this.dialogData.zoneCity = parseInt(this.dialogData.zoneCity[2]) || parseInt(this.dialogData.zoneCity[1])
       this.dialogData.addressCity = parseInt(this.dialogData.addressCity[2]) || parseInt(this.dialogData.zoneCity[1])
+      this.dialogData.zonePre = this.dialogData.qualificationCity[0]
+      this.dialogData.qualificationZoneCity = this.dialogData.qualificationCity[1]
+      this.dialogData.zoneArea = this.dialogData.qualificationCity[2]
       this.dialogData.qualificationCity = parseInt(this.dialogData.qualificationCity[2]) || parseInt(this.dialogData.qualificationCity[1])
     },
     submit() {

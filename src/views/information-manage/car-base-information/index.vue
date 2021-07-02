@@ -12,10 +12,10 @@
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="营运状态:">
-                <el-select v-model="listQuery.operateStatus" placeholder="请选择运营状态">
+              <el-form-item label="车辆类型:">
+                <el-select v-model="listQuery.vehicleType" placeholder="请选择车辆类型">
                   <el-option
-                    v-for="item in operateStatusOptions"
+                    v-for="item in vehicleTypeOptions"
                     :key="item.label"
                     :label="item.value"
                     :value="item.label"
@@ -23,35 +23,14 @@
                 </el-select>
               </el-form-item>
             </el-col>
+
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
-                <el-form-item label="所属地区:">
-                  <el-cascader
-                    v-model="listQuery.zoneId"
-                    size="small"
-                    :options="cityOptions"
-                    placeholder="请选择所属地区"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="具备功能:">
-                  <el-select v-model="listQuery.functions" placeholder="请选择具备功能">
+                <el-form-item label="运营状态:">
+                  <el-select v-model="listQuery.operateStatus" placeholder="请选择运营状态">
                     <el-option
-                      v-for="item in functionsOptions"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="车辆类型:">
-                  <el-select v-model="listQuery.vehicleType" placeholder="请选择车辆类型">
-                    <el-option
-                      v-for="item in vehicleTypeOptions"
+                      v-for="item in operateStatusOptions"
                       :key="item.label"
                       :label="item.value"
                       :value="item.label"
@@ -67,6 +46,28 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+              <el-col :md="8" :sm="24">
+                <el-form-item label="所属地区:">
+                  <el-cascader
+                    v-model="listQuery.zoneId"
+                    size="small"
+                    :options="cityOptions"
+                    placeholder="请选择所属地区"
+                  />
+                </el-form-item>
+              </el-col>
+              <!-- <el-col :md="8" :sm="24">
+                <el-form-item label="具备功能:">
+                  <el-select v-model="listQuery.functions" placeholder="请选择具备功能">
+                    <el-option
+                      v-for="item in functionsOptions"
+                      :key="item.label"
+                      :label="item.value"
+                      :value="item.label"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col> -->
             </template>
 
             <!--查询操作按钮-->
@@ -114,6 +115,11 @@
         <el-table-column label="车牌颜色" prop="plateColor" min-width="100" align="center">
           <template v-if="scope.row.plateColor" slot-scope="scope">
             <span>{{ plateColorMap.get(scope.row.plateColor.toString()) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="所属地区" prop="zoneId" min-width="100" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.zoneId | zoneFilter }}</span>
           </template>
         </el-table-column>
         <el-table-column label="是否双驾" prop="doubleDrivers" width="100" align="center">
@@ -387,26 +393,22 @@
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="开始时间" prop="doubleDriversBeginTime" size="small">
+              <el-form-item label="双驾开始时间" prop="doubleDriversBeginTime" size="small">
                 <el-date-picker
                   v-model="createFormData.doubleDriversBeginTime"
-                  clearable
-                  type="date"
-                  placeholder="请选择双驾开始时间"
-                  format="yyyy 年 MM 月 dd 日"
-                  value-format="yyyy-MM-dd"
+                  type="datetime"
+                  placeholder="选择双驾开始日期时间"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                 />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="结束时间" prop="doubleDriversEndTime" size="small">
+              <el-form-item label="双驾结束时间" prop="doubleDriversEndTime" size="small">
                 <el-date-picker
                   v-model="createFormData.doubleDriversEndTime"
-                  clearable
-                  type="date"
-                  placeholder="请选择双驾结束时间"
-                  format="yyyy 年 MM 月 dd 日"
-                  value-format="yyyy-MM-dd"
+                  type="datetime"
+                  placeholder="选择双驾结束日期时间"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                 />
               </el-form-item>
             </el-col>
@@ -1010,7 +1012,7 @@ import {
   queryUseNature,
   queryCarColor
 } from '@/api/information-manage/car-base-information'
-import { provinceAndCityData } from 'element-china-area-data'
+import { provinceAndCityData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import getAreaText from '@/utils/AreaCodeToText'
 
@@ -1036,6 +1038,10 @@ export default {
     showDoubleDrivers(temp) {
       if (temp === 0 || temp === '0') return '是'
       if (temp === 1 || temp === '1') return '否'
+    },
+    zoneFilter(zoneid) {
+      const text = CodeToText[zoneid]
+      return text
     }
   },
   data() {
