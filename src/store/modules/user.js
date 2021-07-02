@@ -97,8 +97,8 @@ const actions = {
           return Promise.reject('未获取到账号角色,请联系管理员进行分配')
         }
 
-        if (roles[0].roleCode === 'admin') {
-          return Promise.reject('政府企业管理员不允许进入该系统,请移步政府企业端')
+        if (roles[0].roleCode !== 'admin_monitor') {
+          return Promise.reject('该账号无权访问该系统,请更换账号登录！')
         }
 
         commit('SET_NAME', { alias, deptName })
