@@ -97,6 +97,10 @@ const actions = {
           return Promise.reject('未获取到账号角色,请联系管理员进行分配')
         }
 
+        if (roles[0].roleCode === 'admin') {
+          return Promise.reject('政府企业管理员不允许进入该系统,请移步政府企业端')
+        }
+
         commit('SET_NAME', { alias, deptName })
         commit('SET_ROLE', roles[0].roleCode) // 系统暂时使用单角色，将配置的第一个角色作为账号角色
         commit('SET_ROLE_NAME', roles[0].roleName) // 系统暂时使用单角色，将配置的第一个角色作为账号角色
