@@ -2,6 +2,9 @@ import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
+import VueAMap from 'vue-amap'
+Vue.use(VueAMap)
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss' // global css
