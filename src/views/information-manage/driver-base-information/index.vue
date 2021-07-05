@@ -113,7 +113,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="idCardNum" label="身份证号" width="200" align="center" />
-
+        <el-table-column prop="tel" label="手机号码" width="120" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.tel === '0'" />
+            <span v-else>{{ scope.row.tel }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="unitName" label="所属运输企业" width="220" align="center" show-overflow-tooltip />
         <el-table-column prop="qualificationCity" label="所属地区" min-width="110" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             {{ scope.row.qualificationCity | showZoneText }}
@@ -124,7 +130,7 @@
             <span>{{ scope.row.driverVelType | driverVelTypeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="qualificationRange" label="从业资格范围" min-width="150" show-overflow-tooltip align="center">
+        <el-table-column prop="qualificationRange" label="从业资格范围" min-width="120" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.qualificationRange | qualificationRangeFilter }}</span>
           </template>
