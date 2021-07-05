@@ -1,3 +1,9 @@
+<!--
+  - FileName: 角色管理
+  - @author: ZhouJiaXing
+  - @date: 2021/6/8 上午10:52
+  -->
+
 <template>
   <div class="layout-content role-manage">
     <el-card class="box-card">
@@ -122,7 +128,7 @@
 
 // import { fetchList, createAccount, updateAccount } from '@/api/role-manage.js' fixme:替换为你的接口地址
 import Pagination from '@/components/Pagination'
-import { addRole, deleteRole, editRole, getList } from '@/api/system-manage/role-manage'
+import { addRole, deleteRole, editRole, editRoleMenu, getList } from '@/api/system-manage/role-manage'
 import { getMenuByRole, getMenuList } from '@/api/system-manage/menu-manage' // 分页
 
 export default {

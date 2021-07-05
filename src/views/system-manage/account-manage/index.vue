@@ -1,3 +1,9 @@
+<!--
+  - FileName: 账号管理
+  - @author: ZhouJiaXing
+  - @date: 2021/6/9 上午11:02
+  -->
+
 <template>
   <div class="layout-content demo-page">
     <el-card class="box-card">
@@ -62,8 +68,8 @@
             {{ row.status | statusFilter }}
           </span>
         </el-table-column>
-        <el-table-column label="电话" prop="phone" show-overflow-tooltip />
-        <el-table-column label="创建日期" prop="createTime" show-overflow-tooltip />
+        <el-table-column label="电话" prop="phone" />
+        <el-table-column label="创建日期" prop="createTime" />
 
         <!--表格操作列-->
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
@@ -188,8 +194,7 @@ import {
   fetchRoleList,
   updateCount,
   resetPassword,
-  addCount,
-  deleteCount
+  addCount, deleteCount
 } from '@/api/system-manage/account-manage'
 import Pagination from '@/components/Pagination'
 import { isPhoneNumber } from '@/utils' // 分页

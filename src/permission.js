@@ -42,11 +42,11 @@ router.beforeEach(async(to, from, next) => {
           router.addRoutes(accessRoutes)
 
           // hack method to ensure that addRoutes is complete
-          // set the replace: true, so the navigation will not leave a history record
+          // set the replace: true, so the maintenance will not leave a history record
           next({ ...to, replace: true })
         } catch (error) {
-          console.log(error)
-          Message({
+          // 有message属性的是来自网络请求的，提示过了
+          error.message || Message({
             message: error,
             type: 'error',
             duration: 5 * 1000

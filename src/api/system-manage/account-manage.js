@@ -1,3 +1,9 @@
+/*
+ * FileName: 新的账号管理
+ * @author: ZhouJiaXing
+ * @date: 2021/6/11 下午2:39
+ */
+
 import createRequest from '@/utils/createRequest'
 
 const request = createRequest('/admin')
