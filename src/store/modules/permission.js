@@ -4,19 +4,6 @@ import Layout from '@/layout/index'
 import Empty from '@/layout/empty'
 
 /**
- * Use meta.role to determine if the current user has permission
- * @param role
- * @param route
- */
-// function hasPermission(role, route) {
-//   if (route.meta && route.meta.roles) {
-//     return route.meta.roles.includes(role)
-//   } else {
-//     return true
-//   }
-// }
-
-/**
  * 路由懒加载
  * @param path
  * @returns {function(*=): any}
@@ -93,7 +80,7 @@ const mutations = {
 const actions = {
   generateRoutes({ commit }, role) {
     return new Promise(resolve => {
-      getMenuByAccount().then(res => {
+      getMenuByAccount({ system: process.env.VUE_APP_SYSTEM_TAG }).then(res => {
         const accessedRoutes = filterAsyncRoutes(res.data)
         accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
         commit('SET_ROUTES', accessedRoutes)

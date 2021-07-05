@@ -1,3 +1,9 @@
+<!--
+  - FileName: 字典管理
+  - @author: ZhouJiaXing
+  - @date: 2021/5/7 上午11:40
+  -->
+
 <template>
   <div class="layout-content dictionary">
     <el-card class="box-card">
@@ -82,10 +88,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="字段" prop="type" show-overflow-tooltip />
-        <el-table-column label="含义" prop="description" show-overflow-tooltip />
-        <el-table-column label="备注" prop="remarks" show-overflow-tooltip />
-        <el-table-column v-slot="{row}" label="创建日期" prop="createTime" min-width="100px" show-overflow-tooltip>
+        <el-table-column label="字段" prop="type" />
+        <el-table-column label="含义" prop="description" />
+        <el-table-column label="备注" prop="remarks" />
+        <el-table-column v-slot="{row}" label="创建日期" prop="createTime" min-width="100px">
           {{ row.createTime| dateFilter }}
         </el-table-column>
 

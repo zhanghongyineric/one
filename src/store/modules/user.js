@@ -61,6 +61,7 @@ const actions = {
       const formData = new FormData()
       formData.append('username', username.trim())
       formData.append('password', password)
+      formData.append('system', process.env.VUE_APP_SYSTEM_TAG)
       formData.append('grant_type', 'password')
       formData.append('client_id', 'admin')
       formData.append('client_secret', 'admin')
@@ -95,10 +96,6 @@ const actions = {
 
         if (roles.length === 0) {
           return Promise.reject('未获取到账号角色,请联系管理员进行分配')
-        }
-
-        if (roles[0].roleCode !== 'admin_monitor') {
-          return Promise.reject('该账号无权访问该系统,请更换账号登录！')
         }
 
         commit('SET_NAME', { alias, deptName })

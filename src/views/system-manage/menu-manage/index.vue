@@ -1,16 +1,35 @@
+<!--
+  - FileName: 菜单管理
+  - @author: ZhouJiaXing
+  - @date: 2021/6/8 上午10:52
+  -->
+
 <template>
   <div class="layout-content menu-manage">
     <el-card class="box-card">
       <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" label-width="80px">
         <el-row :gutter="48">
+          <!--<el-col :md="8" :sm="24">-->
+          <!--  <el-form-item label="菜单名称:" prop="title">-->
+          <!--    <el-input-->
+          <!--      v-model="queryParams.title"-->
+          <!--      placeholder="请输入菜单名称"-->
+          <!--      clearable-->
+          <!--      @keyup.enter.native="handleQuery"-->
+          <!--    />-->
+          <!--  </el-form-item>-->
+          <!--</el-col>-->
           <el-col :md="8" :sm="24">
-            <el-form-item label="菜单名称:" prop="title">
-              <el-input
-                v-model="queryParams.title"
-                placeholder="请输入菜单名称"
-                clearable
-                @keyup.enter.native="handleQuery"
-              />
+            <el-form-item label="所属系统:" prop="system">
+              <el-select v-model="queryParams.system" placeholder="请选择菜单所属系统" style="width: 100%;">
+                <el-option value="" label="全部" />
+                <el-option
+                  v-for="item in optionGroup.systemList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :md="8" :sm="24">
@@ -43,6 +62,7 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
+        <el-table-column v-slot="{row}" prop="system" label="所属系统" min-width="60">{{ row.system|systemFilter }}</el-table-column>
         <el-table-column prop="sort" label="排序" min-width="60" />
         <el-table-column v-slot="{row}" prop="permission" label="权限标识" :show-overflow-tooltip="true">
           {{ row.permission || '-' }}
@@ -147,6 +167,18 @@
                 <el-input v-model="form.component" placeholder="请输入组件路径或者组件名" />
               </el-form-item>
             </el-col>
+            <el-col v-if="form.type === '2'" :span="24">
+              <el-form-item label="所属系统" prop="system" :disabled="title==='修改菜单'">
+                <el-select v-model="form.system" placeholder="请选择菜单所属系统" style="width: 100%;">
+                  <el-option
+                    v-for="item in optionGroup.systemList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :span="12">
               <el-form-item v-if="form.type === '1'" label="权限标识" prop="permission">
                 <el-input v-model="form.permission" placeholder="请输入权限标识" maxlength="100" />
@@ -192,6 +224,11 @@ const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 export default {
   name: 'MenuManage',
   components: { IconSelect },
+  filters: {
+    systemFilter: function(value) {
+      return onlineOption.system.map[value] || '未分配'
+    }
+  },
   data() {
     return {
       // 遮罩层
@@ -206,10 +243,12 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        title: undefined
+        title: '',
+        system: process.env['VUE_APP_SYSTEM_TAG']
       },
       queryParams_temp: {
-        title: undefined
+        title: '',
+        system: process.env['VUE_APP_SYSTEM_TAG']
       },
       // 表单参数
       form: {
@@ -239,7 +278,8 @@ export default {
         type: '2'
       },
       optionGroup: {
-        hideMenu: onlineOption.hide_menu.list
+        hideMenu: onlineOption.hide_menu.list,
+        systemList: onlineOption.system.list
       },
       // 表单校验
       rules: {
@@ -257,6 +297,9 @@ export default {
         ],
         permission: [
           { required: true, message: '权限标识不能为空', trigger: 'blur' }
+        ],
+        system: [
+          { required: true, message: '请选择所属系统', trigger: 'change' }
         ]
       }
     }
@@ -305,7 +348,7 @@ export default {
     /** 查询菜单列表 */
     getList() {
       this.loading = true
-      getMenuList().then(res => {
+      getMenuList(this.queryParams).then(res => {
         this.menuList = res.data
         this.loading = false
       }).catch(e => {

@@ -2,10 +2,11 @@ import createRequest from '@/utils/createRequest'
 const request = createRequest('/admin')
 
 // 获取所有菜单
-export function getMenuList() {
+export function getMenuList(params) {
   return request({
     url: `/sys/menu/tree`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
@@ -42,10 +43,11 @@ export function getMenuByRole(id) {
   })
 }
 // 返回账号已分配的菜单ID集合
-export function getMenuByAccount() {
+export function getMenuByAccount(params) {
   return request({
     url: `/sys/menu`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 

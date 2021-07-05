@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'pc_safe_code'
+const TokenKey = 'monitor'
 
 export function getToken() {
   return Cookies.get(TokenKey)

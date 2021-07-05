@@ -1,3 +1,9 @@
+<!--
+  - FileName: 角色管理
+  - @author: ZhouJiaXing
+  - @date: 2021/6/8 上午10:52
+  -->
+
 <template>
   <div class="layout-content role-manage">
     <el-card class="box-card">
@@ -42,6 +48,7 @@
         <el-table-column label="角色名" prop="roleName" />
         <el-table-column label="角色标识" prop="roleCode" />
         <el-table-column label="角色描述" prop="roleDesc" />
+        <el-table-column v-slot="{row}" prop="system" label="所属系统" min-width="60">{{ row.system|systemFilter }}</el-table-column>
         <el-table-column label="创建时间" prop="createTime" />
 
         <!--表格操作列-->
@@ -94,6 +101,17 @@
           <el-form-item label="角色描述:" prop="roleDesc">
             <el-input v-model="createFormData.roleDesc" placeholder="请输入角色描述" />
           </el-form-item>
+          <el-form-item label="所属系统" prop="system" :disabled="dialogStatus==='update'">
+            <el-select v-model="createFormData.system" placeholder="请选择菜单所属系统" style="width: 100%;">
+              <el-option
+                v-for="item in optionGroup.systemList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+
           <el-form-item label="菜单权限">
             <el-tree
               ref="menu-tree"
@@ -119,6 +137,7 @@
 </template>
 
 <script>
+const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
 // import { fetchList, createAccount, updateAccount } from '@/api/role-manage.js' fixme:替换为你的接口地址
 import Pagination from '@/components/Pagination'
@@ -128,7 +147,11 @@ import { getMenuByRole, getMenuList } from '@/api/system-manage/menu-manage' // 
 export default {
   name: 'RoleManage',
   components: { Pagination },
-  filters: {},
+  filters: {
+    systemFilter: function(value) {
+      return onlineOption.system.map[value] || '全部'
+    }
+  },
   data() {
     return {
       list: [], // 表格数据
@@ -147,18 +170,21 @@ export default {
       total: 0, // 总数据条数
       advanced: false, // 是否展开高级搜索条件
       optionGroup: {
-        menuOptions: []
+        menuOptions: [],
+        systemList: onlineOption.system.list
       }, // 存放选项的数据
       createFormData: {
         roleName: '',
         roleCode: '',
         roleDesc: '',
+        system: '',
         menuIds: ''// 角色的菜单权限
       }, // 存储新增和编辑框的数据
       createFormDataTemp: {
         roleName: '',
         roleCode: '',
         roleDesc: '',
+        system: '',
         menuIds: []// 角色的菜单权限
       }, // 用于重置新增的数据
       rules: {
@@ -170,6 +196,9 @@ export default {
         ],
         menuIds: [
           { required: true, message: '菜单不能为空', trigger: 'blur' }
+        ],
+        system: [
+          { required: true, message: '所属系统不能为空', trigger: 'blur' }
         ]
       }, // 新增和编辑框的规则
       textMap: {
