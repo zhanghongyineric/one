@@ -20,7 +20,7 @@
           <!--  </el-form-item>-->
           <!--</el-col>-->
           <el-col :md="8" :sm="24">
-            <el-form-item label="所属系统" prop="system">
+            <el-form-item label="所属系统:" prop="system">
               <el-select v-model="queryParams.system" placeholder="请选择菜单所属系统" style="width: 100%;">
                 <el-option value="" label="全部" />
                 <el-option
