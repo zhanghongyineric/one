@@ -168,7 +168,7 @@
               <el-option v-for="{label,value} in optionGroup.statusList" :key="value" :label="label" :value="value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="密码:" prop="password">
+          <el-form-item v-if="dialogStatus === 'create'" label="密码:" prop="password">
             <el-input v-model="createFormData.password" show-password placeholder="请输入密码" />
           </el-form-item>
 
