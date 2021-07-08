@@ -103,6 +103,7 @@
           </el-form-item>
           <el-form-item label="所属系统" prop="system" :disabled="dialogStatus==='update'">
             <el-select v-model="createFormData.system" placeholder="请选择菜单所属系统" style="width: 100%;">
+              <el-option label="全部" value="9" />
               <el-option
                 v-for="item in optionGroup.systemList"
                 :key="item.value"
