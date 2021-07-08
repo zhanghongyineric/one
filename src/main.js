@@ -4,6 +4,21 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import VueAMap from 'vue-amap'
 Vue.use(VueAMap)
+// 初始化地图
+VueAMap.initAMapApiLoader({
+  key: 'amap_key',
+  plugin: [
+    'AMap.Autocomplete',
+    'AMap.PlaceSearch',
+    'AMap.Scale',
+    'AMap.OverView',
+    'AMap.ToolBar',
+    'AMap.MapType',
+    'AMap.PolyEditor',
+    'AMap.CircleEditor'
+  ],
+  v: '1.4.4'
+})
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
