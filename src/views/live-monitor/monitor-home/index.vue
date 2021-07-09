@@ -1,13 +1,14 @@
 <template>
-  <div class="trackquery">
+  <div>
     <div id="container" class="map" :style="styleSize" />
     <div v-if="lineArr.length > 0" class="contbtn">
       <div class="flex-demo">
-        <el-button v-if="startshow" class="btncol" type="primary" @click="starmove">开始动画</el-button>
+        <el-button v-if="startshow" class="btncol" type="primary" @click="startmove">开始动画</el-button>
         <div class="flex-demo">
           <el-button v-if="endshow ==true" :disabled="btndisabled" class="btncol" type="danger" @click="endmove">暂停播放</el-button>
           <el-button v-if="endshow ==false" :disabled="btndisabled" class="btncol" type="success" @click="resumeAnimation">继续播放</el-button>
         </div>
+        <el-button :disabled="btndisabled" class="btncol" type="warning" @click="replayAnimation">重新播放</el-button>
       </div>
     </div>
   </div>
@@ -29,8 +30,7 @@ export default {
       lineArr: [],
       lineArrlast: [],
       lineArrPre: [],
-      marker: '',
-      k: 0
+      marker: ''
     }
   },
   created() {
@@ -47,7 +47,7 @@ export default {
       this.styleSize.width = window.innerWidth + 'px'
     },
     getmap() {
-      //  测试数据
+      // 测试数据
       this.lineArr = [
         '30.572903,104.06632|30.572803,104.06612|30.572703,104.07632|30.571903,104.04632|30.562903,104.10632'
       ]
@@ -122,8 +122,8 @@ export default {
                 map: this.map,
                 path: this.lineArrlast,
                 showDir: true,
-                strokeColor: colors[currentLen], // 线颜色
-                strokeWeight: 6 // 线宽
+                strokeColor: colors[currentLen],
+                strokeWeight: 3
               })
               if (this.lineArrlast.length > 0) {
                 this.marker = new AMap.Marker({
@@ -139,7 +139,7 @@ export default {
                 map: this.map,
                 strokeColor: '#AF5', // 线颜色
                 strokeOpacity: 1, // 线透明度
-                strokeWeight: 6 // 线宽
+                strokeWeight: 3 // 线宽
               })
               this.marker.on('moving', function(e) {
                 passedPolyline.setPath(e.passedPath)
@@ -151,7 +151,7 @@ export default {
       this.map.setFitView()
     },
     // 开始播放
-    starmove() {
+    startmove() {
       this.endshow = true
       this.startshow = true
       this.btndisabled = false
@@ -167,10 +167,13 @@ export default {
       this.endshow = true
       this.marker.resumeMove()
     },
-    // 停止播放
-    stopAnimation() {
+    // 重新播放
+    replayAnimation() {
       this.marker.stopMove()
-    } }}
+      this.startmove()
+    }
+  }
+}
 </script>
 <style scoped>
 .contbtn {
