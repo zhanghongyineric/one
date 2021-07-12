@@ -7,7 +7,7 @@ const liveMonitorRouter = {
   hidden: false,
   alwaysShow: true,
   meta: {
-    title: '实时监控',
+    title: '实时监测',
     icon: 'el-icon-video-camera-solid',
     roles: ['admin']
   },
@@ -17,7 +17,7 @@ const liveMonitorRouter = {
       path: 'monitor-home',
       name: 'MonitorHome',
       component: () => import('@/views/live-monitor/monitor-home'),
-      meta: { title: '监控首页' }
+      meta: { title: '监测首页' }
     },
     {
       path: 'message-monitor',
