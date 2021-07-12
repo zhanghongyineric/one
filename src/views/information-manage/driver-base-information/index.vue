@@ -126,9 +126,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="driverVelType" label="准驾车型" min-width="150" show-overflow-tooltip align="center">
-          <!-- <template slot-scope="scope">
+          <template slot-scope="scope">
             <span>{{ scope.row.driverVelType | driverVelTypeFilter }}</span>
-          </template> -->
+          </template>
         </el-table-column>
         <el-table-column prop="qualificationRange" label="从业资格范围" min-width="120" show-overflow-tooltip align="center">
           <template slot-scope="scope">

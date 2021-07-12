@@ -2,42 +2,42 @@ import request from '@/utils/imformation-sync'
 
 export function device() {
   return request({
-    url: '/mysql/processDeviceData',
-    method: 'GET'
+    url: '/conversion/processDeviceData',
+    method: 'POST'
   })
 }
 
 export function driver() {
   return request({
-    url: '/mysql/processDriverData',
-    method: 'GET'
+    url: '/conversion/processDriverData',
+    method: 'POST'
   })
 }
 
 export function company() {
   return request({
-    url: '/mysql/processCompanyData',
-    method: 'GET'
+    url: '/conversion/processCompanyData',
+    method: 'POST'
   })
 }
 
 export function certificate() {
   return request({
-    url: '/mysql/processTransLicData',
-    method: 'GET'
+    url: '/conversion/processTransLicData',
+    method: 'POST'
   })
 }
 
 export function car() {
   return request({
-    url: '/mysql/processVehicleData',
-    method: 'GET'
+    url: '/conversion/processVehicleData',
+    method: 'POST'
   })
 }
 
 export function platform() {
   return request({
-    url: '/mysql/processPlatformData',
-    method: 'GET'
+    url: '/conversion/processPlatformData',
+    method: 'POST'
   })
 }
