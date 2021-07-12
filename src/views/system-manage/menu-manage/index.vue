@@ -62,7 +62,7 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column v-slot="{row}" prop="system" label="所属系统" min-width="60">{{ row.system|systemFilter }}</el-table-column>
+        <el-table-column v-slot="{row}" prop="system" label="所属系统" min-width="80">{{ row.system|systemFilter }}</el-table-column>
         <el-table-column prop="sort" label="排序" min-width="60" />
         <el-table-column v-slot="{row}" prop="permission" label="权限标识" :show-overflow-tooltip="true">
           {{ row.permission || '-' }}
