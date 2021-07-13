@@ -32,15 +32,17 @@
         <el-button id="sbtn" type="primary" size="small" @click="search">查询</el-button>
         <div class="replay-box">
           <span>回放进度：</span>
-          <el-progress :text-inside="true" :stroke-width="15" :percentage="70" />
+          <el-progress :text-inside="true" :stroke-width="15" :percentage="value" />
 
         </div>
         <div class="check-box">
-          <el-radio v-model="playSpeed" label="1">×1</el-radio>
-          <el-radio v-model="playSpeed" label="5">×5</el-radio>
-          <el-radio v-model="playSpeed" label="10">×10</el-radio>
-          <el-radio v-model="playSpeed" label="20">×20</el-radio>
-          <el-radio v-model="playSpeed" label="50">×50</el-radio>
+          <el-radio
+            v-for="item in speedList"
+            :key="item"
+            v-model="speedCount"
+            :label="item"
+            @change="changeCount"
+          >×{{ item }}</el-radio>
         </div>
         <div class="btns-box">
           <div class="play-box" @click="startmove">
@@ -56,7 +58,6 @@
   </div>
 </template>
 <script>
-
 export default {
   name: 'HistoricalTrajectory',
   data() {
@@ -65,30 +66,39 @@ export default {
         height: '',
         width: ''
       },
-      btndisabled: true,
-      startshow: true,
-      endshow: true,
-      map: '',
-      lineArr: [],
-      lineArrlast: [],
-      lineArrPre: [],
-      marker: '',
       searchFormData: {
         plateNum: '川A12345'
       },
-      playSpeed: '1',
+      map: null,
+      lineArr: [],
+      lineArrlast: [],
+      marker: null,
       showPause: false,
       begin: true,
-      speed: 100
+      value: 0,
+      speedCount: 1, // 目前选择的倍数
+      progressTime: 0, // 时间
+      palyStayus: 0, // 0->未开始  1->行驶中  2->暂停
+      speedList: [1, 5, 10, 20, 50], // 倍数数据
+      markerSpeed: 100, // 初始化速度
+      passedPolyline: null,
+      positionIndex: [], // 轨迹起始点--车辆所在的位置
+      passedPath: 0, // 存放（播放时点击倍数）抓取到的位置
+      int: null, // 定时器--进度条
+      timeInt: null, // 定时器--时间
+      curreGDPath: null, // 存放（播放时点击倍数）抓取到的经纬度
+      polyline: null, // 轨迹线路
+      passedArr: [],
+      lineArrCopy: []
     }
   },
   created() {
-    // 事件监听，实时获取屏幕宽高
-    window.addEventListener('resize', this.getHeight)
     this.getHeight()
   },
   mounted() {
     this.getmap()
+    // 事件监听，实时获取屏幕宽高
+    window.addEventListener('resize', this.getHeight)
   },
   methods: {
     switchPlay() {
@@ -101,29 +111,34 @@ export default {
     getmap() {
       // 测试数据
       this.lineArr = [
-        '30.572903,104.06632|30.572803,104.06612|30.572703,104.07632|30.571903,104.04632|30.562903,104.10632'
-      ]
-      // eslint-disable-next-line no-unused-vars
-      let polylineX,
-        nColorLength,
-        currentLen,
-        latlonarr,
-        pointList
-      const colors = [
-        '#3366cc',
-        '#dc3912',
-        '#109618',
-        '#990099',
-        '#0099c6',
-        '#dd4477',
-        '#66aa00',
-        '#316395',
-        '#994499',
-        '#22aa99',
-        '#6633cc',
-        '#329262',
-        '#5574a6',
-        '#3b3eac'
+        [30.572903, 104.06632],
+        [30.572713, 104.06632],
+        [30.572513, 104.06632],
+        [30.572313, 104.06632],
+        [30.572113, 104.06632],
+        [30.572113, 104.06629],
+        [30.572113, 104.06619],
+        [30.572113, 104.06609],
+        [30.572113, 104.06599],
+        [30.572113, 104.06589],
+        [30.572113, 104.06579],
+        [30.572113, 104.06569],
+        [30.572113, 104.06559],
+        [30.572113, 104.06549],
+        [30.572113, 104.06539],
+        [30.572113, 104.06529],
+        [30.572113, 104.06519],
+        [30.572113, 104.06509],
+        [30.572113, 104.06499],
+        [30.572113, 104.06489],
+        [30.572113, 104.06479],
+        [30.572113, 104.06469],
+        [30.572113, 104.06459],
+        [30.572113, 104.06449],
+        [30.572113, 104.06439],
+        [30.572113, 104.06429],
+        [30.572113, 104.06419],
+        [30.572113, 104.06409]
       ]
       this.map = new AMap.Map('container', {
         resizeEnable: true,
@@ -131,81 +146,43 @@ export default {
         zoom: 12,
         mapStyle: 'amap://styles/grey'
       })
+
       if (this.lineArr.length > 0) {
-        for (let j = 0; j < this.lineArr.length; j++) {
-          polylineX = 'polyline' + j // 计算取颜色的函数
-          nColorLength = colors.length
-          currentLen = 0
-          if (j > nColorLength) {
-            currentLen = j % 14
-          } else {
-            currentLen = j
-          }
-          latlonarr = this.lineArr[j].split('|')
-          if (latlonarr.length > 0) {
-            if (j < this.lineArr.length - 1) {
-              this.lineArrPre = []
-              for (let i = 0; i < latlonarr.length; i++) {
-                pointList = latlonarr[i].split(',')
-                if (pointList.length > 0) {
-                  this.lineArrPre.push(
-                    new AMap.LngLat(pointList[1], pointList[0])
-                  )
-                }
-              }
-              polylineX = new AMap.Polyline({
-                map: this.map,
-                path: this.lineArrPre,
-                showDir: true,
-                strokeColor: colors[currentLen], // 线颜色
-                strokeWeight: 3 // 线宽
-              })
-            } else {
-              // 最后一条轨迹绘制移动轨迹
-              for (let i = 0; i < latlonarr.length; i++) {
-                pointList = latlonarr[i].split(',')
-                if (pointList.length > 0) {
-                  this.lineArrlast.push(
-                    new AMap.LngLat(pointList[1], pointList[0])
-                  )
-                }
-              }
-              polylineX = new AMap.Polyline({
-                map: this.map,
-                path: this.lineArrlast,
-                showDir: true,
-                strokeColor: colors[currentLen],
-                strokeWeight: 3
-              })
-              if (this.lineArrlast.length > 0) {
-                this.marker = new AMap.Marker({
-                  map: this.map,
-                  position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
-                  icon: 'https://webapi.amap.com/images/car.png',
-                  offset: new AMap.Pixel(-26, -13),
-                  autoRotation: true,
-                  angle: -90
-                })
-              }
-              const passedPolyline = new AMap.Polyline({
-                map: this.map,
-                strokeColor: '#AF5', // 线颜色
-                strokeOpacity: 1, // 线透明度
-                strokeWeight: 3 // 线宽
-              })
-              this.marker.on('moving', function(e) {
-                passedPolyline.setPath(e.passedPath)
-              })
-            }
+        for (let i = 0; i < this.lineArr.length; i++) {
+          if (this.lineArr[i].length > 0) {
+            this.lineArrlast.push(
+              new AMap.LngLat(this.lineArr[i][1], this.lineArr[i][0])
+            )
           }
         }
+        this.lineArrCopy = this.lineArrlast
+        this.initPolyline()
+        if (this.lineArrlast.length > 0) {
+          this.marker = new AMap.Marker({
+            map: this.map,
+            position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
+            icon: 'https://webapi.amap.com/images/car.png',
+            offset: new AMap.Pixel(-26, -13),
+            autoRotation: true,
+            angle: -90
+          })
+        }
+        this.marker.on('moving', (e) => {
+          this.passedPolyline.setPath(e.passedPath)
+          this.curreGDPath = new AMap.LngLat(
+            e.passedPath[e.passedPath.length - 1].lng,
+            e.passedPath[e.passedPath.length - 1].lat
+          )
+          this.passedPath = e.passedPath.length
+        })
       }
       this.map.setFitView()
     },
     // 开始播放
     startmove() {
+      const markerSpeed = this.markerSpeed * this.speedCount
       if (!this.showPause && this.begin) {
-        this.marker.moveAlong(this.lineArrlast, this.speed)
+        this.marker.moveAlong(this.lineArrlast, markerSpeed)
         this.showPause = true
         this.begin = false
       } else if (this.showPause && !this.begin) {
@@ -218,13 +195,43 @@ export default {
     },
     // 重新播放
     replayAnimation() {
+      this.speedCount = 1
+      const markerSpeed = this.markerSpeed * this.speedCount
       this.showPause = true
       this.begin = false
+      this.lineArrlast = this.lineArrCopy
       this.marker.stopMove()
-      this.marker.moveAlong(this.lineArrlast, this.speed)
+      this.marker.moveAlong(this.lineArrlast, markerSpeed)
     },
-    search() {
-      this.speed = 1200
+    search() {},
+    // 初始化回放路线
+    initPolyline() {
+      this.polyline = new AMap.Polyline({
+        map: this.map,
+        path: this.lineArrlast,
+        showDir: true,
+        strokeColor: '#3366cc', // 线颜色
+        strokeWeight: 6 // 线宽
+      })
+      this.passedPolyline = new AMap.Polyline({
+        map: this.map,
+        strokeColor: '#AF5', // 线颜色
+        strokeWeight: 6 // 线宽
+      })
+    },
+    changeCount() {
+      const markerSpeed = this.speedCount * this.markerSpeed
+      this.marker.pauseMove()
+      this.lineArrlast = this.lineArrlast.slice(this.passedPath)
+      this.lineArrlast.unshift(this.curreGDPath)
+      this.polyline = new AMap.Polyline({
+        map: this.map,
+        path: this.lineArrlast,
+        showDir: true,
+        strokeColor: '#3366cc', // 线颜色
+        strokeWeight: 6 // 线宽
+      })
+      this.marker.moveAlong(this.lineArrlast, markerSpeed)
     }
   }
 }
