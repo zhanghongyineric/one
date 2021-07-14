@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div id="container" class="map" :style="styleSize" />
     <div v-if="lineArr.length > 0" class="contbtn">
       <div class="search-box">
@@ -55,6 +55,22 @@
         </div>
       </div>
     </div>
+    <div class="bottom-table">
+      <!-- <span class="hidden-btn">隐藏</span> -->
+      <el-table
+        :data="tableData"
+        style="width: 100%;height:100%;"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column prop="status" label="车辆状态" min-width="120" align="center" />
+        <el-table-column prop="time" label="上报时间" min-width="120" align="center" />
+        <el-table-column prop="km" label="GPS里程(公里)" min-width="120" align="center" />
+        <el-table-column prop="speed" label="速度(km/h)" min-width="120" align="center" />
+        <el-table-column prop="positionDes" label="位置描述" min-width="120" align="center" />
+      </el-table>
+    </div>
   </div>
 </template>
 <script>
@@ -89,7 +105,16 @@ export default {
       curreGDPath: null, // 存放（播放时点击倍数）抓取到的经纬度
       polyline: null, // 轨迹线路
       passedArr: [],
-      lineArrCopy: []
+      lineArrCopy: [],
+      tableData: [
+        {
+          status: 'ACC:ON',
+          time: '2021-07-11 08:17:34',
+          km: '20.1',
+          speed: '85.1',
+          positionDes: '四川省雅安市天全县二郎山罗家饭店东北53米'
+        }
+      ]
     }
   },
   created() {
@@ -349,5 +374,35 @@ export default {
   height: 13px;
   width: 13px;
   background-color: #fff;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.bottom-table {
+  width: 100%;
+  height: 200px;
+  position: absolute;
+  bottom: 0;
+
+}
+
+.hidden-btn {
+  color: #fff;
+  position: relative;
+  left: 49%;
+  cursor: pointer;
+  display: block;
+}
+
+::v-deep .amap-logo {
+  display: none !important;
+}
+
+::v-deep .amap-copyright {
+  display: none !important;
 }
 </style>
