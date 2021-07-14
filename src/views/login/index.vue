@@ -6,7 +6,7 @@
         <div class="description">
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
-          <h2>{{ version }}</h2>
+          <h2>v{{ version }}</h2>
           <h3>监测·管理端</h3>
         </div>
       </div>
@@ -94,6 +94,7 @@
 <script>
 import './libs/jigsaw'
 import './libs/jigsaw.css'
+import { selectVersion, sysPort } from '@/api/system-manage/version-manage'
 
 export default {
   name: 'Login',
@@ -123,16 +124,18 @@ export default {
       loading: false,
       passwordType: 'password',
       redirect: undefined,
-      query: undefined // 重定向页面携带过来的参数
+      query: undefined, // 重定向页面携带过来的参数
+      systemCode: '',
+      version: ''
     }
   },
   computed: {
     title() {
       return this.$store.state.settings.title
-    },
-    version() {
-      return process.env.VUE_APP_SYSTEM_VERSION
     }
+    // version() {
+    //   return process.env.VUE_APP_SYSTEM_VERSION
+    // }
   },
   watch: {
     $route: {
@@ -142,6 +145,9 @@ export default {
       },
       immediate: true
     }
+  },
+  created() {
+    this.getSysPort()
   },
   mounted() {
     let isInSlider = false // 鼠标是否在拼图区域
@@ -206,6 +212,26 @@ export default {
     }
   },
   methods: {
+    getSysPort() {
+      sysPort()
+        .then(res => {
+          res.data.forEach(item => {
+            if (item.value === '管理端·检测端') {
+              this.systemCode = item.label
+            }
+          })
+          selectVersion({ port: this.systemCode })
+            .then(res => {
+              this.version = res.data.number
+            })
+            .catch(err => {
+              throw err
+            })
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''

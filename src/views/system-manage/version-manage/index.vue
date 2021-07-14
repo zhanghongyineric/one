@@ -6,20 +6,20 @@
           <el-row :gutter="48">
             <el-col :md="8" :sm="24">
               <el-form-item label="版本号:">
-                <el-input v-model="listQuery.version" placeholder="请输入版本号" @keyup.enter.native="handleSearch" />
+                <el-input v-model="listQuery.number" placeholder="请输入版本号" @keyup.enter.native="handleSearch" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="所属系统:">
                 <el-select
-                  v-model="listQuery.system"
+                  v-model="listQuery.port"
                   placeholder="请选择所属系统"
                 >
                   <el-option
                     v-for="{label,value} in sysOptions"
-                    :key="value"
-                    :label="label"
-                    :value="value"
+                    :key="label"
+                    :label="value"
+                    :value="label"
                   />
                 </el-select>
               </el-form-item>
@@ -30,8 +30,8 @@
                 style="margin-top: -4px"
               >
                 <el-button size="small" @click="resetQuery">重置</el-button>
-                <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
-                <el-button type="primary" size="small" @click="visible = true">新增</el-button>
+                <el-button type="primary" size="small" @click="getTableData">查询</el-button>
+                <el-button type="primary" size="small" @click="openDialog">新增</el-button>
               </div>
             </el-col>
           </el-row>
@@ -45,9 +45,19 @@
         highlight-current-row
         style="width: 100%;"
       >
-        <el-table-column label="版本号" prop="version" width="130px" />
-        <el-table-column label="所属系统" prop="system" width="200px" />
-        <el-table-column label="版本描述" prop="versionDes" show-overflow-tooltip />
+        <el-table-column label="版本号" prop="number" width="130px" />
+        <el-table-column label="所属系统" prop="port" width="200px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.port | portFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="版本描述" prop="content" show-overflow-tooltip />
+        <el-table-column label="状态" prop="status" width="100px">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === '1'" style="color:green">启用</span>
+            <span v-else style="color:red">禁用</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" width="220px" fixed="right">
           <template slot-scope="scope">
             <el-button
@@ -84,6 +94,7 @@
         :title="titles[type]"
         :visible.sync="visible"
         width="500px"
+        :before-close="closeDialog"
         :close-on-click-modal="false"
       >
         <el-form
@@ -94,24 +105,40 @@
         >
           <el-row>
             <el-col :span="24">
-              <el-form-item label="版本号:" prop="version">
-                <el-input v-model="formData.version" placeholder="请输入版本号" size="small" clearable />
+              <el-form-item label="版本号:" prop="number">
+                <el-input v-model="formData.number" placeholder="请输入版本号" size="small" clearable />
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-form-item label="版本描述:" prop="versionDes">
-                <el-input v-model="formData.versionDes" placeholder="请输入版本描述" size="small" clearable />
+              <el-form-item label="版本描述:" prop="content">
+                <el-input v-model="formData.content" placeholder="请输入版本描述" size="small" clearable />
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-form-item label="所属系统:" prop="system">
+              <el-form-item label="所属系统:" prop="port">
                 <el-select
-                  v-model="formData.system"
+                  v-model="formData.port"
                   placeholder="请选择所属系统"
                   size="small"
                 >
                   <el-option
                     v-for="{label,value} in sysOptions"
+                    :key="label"
+                    :label="value"
+                    :value="label"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col v-if="type === 'update'" :span="24">
+              <el-form-item label="状态:" prop="status">
+                <el-select
+                  v-model="formData.status"
+                  placeholder="请选择状态"
+                  size="small"
+                >
+                  <el-option
+                    v-for="{label,value} in statusOptions"
                     :key="value"
                     :label="label"
                     :value="value"
@@ -122,12 +149,15 @@
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="visible = false">
+          <el-button size="small" @click="closeDialog">
             取消
           </el-button>
           <el-button type="primary" size="small" @click="addVersion()">
             确认
           </el-button>
+          <!-- <el-button v-show="type==='update'" type="primary" size="small" @click="updateVersion()">
+            确认
+          </el-button> -->
         </div>
       </el-dialog>
     </el-card>
@@ -136,64 +166,149 @@
 
 <script>
 import Pagination from '@/components/Pagination'
+import {
+  selectFind,
+  save,
+  sysPort,
+  deleteData,
+  release
+} from '@/api/system-manage/version-manage'
+
+let that
 
 export default {
   name: 'VersionManage',
   components: { Pagination },
+  filters: {
+    portFilter(sys) {
+      if (sys) {
+        let text
+        that.sysOptions.forEach(item => {
+          if (sys === item.label) text = item.value
+        })
+        return text
+      }
+    }
+  },
   data() {
     return {
       listLoading: false,
-      list: [
-        {
-          version: '1.0.0',
-          versionDes: '测试',
-          system: '监测端'
-        }
-      ],
+      list: [],
       listQuery: {
         pageNum: 1,
         pageSize: 10
       },
-      sysOptions: [
-        {
-          label: '监测端',
-          value: '0'
-        },
-        {
-          label: '政府端',
-          value: '1'
-        }
-      ],
+      sysOptions: [],
       total: 0,
       visible: false,
       formData: {},
+      statusOptions: [
+        {
+          label: '禁用',
+          value: '0'
+        },
+        {
+          label: '启用',
+          value: '1'
+        }
+      ],
       rules: {
-        version: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
-        versionDes: [{ required: true, message: '请输入版本描述', trigger: 'blur' }],
-        system: [{ required: true, message: '请选择所属系统', trigger: 'change' }]
+        number: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
+        content: [{ required: true, message: '请输入版本描述', trigger: 'blur' }],
+        port: [{ required: true, message: '请选择所属系统', trigger: 'change' }]
       },
       type: 'add',
       titles: {
         add: '新增',
         update: '修改'
-      }
+      },
+      currentRow: {}
     }
   },
+  beforeCreate() {
+    that = this
+  },
+  created() {
+    this.getSysPort()
+    this.getTableData()
+  },
   methods: {
+    closeDialog() {
+      this.visible = false
+      this.formData = {}
+    },
+    getTableData() {
+      this.listLoading = true
+      selectFind({ ...this.listQuery })
+        .then(res => {
+          const { data: { list, total }} = res
+          this.listLoading = false
+          this.list = list
+          this.total = total
+        })
+        .catch(err => {
+          this.listLoading = false
+          throw err
+        })
+    },
+    getSysPort() {
+      sysPort()
+        .then(res => {
+          this.sysOptions = res.data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     addVersion() {
       this.$refs['form'].validate(valid => {
         if (valid) {
-          console.log('接口')
+          if (this.type === 'update') this.formData.id = this.currentRow.id
+          save({ ...this.formData })
+            .then(res => {
+              this.visible = false
+              this.getTableData()
+              this.$message({
+                message: this.type === 'add' ? '新增成功' : '修改成功',
+                type: 'success'
+              })
+              this.formData = {}
+            })
+            .catch(err => {
+              this.$message({
+                message: this.type === 'add' ? '新增失败' : '修改失败',
+                type: 'error'
+              })
+              throw err
+            })
         }
       })
     },
-    handlePush() {
+    openDialog() {
+      this.visible = true
+      this.type = 'add'
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
+    },
+    handlePush(row) {
       this.$confirm('确定发布该条数据？')
         .then(_ => {
-          this.$message({
-            type: 'success',
-            message: '发布成功！'
-          })
+          release({ status: '1', id: parseInt(row.id) })
+            .then(_ => {
+              this.getTableData()
+              this.$message({
+                type: 'success',
+                message: '发布成功！'
+              })
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '发布失败！'
+              })
+              throw err
+            })
         })
         .catch(_ => {
           this.$message({
@@ -202,13 +317,27 @@ export default {
           })
         })
     },
-    handleDelete() {
+    handleDelete(row) {
       this.$confirm('确定删除该条数据？')
         .then(_ => {
-          this.$message({
-            type: 'success',
-            message: '删除成功！'
-          })
+          deleteData({ id: parseInt(row.id) })
+            .then(_ => {
+              this.$message({
+                type: 'success',
+                message: '删除成功！'
+              })
+              if (this.listQuery.pageNum !== 1 && this.list.length === 1) {
+                this.listQuery.pageNum--
+              }
+              this.getTableData()
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '删除失败！'
+              })
+              throw err
+            })
         })
         .catch(_ => {
           this.$message({
@@ -220,12 +349,18 @@ export default {
     handleSearch() {
 
     },
-    handleUpdate() {
+    handleUpdate(row) {
       this.type = 'update'
       this.visible = true
+      this.formData = { ...row }
+      this.currentRow = row
     },
     resetQuery() {
-      this.listQuery = {}
+      this.listQuery = {
+        pageNum: 1,
+        pageSize: 10
+      }
+      this.getTableData()
     },
     getList() {
 
