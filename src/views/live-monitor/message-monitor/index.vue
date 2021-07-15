@@ -20,6 +20,8 @@
           <span class="text">报警车辆</span>
         </div>
       </div>
+      <div class="divide" />
+      <el-input size="small" placeholder="请输入车牌号" />
     </div>
   </div>
 </template>
@@ -71,23 +73,30 @@ export default {
 .left-box {
   width: 350px;
   height: 100%;
-  background-color: #0E1521;
+  background-color: #1C2F41;
   position: absolute;
   left: 0;
   top: 0;
+
+  .divide {
+    height: 1px;
+    width: 100%;
+    background-color: #fff;
+    transform:scaleY(0.5)
+  }
 }
 
 ::v-deep .amap-logo {
-  display: none;
+  display: none !important;
 }
 
 ::v-deep .amap-copyright {
-  display: none;
+  display: none !important;
 }
 
 .static-box {
   width: 100%;
-  height: 120px;
+  height: 90px;
   padding: 10px 0 0 10px;
 
   div {

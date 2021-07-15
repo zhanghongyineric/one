@@ -74,6 +74,9 @@
   </div>
 </template>
 <script>
+import { test } from '@/api/live-monitor/history'
+import connect from '@/utils/mqtt'
+
 export default {
   name: 'HistoricalTrajectory',
   data() {
@@ -119,11 +122,56 @@ export default {
   },
   created() {
     this.getHeight()
+    const token = this.$store.state.user.token
+    test({
+      plateNum: '川A12345',
+      topic: token + '/private/' + 'test',
+      time: '2021-7-15 15:05:51'
+    })
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        throw err
+      })
   },
   mounted() {
     this.getmap()
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
+
+    const topic = this.$store.state.user.token + '/private/' + 'test'
+    this.client = connect()
+    this.client.on('connect', () => {
+      console.log('连接成功')
+      // 订阅多个主题,必须先订阅才能在 message 中 收到消息
+      this.client.subscribe(
+        topic, // 订阅主题
+        { qos: 2 }, // 保证消息传递次数
+        (err) => {
+          // this.client.publish(topic, 'wwwwwwwwwwwwwwwwwwww')
+          console.log(err || '订阅成功')
+        }
+      )
+    })
+    // 失败重连
+    this.client.on('reconnect', (error) => {
+      console.log('正在重连:', error)
+    })
+    // 连接失败
+    this.client.on('error', (error) => {
+      console.log('连接失败:', error)
+    })
+    // 接收消息
+    this.client.on('message', (topic, message) => {
+      console.log('收到消息：', topic, message.toString())
+      this.$notify({
+        type: 'success',
+        title: '收到消息',
+        duration: 0,
+        message: message.toString()
+      })
+    })
   },
   methods: {
     switchPlay() {
