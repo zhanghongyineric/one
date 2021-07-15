@@ -58,9 +58,9 @@
         highlight-current-row
         style="width: 100%;"
       >
-        <el-table-column label="用户名" prop="username" />
+        <el-table-column label="用户名" prop="username" min-width="120px" />
         <el-table-column label="别名" prop="alias" width="250px" show-overflow-tooltip />
-        <el-table-column v-slot="{row}" label="角色名" prop="roles">
+        <el-table-column v-slot="{row}" label="角色名" prop="roles" min-width="120px">
           {{ row.roleList | rolesFilter }}
         </el-table-column>
         <el-table-column v-slot="{row}" label="状态" prop="status">
@@ -68,8 +68,8 @@
             {{ row.status | statusFilter }}
           </span>
         </el-table-column>
-        <el-table-column label="电话" prop="phone" />
-        <el-table-column label="创建日期" prop="createTime" />
+        <el-table-column label="电话" prop="phone" min-width="120px" />
+        <el-table-column label="创建日期" prop="createTime" min-width="200px" />
 
         <!--表格操作列-->
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">

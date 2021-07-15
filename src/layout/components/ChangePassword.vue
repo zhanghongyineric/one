@@ -1,10 +1,3 @@
-
-<!--
-  - FileName: ChangePassword.vue
-  - @author: ChenHaiPing
-  - @date: 2021/4/20 上午10:39
-  -->
-
 <template>
   <!--修改密码弹窗-->
   <el-dialog
@@ -56,7 +49,7 @@
 </template>
 
 <script>
-import { updatePassword } from '@/api/user/password-update'
+import { updatePassword } from '@/api/system-manage/account-manage'
 export default {
   name: 'ChangePassword',
   props: {
@@ -122,8 +115,8 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const passwords = {
-            password: this.createFormData.newPassWord,
-            prePassword: this.createFormData.password
+            newPassword: this.createFormData.newPassWord,
+            password: this.createFormData.password
           }
           updatePassword(passwords).then(() => {
             this.dialogFormVisible = false
