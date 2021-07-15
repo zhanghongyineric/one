@@ -6,7 +6,13 @@
         <div class="description">
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
-          <h2>v{{ version }}</h2>
+          <el-tooltip
+            placement="bottom"
+            effect="dark"
+          >
+            <div slot="content">{{ versionDesc }}</div>
+            <h2 class="version-text" @click="toHistoryVersion">v{{ version }}</h2>
+          </el-tooltip>
           <h3>监测·管理端</h3>
         </div>
       </div>
@@ -126,7 +132,8 @@ export default {
       redirect: undefined,
       query: undefined, // 重定向页面携带过来的参数
       systemCode: '',
-      version: ''
+      version: '',
+      versionDesc: ''
     }
   },
   computed: {
@@ -222,7 +229,9 @@ export default {
           })
           selectVersion({ port: this.systemCode })
             .then(res => {
-              this.version = res.data.number
+              const { data: { number, content }} = res
+              this.version = number
+              this.versionDesc = content
             })
             .catch(err => {
               throw err
@@ -263,6 +272,9 @@ export default {
           return false
         }
       })
+    },
+    toHistoryVersion() {
+      this.$router.push({ path: '/HistoryVersions', query: { code: this.systemCode }})
     }
   }
 }
@@ -543,5 +555,9 @@ body {
       margin-right: 4px;
     }
   }
+}
+
+.version-text {
+  cursor: pointer;
 }
 </style>

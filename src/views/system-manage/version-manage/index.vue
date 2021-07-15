@@ -111,7 +111,14 @@
             </el-col>
             <el-col :span="24">
               <el-form-item label="版本描述:" prop="content">
-                <el-input v-model="formData.content" placeholder="请输入版本描述" size="small" clearable />
+                <el-input
+                  v-model="formData.content"
+                  type="textarea"
+                  :autosize="{minRows: 2, maxRows: 10}"
+                  placeholder="请输入版本描述"
+                  size="small"
+                  clearable
+                />
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -361,9 +368,6 @@ export default {
         pageSize: 10
       }
       this.getTableData()
-    },
-    getList() {
-
     }
   }
 }

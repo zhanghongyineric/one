@@ -53,3 +53,12 @@ export function selectVersion(data) {
     data
   })
 }
+
+// 查看该系统历史版本
+export function historicVersion(data) {
+  return request({
+    url: '/version/historicVersion',
+    method: 'POST',
+    data
+  })
+}
