@@ -86,7 +86,7 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: '川A12345'
+        plateNum: ''
       },
       map: null,
       lineArr: [],
