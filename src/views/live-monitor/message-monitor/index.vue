@@ -4,19 +4,19 @@
     <div class="left-box">
       <div class="static-box">
         <div class="statistics-num">
-          <span class="number">16015</span>
+          <span class="number">22982</span>
           <span class="text">入网车辆</span>
         </div>
         <div class="statistics-num">
-          <span class="number">15001</span>
+          <span class="number">0</span>
           <span class="text">上线车辆</span>
         </div>
         <div class="statistics-num">
-          <span class="number">5641</span>
+          <span class="number">0</span>
           <span class="text">在线车辆</span>
         </div>
         <div class="statistics-num">
-          <span class="number">8</span>
+          <span class="number">0</span>
           <span class="text">报警车辆</span>
         </div>
       </div>
