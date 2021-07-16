@@ -229,9 +229,11 @@ export default {
           })
           selectVersion({ port: this.systemCode })
             .then(res => {
-              const { data: { number, content }} = res
-              this.version = number
-              this.versionDesc = content
+              if (res.data) {
+                const { data: { number, content }} = res
+                this.version = number
+                this.versionDesc = content
+              }
             })
             .catch(err => {
               throw err
