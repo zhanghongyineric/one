@@ -4,7 +4,7 @@
       <div class="table-page-search-wrapper">
         <el-form :model="listQuery" label-width="80px" size="small">
           <el-row :gutter="48">
-            <el-col :md="8" :sm="24">
+            <!-- <el-col :md="8" :sm="24">
               <el-form-item label="版本号:">
                 <el-input v-model="listQuery.number" placeholder="请输入版本号" @keyup.enter.native="handleSearch" />
               </el-form-item>
@@ -23,14 +23,14 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :md="8" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
               >
-                <el-button size="small" @click="resetQuery">重置</el-button>
-                <el-button type="primary" size="small" @click="getTableData">查询</el-button>
+                <!-- <el-button size="small" @click="resetQuery">重置</el-button> -->
+                <!-- <el-button type="primary" size="small" @click="getTableData">查询</el-button> -->
                 <el-button type="primary" size="small" @click="openDialog">新增</el-button>
               </div>
             </el-col>
@@ -52,20 +52,20 @@
           </template>
         </el-table-column>
         <el-table-column label="版本描述" prop="content" show-overflow-tooltip />
-        <el-table-column label="状态" prop="status" width="100px">
+        <!-- <el-table-column label="状态" prop="status" width="100px">
           <template slot-scope="scope">
             <span v-if="scope.row.status === '1'" style="color:green">启用</span>
             <span v-else style="color:red">禁用</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作" align="center" width="220px" fixed="right">
           <template slot-scope="scope">
-            <el-button
+            <!-- <el-button
               size="mini"
               type="primary"
               @click="handlePush(scope.row)"
             >发布
-            </el-button>
+            </el-button> -->
             <el-button
               size="mini"
               type="warning"
@@ -82,42 +82,54 @@
         </el-table-column>
       </el-table>
 
-      <Pagination
+      <!-- <Pagination
         v-show="total>0"
         :total="total"
         :page.sync="listQuery.pageNum"
         :limit.sync="listQuery.pageSize"
-        @pagination="getList"
-      />
+        @pagination="getTableData"
+      /> -->
 
       <el-dialog
         :title="titles[type]"
         :visible.sync="visible"
-        width="500px"
         :before-close="closeDialog"
         :close-on-click-modal="false"
+        top="50px"
       >
         <el-form
           ref="form"
           :model="formData"
           :rules="rules"
-          label-width="100px"
+          label-width="120px"
         >
           <el-row>
             <el-col :span="24">
               <el-form-item label="版本号:" prop="number">
-                <el-input v-model="formData.number" placeholder="请输入版本号" size="small" clearable />
+                <el-input
+                  v-model="formData.number"
+                  placeholder="请输入版本号"
+                  size="small"
+                  clearable
+                  style="width: 200px"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-form-item label="版本描述:" prop="content">
-                <el-input
+              <el-form-item label="当前版本描述:" prop="content">
+                <quill-editor
+                  ref="myQuillEditor"
                   v-model="formData.content"
-                  type="textarea"
-                  :autosize="{minRows: 2, maxRows: 10}"
-                  placeholder="请输入版本描述"
-                  size="small"
-                  clearable
+                  :options="editorOption"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="历史版本描述:" prop="historyContent">
+                <quill-editor
+                  ref="historyQuillEditor"
+                  v-model="formData.historyContent"
+                  :options="editorOption"
                 />
               </el-form-item>
             </el-col>
@@ -137,7 +149,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col v-if="type === 'update'" :span="24">
+            <!-- <el-col v-if="type === 'update'" :span="24">
               <el-form-item label="状态:" prop="status">
                 <el-select
                   v-model="formData.status"
@@ -152,7 +164,7 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-col>
+            </el-col> -->
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -162,9 +174,6 @@
           <el-button type="primary" size="small" @click="addVersion()">
             确认
           </el-button>
-          <!-- <el-button v-show="type==='update'" type="primary" size="small" @click="updateVersion()">
-            确认
-          </el-button> -->
         </div>
       </el-dialog>
     </el-card>
@@ -172,7 +181,7 @@
 </template>
 
 <script>
-import Pagination from '@/components/Pagination'
+import { quillEditor } from 'vue-quill-editor'
 import {
   selectFind,
   save,
@@ -185,7 +194,7 @@ let that
 
 export default {
   name: 'VersionManage',
-  components: { Pagination },
+  components: { quillEditor },
   filters: {
     portFilter(sys) {
       if (sys) {
@@ -229,7 +238,8 @@ export default {
         add: '新增',
         update: '修改'
       },
-      currentRow: {}
+      currentRow: {},
+      editorOption: {}
     }
   },
   beforeCreate() {
@@ -248,10 +258,8 @@ export default {
       this.listLoading = true
       selectFind({ ...this.listQuery })
         .then(res => {
-          const { data: { list, total }} = res
+          this.list = res.data
           this.listLoading = false
-          this.list = list
-          this.total = total
         })
         .catch(err => {
           this.listLoading = false
