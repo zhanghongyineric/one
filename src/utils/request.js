@@ -5,6 +5,7 @@ import { getToken } from '@/utils/auth'
 import fileDownload from 'js-file-download'
 
 let messageBox = null // 存放弹窗实例，避免重复弹窗
+let message = null // 存放提示实例，避免重复提示
 
 // create an axios instance
 const service = axios.create({
@@ -88,11 +89,15 @@ service.interceptors.response.use(
           })
         }
       } else {
-        Message({
-          message: res.msg || '身份过期，请重新登录',
-          type: 'error',
-          duration: 5 * 1000
-        })
+        if (!message) {
+          message = Message({
+            message: '身份过期，请重新登录',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        } else {
+          message = null
+        }
       }
       return Promise.reject(new Error(res.msg || 'Error'))
     } else if (res.code !== 200) {
