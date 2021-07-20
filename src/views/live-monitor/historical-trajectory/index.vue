@@ -74,7 +74,7 @@
   </div>
 </template>
 <script>
-import { test } from '@/api/live-monitor/history'
+import { position } from '@/api/live-monitor/history'
 import connect from '@/utils/mqtt'
 
 export default {
@@ -86,7 +86,7 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: '川A12345'
+        plateNum: ''
       },
       map: null,
       lineArr: [],
@@ -117,65 +117,53 @@ export default {
           speed: '85.1',
           positionDes: '四川省雅安市天全县二郎山罗家饭店东北53米'
         }
-      ]
+      ],
+      topic: ''
+    }
+  },
+  computed: {
+    token() {
+      return this.$store.state.user.token
     }
   },
   created() {
     this.getHeight()
-    const token = this.$store.state.user.token
-    test({
-      plateNum: '川A12345',
-      topic: token + '/private/' + 'test',
-      time: '2021-7-15 15:05:51'
-    })
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        throw err
-      })
+    // 拼接连接主题topic
+    this.topic = this.token + '/private/' + 'position'
   },
   mounted() {
     this.getmap()
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
-
-    const topic = this.$store.state.user.token + '/private/' + 'test'
-    this.client = connect()
-    this.client.on('connect', () => {
-      console.log('连接成功')
-      // 订阅多个主题,必须先订阅才能在 message 中 收到消息
-      this.client.subscribe(
-        topic, // 订阅主题
-        { qos: 2 }, // 保证消息传递次数
-        (err) => {
-          // this.client.publish(topic, 'wwwwwwwwwwwwwwwwwwww')
-          console.log(err || '订阅成功')
-        }
-      )
-    })
-    // 失败重连
-    this.client.on('reconnect', (error) => {
-      console.log('正在重连:', error)
-    })
-    // 连接失败
-    this.client.on('error', (error) => {
-      console.log('连接失败:', error)
-    })
-    // 接收消息
-    this.client.on('message', (topic, message) => {
-      console.log('收到消息：', topic, message.toString())
-      this.$notify({
-        type: 'success',
-        title: '收到消息',
-        duration: 0,
-        message: message.toString()
-      })
-    })
+    this.connectMqtt()
   },
   methods: {
     switchPlay() {
       this.showPause = !this.showPause
+    },
+    connectMqtt() {
+      this.client = connect()
+      this.client.on('connect', () => {
+        this.client.subscribe(
+          this.topic, // 订阅主题
+          { qos: 2 }, // 保证消息传递次数
+          (err) => {
+            console.log(err || '订阅成功')
+          }
+        )
+      })
+      // 失败重连
+      this.client.on('reconnect', (error) => {
+        console.log('正在重连:', error)
+      })
+      // 连接失败
+      this.client.on('error', (error) => {
+        console.log('连接失败:', error)
+      })
+      // 接收消息
+      this.client.on('message', (topic, message) => {
+        console.log('收到消息：', message.toString())
+      })
     },
     getHeight() {
       this.styleSize.height = window.innerHeight - 84 + 'px'
@@ -276,7 +264,19 @@ export default {
       this.marker.stopMove()
       this.marker.moveAlong(this.lineArrlast, markerSpeed)
     },
-    search() {},
+    search() {
+      position({
+        plateNum: '川A12345',
+        topic: this.topic,
+        time: '2021-7-15 15:05:51'
+      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     // 初始化回放路线
     initPolyline() {
       this.polyline = new AMap.Polyline({

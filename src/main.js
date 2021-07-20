@@ -20,6 +20,10 @@ VueAMap.initAMapApiLoader({
   v: '1.4.4'
 })
 
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss' // global css

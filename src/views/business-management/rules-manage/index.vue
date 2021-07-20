@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <el-image style="width: 100%" :src="require('@/assets/wait.png')" />
+  <div class="layout-content">
+    <el-card>
+      d
+    </el-card>
   </div>
 </template>
 

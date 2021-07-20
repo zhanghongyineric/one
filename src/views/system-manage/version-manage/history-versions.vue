@@ -4,49 +4,18 @@
       <el-button
         style="margin-bottom: 20px"
         type="primary"
+        size="small"
         @click="goBack"
       >返回登录</el-button>
-      <el-table
-        v-loading="listLoading"
-        :data="list"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%;"
-      >
-        <el-table-column label="版本号" prop="number" width="130px" />
-        <el-table-column label="版本描述" prop="content" show-overflow-tooltip />
-      </el-table>
-
-      <Pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="listQuery.pageNum"
-        :limit.sync="listQuery.pageSize"
-        @pagination="getList"
-      />
+      <div class="list ql-editor" />
     </el-card>
   </div>
 </template>
 <script>
 import { historicVersion } from '@/api/system-manage/version-manage'
-import Pagination from '@/components/Pagination'
 
 export default {
   name: 'HistoryVersion',
-  components: { Pagination },
-  data() {
-    return {
-      listLoading: false,
-      list: [],
-      total: 0,
-      listQuery: {
-        pageNum: 1,
-        pageSize: 10,
-        port: ''
-      }
-    }
-  },
   computed: {
     sysCode() {
       return this.$route.query.code
@@ -58,13 +27,14 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      this.listQuery.port = this.sysCode
-      historicVersion({ ...this.listQuery })
+      historicVersion({ port: this.sysCode })
         .then(res => {
-          const { data: { list, total }} = res
-          this.list = list
-          this.total = total
-          this.listLoading = false
+          const { data: { historyContent, content }} = res
+          const eleList = document.getElementsByClassName('list')[0]
+          const eleItem = document.createElement('div')
+          eleItem.className = 'list-item'
+          historyContent ? eleItem.innerHTML = content + historyContent : eleItem.innerHTML = content
+          eleList.appendChild(eleItem)
         })
         .catch(err => {
           throw err

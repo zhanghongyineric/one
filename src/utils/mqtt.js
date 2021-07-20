@@ -5,7 +5,7 @@
  */
 import mqtt from 'mqtt'
 
-const connectUrl = 'wss://www.gosmooth.com.cn:/mqtt' // 连接服务端地址，注意查看ws协议对应的端口号
+const connectUrl = process.env.VUE_APP_MQTT_IP // 连接服务端地址，注意查看ws协议对应的端口号
 // 连接选项
 const options = {
   clean: true, // true: 清除会话, false: 保留会话

@@ -6,13 +6,24 @@
         <div class="description">
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
-          <el-tooltip
-            placement="bottom"
-            effect="dark"
-          >
-            <div slot="content">{{ versionDesc }}</div>
-            <h2 class="version-text" @click="toHistoryVersion">v{{ version }}</h2>
-          </el-tooltip>
+          <h2>
+            <span class="version-text" @mouseenter="drawer = true">v{{ version }}</span>
+          </h2>
+          <el-drawer
+            custom-class="version-drawer ql-editor"
+            :visible.sync="drawer"
+            :direction="direction"
+            :with-header="false"
+            :modal="true"
+            size="20%"
+          />
+          <el-button
+            v-if="drawer"
+            class="history-version-btn"
+            type="primary"
+            size="small"
+            @click="toHistoryVersion"
+          >查看历史版本</el-button>
           <h3>监测·管理端</h3>
         </div>
       </div>
@@ -69,7 +80,6 @@
             向右滑动填充拼图
             <span v-show="showFinishSliderTip" class="finishSlider">请先完成拼图</span>
           </p>
-
           <div style="overflow: hidden;text-align: center">
             <el-button
               :loading="loading"
@@ -100,7 +110,7 @@
 <script>
 import './libs/jigsaw'
 import './libs/jigsaw.css'
-import { selectVersion, sysPort } from '@/api/system-manage/version-manage'
+import { historicVersion, sysPort } from '@/api/system-manage/version-manage'
 
 export default {
   name: 'Login',
@@ -133,16 +143,14 @@ export default {
       query: undefined, // 重定向页面携带过来的参数
       systemCode: '',
       version: '',
-      versionDesc: ''
+      drawer: false,
+      direction: 'ltr'
     }
   },
   computed: {
     title() {
       return this.$store.state.settings.title
     }
-    // version() {
-    //   return process.env.VUE_APP_SYSTEM_VERSION
-    // }
   },
   watch: {
     $route: {
@@ -227,11 +235,13 @@ export default {
               this.systemCode = item.label
             }
           })
-          selectVersion({ port: this.systemCode })
+          historicVersion({ port: this.systemCode })
             .then(res => {
-              const { data: { number, content }} = res
-              this.version = number
-              this.versionDesc = content
+              if (res.data) {
+                const { data: { number, content }} = res
+                this.version = number
+                document.getElementsByClassName('version-drawer')[0].innerHTML = content
+              }
             })
             .catch(err => {
               throw err
@@ -559,5 +569,17 @@ body {
 
 .version-text {
   cursor: pointer;
+}
+
+.history-version-btn {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  z-index: 3000;
+}
+
+::v-deep .version-drawer {
+  padding: 70px 20px 20px !important;
+  min-width: 250px !important;
 }
 </style>
