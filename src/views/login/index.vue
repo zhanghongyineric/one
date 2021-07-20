@@ -151,9 +151,6 @@ export default {
     title() {
       return this.$store.state.settings.title
     }
-    // version() {
-    //   return process.env.VUE_APP_SYSTEM_VERSION
-    // }
   },
   watch: {
     $route: {

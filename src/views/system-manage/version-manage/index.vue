@@ -258,7 +258,7 @@ export default {
       this.listLoading = true
       selectFind({ ...this.listQuery })
         .then(res => {
-          this.list = res.data.list
+          this.list = res.data
           this.listLoading = false
         })
         .catch(err => {
