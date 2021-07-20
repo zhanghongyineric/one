@@ -280,7 +280,7 @@ export default {
         remarks: ''
       }, // 用于重置新增的数据
       itemRules: {
-        // value: [{ required: true, message: '请输入字典值', trigger: 'blur' }],
+        value: [{ required: true, message: '请输入字典值', trigger: 'blur' }],
         label: [{ required: true, message: '请输入字典标签', trigger: 'blur' }],
         sort: [{ required: true, message: '请输入排序', trigger: 'blur' }]
       }, // 新增和编辑框的规则
