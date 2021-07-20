@@ -20,7 +20,7 @@
           <span class="text">报警车辆</span>
         </div>
       </div>
-      <div class="divide" />
+      <el-divider />
       <div style="padding-top: 20px;padding-bottom: 20px">
         <el-input size="small" placeholder="请输入车牌号码" />
       </div>
@@ -128,13 +128,10 @@ export default {
   top: 0;
   padding-left: 10px;
   padding-right: 10px;
+}
 
-  .divide {
-    height: 1px;
-    width: 100%;
-    background-color: #fff;
-    transform:scaleY(0.5)
-  }
+::v-deep .el-divider--horizontal {
+  margin: 0 !important;
 }
 
 ::v-deep .amap-logo {

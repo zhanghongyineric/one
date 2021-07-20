@@ -16,18 +16,6 @@ import { historicVersion } from '@/api/system-manage/version-manage'
 
 export default {
   name: 'HistoryVersion',
-  data() {
-    return {
-      listLoading: false,
-      list: [],
-      total: 0,
-      listQuery: {
-        pageNum: 1,
-        pageSize: 10,
-        port: ''
-      }
-    }
-  },
   computed: {
     sysCode() {
       return this.$route.query.code
@@ -39,7 +27,6 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      this.listQuery.port = this.sysCode
       historicVersion({ port: this.sysCode })
         .then(res => {
           const { data } = res
