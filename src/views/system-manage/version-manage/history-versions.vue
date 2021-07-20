@@ -29,11 +29,11 @@ export default {
       this.listLoading = true
       historicVersion({ port: this.sysCode })
         .then(res => {
-          const { data } = res
+          const { data: { historyContent, content }} = res
           const eleList = document.getElementsByClassName('list')[0]
           const eleItem = document.createElement('div')
           eleItem.className = 'list-item'
-          eleItem.innerHTML = data[0].content + data[0].historyContent
+          eleItem.innerHTML = content + historyContent
           eleList.appendChild(eleItem)
         })
         .catch(err => {

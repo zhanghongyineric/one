@@ -110,7 +110,7 @@
 <script>
 import './libs/jigsaw'
 import './libs/jigsaw.css'
-import { selectVersion, sysPort } from '@/api/system-manage/version-manage'
+import { historicVersion, sysPort } from '@/api/system-manage/version-manage'
 
 export default {
   name: 'Login',
@@ -235,7 +235,7 @@ export default {
               this.systemCode = item.label
             }
           })
-          selectVersion({ port: this.systemCode })
+          historicVersion({ port: this.systemCode })
             .then(res => {
               if (res.data) {
                 const { data: { number, content }} = res

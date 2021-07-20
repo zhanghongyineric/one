@@ -45,15 +45,6 @@ export function sysPort(data) {
   })
 }
 
-// 用户界面获取版本信息
-export function selectVersion(data) {
-  return request({
-    url: '/version/selectVersion',
-    method: 'POST',
-    data
-  })
-}
-
 // 查看该系统历史版本
 export function historicVersion(data) {
   return request({
