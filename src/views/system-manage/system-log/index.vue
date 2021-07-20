@@ -89,7 +89,7 @@
         <el-table-column label="请求地址" prop="requestUri" min-width="100px" show-overflow-tooltip />
         <el-table-column label="请求方法" prop="method" />
         <el-table-column label="请求参数" prop="params" min-width="100px" show-overflow-tooltip />
-        <el-table-column label="操作时间" prop="time" min-width="100px" show-overflow-tooltip />
+        <el-table-column label="操作用时(ms)" prop="time" min-width="100px" show-overflow-tooltip />
         <el-table-column label="操作异常" prop="exception" />
         <el-table-column label="操作企业" prop="unitName" min-width="100px" show-overflow-tooltip />
 
