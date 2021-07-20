@@ -62,9 +62,9 @@
                   {{ advanced ? '收起' : '展开' }}
                   <i :class="advanced?'el-icon-arrow-up':'el-icon-arrow-down'" />
                 </el-button>
-
               </div>
             </el-col>
+
           </el-row>
         </el-form>
       </div>
