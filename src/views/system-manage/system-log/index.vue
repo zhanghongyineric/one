@@ -39,8 +39,8 @@
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
-                <el-form-item label="操作用户:">
-                  <el-input v-model="listQuery.username" placeholder="请输入操作用户" @keyup.enter.native="handleSearch" />
+                <el-form-item label="操作人:">
+                  <el-input v-model="listQuery.username" placeholder="请输入操作人" @keyup.enter.native="handleSearch" />
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
@@ -81,8 +81,7 @@
         <!--<el-table-column v-slot="{row}" label="日志类型" prop="type">-->
         <!--  {{ row.type | typeFilter }}-->
         <!--</el-table-column>-->
-        <el-table-column label="操作用户" prop="username" />
-        <el-table-column label="操作人ID" prop="createBy" />
+        <el-table-column label="操作人" prop="createBy" />
         <el-table-column label="操作说明" prop="title" />
         <el-table-column label="操作时间" prop="createTime" min-width="110px" />
         <el-table-column label="IP" prop="remoteAddr" />
