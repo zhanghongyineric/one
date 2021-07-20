@@ -33,7 +33,7 @@ export default {
           const eleList = document.getElementsByClassName('list')[0]
           const eleItem = document.createElement('div')
           eleItem.className = 'list-item'
-          eleItem.innerHTML = content + historyContent
+          historyContent ? eleItem.innerHTML = content + historyContent : eleItem.innerHTML = content
           eleList.appendChild(eleItem)
         })
         .catch(err => {
