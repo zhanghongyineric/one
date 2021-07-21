@@ -4,16 +4,6 @@
       <div class="table-page-search-wrapper">
         <el-form :model="listQuery" label-width="80px" size="small">
           <el-row :gutter="48">
-            <!-- <el-col :md="8" :sm="24">
-              <el-form-item label="关键字:">
-                <el-input
-                  v-model="listQuery.keyword"
-                  placeholder="请输入关键字"
-                  clearable
-                />
-              </el-form-item>
-            </el-col> -->
-
             <el-col :md="(!advanced && 8) || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
@@ -58,6 +48,14 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <Pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.pageNum"
+        :limit.sync="listQuery.pageSize"
+        @pagination="getList"
+      />
 
       <!-- 新增轮播图弹框 -->
       <el-dialog
@@ -116,9 +114,11 @@
 <script>
 import { selectFind, save, deleteData } from '@/api/official-website/carousel'
 import { upload } from '@/api/official-website/news'
+import Pagination from '@/components/Pagination'
 
 export default {
   name: 'CarouselImages',
+  components: { Pagination },
   data() {
     return {
       visible: false,
@@ -130,6 +130,7 @@ export default {
         pageSize: 10,
         keyword: ''
       },
+      total: 0,
       addFormData: {
         typeDesc: '',
         creator: '',
@@ -183,6 +184,7 @@ export default {
           const { data } = res
           this.listLoading = false
           this.list = data.list
+          this.total = data.total
         })
         .catch(err => {
           this.listLoading = false
@@ -192,6 +194,9 @@ export default {
     openDialog(val, row) {
       this.visible = true
       this.currentRow = row
+      this.$nextTick(_ => {
+        this.$refs['addForm'].clearValidate()
+      })
       if (val === 'add') this.modify = false
       else {
         this.modify = true
@@ -341,6 +346,9 @@ export default {
                 message: '删除成功',
                 type: 'success'
               })
+              if (this.listQuery.pageNum !== 1 && this.list.length === 1) {
+                this.listQuery.pageNum--
+              }
               this.getList()
             })
             .catch(err => {
@@ -358,7 +366,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
