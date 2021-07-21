@@ -31,7 +31,7 @@
               >
                 <!-- <el-button size="small" @click="resetQuery">重置</el-button> -->
                 <!-- <el-button type="primary" size="small" @click="getTableData">查询</el-button> -->
-                <el-button type="primary" size="small" @click="openDialog">新增</el-button>
+                <!-- <el-button type="primary" size="small" @click="openDialog">新增</el-button> -->
               </div>
             </el-col>
           </el-row>
@@ -58,7 +58,7 @@
             <span v-else style="color:red">禁用</span>
           </template>
         </el-table-column> -->
-        <el-table-column label="操作" align="center" width="220px" fixed="right">
+        <el-table-column label="操作" align="center" width="120px" fixed="right">
           <template slot-scope="scope">
             <!-- <el-button
               size="mini"
@@ -72,12 +72,12 @@
               @click="handleUpdate(scope.row)"
             >修改
             </el-button>
-            <el-button
+            <!-- <el-button
               size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
             >删除
-            </el-button>
+            </el-button> -->
           </template>
         </el-table-column>
       </el-table>
