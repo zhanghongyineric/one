@@ -227,7 +227,7 @@ export default {
         unitName: [{ required: true, message: '请输入服务商名称', trigger: 'blur' }],
         businessLicenseCode: [{ required: true, message: '请输入社会统一信用代码', trigger: 'blur' }],
         unitAddress: [{ required: true, message: '请选择地址', trigger: 'change' }],
-        mobilePhone: [{ required: false, trigger: 'blur', validator: validateUnitTel }],
+        mobilePhone: [{ required: true, trigger: 'blur', validator: validateUnitTel }],
         status: [{ required: true, trigger: 'change', message: '请选择状态' }]
       },
       dialogData: {

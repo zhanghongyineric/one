@@ -595,7 +595,7 @@ export default {
       // 用于重置新增的数据
       rules: {
         unitName: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
-        telephone: [{ required: false, trigger: 'blur', validator: validateUnitTel }],
+        telephone: [{ required: true, trigger: 'blur', validator: validateUnitTel }],
         shortName: [{ required: true, message: '请输入企业简称', trigger: 'blur' }],
         aptitudeLevel: [{ required: true, message: '请选择企业级别', trigger: 'change' }],
         zoneId: [{ required: true, message: '请选择行政区域', trigger: 'change' }],
