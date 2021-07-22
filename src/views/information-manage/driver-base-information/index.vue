@@ -867,7 +867,7 @@ export default {
               this.dialogVisible = false
               this.$message({
                 type: 'success',
-                message: '新增成功！'
+                message: this.modify ? '修改成功！' : '新增成功！'
               })
               this.getList()
               this.stepIndex = 1
@@ -875,7 +875,7 @@ export default {
             .catch(err => {
               this.$message({
                 type: 'error',
-                message: '新增失败！'
+                message: this.modify ? '修改失败！' : '新增失败！'
               })
               throw err
             })
