@@ -1694,7 +1694,7 @@ export default {
         .then(() => {
           InsuranceDelete({ id: parseInt(row.id) })
             .then(res => {
-              this.getInsuranceData(row.id.toString())
+              this.getInsuranceData(row.vehicleId.toString())
               this.$message({
                 type: 'success',
                 message: '删除成功'
@@ -1737,6 +1737,7 @@ export default {
     createAccess() {
       this.$refs['fourForm'].validate(valid => {
         if (valid) {
+          this.accessFormData.vehicleId = this.currentRow.vehicleId
           this.accessFormData.functions = this.accessFormData.functions.join(',')
           AccessInstallationSave({ ...this.accessFormData })
             .then(res => {

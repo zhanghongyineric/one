@@ -824,9 +824,9 @@ export default {
         allowConnect: '',
         developerName: '',
         keepOnRecord: '',
-        serviceArea: '',
-        functions: '',
-        serviceVehicleTypeCode: ''
+        serviceArea: [],
+        functions: [],
+        serviceVehicleTypeCode: []
       }
     },
     closeDialog() {
@@ -842,9 +842,9 @@ export default {
           this.dialogData.creatorNo = this.$store.state.user.userId
           if (this.modify) this.dialogData.platformId = this.currentRow.platformId.toString()
           const req = { ...this.dialogData }
-          req.serviceArea = this.dialogData.serviceArea.join(',')
-          req.functions = this.dialogData.functions.join(',')
-          req.serviceVehicleTypeCode = this.dialogData.serviceVehicleTypeCode.join(',')
+          if (this.dialogData.serviceArea) req.serviceArea = this.dialogData.serviceArea.join(',')
+          if (this.dialogData.functions) req.functions = this.dialogData.functions.join(',')
+          if (this.dialogData.serviceVehicleTypeCode) req.serviceVehicleTypeCode = this.dialogData.serviceVehicleTypeCode.join(',')
 
           save({ ...req })
             .then(res => {
