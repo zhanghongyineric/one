@@ -90,3 +90,13 @@ export function deleteViolationDegreeValue(data) {
     data
   })
 }
+
+// 修改违章程度
+export function updateViolationDegree(data) {
+  return request({
+    url: '/violation/updateViolationDegree',
+    method: 'POST',
+    data
+  })
+}
+

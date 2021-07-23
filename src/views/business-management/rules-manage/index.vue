@@ -18,7 +18,7 @@
         highlight-current-row
         style="width: 100%"
       >
-        <el-table-column prop="violationNo" label="规则编号" width="100" />
+        <el-table-column type="index" label="编号" width="100" />
         <el-table-column prop="violationName" label="规则名称" min-width="150px" />
         <el-table-column prop="script" label="规则描述" min-width="200px" />
         <!-- <el-table-column prop="degreeScript" label="违章程度描述" min-width="200px" /> -->
@@ -52,9 +52,10 @@
           ref="formData"
           :model="formData"
           label-width="100px"
+          :rules="oneRule"
         >
           <el-form-item label="规则名称：" prop="violationName">
-            <el-select v-model="formData.violationName">
+            <el-select v-model="formData.violationName" placeholder="请选择规则名称">
               <el-option
                 v-for="{label, value} in ruleOptions"
                 :key="label"
@@ -88,18 +89,33 @@
       >
         <el-form
           ref="degreeForm"
-          :model="degreeFormData"
+          :model="formData"
           label-width="120px"
+          :rules="degreeRule"
         >
-          <el-form-item label="违章程度：">
-            <el-button
+          <el-form-item label="违章程度：" prop="degreeLabel">
+            <!-- <el-button
               v-for="{value,label} in degreeOptions"
               :key="label"
               type="primary"
               size="small"
               icon="el-icon-setting"
-              @click="changeDegree(value)"
-            >{{ value }}</el-button>
+              @click="changeDegree(value,label)"
+            >{{ value }}</el-button> -->
+
+            <el-select
+              v-model="degreeLabel"
+              size="small"
+            >
+              <el-option
+                v-for="{value,label} in degreeOptions"
+                :key="label"
+                :value="label"
+                :label="value"
+                @click.native="changeDegree(value,label)"
+              />
+            </el-select>
+
           </el-form-item>
           <el-form-item :label="`${degreeValue}条件：`" prop="script">
             <el-row>
@@ -123,7 +139,7 @@
                     v-for="{label, value} in symbols"
                     :key="label"
                     :label="value"
-                    :value="value"
+                    :value="label"
                   />
                 </el-select>
                 <el-input v-model="formData.lessValue" size="small" style="width: 100px" placeholder="请输入" />
@@ -143,15 +159,15 @@
                     v-for="{label, value} in symbols"
                     :key="label"
                     :label="value"
-                    :value="value"
+                    :value="label"
                   />
                 </el-select>
                 <el-input v-model="backup.lessValue" size="small" style="width: 100px" placeholder="请输入" />
-                <i class="el-icon-delete" @click="deleteCol" />
+                <!-- <i class="el-icon-delete" @click="deleteCol" /> -->
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="描述：">
+          <el-form-item label="描述：" prop="expresion">
             <el-input v-model="expresion" disabled type="textarea" />
           </el-form-item>
         </el-form>
@@ -171,7 +187,8 @@ import {
   save,
   deleteData,
   selectEdit,
-  insertViolationDegree
+  insertViolationDegree,
+  updateViolationDegree
 } from '@/api/business-manage/rules-manage'
 import Pagination from '@/components/Pagination'
 
@@ -194,6 +211,13 @@ export default {
         expresion: '',
         lessValue: '',
         lessNo: '',
+        conditionNo: '',
+        degreeLabel: ''
+      },
+      backup: {
+        expresion: '',
+        lessValue: '',
+        lessNo: '',
         conditionNo: ''
       },
       degreeFormData: {},
@@ -201,18 +225,14 @@ export default {
       degreeOptions: [],
       violationOptions: [],
       degreeValue: '',
+      degreeLabel: '',
       type: {
         'update': '更新',
         'add': '新增'
       },
       status: '',
       currentRow: {},
-      backup: {
-        expresion: '',
-        lessValue: '',
-        lessNo: '',
-        conditionNo: ''
-      },
+
       symbolText: '',
       currentUnit: '',
       currentUnit2: '',
@@ -220,22 +240,32 @@ export default {
       expresion: '',
       degreeReq: {
         violationDegrees: []
-      }
+      },
+      oneRule: {
+        violationName: [{ required: true, trigger: 'change', message: '请选择规则名称' }],
+        script: [{ required: true, trigger: 'blur', message: '请输入规则描述' }]
+      },
+      degreeRule: {
+        // degreeLabel: [{ required: true, trigger: 'change', message: '请选择违章程度' }],
+        expresion: [{ required: true, trigger: 'blur', message: '请配置违章条件' }]
+      },
+      update: false,
+      currentId: ''
     }
   },
   watch: {
     formData: {
       handler(newVal, oldVal) {
-        let sym = ''
-        this.symbols.forEach(({ value, remark }) => {
-          if (value === newVal.lessNo) sym = remark
+        let sym = ''; let conditionNo = ''
+        this.symbols.forEach(({ label, remark }) => {
+          if (label === newVal.lessNo) sym = remark
         })
         this.violationOptions.forEach(({ label, value }) => {
-          if (label === newVal.conditionNo) newVal.conditionNo = value
+          if (label === newVal.conditionNo) conditionNo = value
         })
         if (newVal.conditionNo) {
           this.formData.expresion =
-        newVal.conditionNo + sym + newVal.lessValue + this.currentUnit
+        conditionNo + sym + newVal.lessValue + this.currentUnit
         }
         if (this.backup.expresion) this.expresion = this.formData.expresion + '且' + this.backup.expresion
         else this.expresion = this.formData.expresion
@@ -244,16 +274,16 @@ export default {
     },
     backup: {
       handler(newVal, ov) {
-        let sym = ''
-        this.symbols.forEach(({ value, remark }) => {
-          if (value === newVal.lessNo) sym = remark
+        let sym = ''; let conditionNo = ''
+        this.symbols.forEach(({ label, remark }) => {
+          if (label === newVal.lessNo) sym = remark
         })
         this.violationOptions.forEach(({ label, value }) => {
-          if (label === newVal.conditionNo) newVal.conditionNo = value
+          if (label === newVal.conditionNo) conditionNo = value
         })
         if (newVal.conditionNo) {
           this.backup.expresion =
-        newVal.conditionNo + sym + newVal.lessValue + this.currentUnit2
+        conditionNo + sym + newVal.lessValue + this.currentUnit2
         }
 
         if (this.backup.expresion) this.expresion = this.formData.expresion + '且' + this.backup.expresion
@@ -269,6 +299,7 @@ export default {
     this.degreeOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章严重程度编码'].list
     this.violationOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章条件'].list
     this.degreeValue = this.degreeOptions[0].value
+    this.degreeLabel = this.degreeOptions[0].label
   },
   methods: {
     getList() {
@@ -300,16 +331,40 @@ export default {
       this.currentRow = row
       this.formData = { ...row }
       this.visible = true
+      this.$nextTick(_ => {
+        this.$refs['formData'].clearValidate()
+      })
     },
     updateDegree(row) {
       this.degreeVisible = true
       this.currentRow = row
+      this.showCol = true
       selectEdit({
         violationNo: row.id.toString(),
-        degreeNo: this.degreeOptions[0].label
+        degreeNo: this.degreeLabel
       })
         .then(res => {
-          console.log(res)
+          const { data } = res
+          if (data.length) {
+            this.update = true
+            this.expresion = data[0].expresion
+            this.currentId = data[0].id.toString()
+            this.formData.lessNo = data[0].violationDegreeValues[0].lessNo
+            this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
+            this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
+            this.formData.id = data[0].violationDegreeValues[0].id.toString()
+            if (data[0].violationDegreeValues > 1) {
+              this.backup.lessNo = data[0].violationDegreeValues[1].lessNo
+              this.backup.lessValue = data[0].violationDegreeValues[1].lessValue
+              this.backup.conditionNo = data[0].violationDegreeValues[1].conditionNo
+              this.backup.id = data[0].violationDegreeValues[1].id.toString()
+            } else {
+              this.showCol = false
+            }
+          } else {
+            this.update = false
+            this.resetFormData()
+          }
         })
         .catch(err => {
           throw err
@@ -344,59 +399,147 @@ export default {
       this.visible = false
       this.degreeVisible = false
       this.showCol = true
+      this.resetFormData()
     },
-    changeDegree(value) {
+    changeDegree(value, label) {
       this.degreeValue = value
+      this.degreeLabel = label
+      this.showCol = true
+      this.resetFormData()
+      selectEdit({
+        violationNo: this.currentRow.id.toString(),
+        degreeNo: label
+      })
+        .then(res => {
+          const { data } = res
+          if (data.length) {
+            this.update = true
+            this.expresion = data[0].expresion
+            this.currentId = data[0].id.toString()
+            this.formData.lessNo = data[0].violationDegreeValues[0].lessNo
+            this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
+            this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
+            this.formData.id = data[0].violationDegreeValues[0].id.toString()
+            if (data[0].violationDegreeValues > 1) {
+              this.backup.lessNo = data[0].violationDegreeValues[1].lessNo
+              this.backup.lessValue = data[0].violationDegreeValues[1].lessValue
+              this.backup.conditionNo = data[0].violationDegreeValues[1].conditionNo
+              this.backup.id = data[0].violationDegreeValues[1].id.toString()
+            } else {
+              this.showCol = false
+            }
+          } else {
+            this.update = false
+            this.resetFormData()
+          }
+        })
+        .catch(err => {
+          throw err
+        })
     },
     addRule() {
       this.status = 'add'
       this.visible = true
+      this.$nextTick(_ => {
+        this.$refs['formData'].clearValidate()
+      })
     },
     saveRule() {
-      if (this.status === 'update') this.formData.id = this.currentRow.id
-      save({ ...this.formData })
-        .then(_ => {
-          this.visible = false
-          this.$message({
-            type: 'success',
-            message: `${this.type[this.status]}成功！`
-          })
-          this.getList()
-        })
-        .catch(err => {
-          this.$message({
-            type: 'error',
-            message: `${this.type[this.status]}失败！`
-          })
-          throw err
-        })
+      this.$refs['formData'].validate(valid => {
+        if (valid) {
+          if (this.status === 'update') this.formData.id = this.currentRow.id
+          save({ ...this.formData })
+            .then(_ => {
+              this.visible = false
+              this.$message({
+                type: 'success',
+                message: `${this.type[this.status]}成功！`
+              })
+              this.getList()
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: `${this.type[this.status]}失败！`
+              })
+              throw err
+            })
+        }
+      })
+    },
+    resetFormData() {
+      this.formData = {
+        expresion: '',
+        lessValue: '',
+        lessNo: '',
+        conditionNo: ''
+      }
+      this.backup = {
+        expresion: '',
+        lessValue: '',
+        lessNo: '',
+        conditionNo: ''
+      }
+      this.expresion = ''
     },
     saveVio() {
-      const req = {
-        degreeNo: this.degreeOptions[0].label,
-        expresion: this.expresion,
-        violationNo: this.currentRow.id,
-        violationDegreeValues: []
-      }
-      this.formData.violationNo = this.currentRow.id.toString()
-      this.backup.violationNo = this.currentRow.id.toString()
-      this.backup.degreeNo = this.degreeOptions[0].label
-      this.formData.degreeNo = this.degreeOptions[0].label
-      req.violationDegreeValues.push(this.formData)
-      req.violationDegreeValues.push(this.backup)
-      this.degreeReq.violationDegrees.push(req)
-      insertViolationDegree(this.degreeReq)
-        .then(res => {
-          this.degreeVisible = false
-          console.log(res)
-        })
-        .catch(err => {
-          throw err
-        })
+      this.$refs['degreeForm'].validate(valid => {
+        if (valid) {
+          const req = {
+            degreeNo: this.degreeLabel,
+            expresion: this.expresion,
+            violationNo: this.currentRow.id.toString(),
+            violationDegreeValues: []
+          }
+          this.formData.violationNo = this.currentRow.id.toString()
+          this.backup.violationNo = this.currentRow.id.toString()
+          this.backup.degreeNo = this.degreeLabel
+          this.formData.degreeNo = this.degreeLabel
+          req.violationDegreeValues.push(this.formData)
+          if (this.backup.conditionNo) req.violationDegreeValues.push(this.backup)
+          this.degreeReq.violationDegrees.push(req)
+          if (this.update) {
+            req.id = this.currentId
+            updateViolationDegree(this.degreeReq)
+              .then(_ => {
+                // this.degreeVisible = false
+                // this.resetFormData()
+                this.$message({
+                  type: 'success',
+                  message: '修改成功！'
+                })
+              })
+              .catch(err => {
+                this.$message({
+                  type: 'error',
+                  message: '修改失败！'
+                })
+                throw err
+              })
+          } else {
+            insertViolationDegree(this.degreeReq)
+              .then(_ => {
+                // this.degreeVisible = false
+                // this.resetFormData()
+                this.$message({
+                  type: 'success',
+                  message: '新增成功！'
+                })
+              })
+              .catch(err => {
+                this.$message({
+                  type: 'error',
+                  message: '新增失败！'
+                })
+                throw err
+              })
+          }
+        }
+      })
     },
-    addViolation() {
+    // addViolation() {
 
-    },
+    // },
     deleteCol() {
       this.showCol = false
     }
