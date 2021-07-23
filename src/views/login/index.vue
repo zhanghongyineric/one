@@ -14,16 +14,17 @@
             :visible.sync="drawer"
             :direction="direction"
             :with-header="false"
-            :modal="true"
+            :modal="false"
             size="20%"
           />
-          <el-button
+          <!-- <el-button
             v-if="drawer"
             class="history-version-btn"
             type="primary"
             size="small"
             @click="toHistoryVersion"
-          >查看历史版本</el-button>
+          >查看历史版本</el-button> -->
+          <span v-if="drawer" class="history-version-text">历史版本信息</span>
           <h3>监测·管理端</h3>
         </div>
       </div>
@@ -99,10 +100,10 @@
     <div class="footer">
       <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备20014004号</a>
       <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备20014004号-2</a>
-      <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51019002003222">
+      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51019002003222">
         <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
-        川公网安备 51019002003222 号
-      </a> -->
+        川公网安备 51010702002449 号
+      </a>
     </div>
   </div>
 </template>
@@ -571,15 +572,19 @@ body {
   cursor: pointer;
 }
 
-.history-version-btn {
+.history-version-text {
   position: fixed;
-  left: 20px;
+  left: 6%;
   top: 20px;
   z-index: 3000;
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 ::v-deep .version-drawer {
   padding: 70px 20px 20px !important;
   min-width: 250px !important;
+  background-color:rgba(255,255,255,0.3) !important;
 }
 </style>

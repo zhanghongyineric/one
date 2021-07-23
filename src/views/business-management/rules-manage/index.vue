@@ -257,8 +257,8 @@ export default {
     formData: {
       handler(newVal, oldVal) {
         let sym = ''; let conditionNo = ''
-        this.symbols.forEach(({ label, remark }) => {
-          if (label === newVal.lessNo) sym = remark
+        this.symbols.forEach(({ label, value }) => {
+          if (label === newVal.lessNo) sym = value
         })
         this.violationOptions.forEach(({ label, value }) => {
           if (label === newVal.conditionNo) conditionNo = value
@@ -267,7 +267,7 @@ export default {
           this.formData.expresion =
         conditionNo + sym + newVal.lessValue + this.currentUnit
         }
-        if (this.backup.expresion) this.expresion = this.formData.expresion + '且' + this.backup.expresion
+        if (this.backup.expresion) this.expresion = this.formData.expresion + '\xa0' + '且' + '\xa0' + this.backup.expresion
         else this.expresion = this.formData.expresion
       },
       deep: true
@@ -275,8 +275,8 @@ export default {
     backup: {
       handler(newVal, ov) {
         let sym = ''; let conditionNo = ''
-        this.symbols.forEach(({ label, remark }) => {
-          if (label === newVal.lessNo) sym = remark
+        this.symbols.forEach(({ label, value }) => {
+          if (label === newVal.lessNo) sym = value
         })
         this.violationOptions.forEach(({ label, value }) => {
           if (label === newVal.conditionNo) conditionNo = value
@@ -286,7 +286,7 @@ export default {
         conditionNo + sym + newVal.lessValue + this.currentUnit2
         }
 
-        if (this.backup.expresion) this.expresion = this.formData.expresion + '且' + this.backup.expresion
+        if (this.backup.expresion) this.expresion = this.formData.expresion + '\xa0\xa0' + '且' + '\xa0\xa0' + this.backup.expresion
         else this.expresion = this.formData.expresion
       },
       deep: true
@@ -353,7 +353,7 @@ export default {
             this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
             this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
             this.formData.id = data[0].violationDegreeValues[0].id.toString()
-            if (data[0].violationDegreeValues > 1) {
+            if (data[0].violationDegreeValues.length > 1) {
               this.backup.lessNo = data[0].violationDegreeValues[1].lessNo
               this.backup.lessValue = data[0].violationDegreeValues[1].lessValue
               this.backup.conditionNo = data[0].violationDegreeValues[1].conditionNo
@@ -420,7 +420,7 @@ export default {
             this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
             this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
             this.formData.id = data[0].violationDegreeValues[0].id.toString()
-            if (data[0].violationDegreeValues > 1) {
+            if (data[0].violationDegreeValues.length > 1) {
               this.backup.lessNo = data[0].violationDegreeValues[1].lessNo
               this.backup.lessValue = data[0].violationDegreeValues[1].lessValue
               this.backup.conditionNo = data[0].violationDegreeValues[1].conditionNo
@@ -455,13 +455,14 @@ export default {
                 type: 'success',
                 message: `${this.type[this.status]}成功！`
               })
+              this.resetFormData()
               this.getList()
             })
             .catch(err => {
-              this.$message({
-                type: 'error',
-                message: `${this.type[this.status]}失败！`
-              })
+              // this.$message({
+              //   type: 'error',
+              //   message: `${this.type[this.status]}失败！`
+              // })
               throw err
             })
         }
