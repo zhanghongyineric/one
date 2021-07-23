@@ -7,7 +7,7 @@
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
           <h2>
-            <span class="version-text" @mouseenter="drawer = true">v{{ version }}</span>
+            <span class="version-text">v{{ version }}</span>
           </h2>
           <el-drawer
             custom-class="version-drawer ql-editor"
@@ -105,6 +105,9 @@
         川公网安备 51010702002449 号
       </a>
     </div>
+    <div :class="[drawer ? 'close-symbol' : 'expand-symbol']" @click="switchDrawer">
+      <div :class="[drawer ? 'left-arrow' : 'right-arrow']" />
+    </div>
   </div>
 </template>
 
@@ -145,7 +148,8 @@ export default {
       systemCode: '',
       version: '',
       drawer: false,
-      direction: 'ltr'
+      direction: 'ltr',
+      arrowStyle: 'right-arrow'
     }
   },
   computed: {
@@ -239,9 +243,12 @@ export default {
           historicVersion({ port: this.systemCode })
             .then(res => {
               if (res.data) {
-                const { data: { number, content }} = res
+                console.log(res)
+                const { data: { number, content, historyContent }} = res
                 this.version = number
-                document.getElementsByClassName('version-drawer')[0].innerHTML = content
+                const eleItem = document.getElementsByClassName('version-drawer')[0]
+                // document.getElementsByClassName('version-drawer')[0].innerHTML = content
+                historyContent ? eleItem.innerHTML = content + historyContent : eleItem.innerHTML = content
               }
             })
             .catch(err => {
@@ -286,6 +293,10 @@ export default {
     },
     toHistoryVersion() {
       this.$router.push({ path: '/HistoryVersions', query: { code: this.systemCode }})
+    },
+    switchDrawer() {
+      this.drawer = !this.drawer
+      this.drawer ? this.arrowStyle = 'left-arrow' : this.arrowStyle = 'right=arrow'
     }
   }
 }
@@ -569,7 +580,7 @@ body {
 }
 
 .version-text {
-  cursor: pointer;
+  // cursor: pointer;
 }
 
 .history-version-text {
@@ -586,5 +597,55 @@ body {
   padding: 70px 20px 20px !important;
   min-width: 250px !important;
   background-color:rgba(255,255,255,0.3) !important;
+}
+
+.expand-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent  transparent  transparent #fff;
+  position: fixed;
+  top: 48%;
+  left: 0;
+  cursor: pointer;
+  transition: left .3s;
+}
+
+.close-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent  transparent  transparent #fff;
+  position: fixed;
+  top: 48%;
+  left: 20%;
+  cursor: pointer;
+  transition: left .3s;
+}
+
+.right-arrow {
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #ccc;
+  border-right: 2px solid #ccc;
+  transform: rotate(45deg);
+  position: relative;
+  top: 10px;
+  right: 15px;
+}
+
+.left-arrow {
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid #ccc;
+  border-left: 2px solid #ccc;
+  transform: rotate(45deg);
+  position: relative;
+  top: 10px;
+  right: 10px;
 }
 </style>
