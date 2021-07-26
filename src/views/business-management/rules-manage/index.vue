@@ -517,6 +517,7 @@ export default {
                 })
                 throw err
               })
+            this.degreeReq.violationDegrees = []
           } else {
             insertViolationDegree(this.degreeReq)
               .then(_ => {
@@ -534,6 +535,7 @@ export default {
                 })
                 throw err
               })
+            this.degreeReq.violationDegrees = []
           }
         }
       })
