@@ -233,39 +233,43 @@ export default {
       }
     },
     submit() {
-      this.listLoading = true
+      this.$refs['addForm'].validate(valid => {
+        if (valid) {
+          this.listLoading = true
 
-      let req = {}
-      if (this.modify) {
-        this.addFormData.updator = this.$store.state.user.name
-        this.addFormData.updatorNo = this.$store.state.user.userId
-        req = { id: this.currentRow.id, ...this.addFormData }
-      } else {
-        this.addFormData.creator = this.$store.state.user.name
-        this.addFormData.creatorNo = this.$store.state.user.userId
-        req = { ...this.addFormData }
-      }
+          let req = {}
+          if (this.modify) {
+            this.addFormData.updator = this.$store.state.user.name
+            this.addFormData.updatorNo = this.$store.state.user.userId
+            req = { id: this.currentRow.id, ...this.addFormData }
+          } else {
+            this.addFormData.creator = this.$store.state.user.name
+            this.addFormData.creatorNo = this.$store.state.user.userId
+            req = { ...this.addFormData }
+          }
 
-      if (req.type === '产品服务') {
-        req.type = '1'
-      } else if (req.type === '关于我们') {
-        req.type = '2'
-      }
+          if (req.type === '产品服务') {
+            req.type = '1'
+          } else if (req.type === '关于我们') {
+            req.type = '2'
+          }
 
-      save(req)
-        .then(res => {
-          this.listLoading = false
-          this.visible = false
-          this.getList()
-          this.resetFormData()
-          this.$message({
-            type: 'success',
-            message: `${this.modify ? '修改成功!' : '新增成功!'}`
-          })
-        })
-        .catch(err => {
-          throw err
-        })
+          save(req)
+            .then(res => {
+              this.listLoading = false
+              this.visible = false
+              this.getList()
+              this.resetFormData()
+              this.$message({
+                type: 'success',
+                message: `${this.modify ? '修改成功!' : '新增成功!'}`
+              })
+            })
+            .catch(err => {
+              throw err
+            })
+        }
+      })
     },
     deleteData(row) {
       this.$confirm('确认删除该条数据？')

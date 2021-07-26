@@ -87,7 +87,7 @@
             </el-select>
           </el-form-item>
 
-          <p style="margin-left: 45px"><b>上传图片：</b>（只能1张）</p>
+          <p style="margin-left: 45px"><b>上传图片：</b>（只能一张）</p>
           <el-upload
             ref="upload"
             action
@@ -267,7 +267,7 @@ export default {
                 this.fileList.forEach(item => {
                   arr.push(item.url.split('.cn')[1])
                 })
-                this.addFormData.imageUrl = this.addFormData.imageUrl.concat(';', arr.join(';'))
+                if (this.addFormData.imageUrl) this.addFormData.imageUrl = this.addFormData.imageUrl.concat(';', arr.join(';'))
 
                 const lastarr = this.addFormData.imageUrl.split(';')
                 if (lastarr[lastarr.length - 1] === '')lastarr.pop()
@@ -306,6 +306,7 @@ export default {
     closeDialog() {
       this.visible = false
       this.fileList = []
+      this.resetFormData()
     },
     // 组成promise.all的参数数组
     allImgReq() {

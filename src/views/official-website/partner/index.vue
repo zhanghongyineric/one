@@ -133,7 +133,7 @@ export default {
       },
       fileList: [],
       rules: {
-        // summary: [{ required: true, message: '请输入公司名称', trigger: 'blur' }]
+        summary: [{ required: true, message: '请输入公司名称', trigger: 'blur' }]
       },
       imgsFiles: [],
       modify: false,
