@@ -267,20 +267,12 @@ export default {
                 this.fileList.forEach(item => {
                   arr.push(item.url.split('.cn')[1])
                 })
-                console.log(this.addFormData.imageUrl, '1 imageUrl')
                 if (this.addFormData.imageUrl) this.addFormData.imageUrl = this.addFormData.imageUrl.concat(';', arr.join(';'))
-                console.log(this.addFormData.imageUrl, '2 imageUrl')
                 const lastarr = this.addFormData.imageUrl.split(';')
-                console.log(lastarr, '1 lastarr')
                 if (lastarr[lastarr.length - 1] === '')lastarr.pop()
-                console.log(lastarr, '2 lastarr')
                 this.addFormData.imageUrl = lastarr[0] || ''
-                // const array = this.addFormData.imageUrl.split(';')
-                // this.addFormData.imageUrl = array[0]
-                console.log(this.addFormData.imageUrl, '3 imageUrl')
               } else this.addFormData.imageUrl = this.imgArr.join(';')
 
-              // this.addFormData.imageUrl = this.imgArr.join(';')
               this.addFormData.creator = this.$store.state.user.name
               this.addFormData.updator = this.$store.state.user.name
               this.addFormData.creatorNo = this.$store.state.user.userId
@@ -305,6 +297,15 @@ export default {
                   this.listLoading = false
                   throw err
                 })
+            })
+            .catch(err => {
+              this.listLoading = false
+              this.$message({
+                type: 'error',
+                message: '图片过大，上传失败！'
+              })
+              this.imgsUpload = []
+              throw err
             })
         }
       })
