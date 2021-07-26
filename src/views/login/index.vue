@@ -7,7 +7,7 @@
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
           <h2>
-            <span class="version-text">v{{ version }}</span>
+            <span>v{{ version }}</span>
           </h2>
           <el-drawer
             custom-class="version-drawer ql-editor"
@@ -17,13 +17,6 @@
             :modal="false"
             size="20%"
           />
-          <!-- <el-button
-            v-if="drawer"
-            class="history-version-btn"
-            type="primary"
-            size="small"
-            @click="toHistoryVersion"
-          >查看历史版本</el-button> -->
           <span v-if="drawer" class="history-version-text">历史版本信息</span>
           <h3>监测·管理端</h3>
         </div>
@@ -247,7 +240,6 @@ export default {
                 const { data: { number, content, historyContent }} = res
                 this.version = number
                 const eleItem = document.getElementsByClassName('version-drawer')[0]
-                // document.getElementsByClassName('version-drawer')[0].innerHTML = content
                 historyContent ? eleItem.innerHTML = content + historyContent : eleItem.innerHTML = content
               }
             })
@@ -579,10 +571,6 @@ body {
   }
 }
 
-.version-text {
-  // cursor: pointer;
-}
-
 .history-version-text {
   position: fixed;
   left: 6%;
@@ -597,6 +585,11 @@ body {
   padding: 70px 20px 20px !important;
   min-width: 250px !important;
   background-color:rgba(255,255,255,0.3) !important;
+  overflow-y: auto !important;
+}
+
+::v-deep .el-drawer__container ::-webkit-scrollbar{
+    display: none !important;
 }
 
 .expand-symbol {
