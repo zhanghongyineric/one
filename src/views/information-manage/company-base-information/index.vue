@@ -599,7 +599,7 @@ export default {
         shortName: [{ required: true, message: '请输入企业简称', trigger: 'blur' }],
         aptitudeLevel: [{ required: true, message: '请选择企业级别', trigger: 'change' }],
         zoneId: [{ required: true, message: '请选择行政区域', trigger: 'change' }],
-        businessLicense: [{ required: true, message: '请选择社会统一信用代码', trigger: 'change' }],
+        businessLicense: [{ required: true, message: '请输入社会统一信用代码', trigger: 'blur' }],
         enconomicType: [{ required: true, message: '请选择企业经济类型', trigger: 'change' }],
         registerZoneId: [{ required: true, message: '请选择企业注册地', trigger: 'change' }],
         businesScopeCode: [{ required: true, message: '请选择道路运输经营范围代码', trigger: 'change' }],
@@ -777,7 +777,7 @@ export default {
           this.buttonLoading = true
           const requestData = {
             ...this.createFormData,
-            zoneId: this.createFormData.zoneId[0] || ''
+            zoneId: this.createFormData.zoneId[2] || this.createFormData.zoneId[1]
           }
           addCount(requestData).then(() => {
             this.dialogFormVisible = false

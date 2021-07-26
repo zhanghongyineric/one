@@ -767,6 +767,9 @@ export default {
               this.dialogVisible = false
               this.getList()
               this.stepIndex = 1
+              this.modify = false
+              this.detail = false
+              this.dialogData = {}
             })
             .catch(err => {
               throw err
@@ -870,6 +873,7 @@ export default {
                 message: this.modify ? '修改成功！' : '新增成功！'
               })
               this.getList()
+              this.dialogData = {}
               this.stepIndex = 1
             })
             .catch(err => {
