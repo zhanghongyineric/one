@@ -267,11 +267,17 @@ export default {
                 this.fileList.forEach(item => {
                   arr.push(item.url.split('.cn')[1])
                 })
+                console.log(this.addFormData.imageUrl, '1 imageUrl')
                 if (this.addFormData.imageUrl) this.addFormData.imageUrl = this.addFormData.imageUrl.concat(';', arr.join(';'))
-
+                console.log(this.addFormData.imageUrl, '2 imageUrl')
                 const lastarr = this.addFormData.imageUrl.split(';')
+                console.log(lastarr, '1 lastarr')
                 if (lastarr[lastarr.length - 1] === '')lastarr.pop()
+                console.log(lastarr, '2 lastarr')
                 this.addFormData.imageUrl = lastarr.join(';')
+                const array = this.addFormData.imageUrl.split(';')
+                this.addFormData.imageUrl = array[0]
+                console.log(this.addFormData.imageUrl, '3 imageUrl')
               } else this.addFormData.imageUrl = this.imgArr.join(';')
 
               // this.addFormData.imageUrl = this.imgArr.join(';')
