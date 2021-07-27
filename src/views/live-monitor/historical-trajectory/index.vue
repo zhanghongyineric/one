@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div id="container" class="map" :style="styleSize" />
-    <div v-if="lineArr.length > 0" class="contbtn">
+    <div class="contbtn">
       <div class="search-box">
         <el-form
           ref="searchForm"
@@ -17,6 +17,7 @@
               type="datetime"
               placeholder="选择开始日期时间"
               size="small"
+              value-format="yyyy-MM-dd hh:mm:ss"
             />
           </el-form-item>
           <el-form-item label="结束时间:">
@@ -25,6 +26,7 @@
               size="small"
               type="datetime"
               placeholder="选择结束日期时间"
+              value-format="yyyy-MM-dd hh:mm:ss"
             />
           </el-form-item>
 
@@ -86,7 +88,7 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: ''
+        plateNum: '川Q38857'
       },
       map: null,
       lineArr: [],
@@ -126,6 +128,13 @@ export default {
       return this.$store.state.user.token
     }
   },
+  watch: {
+    lineArr: {
+      handler(newVal, oldVal) {
+        // this.getmap()
+      }
+    }
+  },
   created() {
     this.getHeight()
     // 拼接连接主题topic
@@ -162,7 +171,10 @@ export default {
       })
       // 接收消息
       this.client.on('message', (topic, message) => {
-        console.log('收到消息：', message.toString())
+        message = message.toString()
+        const arr = message.split('+')
+        this.lineArr.push([arr[1], arr[2]])
+        console.log(message)
       })
     },
     getHeight() {
@@ -203,7 +215,7 @@ export default {
       ]
       this.map = new AMap.Map('container', {
         resizeEnable: true,
-        center: [104.06632, 30.572903],
+        center: [30.572903, 104.06632],
         zoom: 12,
         mapStyle: 'amap://styles/grey'
       })
@@ -266,10 +278,8 @@ export default {
     },
     search() {
       position({
-        plateNum: '川Q38857',
         topic: this.topic,
-        startTime: '2021-07-26 00:00:00',
-        endTime: '2021-07-27 00:00:00'
+        ...this.searchFormData
       })
         .then(res => {
           console.log(res)
@@ -277,6 +287,7 @@ export default {
         .catch(err => {
           throw err
         })
+      console.log(this.searchFormData)
     },
     // 初始化回放路线
     initPolyline() {
