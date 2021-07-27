@@ -17,7 +17,7 @@
               type="datetime"
               placeholder="选择开始日期时间"
               size="small"
-              value-format="yyyy-MM-dd hh:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
             />
           </el-form-item>
           <el-form-item label="结束时间:">
@@ -26,7 +26,7 @@
               size="small"
               type="datetime"
               placeholder="选择结束日期时间"
-              value-format="yyyy-MM-dd hh:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
             />
           </el-form-item>
 
@@ -68,7 +68,7 @@
       >
         <el-table-column prop="status" label="车辆状态" min-width="120" align="center" />
         <el-table-column prop="time" label="上报时间" min-width="120" align="center" />
-        <el-table-column prop="km" label="GPS里程(公里)" min-width="120" align="center" />
+        <!-- <el-table-column prop="km" label="GPS里程(公里)" min-width="120" align="center" /> -->
         <el-table-column prop="speed" label="速度(km/h)" min-width="120" align="center" />
         <el-table-column prop="positionDes" label="位置描述" min-width="120" align="center" />
       </el-table>
@@ -88,7 +88,7 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: '川Q38857'
+        plateNum: ''
       },
       map: null,
       lineArr: [],
@@ -111,15 +111,7 @@ export default {
       polyline: null, // 轨迹线路
       passedArr: [],
       lineArrCopy: [],
-      tableData: [
-        {
-          status: 'ACC:ON',
-          time: '2021-07-11 08:17:34',
-          km: '20.1',
-          speed: '85.1',
-          positionDes: '四川省雅安市天全县二郎山罗家饭店东北53米'
-        }
-      ],
+      tableData: [],
       topic: ''
     }
   },
@@ -170,11 +162,28 @@ export default {
         console.log('连接失败:', error)
       })
       // 接收消息
+      let geocoder; let lnglat = []
+      AMap.plugin('AMap.Geocoder', function() {
+        geocoder = new AMap.Geocoder({ city: '' })
+      })
       this.client.on('message', (topic, message) => {
         message = message.toString()
         const arr = message.split('+')
         this.lineArr.push([arr[1], arr[2]])
-        console.log(message)
+        lnglat = [arr[1], arr[2]]
+        let data = {}
+        geocoder.getAddress(lnglat, function(status, result) {
+          if (status === 'complete' && result.info === 'OK') {
+            console.log(result, '***')
+            data = {
+              status: 'ACC:ON',
+              time: arr[4],
+              speed: arr[3],
+              positionDes: result.regeocode.formattedAddress
+            }
+          }
+        })
+        this.tableData.push(data)
       })
     },
     getHeight() {
