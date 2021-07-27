@@ -266,9 +266,10 @@ export default {
     },
     search() {
       position({
-        plateNum: '川A12345',
+        plateNum: '川Q38857',
         topic: this.topic,
-        time: '2021-7-15 15:05:51'
+        startTime: '2021-07-26 00:00:00',
+        endTime: '2021-07-27 00:00:00'
       })
         .then(res => {
           console.log(res)

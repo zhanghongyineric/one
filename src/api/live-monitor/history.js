@@ -1,10 +1,10 @@
 import createRequest from '@/utils/createRequest'
 
-const request = createRequest('/baseInfo/mqtt')
+const request = createRequest('/monitor')
 
 export function position(data) {
   return request({
-    url: `/vehicle/position`,
+    url: `/trajectory/position`,
     method: 'POST',
     data
   })

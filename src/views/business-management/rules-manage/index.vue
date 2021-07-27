@@ -119,7 +119,7 @@
           </el-form-item>
           <el-form-item :label="`${degreeValue}条件：`" prop="script">
             <el-row>
-              <el-col>
+              <el-col v-show="showCol">
                 <el-select
                   v-model="formData.conditionNo"
                   size="small"
@@ -143,9 +143,10 @@
                   />
                 </el-select>
                 <el-input v-model="formData.lessValue" size="small" style="width: 100px" placeholder="请输入" />
+                <i class="el-icon-delete" @click="deleteCol(1)" />
               </el-col>
-              <el-col v-show="showCol">
-                <el-select v-model="backup.conditionNo" size="small" style="width: 150px" @change="getUnit2">
+              <el-col v-show="showCol2">
+                <el-select v-model="formData2.conditionNo" size="small" style="width: 150px" @change="getUnit2">
                   <el-option
                     v-for="{label, value, remark} in violationOptions"
                     :key="label"
@@ -154,7 +155,7 @@
                   />
                 </el-select>
 
-                <el-select v-model="backup.lessNo" size="small" style="width: 100px">
+                <el-select v-model="formData2.lessNo" size="small" style="width: 100px">
                   <el-option
                     v-for="{label, value} in symbols"
                     :key="label"
@@ -162,8 +163,29 @@
                     :value="label"
                   />
                 </el-select>
-                <el-input v-model="backup.lessValue" size="small" style="width: 100px" placeholder="请输入" />
-                <!-- <i class="el-icon-delete" @click="deleteCol" /> -->
+                <el-input v-model="formData2.lessValue" size="small" style="width: 100px" placeholder="请输入" />
+                <i class="el-icon-delete" @click="deleteCol(2)" />
+              </el-col>
+              <el-col v-show="showCol3">
+                <el-select v-model="formData3.conditionNo" size="small" style="width: 150px" @change="getUnit3">
+                  <el-option
+                    v-for="{label, value, remark} in violationOptions"
+                    :key="label"
+                    :label="`${value}(${remark})`"
+                    :value="label"
+                  />
+                </el-select>
+
+                <el-select v-model="formData3.lessNo" size="small" style="width: 100px">
+                  <el-option
+                    v-for="{label, value} in symbols"
+                    :key="label"
+                    :label="value"
+                    :value="label"
+                  />
+                </el-select>
+                <el-input v-model="formData3.lessValue" size="small" style="width: 100px" placeholder="请输入" />
+                <i class="el-icon-delete" @click="deleteCol(3)" />
               </el-col>
             </el-row>
           </el-form-item>
@@ -188,7 +210,8 @@ import {
   deleteData,
   selectEdit,
   insertViolationDegree,
-  updateViolationDegree
+  updateViolationDegree,
+  deleteViolationDegreeValue
 } from '@/api/business-manage/rules-manage'
 import Pagination from '@/components/Pagination'
 
@@ -214,7 +237,13 @@ export default {
         conditionNo: '',
         degreeLabel: ''
       },
-      backup: {
+      formData2: {
+        expresion: '',
+        lessValue: '',
+        lessNo: '',
+        conditionNo: ''
+      },
+      formData3: {
         expresion: '',
         lessValue: '',
         lessNo: '',
@@ -236,6 +265,9 @@ export default {
       symbolText: '',
       currentUnit: '',
       currentUnit2: '',
+      currentUnit3: '',
+      showCol2: true,
+      showCol3: true,
       showCol: true,
       expresion: '',
       degreeReq: {
@@ -267,12 +299,12 @@ export default {
           this.formData.expresion =
         conditionNo + sym + newVal.lessValue + this.currentUnit
         }
-        if (this.backup.expresion) this.expresion = this.formData.expresion + '\xa0' + '且' + '\xa0' + this.backup.expresion
+        if (this.formData2.expresion) this.expresion = this.formData.expresion + '\xa0' + '且' + '\xa0' + this.formData2.expresion
         else this.expresion = this.formData.expresion
       },
       deep: true
     },
-    backup: {
+    formData2: {
       handler(newVal, ov) {
         let sym = ''; let conditionNo = ''
         this.symbols.forEach(({ label, value }) => {
@@ -282,12 +314,47 @@ export default {
           if (label === newVal.conditionNo) conditionNo = value
         })
         if (newVal.conditionNo) {
-          this.backup.expresion =
+          this.formData2.expresion =
         conditionNo + sym + newVal.lessValue + this.currentUnit2
         }
 
-        if (this.backup.expresion) this.expresion = this.formData.expresion + '\xa0\xa0' + '且' + '\xa0\xa0' + this.backup.expresion
-        else this.expresion = this.formData.expresion
+        if (this.formData.expresion) this.expresion = this.formData.expresion + '\xa0\xa0' + '且' + '\xa0\xa0' + this.formData2.expresion
+        else this.expresion = this.formData2.expresion
+      },
+      deep: true
+    },
+    formData3: {
+      handler(newVal, ov) {
+        let sym = ''; let conditionNo = ''
+        this.symbols.forEach(({ label, value }) => {
+          if (label === newVal.lessNo) sym = value
+        })
+        this.violationOptions.forEach(({ label, value }) => {
+          if (label === newVal.conditionNo) conditionNo = value
+        })
+        if (newVal.conditionNo) {
+          this.formData3.expresion =
+        conditionNo + sym + newVal.lessValue + this.currentUnit3
+        }
+
+        if (this.formData.expresion && this.formData2.expresion) {
+          this.expresion =
+        this.formData.expresion +
+        '\xa0\xa0' + '且' + '\xa0\xa0' +
+        this.formData2.expresion +
+        '\xa0\xa0' + '且' + '\xa0\xa0' +
+        this.formData3.expresion
+        } else if (this.formData.expresion && !this.formData2.expresion) {
+          this.expresion =
+        this.formData.expresion +
+        '\xa0\xa0' + '且' + '\xa0\xa0' +
+        this.formData3.expresion
+        } else if (!this.formData.expresion && this.formData2.expresion) {
+          this.expresion =
+        this.formData2.expresion +
+        '\xa0\xa0' + '且' + '\xa0\xa0' +
+        this.formData3.expresion
+        } else this.expresion = this.formData3.expresion
       },
       deep: true
     }
@@ -325,7 +392,11 @@ export default {
       this.violationOptions.forEach(({ label, remark }) => {
         if (label === val) this.currentUnit2 = remark
       })
-      console.log(this.currentUnit2)
+    },
+    getUnit3(val) {
+      this.violationOptions.forEach(({ label, remark }) => {
+        if (label === val) this.currentUnit3 = remark
+      })
     },
     updateData(row) {
       this.status = 'update'
@@ -339,6 +410,8 @@ export default {
     updateDegree(row) {
       this.degreeVisible = true
       this.currentRow = row
+      this.showCol2 = true
+      this.showCol3 = true
       this.showCol = true
       selectEdit({
         violationNo: row.id.toString(),
@@ -355,12 +428,16 @@ export default {
             this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
             this.formData.id = data[0].violationDegreeValues[0].id.toString()
             if (data[0].violationDegreeValues.length > 1) {
-              this.backup.lessNo = data[0].violationDegreeValues[1].lessNo
-              this.backup.lessValue = data[0].violationDegreeValues[1].lessValue
-              this.backup.conditionNo = data[0].violationDegreeValues[1].conditionNo
-              this.backup.id = data[0].violationDegreeValues[1].id.toString()
-            } else {
-              this.showCol = false
+              this.formData2.lessNo = data[0].violationDegreeValues[1].lessNo
+              this.formData2.lessValue = data[0].violationDegreeValues[1].lessValue
+              this.formData2.conditionNo = data[0].violationDegreeValues[1].conditionNo
+              this.formData2.id = data[0].violationDegreeValues[1].id.toString()
+            }
+            if (data[0].violationDegreeValues.length > 2) {
+              this.formData3.lessNo = data[0].violationDegreeValues[2].lessNo
+              this.formData3.lessValue = data[0].violationDegreeValues[2].lessValue
+              this.formData3.conditionNo = data[0].violationDegreeValues[2].conditionNo
+              this.formData3.id = data[0].violationDegreeValues[2].id.toString()
             }
           } else {
             this.update = false
@@ -400,12 +477,16 @@ export default {
       this.visible = false
       this.degreeVisible = false
       this.showCol = true
+      this.showCol2 = true
+      this.showCol3 = true
       this.resetFormData()
     },
     changeDegree(value, label) {
       this.degreeValue = value
       this.degreeLabel = label
       this.showCol = true
+      this.showCol2 = true
+      this.showCol3 = true
       this.resetFormData()
       selectEdit({
         violationNo: this.currentRow.id.toString(),
@@ -422,12 +503,16 @@ export default {
             this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
             this.formData.id = data[0].violationDegreeValues[0].id.toString()
             if (data[0].violationDegreeValues.length > 1) {
-              this.backup.lessNo = data[0].violationDegreeValues[1].lessNo
-              this.backup.lessValue = data[0].violationDegreeValues[1].lessValue
-              this.backup.conditionNo = data[0].violationDegreeValues[1].conditionNo
-              this.backup.id = data[0].violationDegreeValues[1].id.toString()
-            } else {
-              this.showCol = false
+              this.formData2.lessNo = data[0].violationDegreeValues[1].lessNo
+              this.formData2.lessValue = data[0].violationDegreeValues[1].lessValue
+              this.formData2.conditionNo = data[0].violationDegreeValues[1].conditionNo
+              this.formData2.id = data[0].violationDegreeValues[1].id.toString()
+            }
+            if (data[0].violationDegreeValues.length > 2) {
+              this.formData3.lessNo = data[0].violationDegreeValues[2].lessNo
+              this.formData3.lessValue = data[0].violationDegreeValues[2].lessValue
+              this.formData3.conditionNo = data[0].violationDegreeValues[2].conditionNo
+              this.formData3.id = data[0].violationDegreeValues[2].id.toString()
             }
           } else {
             this.update = false
@@ -476,7 +561,13 @@ export default {
         lessNo: '',
         conditionNo: ''
       }
-      this.backup = {
+      this.formData2 = {
+        expresion: '',
+        lessValue: '',
+        lessNo: '',
+        conditionNo: ''
+      }
+      this.formData3 = {
         expresion: '',
         lessValue: '',
         lessNo: '',
@@ -494,11 +585,16 @@ export default {
             violationDegreeValues: []
           }
           this.formData.violationNo = this.currentRow.id.toString()
-          this.backup.violationNo = this.currentRow.id.toString()
-          this.backup.degreeNo = this.degreeLabel
+          this.formData2.violationNo = this.currentRow.id.toString()
+          this.formData3.violationNo = this.currentRow.id.toString()
+
           this.formData.degreeNo = this.degreeLabel
-          req.violationDegreeValues.push(this.formData)
-          if (this.backup.conditionNo) req.violationDegreeValues.push(this.backup)
+          this.formData2.degreeNo = this.degreeLabel
+          this.formData3.degreeNo = this.degreeLabel
+
+          if (this.formData.conditionNo) req.violationDegreeValues.push(this.formData)
+          if (this.formData2.conditionNo) req.violationDegreeValues.push(this.formData2)
+          if (this.formData3.conditionNo) req.violationDegreeValues.push(this.formData3)
           this.degreeReq.violationDegrees.push(req)
           if (this.update) {
             req.id = this.currentId
@@ -541,8 +637,33 @@ export default {
         }
       })
     },
-    deleteCol() {
-      this.showCol = false
+    deleteCol(index) {
+      if (index === 1) {
+        this.showCol = false
+        if (this.formData.id) this.deleteVio(parseInt(this.formData.id))
+      } else if (index === 2) {
+        this.showCol2 = false
+        if (this.formData2.id) this.deleteVio(parseInt(this.formData2.id))
+      } else {
+        this.showCol3 = false
+        if (this.formData3.id) this.deleteVio(parseInt(this.formData3.id))
+      }
+    },
+    deleteVio(id) {
+      deleteViolationDegreeValue({ id })
+        .then(_ => {
+          this.$message({
+            type: 'success',
+            message: '删除成功！'
+          })
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: '删除失败!'
+          })
+          throw err
+        })
     }
   }
 }
