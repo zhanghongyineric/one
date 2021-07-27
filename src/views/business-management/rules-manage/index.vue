@@ -325,6 +325,7 @@ export default {
       this.violationOptions.forEach(({ label, remark }) => {
         if (label === val) this.currentUnit2 = remark
       })
+      console.log(this.currentUnit2)
     },
     updateData(row) {
       this.status = 'update'
@@ -540,9 +541,6 @@ export default {
         }
       })
     },
-    // addViolation() {
-
-    // },
     deleteCol() {
       this.showCol = false
     }
