@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div v-loading="loading" class="container">
     <div id="container" class="map" :style="styleSize" />
     <div class="contbtn">
       <div class="search-box">
@@ -90,6 +90,7 @@ export default {
       searchFormData: {
         plateNum: ''
       },
+      loading: false,
       map: null,
       lineArr: [],
       lineArrlast: [],
@@ -120,23 +121,27 @@ export default {
       return this.$store.state.user.token
     }
   },
-  watch: {
-    lineArr: {
-      handler(newVal, oldVal) {
-        // this.getmap()
-      }
-    }
-  },
   created() {
     this.getHeight()
-    // 拼接连接主题topic
-    this.topic = this.token + '/private/' + 'position'
+    // 拼接mqtt连接的topic
+    this.topic = this.token + '/private/' + Date.parse(new Date())
   },
   mounted() {
     this.getmap()
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
+    // 连接mqtt
     this.connectMqtt()
+    // 刷新页面或者跳转页面时，断开mqtt连接
+    window.onbeforeunload = () => {
+      if (this.client) this.client.end()
+      console.log('断开连接成功!')
+    }
+    this.$router.beforeEach((to, from, next) => {
+      if (this.client.connected) this.client.end()
+      console.log('断开连接成功!')
+      next()
+    })
   },
   methods: {
     switchPlay() {
@@ -146,17 +151,17 @@ export default {
       this.client = connect()
       this.client.on('connect', () => {
         this.client.subscribe(
-          this.topic, // 订阅主题
-          { qos: 2 }, // 保证消息传递次数
+          this.topic,
+          { qos: 2 },
           (err) => {
             console.log(err || '订阅成功')
           }
         )
       })
       // 失败重连
-      this.client.on('reconnect', (error) => {
-        console.log('正在重连:', error)
-      })
+      // this.client.on('reconnect', (error) => {
+      //   console.log('正在重连:', error)
+      // })
       // 连接失败
       this.client.on('error', (error) => {
         console.log('连接失败:', error)
@@ -168,13 +173,13 @@ export default {
       })
       this.client.on('message', (topic, message) => {
         message = message.toString()
+        console.log(message)
         const arr = message.split('+')
         this.lineArr.push([arr[1], arr[2]])
         lnglat = [arr[1], arr[2]]
         let data = {}
         geocoder.getAddress(lnglat, function(status, result) {
           if (status === 'complete' && result.info === 'OK') {
-            console.log(result, '***')
             data = {
               status: 'ACC:ON',
               time: arr[4],
@@ -191,36 +196,35 @@ export default {
       this.styleSize.width = window.innerWidth + 'px'
     },
     getmap() {
-      // 测试数据
       this.lineArr = [
-        [30.572903, 104.06632],
-        [30.572713, 104.06632],
-        [30.572513, 104.06632],
-        [30.572313, 104.06632],
-        [30.572113, 104.06632],
-        [30.572113, 104.06629],
-        [30.572113, 104.06619],
-        [30.572113, 104.06609],
-        [30.572113, 104.06599],
-        [30.572113, 104.06589],
-        [30.572113, 104.06579],
-        [30.572113, 104.06569],
-        [30.572113, 104.06559],
-        [30.572113, 104.06549],
-        [30.572113, 104.06539],
-        [30.572113, 104.06529],
-        [30.572113, 104.06519],
-        [30.572113, 104.06509],
-        [30.572113, 104.06499],
-        [30.572113, 104.06489],
-        [30.572113, 104.06479],
-        [30.572113, 104.06469],
-        [30.572113, 104.06459],
-        [30.572113, 104.06449],
-        [30.572113, 104.06439],
-        [30.572113, 104.06429],
-        [30.572113, 104.06419],
-        [30.572113, 104.06409]
+        [30.572903, 104.06632]
+        // [30.572713, 104.06632],
+        // [30.572513, 104.06632],
+        // [30.572313, 104.06632],
+        // [30.572113, 104.06632],
+        // [30.572113, 104.06629],
+        // [30.572113, 104.06619],
+        // [30.572113, 104.06609],
+        // [30.572113, 104.06599],
+        // [30.572113, 104.06589],
+        // [30.572113, 104.06579],
+        // [30.572113, 104.06569],
+        // [30.572113, 104.06559],
+        // [30.572113, 104.06549],
+        // [30.572113, 104.06539],
+        // [30.572113, 104.06529],
+        // [30.572113, 104.06519],
+        // [30.572113, 104.06509],
+        // [30.572113, 104.06499],
+        // [30.572113, 104.06489],
+        // [30.572113, 104.06479],
+        // [30.572113, 104.06469],
+        // [30.572113, 104.06459],
+        // [30.572113, 104.06449],
+        // [30.572113, 104.06439],
+        // [30.572113, 104.06429],
+        // [30.572113, 104.06419],
+        // [30.572113, 104.06409]
       ]
       this.map = new AMap.Map('container', {
         resizeEnable: true,
@@ -239,24 +243,24 @@ export default {
         }
         this.lineArrCopy = this.lineArrlast
         this.initPolyline()
-        if (this.lineArrlast.length > 0) {
-          this.marker = new AMap.Marker({
-            map: this.map,
-            position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
-            icon: 'https://webapi.amap.com/images/car.png',
-            offset: new AMap.Pixel(-26, -13),
-            autoRotation: true,
-            angle: -90
-          })
-        }
-        this.marker.on('moving', (e) => {
-          this.passedPolyline.setPath(e.passedPath)
-          this.curreGDPath = new AMap.LngLat(
-            e.passedPath[e.passedPath.length - 1].lng,
-            e.passedPath[e.passedPath.length - 1].lat
-          )
-          this.passedPath = e.passedPath.length
-        })
+        // if (this.lineArrlast.length > 0) {
+        //   this.marker = new AMap.Marker({
+        //     map: this.map,
+        //     position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
+        //     icon: 'https://webapi.amap.com/images/car.png',
+        //     offset: new AMap.Pixel(-26, -13),
+        //     autoRotation: true,
+        //     angle: -90
+        //   })
+        // }
+        // this.marker.on('moving', (e) => {
+        //   this.passedPolyline.setPath(e.passedPath)
+        //   this.curreGDPath = new AMap.LngLat(
+        //     e.passedPath[e.passedPath.length - 1].lng,
+        //     e.passedPath[e.passedPath.length - 1].lat
+        //   )
+        //   this.passedPath = e.passedPath.length
+        // })
       }
       this.map.setFitView()
     },
