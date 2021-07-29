@@ -301,8 +301,8 @@ export default {
               this.lineArr = []
               const { data } = res
               data.forEach(item => {
-                const lat = item.latitude / 1000000
-                const lng = item.longitude / 1000000
+                const lat = item.latitude
+                const lng = item.longitude
                 this.lineArr.push([lng, lat])
                 let data = {}
                 lnglat = [lat, lng]
@@ -318,7 +318,7 @@ export default {
                   }
                 })
               })
-              this.getmap([data[0].latitude / 1000000, data[1].longitude / 1000000])
+              this.getmap([data[0].latitude, data[1].longitude])
               this.setLine()
               this.loading = false
             })
