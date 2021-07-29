@@ -579,6 +579,7 @@ body {
   display: block;
   font-size: 20px;
   font-weight: 700;
+  color: #0092e7;
 }
 
 ::v-deep .version-drawer {
