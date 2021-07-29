@@ -6,12 +6,13 @@
         <el-form
           ref="searchForm"
           :model="searchFormData"
-          label-width="80px"
+          label-width="90px"
+          :rules="rules"
         >
-          <el-form-item label="车牌号码:">
+          <el-form-item label="车牌号码:" prop="plateNum">
             <el-input v-model="searchFormData.plateNum" size="small" placeholder="请输入车牌号" clearable />
           </el-form-item>
-          <el-form-item label="起始时间:">
+          <el-form-item label="起始时间:" prop="startTime">
             <el-date-picker
               v-model="searchFormData.startTime"
               type="datetime"
@@ -20,7 +21,7 @@
               value-format="yyyy-MM-dd HH:mm:ss"
             />
           </el-form-item>
-          <el-form-item label="结束时间:">
+          <el-form-item label="结束时间:" prop="endTime">
             <el-date-picker
               v-model="searchFormData.endTime"
               size="small"
@@ -31,10 +32,14 @@
           </el-form-item>
 
         </el-form>
-        <el-button id="sbtn" type="primary" size="small" @click="search">查询</el-button>
+        <div id="sbtn">
+          <el-button type="warning" size="small" @click="reset">重置</el-button>
+          <el-button type="primary" size="small" @click="search">查询</el-button>
+        </div>
+
         <div class="replay-box">
           <span>回放进度：</span>
-          <el-progress :text-inside="true" :stroke-width="15" :percentage="value" />
+          <el-progress :text-inside="true" :stroke-width="15" :percentage="perValue" />
 
         </div>
         <div class="check-box">
@@ -57,15 +62,20 @@
         </div>
       </div>
     </div>
-    <div class="bottom-table">
-      <!-- <span class="hidden-btn">隐藏</span> -->
+    <div :class="[showTable ? 'close-symbol' : 'expand-symbol']" @click="showTable = !showTable">
+      <div :class="[showTable ? 'bottom-arrow' : 'top-arrow']" />
+    </div>
+    <div v-show="showTable" class="bottom-table">
+
       <el-table
         :data="tableData"
         style="width: 100%;height:100%;"
         border
         fit
         highlight-current-row
+        height="200"
       >
+        <el-table-column type="index" label="序号" width="80" align="center" />
         <el-table-column prop="status" label="车辆状态" min-width="120" align="center" />
         <el-table-column prop="time" label="上报时间" min-width="120" align="center" />
         <!-- <el-table-column prop="km" label="GPS里程(公里)" min-width="120" align="center" /> -->
@@ -79,6 +89,8 @@
 import { position } from '@/api/live-monitor/history'
 import connect from '@/utils/mqtt'
 
+let TIME_VARIABLE
+
 export default {
   name: 'HistoricalTrajectory',
   data() {
@@ -88,32 +100,35 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: ''
+        plateNum: '',
+        startTime: '',
+        endTime: ''
       },
       loading: false,
       map: null,
-      lineArr: [],
+      lineArr: [[30.572903, 104.06632]],
       lineArrlast: [],
       marker: null,
       showPause: false,
       begin: true,
-      value: 0,
+      perValue: 0,
       speedCount: 1, // 目前选择的倍数
-      progressTime: 0, // 时间
-      palyStayus: 0, // 0->未开始  1->行驶中  2->暂停
       speedList: [1, 5, 10, 20, 50], // 倍数数据
       markerSpeed: 100, // 初始化速度
       passedPolyline: null,
-      positionIndex: [], // 轨迹起始点--车辆所在的位置
       passedPath: 0, // 存放（播放时点击倍数）抓取到的位置
-      int: null, // 定时器--进度条
-      timeInt: null, // 定时器--时间
       curreGDPath: null, // 存放（播放时点击倍数）抓取到的经纬度
       polyline: null, // 轨迹线路
-      passedArr: [],
       lineArrCopy: [],
       tableData: [],
-      topic: ''
+      topic: '',
+      showTable: true,
+      alreadyPercent: 0,
+      rules: {
+        plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
+        startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
+        endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
+      }
     }
   },
   computed: {
@@ -127,7 +142,7 @@ export default {
     this.topic = this.token + '/private/' + Date.parse(new Date())
   },
   mounted() {
-    this.getmap()
+    this.getmap([30.572903, 104.06632])
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
     // 连接mqtt
@@ -144,6 +159,16 @@ export default {
     })
   },
   methods: {
+    reset() {
+      this.searchFormData = {
+        plateNum: '',
+        startTime: '',
+        endTime: ''
+      }
+      this.$nextTick(() => {
+        this.$refs['searchForm'].clearValidate()
+      })
+    },
     switchPlay() {
       this.showPause = !this.showPause
     },
@@ -195,40 +220,11 @@ export default {
       this.styleSize.height = window.innerHeight - 84 + 'px'
       this.styleSize.width = window.innerWidth + 'px'
     },
-    getmap() {
-      this.lineArr = [
-        [30.572903, 104.06632]
-        // [30.572713, 104.06632],
-        // [30.572513, 104.06632],
-        // [30.572313, 104.06632],
-        // [30.572113, 104.06632],
-        // [30.572113, 104.06629],
-        // [30.572113, 104.06619],
-        // [30.572113, 104.06609],
-        // [30.572113, 104.06599],
-        // [30.572113, 104.06589],
-        // [30.572113, 104.06579],
-        // [30.572113, 104.06569],
-        // [30.572113, 104.06559],
-        // [30.572113, 104.06549],
-        // [30.572113, 104.06539],
-        // [30.572113, 104.06529],
-        // [30.572113, 104.06519],
-        // [30.572113, 104.06509],
-        // [30.572113, 104.06499],
-        // [30.572113, 104.06489],
-        // [30.572113, 104.06479],
-        // [30.572113, 104.06469],
-        // [30.572113, 104.06459],
-        // [30.572113, 104.06449],
-        // [30.572113, 104.06439],
-        // [30.572113, 104.06429],
-        // [30.572113, 104.06419],
-        // [30.572113, 104.06409]
-      ]
+    getmap(defaultCenter) {
+      this.lineArrlast = []
       this.map = new AMap.Map('container', {
         resizeEnable: true,
-        center: [30.572903, 104.06632],
+        center: defaultCenter,
         zoom: 12,
         mapStyle: 'amap://styles/grey'
       })
@@ -243,24 +239,8 @@ export default {
         }
         this.lineArrCopy = this.lineArrlast
         this.initPolyline()
-        // if (this.lineArrlast.length > 0) {
-        //   this.marker = new AMap.Marker({
-        //     map: this.map,
-        //     position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
-        //     icon: 'https://webapi.amap.com/images/car.png',
-        //     offset: new AMap.Pixel(-26, -13),
-        //     autoRotation: true,
-        //     angle: -90
-        //   })
-        // }
-        // this.marker.on('moving', (e) => {
-        //   this.passedPolyline.setPath(e.passedPath)
-        //   this.curreGDPath = new AMap.LngLat(
-        //     e.passedPath[e.passedPath.length - 1].lng,
-        //     e.passedPath[e.passedPath.length - 1].lat
-        //   )
-        //   this.passedPath = e.passedPath.length
-        // })
+        // 计算轨迹播放时间
+        TIME_VARIABLE = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
       }
       this.map.setFitView()
     },
@@ -281,26 +261,95 @@ export default {
     },
     // 重新播放
     replayAnimation() {
-      this.speedCount = 1
-      const markerSpeed = this.markerSpeed * this.speedCount
-      this.showPause = true
-      this.begin = false
-      this.lineArrlast = this.lineArrCopy
-      this.marker.stopMove()
-      this.marker.moveAlong(this.lineArrlast, markerSpeed)
+      this.search()
+      // this.speedCount = 1
+      // this.markerSpeed = 100
+      // const markerSpeed = this.markerSpeed * this.speedCount
+      // this.perValue = 0
+      // this.alreadyPercent = 0
+      // this.showPause = true
+      // this.begin = false
+      // this.lineArrlast = this.lineArrCopy
+      // this.marker.stopMove()
+
+      // this.marker.moveAlong(this.lineArrlast, markerSpeed)
     },
     search() {
-      position({
-        topic: this.topic,
-        ...this.searchFormData
+      this.$refs['searchForm'].validate(valid => {
+        if (valid) {
+          this.loading = true
+
+          this.perValue = 0
+          this.alreadyPercent = 0
+          this.speedCount = 1
+          this.markerSpeed = 100
+          this.showPause = false
+          this.tableData = []
+          this.lineArr = [[]]
+          this.lineArrlast = []
+          this.begin = true
+
+          let geocoder; let lnglat = []
+          AMap.plugin('AMap.Geocoder', function() {
+            geocoder = new AMap.Geocoder({ city: '' })
+          })
+          position({
+            topic: this.topic,
+            ...this.searchFormData
+          })
+            .then(res => {
+              this.lineArr = []
+              const { data } = res
+              data.forEach(item => {
+                const lat = item.latitude / 1000000
+                const lng = item.longitude / 1000000
+                this.lineArr.push([lng, lat])
+                let data = {}
+                lnglat = [lat, lng]
+                geocoder.getAddress(lnglat, (status, result) => {
+                  if (status === 'complete' && result.info === 'OK') {
+                    data = {
+                      status: 'ACC:ON',
+                      time: item.reportTime,
+                      speed: item.speed,
+                      positionDes: result.regeocode.formattedAddress
+                    }
+                    this.tableData.push(data)
+                  }
+                })
+              })
+              this.getmap([data[0].latitude / 1000000, data[1].longitude / 1000000])
+              this.setLine()
+              this.loading = false
+            })
+            .catch(err => {
+              this.loading = false
+              throw err
+            })
+        }
       })
-        .then(res => {
-          console.log(res)
+    },
+    setLine() {
+      if (this.lineArrlast.length > 0) {
+        this.marker = new AMap.Marker({
+          map: this.map,
+          position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
+          icon: 'https://webapi.amap.com/images/car.png',
+          offset: new AMap.Pixel(-26, -13),
+          autoRotation: true,
+          angle: -90
         })
-        .catch(err => {
-          throw err
-        })
-      console.log(this.searchFormData)
+      }
+      this.marker.on('moving', (e) => {
+        this.passedPolyline.setPath(e.passedPath)
+        const passedTime = (this.passedPolyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
+        this.perValue = (((passedTime / TIME_VARIABLE) * 100) + this.alreadyPercent).toFixed(2) * 1
+        this.curreGDPath = new AMap.LngLat(
+          e.passedPath[e.passedPath.length - 1].lng,
+          e.passedPath[e.passedPath.length - 1].lat
+        )
+        this.passedPath = e.passedPath.length
+      })
     },
     // 初始化回放路线
     initPolyline() {
@@ -308,28 +357,32 @@ export default {
         map: this.map,
         path: this.lineArrlast,
         showDir: true,
-        strokeColor: '#3366cc', // 线颜色
-        strokeWeight: 6 // 线宽
+        strokeColor: '#3366cc',
+        strokeWeight: 6
       })
       this.passedPolyline = new AMap.Polyline({
         map: this.map,
-        strokeColor: '#AF5', // 线颜色
-        strokeWeight: 6 // 线宽
+        strokeColor: '#3366cc',
+        strokeWeight: 6
       })
     },
     changeCount() {
       const markerSpeed = this.speedCount * this.markerSpeed
-      this.marker.pauseMove()
-      this.lineArrlast = this.lineArrlast.slice(this.passedPath)
-      this.lineArrlast.unshift(this.curreGDPath)
-      this.polyline = new AMap.Polyline({
-        map: this.map,
-        path: this.lineArrlast,
-        showDir: true,
-        strokeColor: '#3366cc', // 线颜色
-        strokeWeight: 6 // 线宽
-      })
-      this.marker.moveAlong(this.lineArrlast, markerSpeed)
+      TIME_VARIABLE = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
+      if (this.perValue && this.perValue <= 100) {
+        this.marker.pauseMove()
+        this.lineArrlast = this.lineArrlast.slice(this.passedPath)
+        this.lineArrlast.unshift(this.curreGDPath)
+        this.polyline = new AMap.Polyline({
+          map: this.map,
+          path: this.lineArrlast,
+          showDir: true,
+          strokeColor: '#3366cc',
+          strokeWeight: 6
+        })
+        this.marker.moveAlong(this.lineArrlast, markerSpeed)
+        this.alreadyPercent = this.perValue
+      }
     }
   }
 }
@@ -359,7 +412,8 @@ export default {
 
 #sbtn {
   position: relative;
-  left: 240px;
+  left: 185px;
+  // left: 250px;
 }
 
 ::v-deep .el-form-item__label {
@@ -382,7 +436,7 @@ export default {
 
   div {
     display: inline-block;
-    width: 220px;
+    width: 230px;
   }
 }
 
@@ -392,7 +446,7 @@ export default {
 }
 
 ::v-deep .el-radio__label {
-  padding-left: 1px !important;
+  padding-left: 3px !important;
   color: #fff;
 }
 
@@ -425,7 +479,7 @@ export default {
 
 .btns-box {
   position: relative;
-  left: 200px;
+  left: 230px;
   padding-top: 10px;
 }
 
@@ -477,5 +531,54 @@ export default {
 
 ::v-deep .amap-copyright {
   display: none !important;
+}
+
+.expand-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color:  transparent transparent #fff transparent ;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  cursor: pointer;
+  // transition: left .3s;
+}
+
+.close-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent transparent #fff  transparent ;
+  position: absolute;
+  bottom: 200px;
+  left: 50%;
+  cursor: pointer;
+}
+
+.bottom-arrow {
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid #b4b5b6;
+  border-right: 2px solid #b4b5b6;
+  transform: rotate(45deg);
+  position: relative;
+  top: 30px;
+  left: 10px;
+}
+
+.top-arrow {
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #b4b5b6;
+  border-left: 2px solid #b4b5b6;
+  transform: rotate(45deg);
+  position: relative;
+  top: 35px;
+  left: 10px;
 }
 </style>
