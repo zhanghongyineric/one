@@ -767,6 +767,9 @@ export default {
               this.dialogVisible = false
               this.getList()
               this.stepIndex = 1
+              this.modify = false
+              this.detail = false
+              this.dialogData = {}
             })
             .catch(err => {
               throw err
@@ -867,15 +870,16 @@ export default {
               this.dialogVisible = false
               this.$message({
                 type: 'success',
-                message: '新增成功！'
+                message: this.modify ? '修改成功！' : '新增成功！'
               })
               this.getList()
+              this.dialogData = {}
               this.stepIndex = 1
             })
             .catch(err => {
               this.$message({
                 type: 'error',
-                message: '新增失败！'
+                message: this.modify ? '修改失败！' : '新增失败！'
               })
               throw err
             })

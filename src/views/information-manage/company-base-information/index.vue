@@ -62,9 +62,9 @@
                   {{ advanced ? '收起' : '展开' }}
                   <i :class="advanced?'el-icon-arrow-up':'el-icon-arrow-down'" />
                 </el-button>
-
               </div>
             </el-col>
+
           </el-row>
         </el-form>
       </div>
@@ -196,10 +196,10 @@
             <el-col :md="12" :sm="24">
               <el-form-item
                 label="企业经济类型:"
-                prop="enconomicType"
+                prop="economicType"
               >
                 <el-select
-                  v-model="createFormData.enconomicType"
+                  v-model="createFormData.economicType"
                   size="small"
                   clearable
                   placeholder="请选择企业经济类型"
@@ -260,8 +260,8 @@
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
-              <el-form-item label="运输经营范围代码:" prop="businesScopeCode">
-                <el-input v-model="createFormData.businesScopeCode" size="small" clearable placeholder="请输入运输经营范围代码" />
+              <el-form-item label="运输经营范围代码:" prop="businessScopeCode">
+                <el-input v-model="createFormData.businessScopeCode" size="small" clearable placeholder="请输入运输经营范围代码" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -549,7 +549,7 @@ export default {
         upUnitName: '',
         zoneId: [],
         businessLicense: '',
-        enconomicType: '',
+        economicType: '',
         unitAddress: '',
         lrname: '',
         telephone: '',
@@ -557,7 +557,7 @@ export default {
         contactphone: '',
         postcode: '',
         registerZoneId: '',
-        businesScopeCode: '',
+        businessScopeCode: '',
         businesScopeScript: '',
         operationType: '',
         remark: '',
@@ -574,7 +574,7 @@ export default {
         upUnitName: '',
         zoneId: [],
         businessLicense: '',
-        enconomicType: '',
+        economicType: '',
         unitAddress: '',
         lrname: '',
         telephone: '',
@@ -582,7 +582,7 @@ export default {
         contactphone: '',
         postcode: '',
         registerZoneId: '',
-        businesScopeCode: '',
+        businessScopeCode: '',
         businesScopeScript: '',
         operationType: '',
         remark: '',
@@ -595,14 +595,14 @@ export default {
       // 用于重置新增的数据
       rules: {
         unitName: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
-        telephone: [{ required: false, trigger: 'blur', validator: validateUnitTel }],
+        telephone: [{ required: true, trigger: 'blur', validator: validateUnitTel }],
         shortName: [{ required: true, message: '请输入企业简称', trigger: 'blur' }],
         aptitudeLevel: [{ required: true, message: '请选择企业级别', trigger: 'change' }],
         zoneId: [{ required: true, message: '请选择行政区域', trigger: 'change' }],
-        businessLicense: [{ required: true, message: '请选择社会统一信用代码', trigger: 'change' }],
-        enconomicType: [{ required: true, message: '请选择企业经济类型', trigger: 'change' }],
+        businessLicense: [{ required: true, message: '请输入社会统一信用代码', trigger: 'blur' }],
+        economicType: [{ required: true, message: '请选择企业经济类型', trigger: 'change' }],
         registerZoneId: [{ required: true, message: '请选择企业注册地', trigger: 'change' }],
-        businesScopeCode: [{ required: true, message: '请选择道路运输经营范围代码', trigger: 'change' }],
+        businessScopeCode: [{ required: true, message: '请选择道路运输经营范围代码', trigger: 'change' }],
         operationType: [{ required: true, message: '请选择企业运营类型', trigger: 'change' }]
       }, // 新增和编辑框的规则
       textMap: {
@@ -775,9 +775,10 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
+          this.createFormData.economicType = this.createFormData.economicType.toString()
           const requestData = {
             ...this.createFormData,
-            zoneId: this.createFormData.zoneId[0] || ''
+            zoneId: this.createFormData.zoneId[2] || this.createFormData.zoneId[1]
           }
           addCount(requestData).then(() => {
             this.dialogFormVisible = false
@@ -798,7 +799,7 @@ export default {
     },
     // 点击查看详情
     handleDetail(row) {
-      if (row.enconomicType) row.enconomicType = parseInt(row.enconomicType)
+      if (row.economicType) row.economicType = parseInt(row.economicType)
       this.rowId = row.unitId
       this.createFormData = { ...row }
       if (this.createFormData.zoneId) {
@@ -813,7 +814,7 @@ export default {
     },
     // 点击更新信息
     handleUpdate(row) {
-      if (row.enconomicType) row.enconomicType = parseInt(row.enconomicType)
+      if (row.economicType) row.economicType = parseInt(row.economicType)
       this.rowId = row.unitId
       this.createFormData = { ...row }
       if (this.createFormData.zoneId) {
@@ -832,6 +833,7 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const zoneId = this.createFormData.zoneId
+          this.createFormData.economicType = this.createFormData.economicType.toString()
           const requestData = {
             id: this.rowId,
             ...this.createFormData,

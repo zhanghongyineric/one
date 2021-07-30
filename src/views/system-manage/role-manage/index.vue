@@ -1,9 +1,3 @@
-<!--
-  - FileName: 角色管理
-  - @author: ZhouJiaXing
-  - @date: 2021/6/8 上午10:52
-  -->
-
 <template>
   <div class="layout-content role-manage">
     <el-card class="box-card">
@@ -48,6 +42,7 @@
         <el-table-column label="角色名" prop="roleName" />
         <el-table-column label="角色标识" prop="roleCode" />
         <el-table-column label="角色描述" prop="roleDesc" />
+        <el-table-column label="父角色" prop="parentRoleName" />
         <el-table-column v-slot="{row}" prop="system" label="所属系统" min-width="60">{{ row.system|systemFilter }}</el-table-column>
         <el-table-column label="创建时间" prop="createTime" />
 
@@ -85,6 +80,7 @@
         :visible.sync="dialogFormVisible"
         custom-class="base-dialog dialog-col-1"
         :close-on-click-modal="false"
+        top="20px"
       >
         <el-form
           ref="dataForm"
@@ -94,6 +90,17 @@
         >
           <el-form-item label="角色名:" prop="roleName">
             <el-input v-model="createFormData.roleName" placeholder="请输入角色名" />
+          </el-form-item>
+          <el-form-item label="父角色:" prop="parentRoleCode">
+            <el-select v-model="createFormData.parentRoleCode" :disabled="dialogStatus==='update'" placeholder="请选择父角色">
+              <el-option
+                v-for="{roleCode, roleName, id} in fatherRoleOptions"
+                :key="roleCode"
+                :label="roleName"
+                :value="roleCode"
+                @click.native="selectFather(id)"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="角色标识:" prop="roleCode">
             <el-input v-model="createFormData.roleCode" placeholder="请输入角色标识" :disabled="dialogStatus==='update'" />
@@ -142,7 +149,7 @@ const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
 // import { fetchList, createAccount, updateAccount } from '@/api/role-manage.js' fixme:替换为你的接口地址
 import Pagination from '@/components/Pagination'
-import { addRole, deleteRole, editRole, getList } from '@/api/system-manage/role-manage'
+import { addRole, deleteRole, editRole, getList, getRoleList } from '@/api/system-manage/role-manage'
 import { getMenuByRole, getMenuList } from '@/api/system-manage/menu-manage' // 分页
 
 export default {
@@ -179,6 +186,7 @@ export default {
         roleCode: '',
         roleDesc: '',
         system: '',
+        parentRoleCode: '',
         menuIds: ''// 角色的菜单权限
       }, // 存储新增和编辑框的数据
       createFormDataTemp: {
@@ -207,12 +215,14 @@ export default {
         create: '新增'
       }, // 弹出框标题
       dialogFormVisible: false,
-      dialogStatus: ''
+      dialogStatus: '',
+      fatherRoleOptions: []
     }
   },
   created() {
     this.getList()
     this.initMenuOptions()
+    this.getRoleOptions()
   },
 
   methods: {
@@ -241,6 +251,15 @@ export default {
         this.optionGroup.menuOptions = formatMenu(res.data)
       })
     },
+    getRoleOptions() {
+      getRoleList({ onlyParent: 1 })
+        .then(res => {
+          this.fatherRoleOptions = res.data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     // 点击搜索
     handleSearch() {
       this.listQuery.pageNum = 1 // 重置pageNum
@@ -253,6 +272,7 @@ export default {
         this.list = response.data.list
         this.total = response.total.list
         this.listLoading = false
+        this.getRoleOptions()
       }).catch(() => {
         this.listLoading = false
       })
@@ -338,6 +358,22 @@ export default {
       // 获取当前角色的选中菜单
       getMenuByRole(row.id).then(res => {
         this.createFormData = { ...row } // copy obj
+        const checked = res.data
+        checked.forEach((v) => {
+          this.$nextTick(() => {
+            this.$refs['menu-tree'].setChecked(v, true, false)
+          })
+        })
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    // 选择父角色
+    selectFather(id) {
+      console.log(id)
+      this.$refs['menu-tree'].setCheckedKeys([])
+      // 获取当前父角色的选中菜单
+      getMenuByRole(id).then(res => {
+        // this.createFormData = { ...row } // copy obj
         const checked = res.data
         checked.forEach((v) => {
           this.$nextTick(() => {

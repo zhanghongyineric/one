@@ -7,23 +7,17 @@
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
           <h2>
-            <span class="version-text" @mouseenter="drawer = true">v{{ version }}</span>
+            <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
           </h2>
           <el-drawer
             custom-class="version-drawer ql-editor"
             :visible.sync="drawer"
             :direction="direction"
             :with-header="false"
-            :modal="true"
+            :modal="false"
             size="20%"
           />
-          <el-button
-            v-if="drawer"
-            class="history-version-btn"
-            type="primary"
-            size="small"
-            @click="toHistoryVersion"
-          >查看历史版本</el-button>
+          <span v-if="drawer" class="history-version-text">历史版本信息</span>
           <h3>监测·管理端</h3>
         </div>
       </div>
@@ -99,10 +93,13 @@
     <div class="footer">
       <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备20014004号</a>
       <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备20014004号-2</a>
-      <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51019002003222">
+      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51019002003222">
         <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
-        川公网安备 51019002003222 号
-      </a> -->
+        川公网安备 51010702002449 号
+      </a>
+    </div>
+    <div :class="[drawer ? 'close-symbol' : 'expand-symbol']" @click="switchDrawer">
+      <div :class="[drawer ? 'left-arrow' : 'right-arrow']" />
     </div>
   </div>
 </template>
@@ -144,7 +141,8 @@ export default {
       systemCode: '',
       version: '',
       drawer: false,
-      direction: 'ltr'
+      direction: 'ltr',
+      arrowStyle: 'right-arrow'
     }
   },
   computed: {
@@ -238,9 +236,11 @@ export default {
           historicVersion({ port: this.systemCode })
             .then(res => {
               if (res.data) {
-                const { data: { number, content }} = res
+                console.log(res)
+                const { data: { number, content, historyContent }} = res
                 this.version = number
-                document.getElementsByClassName('version-drawer')[0].innerHTML = content
+                const eleItem = document.getElementsByClassName('version-drawer')[0]
+                historyContent ? eleItem.innerHTML = content + historyContent : eleItem.innerHTML = content
               }
             })
             .catch(err => {
@@ -285,6 +285,10 @@ export default {
     },
     toHistoryVersion() {
       this.$router.push({ path: '/HistoryVersions', query: { code: this.systemCode }})
+    },
+    switchDrawer() {
+      this.drawer = !this.drawer
+      this.drawer ? this.arrowStyle = 'left-arrow' : this.arrowStyle = 'right=arrow'
     }
   }
 }
@@ -567,19 +571,75 @@ body {
   }
 }
 
-.version-text {
-  cursor: pointer;
-}
-
-.history-version-btn {
+.history-version-text {
   position: fixed;
-  left: 20px;
+  left: 6%;
   top: 20px;
   z-index: 3000;
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0092e7;
 }
 
 ::v-deep .version-drawer {
   padding: 70px 20px 20px !important;
   min-width: 250px !important;
+  background-color:rgba(255,255,255,0.3) !important;
+  overflow-y: auto !important;
+}
+
+::v-deep .el-drawer__container ::-webkit-scrollbar{
+    display: none !important;
+}
+
+.expand-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent  transparent  transparent #fff;
+  position: fixed;
+  top: 48%;
+  left: 0;
+  cursor: pointer;
+  transition: left .3s;
+}
+
+.close-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent  transparent  transparent #fff;
+  position: fixed;
+  top: 48%;
+  left: 20%;
+  cursor: pointer;
+  transition: left .3s;
+}
+
+.right-arrow {
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #ccc;
+  border-right: 2px solid #ccc;
+  transform: rotate(45deg);
+  position: relative;
+  top: 10px;
+  right: 15px;
+}
+
+.left-arrow {
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid #ccc;
+  border-left: 2px solid #ccc;
+  transform: rotate(45deg);
+  position: relative;
+  top: 10px;
+  right: 10px;
 }
 </style>

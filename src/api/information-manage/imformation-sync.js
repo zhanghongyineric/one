@@ -41,3 +41,11 @@ export function platform() {
     method: 'POST'
   })
 }
+
+export function gps(data) {
+  return request({
+    url: '/conversion/gps',
+    method: 'POST',
+    data
+  })
+}

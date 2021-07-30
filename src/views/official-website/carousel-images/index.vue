@@ -4,16 +4,6 @@
       <div class="table-page-search-wrapper">
         <el-form :model="listQuery" label-width="80px" size="small">
           <el-row :gutter="48">
-            <!-- <el-col :md="8" :sm="24">
-              <el-form-item label="关键字:">
-                <el-input
-                  v-model="listQuery.keyword"
-                  placeholder="请输入关键字"
-                  clearable
-                />
-              </el-form-item>
-            </el-col> -->
-
             <el-col :md="(!advanced && 8) || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
@@ -59,6 +49,14 @@
         </el-table-column>
       </el-table>
 
+      <Pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.pageNum"
+        :limit.sync="listQuery.pageSize"
+        @pagination="getList"
+      />
+
       <!-- 新增轮播图弹框 -->
       <el-dialog
         :title="modify ? '修改' : '新增'"
@@ -89,7 +87,7 @@
             </el-select>
           </el-form-item>
 
-          <p style="margin-left: 45px"><b>上传图片：</b>（只能1张）</p>
+          <p style="margin-left: 45px"><b>上传图片：</b>（只能一张）</p>
           <el-upload
             ref="upload"
             action
@@ -116,9 +114,11 @@
 <script>
 import { selectFind, save, deleteData } from '@/api/official-website/carousel'
 import { upload } from '@/api/official-website/news'
+import Pagination from '@/components/Pagination'
 
 export default {
   name: 'CarouselImages',
+  components: { Pagination },
   data() {
     return {
       visible: false,
@@ -130,6 +130,7 @@ export default {
         pageSize: 10,
         keyword: ''
       },
+      total: 0,
       addFormData: {
         typeDesc: '',
         creator: '',
@@ -183,6 +184,7 @@ export default {
           const { data } = res
           this.listLoading = false
           this.list = data.list
+          this.total = data.total
         })
         .catch(err => {
           this.listLoading = false
@@ -192,6 +194,9 @@ export default {
     openDialog(val, row) {
       this.visible = true
       this.currentRow = row
+      this.$nextTick(_ => {
+        this.$refs['addForm'].clearValidate()
+      })
       if (val === 'add') this.modify = false
       else {
         this.modify = true
@@ -262,14 +267,12 @@ export default {
                 this.fileList.forEach(item => {
                   arr.push(item.url.split('.cn')[1])
                 })
-                this.addFormData.imageUrl = this.addFormData.imageUrl.concat(';', arr.join(';'))
-
+                if (this.addFormData.imageUrl) this.addFormData.imageUrl = this.addFormData.imageUrl.concat(';', arr.join(';'))
                 const lastarr = this.addFormData.imageUrl.split(';')
                 if (lastarr[lastarr.length - 1] === '')lastarr.pop()
-                this.addFormData.imageUrl = lastarr.join(';')
+                this.addFormData.imageUrl = lastarr[0] || ''
               } else this.addFormData.imageUrl = this.imgArr.join(';')
 
-              // this.addFormData.imageUrl = this.imgArr.join(';')
               this.addFormData.creator = this.$store.state.user.name
               this.addFormData.updator = this.$store.state.user.name
               this.addFormData.creatorNo = this.$store.state.user.userId
@@ -295,12 +298,22 @@ export default {
                   throw err
                 })
             })
+            .catch(err => {
+              this.listLoading = false
+              this.$message({
+                type: 'error',
+                message: '图片过大，上传失败！'
+              })
+              this.imgsUpload = []
+              throw err
+            })
         }
       })
     },
     closeDialog() {
       this.visible = false
       this.fileList = []
+      this.resetFormData()
     },
     // 组成promise.all的参数数组
     allImgReq() {
@@ -341,6 +354,9 @@ export default {
                 message: '删除成功',
                 type: 'success'
               })
+              if (this.listQuery.pageNum !== 1 && this.list.length === 1) {
+                this.listQuery.pageNum--
+              }
               this.getList()
             })
             .catch(err => {
@@ -358,7 +374,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
