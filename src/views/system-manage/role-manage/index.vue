@@ -38,19 +38,29 @@
         fit
         highlight-current-row
         style="width: 100%;"
+        row-key="id"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
         <el-table-column label="角色名" prop="roleName" />
         <el-table-column label="角色标识" prop="roleCode" />
         <el-table-column label="角色描述" prop="roleDesc" />
-        <el-table-column label="父角色" prop="parentRoleName" />
-        <el-table-column v-slot="{row}" prop="system" label="所属系统" min-width="60">{{ row.system|systemFilter }}</el-table-column>
+        <el-table-column v-slot="{row}" label="父角色" prop="parentRoleName">
+          {{ row.parentRoleName || '-' }}
+        </el-table-column>
+        <el-table-column v-slot="{row}" prop="system" label="所属系统" min-width="60">{{
+          row.system|systemFilter
+        }}
+        </el-table-column>
         <el-table-column label="创建时间" prop="createTime" />
 
         <!--表格操作列-->
-        <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
           <template v-slot="{row}">
             <el-button type="primary" size="mini" @click="handleUpdate(row)">
               编辑
+            </el-button>
+            <el-button type="warning" size="mini" @click="handleCreate(row)">
+              新增
             </el-button>
             <el-popconfirm
               title="确认删除吗？"
@@ -91,14 +101,13 @@
           <el-form-item label="角色名:" prop="roleName">
             <el-input v-model="createFormData.roleName" placeholder="请输入角色名" />
           </el-form-item>
-          <el-form-item label="父角色:" prop="parentRoleCode">
-            <el-select v-model="createFormData.parentRoleCode" :disabled="dialogStatus==='update'" placeholder="请选择父角色">
+          <el-form-item v-if="createFormData.parentRoleCode" label="父角色:" prop="parentRoleCode">
+            <el-select v-model="createFormData.parentRoleCode" disabled>
               <el-option
-                v-for="{roleCode, roleName, id, system} in fatherRoleOptions"
+                v-for="{roleCode, roleName} in fatherRoleOptions"
                 :key="roleCode"
                 :label="roleName"
                 :value="roleCode"
-                @click.native="selectFather(id,system)"
               />
             </el-select>
           </el-form-item>
@@ -111,7 +120,7 @@
           <el-form-item label="所属系统" prop="system">
             <el-select
               v-model="createFormData.system"
-              :disabled="dialogStatus==='update'"
+              :disabled="dialogStatus==='update' || createFormData.parentRoleCode&&createFormData.parentSystem !=='9'"
               placeholder="请选择菜单所属系统"
               style="width: 100%;"
             >
@@ -233,8 +242,8 @@ export default {
 
   methods: {
     // 初始化菜单树
-    initMenuOptions() {
-      getMenuList().then(res => {
+    initMenuOptions(id) {
+      getMenuList({ roleId: id }).then(res => {
         // 格式化数据
         const formatMenu = (menu) => {
           return menu.map(item => {
@@ -274,11 +283,21 @@ export default {
     // 获取列表
     getList() {
       this.listLoading = true
-      getList(this.listQuery).then(response => {
-        this.list = response.data.list
-        this.total = response.total.list
+      getList(this.listQuery).then(({ data }) => {
+        const parentMap = {}
+        data.list.filter(role => !role.roleCode.includes('_')).forEach(parent => {
+          parentMap[parent.roleCode] = parent
+        })
+        data.list.filter(role => role.roleCode.includes('_')).forEach(children => {
+          const parent = parentMap[children.parentRoleCode]
+          parent.children || (parent.children = [])
+          parent.children.push(children)
+        })
+
+        this.list = Object.values(parentMap)
         this.listLoading = false
-      }).catch(() => {
+      }).catch((e) => {
+        console.log(e)
         this.listLoading = false
       })
     },
@@ -294,10 +313,13 @@ export default {
       this.$refs['dataForm'].clearValidate()
     },
     // 点击新增按钮
-    handleCreate() {
+    handleCreate(row) {
       this.resetCreateFormData()
       this.getRoleOptions()
-      this.initMenuOptions()
+      this.initMenuOptions(row && row.id)
+      this.createFormData.parentRoleCode = row && row.roleCode
+      this.createFormData.system = row && row.system
+      this.createFormData.parentSystem = row && row.system
       this.optionGroup.systemList = this.optionGroup.temp_systemList
 
       // 如果弹窗已经渲染好了，直接初始化表单
