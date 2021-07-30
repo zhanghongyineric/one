@@ -147,7 +147,6 @@
 <script>
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
-// import { fetchList, createAccount, updateAccount } from '@/api/role-manage.js' fixme:替换为你的接口地址
 import Pagination from '@/components/Pagination'
 import { addRole, deleteRole, editRole, getList, getRoleList } from '@/api/system-manage/role-manage'
 import { getMenuByRole, getMenuList } from '@/api/system-manage/menu-manage' // 分页
@@ -221,8 +220,7 @@ export default {
   },
   created() {
     this.getList()
-    this.initMenuOptions()
-    this.getRoleOptions()
+    // this.initMenuOptions()
   },
 
   methods: {
@@ -272,7 +270,6 @@ export default {
         this.list = response.data.list
         this.total = response.total.list
         this.listLoading = false
-        this.getRoleOptions()
       }).catch(() => {
         this.listLoading = false
       })
@@ -291,6 +288,8 @@ export default {
     // 点击新增按钮
     handleCreate() {
       this.resetCreateFormData()
+      this.getRoleOptions()
+      this.initMenuOptions()
 
       // 如果弹窗已经渲染好了，直接初始化表单
       if (this.$refs['menu-tree']) {
@@ -340,6 +339,10 @@ export default {
     },
     // 点击编辑
     handleUpdate(row) {
+      this.getRoleOptions()
+      this.selectFather(row.parentId)
+
+      console.log(row)
       // 如果弹窗已经渲染好了，直接初始化表单
       if (this.$refs['menu-tree']) {
         this.resetForm()
@@ -369,18 +372,26 @@ export default {
     },
     // 选择父角色
     selectFather(id) {
-      console.log(id)
-      this.$refs['menu-tree'].setCheckedKeys([])
-      // 获取当前父角色的选中菜单
-      getMenuByRole(id).then(res => {
-        // this.createFormData = { ...row } // copy obj
-        const checked = res.data
-        checked.forEach((v) => {
-          this.$nextTick(() => {
-            this.$refs['menu-tree'].setChecked(v, true, false)
+      getMenuList({ roleId: id }).then(res => {
+        const formatMenu = (menu) => {
+          return menu.map(item => {
+            const temp_item = {
+              label: item.title,
+              value: item.id
+            }
+
+            if (item.children && item.children.length) {
+              item.children = formatMenu(item.children)
+            }
+            if (item.children && item.children.length) {
+              temp_item.children = item.children
+            }
+
+            return temp_item
           })
-        })
-        this.$refs['dataForm'].clearValidate()
+        }
+        // 格式化菜单
+        this.optionGroup.menuOptions = formatMenu(res.data)
       })
     },
     // 保存编辑
