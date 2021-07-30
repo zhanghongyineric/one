@@ -254,7 +254,6 @@ export default {
     getRoleOptions() {
       getRoleList({ onlyParent: 1 })
         .then(res => {
-          console.log(res, 'res')
           this.fatherRoleOptions = res.data
         })
         .catch(err => {
@@ -273,6 +272,7 @@ export default {
         this.list = response.data.list
         this.total = response.total.list
         this.listLoading = false
+        this.getRoleOptions()
       }).catch(() => {
         this.listLoading = false
       })

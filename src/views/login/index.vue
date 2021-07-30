@@ -7,7 +7,7 @@
           <h1>{{ title }}</h1>
           <h2>助力政府监管，降低安全隐患</h2>
           <h2>
-            <span>v{{ version }}</span>
+            <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
           </h2>
           <el-drawer
             custom-class="version-drawer ql-editor"

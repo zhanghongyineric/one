@@ -19,19 +19,23 @@
             fit
             border
             highlight-current-row
-            style="width:100%;margin-top: 20px"
+            style="width:100%;margin-top: 20px;"
+            :header-cell-style="tableHeaderColor"
+            :row-style="tableRowStyle"
           >
-            <el-table-column prop="number" label="车牌号码" />
-            <el-table-column prop="number" label="车牌颜色" />
-            <el-table-column prop="number" label="车辆类型" />
-            <el-table-column prop="number" label="驾驶员" />
-            <el-table-column prop="number" label="行驶里程" />
-            <el-table-column prop="number" label="安全系数" />
+            <el-table-column prop="number" label="车牌号码" align="center" />
+            <el-table-column prop="number" label="车牌颜色" align="center" />
+            <el-table-column prop="number" label="车辆类型" align="center" />
+            <el-table-column prop="number" label="驾驶员" align="center" />
+            <el-table-column prop="number" label="行驶里程" align="center" />
+            <el-table-column prop="number" label="安全系数" align="center" />
           </el-table>
         </div>
       </el-col>
       <el-col :span="8">
-        <div class="center" />
+        <div class="center">
+          <map-chart />
+        </div>
       </el-col>
       <el-col :span="8">
         <div class="box" />
@@ -44,10 +48,11 @@
 <script>
 import PieChart from '@/components/Charts/PieChart.vue'
 import BarChart from '@/components/Charts/BarChart.vue'
+import MapChart from '@/components/Charts/MapChart.vue'
 
 export default {
   name: 'MonitorHome',
-  components: { PieChart, BarChart },
+  components: { PieChart, BarChart, MapChart },
   data() {
     return {
       carChartData: [
@@ -62,7 +67,17 @@ export default {
       ],
       companyChartXData: ['宜宾长顺运输公司', '遂宁运输有限公司', '阳光汽车公司', '成都交通运输公司'],
       companyChartYData: [5, 8, 10, 15],
-      carList: []
+      carList: [
+        {
+          number: 1
+        },
+        {
+          number: 2
+        },
+        {
+          number: 3
+        }
+      ]
     }
   },
   created() {
@@ -72,8 +87,15 @@ export default {
 
   },
   methods: {
-    headerStyle() {
-      return 'headerStyle'
+    // 修改table tr行的背景色
+    tableRowStyle({ row, rowIndex }) {
+      return { 'background-color': '#122230', 'color': '#fff' }
+    },
+    // 修改table header的背景色
+    tableHeaderColor({ row, column, rowIndex, columnIndex }) {
+      if (rowIndex === 0) {
+        return 'background-color: #202B3A;color: #fff;font-weight: 500;'
+      }
     }
   }
 }
@@ -112,18 +134,13 @@ export default {
   font-weight: 700;
 }
 
-// ::v-deep .el-table,
-// ::v-deep .el-table--border,
-// ::v-deep .el-table--group,
-// ::v-deep .el-table__header-wrapper {
-//   border-color: #151D2C !important;
-//   background-color: #151D2C !important;
-//   color: white !important;
-// }
+::v-deep .el-table tbody tr:hover>td {
+     background: #122230 !important
+  }
 
-// ::v-deep .headerStyle {
-//     background-color: #151D2C !important;
-//   color: white !important;
-// }
+::v-deep .el-table__body tr.current-row > td {
+  background-color: #122230 !important;
+  color: #fff;
+}
 
 </style>
