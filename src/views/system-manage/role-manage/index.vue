@@ -350,6 +350,15 @@ export default {
     handleUpdate(row) {
       this.getRoleOptions()
       this.selectFather(row.parentId)
+      getMenuByRole(row.id).then(res => {
+        const checked = res.data
+        checked.forEach((v) => {
+          this.$nextTick(() => {
+            this.$refs['menu-tree'].setChecked(v, true, false)
+          })
+        })
+        this.$refs['dataForm'].clearValidate()
+      })
       // 如果弹窗已经渲染好了，直接初始化表单
       if (this.$refs['menu-tree']) {
         this.resetForm()
@@ -387,6 +396,7 @@ export default {
         })
       }
       getMenuList({ roleId: id }).then(res => {
+        console.log(res.data)
         const formatMenu = (menu) => {
           return menu.map(item => {
             const temp_item = {
@@ -406,6 +416,7 @@ export default {
         }
         // 格式化菜单
         this.optionGroup.menuOptions = formatMenu(res.data)
+        console.log(this.optionGroup.menuOptions, 'return')
       })
     },
     // 保存编辑

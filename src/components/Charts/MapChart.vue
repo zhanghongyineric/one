@@ -52,6 +52,7 @@ export default {
       this.setOptions(this.chartData)
     },
     setOptions() {
+      console.log(this.chart, 'chart')
       this.chart.setOptions({
         title: {
           text: '在线车辆分布'
