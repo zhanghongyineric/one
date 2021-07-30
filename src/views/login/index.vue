@@ -93,7 +93,7 @@
     <div class="footer">
       <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备20014004号</a>
       <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备20014004号-2</a>
-      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51019002003222">
+      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51010702002449">
         <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
         川公网安备 51010702002449 号
       </a>
