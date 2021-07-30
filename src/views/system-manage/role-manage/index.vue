@@ -94,11 +94,11 @@
           <el-form-item label="父角色:" prop="parentRoleCode">
             <el-select v-model="createFormData.parentRoleCode" :disabled="dialogStatus==='update'" placeholder="请选择父角色">
               <el-option
-                v-for="{roleCode, roleName, id} in fatherRoleOptions"
+                v-for="{roleCode, roleName, id, system} in fatherRoleOptions"
                 :key="roleCode"
                 :label="roleName"
                 :value="roleCode"
-                @click.native="selectFather(id)"
+                @click.native="selectFather(id,system)"
               />
             </el-select>
           </el-form-item>
@@ -108,9 +108,13 @@
           <el-form-item label="角色描述:" prop="roleDesc">
             <el-input v-model="createFormData.roleDesc" placeholder="请输入角色描述" />
           </el-form-item>
-          <el-form-item label="所属系统" prop="system" :disabled="dialogStatus==='update'">
-            <el-select v-model="createFormData.system" placeholder="请选择菜单所属系统" style="width: 100%;">
-              <el-option label="全部" value="9" />
+          <el-form-item label="所属系统" prop="system">
+            <el-select
+              v-model="createFormData.system"
+              :disabled="dialogStatus==='update'"
+              placeholder="请选择菜单所属系统"
+              style="width: 100%;"
+            >
               <el-option
                 v-for="item in optionGroup.systemList"
                 :key="item.value"
@@ -178,7 +182,8 @@ export default {
       advanced: false, // 是否展开高级搜索条件
       optionGroup: {
         menuOptions: [],
-        systemList: onlineOption.system.list
+        systemList: [{ label: '全部', value: '9' }],
+        temp_systemList: []
       }, // 存放选项的数据
       createFormData: {
         roleName: '',
@@ -220,7 +225,10 @@ export default {
   },
   created() {
     this.getList()
-    // this.initMenuOptions()
+    onlineOption.system.list.forEach(item => {
+      this.optionGroup.systemList.push(item)
+    })
+    this.optionGroup.temp_systemList = this.optionGroup.systemList
   },
 
   methods: {
@@ -290,6 +298,7 @@ export default {
       this.resetCreateFormData()
       this.getRoleOptions()
       this.initMenuOptions()
+      this.optionGroup.systemList = this.optionGroup.temp_systemList
 
       // 如果弹窗已经渲染好了，直接初始化表单
       if (this.$refs['menu-tree']) {
@@ -341,8 +350,6 @@ export default {
     handleUpdate(row) {
       this.getRoleOptions()
       this.selectFather(row.parentId)
-
-      console.log(row)
       // 如果弹窗已经渲染好了，直接初始化表单
       if (this.$refs['menu-tree']) {
         this.resetForm()
@@ -371,7 +378,14 @@ export default {
       })
     },
     // 选择父角色
-    selectFather(id) {
+    selectFather(id, system) {
+      if (system !== '9') {
+        onlineOption.system.list.forEach(({ value, label }) => {
+          if (system === value) {
+            this.optionGroup.systemList = [{ label, value }]
+          }
+        })
+      }
       getMenuList({ roleId: id }).then(res => {
         const formatMenu = (menu) => {
           return menu.map(item => {
