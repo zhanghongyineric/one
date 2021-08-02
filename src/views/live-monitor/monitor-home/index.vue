@@ -34,7 +34,7 @@
       </el-col>
       <el-col :span="8">
         <div class="center">
-          <map-chart />
+          <map-chart :height="'100%'" :width="'100%'" />
         </div>
       </el-col>
       <el-col :span="8">

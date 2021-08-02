@@ -44,7 +44,10 @@
     </el-row>
     <el-row :gutter="20" style="margin-top: 30px">
       <el-col :md="8" :sm="24">
-        <div class="box" @click="gotoPage('/information-manage/company-base-information')">
+        <div
+          class="box"
+          @click="gotoPage('/information-manage/company-base-information')"
+        >
           <p>企业信息</p>
           <div class="top-box">
             <div class="bottom-chart-box-left bottom-box-position">
@@ -293,7 +296,8 @@ export default {
         },
         legend: {
           orient: 'vertical',
-          left: 'right'
+          left: 'right',
+          selectedMode: false
         },
         series: [
           {
@@ -357,7 +361,8 @@ export default {
         },
         legend: {
           orient: 'vertical',
-          left: 'right'
+          left: 'right',
+          selectedMode: false
         },
         series: [
           {
@@ -426,7 +431,8 @@ export default {
         },
         legend: {
           orient: 'vertical',
-          left: 'right'
+          left: 'right',
+          selectedMode: false
         },
         series: [
           {
@@ -486,7 +492,8 @@ export default {
         },
         legend: {
           orient: 'vertical',
-          left: 'right'
+          left: 'right',
+          selectedMode: false
         },
         series: [
           {
@@ -546,7 +553,8 @@ export default {
         },
         legend: {
           orient: 'vertical',
-          left: 'right'
+          left: 'right',
+          selectedMode: false
         },
         series: [
           {
