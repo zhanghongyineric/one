@@ -47,7 +47,7 @@
 </template>
 <script>
 import PieChart from '@/components/Charts/PieChart.vue'
-import BarChart from '@/components/Charts/BarChart.vue'
+import BarChart from '@/components/Charts/HorizontalBarChart.vue'
 import MapChart from '@/components/Charts/MapChart.vue'
 
 export default {

@@ -6,7 +6,11 @@
           <p>驾驶员信息</p>
           <div class="top-box">
             <div class="chart-box-left">
-              <div id="driverCol" class="chart-style" />
+              <bar-chart
+                :x-data="['从业', '待业', '注销']"
+                :chart-data="[driverData.work,driverData.unwork,driverData.logout]"
+                :color-list="['#A9DF96', '#FAC858', '#FF7070']"
+              />
             </div>
             <div class="text-box">
               <span class="num">{{ driverData.all }}</span>
@@ -16,7 +20,7 @@
               </span>
             </div>
             <div class="chart-box-right">
-              <div id="driver" class="chart-style" />
+              <pie-chart :name="'驾驶员'" :chart-data="driverPieData" />
             </div>
           </div>
         </div>
@@ -26,7 +30,11 @@
           <p>车辆信息</p>
           <div class="top-box">
             <div class="chart-box-left">
-              <div id="carCol" class="chart-style" />
+              <bar-chart
+                :class-name="'carColChart'"
+                :x-data="['停运', '注销', '转出', '正常', '暂停']"
+                :chart-data="[carData.stop,carData.logout,carData.out,carData.normal,carData.pause]"
+              />
             </div>
             <div class="text-box">
               <span class="num">{{ carData.all }}</span>
@@ -36,7 +44,7 @@
               </span>
             </div>
             <div class="chart-box-right">
-              <div id="car" class="chart-style" />
+              <pie-chart :name="'车辆'" :chart-data="carPieData" />
             </div>
           </div>
         </div>
@@ -51,7 +59,11 @@
           <p>企业信息</p>
           <div class="top-box">
             <div class="bottom-chart-box-left bottom-box-position">
-              <div id="companyCol" class="chart-style" />
+              <bar-chart
+                :x-data="['营运', '歇业']"
+                :chart-data="[companyData.normal,companyData.pause]"
+                :color-list="['#A9DF96', '#FF7070']"
+              />
             </div>
             <div class="text-box bottom-box">
               <span class="num">{{ companyData.all }}</span>
@@ -61,7 +73,7 @@
               </span>
             </div>
             <div class="bottom-chart-box-right">
-              <div id="company" class="chart-style" />
+              <pie-chart :name="'企业'" :chart-data="companyPieData" />
             </div>
           </div>
         </div>
@@ -71,7 +83,11 @@
           <p>接入平台信息</p>
           <div class="top-box">
             <div class="bottom-chart-box-left bottom-box-position">
-              <div id="platformCol" class="chart-style" />
+              <bar-chart
+                :x-data="['正常', '歇业']"
+                :chart-data="[platformData.normal,platformData.pause]"
+                :color-list="['#A9DF96', '#FF7070']"
+              />
             </div>
             <div class="text-box bottom-box">
               <span class="num">{{ platformData.all }}</span>
@@ -81,7 +97,7 @@
               </span>
             </div>
             <div class="bottom-chart-box-right">
-              <div id="platform" class="chart-style" />
+              <pie-chart :name="'接入平台'" :chart-data="platformPieData" />
             </div>
           </div>
         </div>
@@ -91,7 +107,11 @@
           <p>服务商信息</p>
           <div class="top-box">
             <div class="bottom-chart-box-left bottom-box-position">
-              <div id="serviceCol" class="chart-style" />
+              <bar-chart
+                :x-data="['正常', '注销']"
+                :chart-data="[serviceData.normal,serviceData.pause]"
+                :color-list="['#A9DF96', '#FF7070']"
+              />
             </div>
             <div class="text-box bottom-box">
               <span class="num">{{ serviceData.all }}</span>
@@ -101,12 +121,13 @@
               </span>
             </div>
             <div class="bottom-chart-box-right">
-              <div id="service" class="chart-style" />
+              <pie-chart :name="'服务商'" :chart-data="servicePieData" />
             </div>
           </div>
         </div>
       </el-col>
     </el-row>
+    <div />
   </div>
 </template>
 
@@ -118,41 +139,14 @@ import {
   carNumber,
   driverNumber
 } from '@/api/information-manage/home'
+import BarChart from '@/components/Charts/VerticalBarChart.vue'
+import PieChart from '@/components/Charts/InfomationPie.vue'
 
 export default {
   name: 'InformationHome',
+  components: { BarChart, PieChart },
   data() {
     return {
-      driverChart: {},
-      driverColChart: {},
-
-      carChart: {},
-      carColChart: {},
-
-      companyChart: {},
-      companyColChart: {},
-
-      platformChart: {},
-      platformColChart: {},
-
-      serviceChart: {},
-      serviceColChart: {},
-
-      driverOption: {},
-      driverColOption: {},
-
-      carOption: {},
-      carColOption: {},
-
-      companyOption: {},
-      companyColOption: {},
-
-      platformOption: {},
-      platformColOption: {},
-
-      serviceOption: {},
-      serviceColOption: {},
-
       companyData: {
         all: 0,
         normal: 0,
@@ -181,15 +175,17 @@ export default {
         work: 0,
         unwork: 0,
         logout: 0
-      }
-    }
-  },
-  watch: {
-    driverData: {
-      deep: true,
-      handler(val) {
-        this.updateEcharts()
-      }
+      },
+      driverAll: 0,
+      driverPieData: [],
+      carAll: 0,
+      carPieData: [],
+      companyAll: 0,
+      companyPieData: [],
+      platformAll: 0,
+      platformPieData: [],
+      serviceAll: 0,
+      servicePieData: []
     }
   },
   created() {
@@ -199,31 +195,6 @@ export default {
     this.getCarNum()
     this.getDriverNum()
   },
-  mounted() {
-    const dc = this.driverChart = this.$echarts.init(document.getElementById('driver'))
-    const dcc = this.driverColChart = this.$echarts.init(document.getElementById('driverCol'))
-    const cc = this.carChart = this.$echarts.init(document.getElementById('car'))
-    const ccc = this.carColChart = this.$echarts.init(document.getElementById('carCol'))
-    const comc = this.companyChart = this.$echarts.init(document.getElementById('company'))
-    const comcc = this.companyColChart = this.$echarts.init(document.getElementById('companyCol'))
-    const pc = this.platformChart = this.$echarts.init(document.getElementById('platform'))
-    const pcc = this.platformColChart = this.$echarts.init(document.getElementById('platformCol'))
-    const sc = this.serviceChart = this.$echarts.init(document.getElementById('service'))
-    const scc = this.serviceColChart = this.$echarts.init(document.getElementById('serviceCol'))
-
-    window.addEventListener('resize', function() {
-      dcc.resize()
-      dc.resize()
-      cc.resize()
-      ccc.resize()
-      comc.resize()
-      comcc.resize()
-      pc.resize()
-      pcc.resize()
-      sc.resize()
-      scc.resize()
-    })
-  },
   methods: {
     getCompanyNum() {
       companyNumber()
@@ -232,6 +203,10 @@ export default {
           this.companyData.all = data['全部']
           this.companyData.normal = data['运营']
           this.companyData.pause = data['歇业']
+          this.companyPieData = [
+            { value: this.companyData.normal, name: '营运', itemStyle: { color: '#9FE080' }},
+            { value: this.companyData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
+          ]
         })
         .catch(err => {
           throw err
@@ -244,6 +219,10 @@ export default {
           this.serviceData.all = data['全部']
           this.serviceData.normal = data['正常']
           this.serviceData.pause = data['注销']
+          this.servicePieData = [
+            { value: this.serviceData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
+            { value: this.serviceData.pause, name: '注销', itemStyle: { color: '#FF7070' }}
+          ]
         })
         .catch(err => {
           throw err
@@ -256,6 +235,10 @@ export default {
           this.platformData.all = data['全部']
           this.platformData.normal = data['正常']
           this.platformData.pause = data['歇业']
+          this.platformPieData = [
+            { value: this.platformData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
+            { value: this.platformData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
+          ]
         })
         .catch(err => {
           throw err
@@ -271,6 +254,13 @@ export default {
           this.carData.normal = data['正常']
           this.carData.logout = data['注销']
           this.carData.out = data['转出']
+          this.carPieData = [
+            { value: this.carData.stop, name: '停运', itemStyle: { color: '#FF7070' }},
+            { value: this.carData.logout, name: '注销', itemStyle: { color: '#5C7BD9' }},
+            { value: this.carData.out, name: '转出', itemStyle: { color: '#FFDC60' }},
+            { value: this.carData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
+            { value: this.carData.pause, name: '暂停', itemStyle: { color: '#7ED3F4' }}
+          ]
         })
         .catch(err => {
           throw err
@@ -284,340 +274,15 @@ export default {
           this.driverData.work = data['从业']
           this.driverData.unwork = data['待业']
           this.driverData.logout = data['注销']
+          this.driverPieData = [
+            { value: data['从业'], name: '从业', itemStyle: { color: '#A9DF96' }},
+            { value: data['待业'], name: '待业', itemStyle: { color: '#FAC858' }},
+            { value: data['注销'], name: '注销', itemStyle: { color: '#FF7070' }}
+          ]
         })
         .catch(err => {
           throw err
         })
-    },
-    updateEcharts() {
-      this.driverOption = {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'right',
-          selectedMode: false
-        },
-        series: [
-          {
-            name: '驾驶员状态',
-            type: 'pie',
-            radius: '50%',
-            data: [
-              { value: this.driverData.work, name: '从业', itemStyle: { color: '#A9DF96' }},
-              { value: this.driverData.unwork, name: '待业', itemStyle: { color: '#FAC858' }},
-              { value: this.driverData.logout, name: '注销', itemStyle: { color: '#FF7070' }}
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
-          }
-        ]
-      }
-      this.driverColOption = {
-        xAxis: {
-          type: 'category',
-          data: ['从业', '待业', '注销']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        grid: {
-          containLabel: true
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' }
-        },
-        series: [{
-          data: [
-            this.driverData.work,
-            this.driverData.unwork,
-            this.driverData.logout
-          ],
-          type: 'bar',
-          showBackground: true,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.2)'
-          },
-          itemStyle: {
-            normal: {
-              color: function(params) {
-                const colorList = ['#A9DF96', '#FAC858', '#FF7070']
-                return colorList[params.dataIndex]
-              }
-            }
-          }
-        }]
-      }
-      this.carOption = {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'right',
-          selectedMode: false
-        },
-        series: [
-          {
-            name: '运营状态',
-            type: 'pie',
-            radius: '50%',
-            center: ['40%', '50%'],
-            data: [
-              { value: this.carData.stop, name: '停运', itemStyle: { color: '#FF7070' }},
-              { value: this.carData.logout, name: '注销', itemStyle: { color: '#5C7BD9' }},
-              { value: this.carData.out, name: '转出', itemStyle: { color: '#FFDC60' }},
-              { value: this.carData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
-              { value: this.carData.pause, name: '暂停', itemStyle: { color: '#7ED3F4' }}
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
-          }
-        ]
-      }
-      this.carColOption = {
-        xAxis: {
-          type: 'category',
-          data: ['停运', '注销', '转出', '正常', '暂停']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        grid: {
-          containLabel: true
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' }
-        },
-        series: [{
-          data: [
-            this.carData.stop,
-            this.carData.logout,
-            this.carData.out,
-            this.carData.normal,
-            this.carData.pause
-          ],
-          type: 'bar',
-          showBackground: true,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.2)'
-          },
-          itemStyle: {
-            normal: {
-              color: function(params) {
-                const colorList = ['#FF7070', '#5C7BD9', '#FFDC60', '#9FE080', '#7ED3F4']
-                return colorList[params.dataIndex]
-              }
-            }
-          }
-        }]
-      }
-      this.companyOption = {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'right',
-          selectedMode: false
-        },
-        series: [
-          {
-            name: '营运状态',
-            type: 'pie',
-            radius: '50%',
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            data: [
-              { value: this.companyData.normal, name: '营运', itemStyle: { color: '#9FE080' }},
-              { value: this.companyData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
-            ]
-          }
-        ]
-      }
-      this.companyColOption = {
-        xAxis: {
-          type: 'category',
-          data: ['营运', '歇业']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        grid: {
-          containLabel: true
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' }
-        },
-        series: [{
-          data: [
-            this.companyData.normal,
-            this.companyData.pause
-          ],
-          type: 'bar',
-          showBackground: true,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.2)'
-          },
-          itemStyle: {
-            normal: {
-              color: function(params) {
-                const colorList = ['#A9DF96', '#FF7070']
-                return colorList[params.dataIndex]
-              }
-            }
-          }
-        }]
-      }
-      this.platformOption = {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'right',
-          selectedMode: false
-        },
-        series: [
-          {
-            name: '营运状态',
-            type: 'pie',
-            radius: '50%',
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            data: [
-              { value: this.platformData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
-              { value: this.platformData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
-            ]
-          }
-        ]
-      }
-      this.platformColOption = {
-        xAxis: {
-          type: 'category',
-          data: ['正常', '歇业']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        grid: {
-          containLabel: true
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' }
-        },
-        series: [{
-          data: [
-            this.platformData.normal,
-            this.platformData.pause
-          ],
-          type: 'bar',
-          showBackground: true,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.2)'
-          },
-          itemStyle: {
-            normal: {
-              color: function(params) {
-                const colorList = ['#A9DF96', '#FF7070']
-                return colorList[params.dataIndex]
-              }
-            }
-          }
-        }]
-      }
-      this.serviceOption = {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'right',
-          selectedMode: false
-        },
-        series: [
-          {
-            name: '服务商状态',
-            type: 'pie',
-            radius: '50%',
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            data: [
-              { value: this.serviceData.normal, name: '正常', itemStyle: { color: '#9FE080' }},
-              { value: this.serviceData.pause, name: '注销', itemStyle: { color: '#FF7070' }}
-            ]
-          }
-        ]
-      }
-      this.serviceColOption = {
-        xAxis: {
-          type: 'category',
-          data: ['正常', '注销']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        grid: {
-          containLabel: true
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' }
-        },
-        series: [{
-          data: [
-            this.serviceData.normal,
-            this.serviceData.pause
-          ],
-          type: 'bar',
-          showBackground: true,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.2)'
-          },
-          itemStyle: {
-            normal: {
-              color: function(params) {
-                const colorList = ['#A9DF96', '#FF7070']
-                return colorList[params.dataIndex]
-              }
-            }
-          }
-        }]
-      }
-      this.driverChart.setOption(this.driverOption)
-      this.driverColChart.setOption(this.driverColOption)
-      this.carChart.setOption(this.carOption)
-      this.carColChart.setOption(this.carColOption)
-      this.companyChart.setOption(this.companyOption)
-      this.companyColChart.setOption(this.companyColOption)
-      this.platformChart.setOption(this.platformOption)
-      this.platformColChart.setOption(this.platformColOption)
-      this.serviceChart.setOption(this.serviceOption)
-      this.serviceColChart.setOption(this.serviceColOption)
     },
     gotoPage(path) {
       this.$router.push(path)
@@ -633,7 +298,7 @@ export default {
 
 .box {
   width: 100%;
-  height: 400px;
+  height: 350px;
   background-color: #fff;
   position: relative;
   box-sizing: border-box;

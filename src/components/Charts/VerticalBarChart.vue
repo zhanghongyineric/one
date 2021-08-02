@@ -1,4 +1,4 @@
-<!-- 主要用于监测首页饼状图 -->
+<!-- 主要用于信息管理首页柱状图 -->
 <template>
   <div :class="className" :style="{height,width}" />
 </template>
@@ -23,15 +23,17 @@ export default {
     },
     chartData: {
       type: Array,
-      required: true
+      require: true,
+      default: () => []
     },
-    showlegend: {
-      type: Boolean,
-      default: false
-    },
-    position: {
+    xData: {
       type: Array,
-      default: () => ['50%', '50%']
+      require: true,
+      default: () => []
+    },
+    colorList: {
+      type: Array,
+      default: () => ['#FF7070', '#5C7BD9', '#FFDC60', '#9FE080', '#7ED3F4']
     }
   },
   data() {
@@ -66,49 +68,36 @@ export default {
     },
     setOptions(data) {
       this.chart.setOption({
+        xAxis: {
+          type: 'category',
+          data: this.xData
+        },
+        yAxis: {
+          type: 'value'
+        },
+        grid: {
+          containLabel: true
+        },
         tooltip: {
-          trigger: 'item'
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
         },
-        title: {
-          text: '车辆概况',
-          left: 'left',
-          textStyle: {
-            color: '#fff'
-          }
-        },
-        legend: {
-          top: '10%',
-          left: 'center',
-          textStyle: {
-            fontSize: 10,
-            color: '#fff'
+        series: [{
+          data,
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
           },
-          itemWidth: 10,
-          show: this.showlegend
-        },
-        series: [
-          {
-            name: '车辆统计',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            center: this.position,
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '20'
+          itemStyle: {
+            normal: {
+              color: (params) => {
+                const colorList = this.colorList
+                return colorList[params.dataIndex]
               }
-            },
-            labelLine: {
-              show: false
-            },
-            data
+            }
           }
-        ]
+        }]
       })
     }
   }

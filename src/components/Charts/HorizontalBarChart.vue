@@ -1,5 +1,6 @@
+<!--主要用于监测首页的柱状图-->
 <template>
-  <div :class="className" :style="{height,width}" />
+  <div :style="{height,width}" />
 </template>
 <script>
 import * as echarts from 'echarts'
@@ -8,10 +9,6 @@ import chartResize from './chart-resize'
 export default {
   mixins: [chartResize],
   props: {
-    className: {
-      type: String,
-      default: 'chart'
-    },
     width: {
       type: String,
       default: '100%'

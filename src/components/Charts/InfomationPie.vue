@@ -1,18 +1,13 @@
-<!-- 主要用于监测首页饼状图 -->
+<!-- 主要用于信息管理首页饼状图 -->
 <template>
-  <div :class="className" :style="{height,width}" />
+  <div :style="{height,width}" />
 </template>
 <script>
 import * as echarts from 'echarts'
 import chartResize from './chart-resize'
-
 export default {
   mixins: [chartResize],
   props: {
-    className: {
-      type: String,
-      default: 'chart'
-    },
     width: {
       type: String,
       default: '100%'
@@ -23,15 +18,12 @@ export default {
     },
     chartData: {
       type: Array,
-      required: true
+      require: true,
+      default: () => []
     },
-    showlegend: {
-      type: Boolean,
-      default: false
-    },
-    position: {
-      type: Array,
-      default: () => ['50%', '50%']
+    name: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -69,44 +61,24 @@ export default {
         tooltip: {
           trigger: 'item'
         },
-        title: {
-          text: '车辆概况',
-          left: 'left',
-          textStyle: {
-            color: '#fff'
-          }
-        },
         legend: {
-          top: '10%',
-          left: 'center',
-          textStyle: {
-            fontSize: 10,
-            color: '#fff'
-          },
-          itemWidth: 10,
-          show: this.showlegend
+          orient: 'vertical',
+          left: 'right',
+          selectedMode: false
         },
         series: [
           {
-            name: '车辆统计',
+            name: `${this.name}状态`,
             type: 'pie',
-            radius: ['40%', '70%'],
-            center: this.position,
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-              position: 'center'
-            },
+            radius: '50%',
+            data,
             emphasis: {
-              label: {
-                show: true,
-                fontSize: '20'
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
               }
-            },
-            labelLine: {
-              show: false
-            },
-            data
+            }
           }
         ]
       })
