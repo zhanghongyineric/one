@@ -43,7 +43,7 @@
       >
         <el-table-column label="角色名" prop="roleName" />
         <el-table-column label="角色标识" prop="roleCode" />
-        <el-table-column label="角色描述" prop="roleDesc" />
+        <el-table-column label="角色描述" prop="roleDesc" show-overflow-tooltip/>
         <el-table-column v-slot="{row}" label="父角色" prop="parentRoleName">
           {{ row.parentRoleName || '-' }}
         </el-table-column>
@@ -179,12 +179,12 @@ export default {
       buttonLoading: false, // 弹窗按钮加载状态
       listQuery: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 100,
         keyword: ''
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 100,
         keyword: ''
       }, // 用于重置查询条件
       total: 0, // 总数据条数
@@ -418,7 +418,6 @@ export default {
         })
       }
       getMenuList({ roleId: id }).then(res => {
-        console.log(res.data)
         const formatMenu = (menu) => {
           return menu.map(item => {
             const temp_item = {
@@ -438,7 +437,6 @@ export default {
         }
         // 格式化菜单
         this.optionGroup.menuOptions = formatMenu(res.data)
-        console.log(this.optionGroup.menuOptions, 'return')
       })
     },
     // 保存编辑

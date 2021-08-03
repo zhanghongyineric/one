@@ -244,11 +244,11 @@ export default {
       // 查询参数
       queryParams: {
         title: '',
-        system: process.env['VUE_APP_SYSTEM_TAG']
+        system: ''
       },
       queryParams_temp: {
         title: '',
-        system: process.env['VUE_APP_SYSTEM_TAG']
+        system: ''
       },
       // 表单参数
       form: {
