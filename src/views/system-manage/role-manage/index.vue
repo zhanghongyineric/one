@@ -418,7 +418,6 @@ export default {
         })
       }
       getMenuList({ roleId: id }).then(res => {
-        console.log(res.data)
         const formatMenu = (menu) => {
           return menu.map(item => {
             const temp_item = {
@@ -438,7 +437,6 @@ export default {
         }
         // 格式化菜单
         this.optionGroup.menuOptions = formatMenu(res.data)
-        console.log(this.optionGroup.menuOptions, 'return')
       })
     },
     // 保存编辑
