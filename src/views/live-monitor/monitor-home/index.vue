@@ -34,7 +34,7 @@
       </el-col>
       <el-col :span="8">
         <div class="center">
-          <map-chart />
+          <map-chart :height="'100%'" :width="'100%'" />
         </div>
       </el-col>
       <el-col :span="8">
@@ -47,7 +47,7 @@
 </template>
 <script>
 import PieChart from '@/components/Charts/PieChart.vue'
-import BarChart from '@/components/Charts/BarChart.vue'
+import BarChart from '@/components/Charts/HorizontalBarChart.vue'
 import MapChart from '@/components/Charts/MapChart.vue'
 
 export default {
