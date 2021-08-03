@@ -33,7 +33,7 @@ export default {
     },
     colorList: {
       type: Array,
-      default: () => ['#FF7070', '#5C7BD9', '#FFDC60', '#9FE080', '#7ED3F4']
+      default: () => ['#FF7070', '#5C7BD9', '#FFDC60', '#009966', '#7ED3F4']
     }
   },
   data() {
