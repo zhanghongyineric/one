@@ -41,10 +41,16 @@ export default {
     }
   },
   watch: {
-    chartData: {
+    xData: {
       deep: true,
-      handler(val) {
-        this.setOptions(val)
+      handler() {
+        this.setOptions()
+      }
+    },
+    yData: {
+      deep: true,
+      handler() {
+        this.setOptions()
       }
     }
   },
@@ -65,7 +71,7 @@ export default {
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
     },
-    setOptions(data) {
+    setOptions() {
       this.chart.setOption({
         tooltip: {
           trigger: 'axis',
@@ -98,7 +104,7 @@ export default {
         },
         series: [
           {
-            name: '违章次数',
+            name: '风险程度',
             type: 'bar',
             data: this.yData,
             itemStyle: {

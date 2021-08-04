@@ -16,7 +16,7 @@
               <div class="text-box">
                 <span class="num">{{ driverData.all }}</span>
                 <span class="total-num">
-                  <svg-icon :icon-class="'driver'" style="width: 25px;height: 25px;position:relative;top: 5px;" />
+                  <svg-icon :icon-class="'driver'" style="width:25px;height:25px;position:relative;top:5px;" />
                   驾驶员总数
                 </span>
               </div>
@@ -190,9 +190,32 @@
           <div class="center" />
         </el-col>
         <el-col :span="8">
-          <div class="box-monitor" />
-          <div class="box-monitor" />
-          <div class="box-monitor" />
+          <div class="box-monitor">
+            <span class="title">事件处理</span>
+            <el-table
+              :data="carList"
+              fit
+              border
+              highlight-current-row
+              style="width:100%;margin-top: 20px;"
+              :header-cell-style="tableHeaderColor"
+              :row-style="tableRowStyle"
+            >
+              <el-table-column prop="number" label="车牌号码" align="center" />
+              <el-table-column prop="number" label="车牌颜色" align="center" />
+              <el-table-column prop="number" label="定位时间" align="center" />
+              <el-table-column prop="number" label="事件类型" align="center" />
+              <el-table-column prop="number" label="严重程度" align="center" />
+            </el-table>
+          </div>
+          <div class="box-monitor">
+            <span class="title">考核分析</span>
+            <mutil-pie-chart />
+          </div>
+          <div class="box-monitor">
+            <span class="title">趋势分析</span>
+            <line-chart />
+          </div>
         </el-col>
       </el-row>
       <div class="monitor-top-box">
@@ -232,20 +255,29 @@ import {
   driverNumber
 } from '@/api/information-manage/home'
 import {
-  // enterpriseRanking,
+  enterpriseRanking,
   vehicleProportion
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
 import MonitorPieChart from '@/components/Charts/PieChart.vue'
 import MonitorBarChart from '@/components/Charts/HorizontalBarChart.vue'
+import MutilPieChart from '@/components/Charts/MutilPieChart.vue'
+import LineChart from '@/components/Charts/LineChart.vue'
 
 export default {
   name: 'InformationHome',
-  components: { BarChart, PieChart, MonitorPieChart, MonitorBarChart },
+  components: {
+    BarChart,
+    PieChart,
+    MonitorPieChart,
+    MonitorBarChart,
+    MutilPieChart,
+    LineChart
+  },
   data() {
     return {
-      showInfo: true,
+      showInfo: false,
       companyData: {
         all: 0,
         normal: 0,
@@ -286,18 +318,9 @@ export default {
       serviceAll: 0,
       servicePieData: [],
 
-      carChartData: [
-        { value: 1048, name: '班线客运' },
-        { value: 735, name: '普通客运' },
-        { value: 580, name: '旅游客运' },
-        { value: 484, name: '危险品运输' },
-        { value: 300, name: '出租' },
-        { value: 200, name: '农村客运' },
-        { value: 200, name: '公交' },
-        { value: 200, name: '个体户' }
-      ],
-      companyChartXData: ['宜宾长顺运输公司', '遂宁运输有限公司', '阳光汽车公司', '成都交通运输公司'],
-      companyChartYData: [5, 8, 10, 15],
+      carChartData: [],
+      companyChartXData: [],
+      companyChartYData: [],
       carList: [
         {
           number: 1
@@ -326,17 +349,28 @@ export default {
         return 'background-color: #202B3A;color: #fff;font-weight: 500;'
       }
     },
-    tableRowStyle({ row, rowIndex }) {
+    tableRowStyle() {
       return { 'background-color': '#122230', 'color': '#fff' }
     },
     getEnterpriseRanking() {
-      // enterpriseRanking({
-      //   pageNum: 1,
-      //   pageSize: 10
-      // })
-      //   .then(res => {
-      //     const { data } = res
-      //   })
+      enterpriseRanking({
+        pageNum: 1,
+        pageSize: 10
+      })
+        .then(res => {
+          const { data: { list, total }} = res
+          if (total > 7) {
+            for (let i = 6; i >= 0; i--) {
+              this.companyChartXData.push(list[i].unitName)
+              this.companyChartYData.push(list[i].overScore)
+            }
+          } else {
+            for (let i = total - 1; i >= 0; i--) {
+              this.companyChartXData.push(list[i].unitName)
+              this.companyChartYData.push(list[i].overScore)
+            }
+          }
+        })
     },
     getVehicleProportion() {
       vehicleProportion({
@@ -345,7 +379,12 @@ export default {
       })
         .then(res => {
           const { data } = res
-          console.log(data, 'data')
+          data.forEach(item => {
+            this.carChartData.push({
+              value: item.count,
+              name: item.vehicleType
+            })
+          })
         })
     },
     getCompanyNum() {
@@ -628,11 +667,6 @@ p {
   position: relative;
   bottom: 15px;
   left: 10px;
-}
-
-.monitor {
-  // width: 100%;
-  // height: 100%;
 }
 
 .box-monitor {
