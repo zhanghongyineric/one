@@ -812,14 +812,14 @@ p {
     transition: opacity 2s
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active, 2.1.8 版本以下 */ {
-    opacity: 0
+    opacity: 0.5
 }
 
 .fade1-enter-active, .fade-leave-active {
     transition: opacity 2s
 }
 .fade1-enter, .fade-leave-to /* .fade-leave-active, 2.1.8 版本以下 */ {
-    opacity: 0
+    opacity: 0.5
 }
 
 ::v-deep .el-table tbody tr:hover>td {
