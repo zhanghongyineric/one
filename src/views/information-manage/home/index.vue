@@ -130,7 +130,7 @@
           </el-col>
         </el-row>
         <div class="closed-box">
-          <div class="closed-box-inner">
+          <!-- <div class="closed-box-inner">
             <el-row :gutter="20">
               <el-col :md="8" :span="24">
                 <div class="content-box">
@@ -148,7 +148,7 @@
                 </div>
               </el-col>
             </el-row>
-          </div>
+          </div> -->
         </div>
         <div class="expand-symbol" @click="showInfo = false">
           <div class="top-arrow" />
@@ -181,12 +181,12 @@
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
               >
-                <el-table-column prop="number" label="车牌号码" align="center" />
-                <el-table-column prop="color" label="车牌颜色" align="center" />
-                <el-table-column prop="kind" label="车辆类型" min-width="120" align="center" />
-                <el-table-column prop="driver" label="驾驶员" align="center" />
-                <el-table-column prop="mile" label="行驶里程" align="center" />
-                <el-table-column prop="level" label="安全系数" align="center" />
+                <el-table-column prop="number" label="车牌号码" min-width="120" align="center" show-overflow-tooltip />
+                <el-table-column prop="color" label="车牌颜色" align="center" show-overflow-tooltip />
+                <el-table-column prop="kind" label="车辆类型" min-width="120" show-overflow-tooltip align="center" />
+                <el-table-column prop="driver" label="驾驶员" align="center" show-overflow-tooltip />
+                <el-table-column prop="mile" label="行驶里程" align="center" show-overflow-tooltip />
+                <el-table-column prop="level" label="安全系数" align="center" show-overflow-tooltip />
               </el-table>
             </div>
           </el-col>
@@ -211,11 +211,11 @@
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
               >
-                <el-table-column prop="number" label="车牌号码" align="center" />
-                <el-table-column prop="color" label="车牌颜色" align="center" />
-                <el-table-column prop="time" label="定位时间" align="center" />
-                <el-table-column prop="kind" label="事件类型" align="center" />
-                <el-table-column prop="level" label="严重程度" align="center" />
+                <el-table-column prop="number" label="车牌号码" align="center" show-overflow-tooltip />
+                <el-table-column prop="color" label="车牌颜色" align="center" show-overflow-tooltip />
+                <el-table-column prop="time" label="定位时间" align="center" show-overflow-tooltip />
+                <el-table-column prop="kind" label="事件类型" align="center" show-overflow-tooltip />
+                <el-table-column prop="level" label="严重程度" align="center" show-overflow-tooltip />
               </el-table>
             </div>
             <div class="box-monitor">
@@ -233,17 +233,27 @@
             <el-row :gutter="20">
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span>驾驶员信息</span>
+                  <span class="title-text">驾驶员信息</span>
+                  <span class="little-num">从业：{{ driverData.work }}</span>
+                  <span class="little-num">待业：{{ driverData.unwork }}</span>
+                  <span class="little-num">注销：{{ driverData.logout }}</span>
                 </div>
               </el-col>
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span>车辆信息</span>
+                  <span class="title-text">车辆信息</span>
+                  <span class="little-num">停运：{{ carData.stop }}</span>
+                  <span class="little-num">注销：{{ carData.logout }}</span>
+                  <span class="little-num">转出：{{ carData.out }}</span>
+                  <span class="little-num">正常：{{ carData.normal }}</span>
+                  <span class="little-num">暂停：{{ carData.pause }}</span>
                 </div>
               </el-col>
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span>企业信息</span>
+                  <span class="title-text">企业信息</span>
+                  <span class="little-num">营运：{{ companyData.normal }}</span>
+                  <span class="little-num">歇业：{{ companyData.pause }}</span>
                 </div>
               </el-col>
             </el-row>
@@ -670,7 +680,7 @@ p {
 
 .closed-box {
   width: 99%;
-  height: 100px;
+  // height: 100px;
   position: absolute;
   bottom: 0;
   right: 0;
@@ -705,10 +715,21 @@ p {
     text-align: center;
     line-height: 70px;
 
-      span {
+     .title-text {
         color: #fff;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 700;
+        display:block;
+        position: relative;
+        bottom: 17px;
+      }
+
+      .little-num {
+        display: inline-block;
+        color: #19F1FF;
+        margin-right: 15px;
+        position: relative;
+        bottom: 50px;
       }
   }
 }
@@ -721,7 +742,7 @@ p {
   border-style: solid;
   border-color: transparent transparent #0E1521 transparent;
   position: absolute;
-  bottom: 90px;
+  bottom: 20px;
   left: 48%;
   cursor: pointer;
 }

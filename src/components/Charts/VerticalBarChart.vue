@@ -70,10 +70,22 @@ export default {
       this.chart.setOption({
         xAxis: {
           type: 'category',
-          data: this.xData
+          data: this.xData,
+          axisLabel: {
+            show: true,
+            textStyle: {
+              color: '#ccc'
+            }
+          }
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          axisLabel: {
+            show: true,
+            textStyle: {
+              color: '#ccc'
+            }
+          }
         },
         grid: {
           containLabel: true

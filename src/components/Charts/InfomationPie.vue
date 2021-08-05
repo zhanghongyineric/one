@@ -64,7 +64,10 @@ export default {
         legend: {
           orient: 'vertical',
           left: 'right',
-          selectedMode: false
+          selectedMode: false,
+          textStyle: {
+            color: '#fff'
+          }
         },
         series: [
           {

@@ -1,4 +1,4 @@
-<!--主要用于监测首页的柱状图-->
+<!--主要用于监测首页的横向柱状图-->
 <template>
   <div :style="{height,width}" />
 </template>
@@ -88,14 +88,20 @@ export default {
         },
         xAxis: {
           type: 'value',
-          boundaryGap: [0, 0.01]
+          boundaryGap: [0, 0.01],
+          axisLabel: {
+            show: true,
+            textStyle: {
+              color: '#ccc'
+            }
+          }
         },
         yAxis: {
           type: 'category',
           data: this.xData,
           axisLabel: {
             textStyle: {
-              color: '#fff'
+              color: '#ccc'
             }
           }
         },
@@ -109,7 +115,7 @@ export default {
             data: this.yData,
             itemStyle: {
               normal: {
-                color: '#CC6666'
+                color: '#FF9A90'
               }
             }
           }

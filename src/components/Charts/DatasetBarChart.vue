@@ -69,8 +69,23 @@ export default {
             ['自贡市', 999, 1999]
           ]
         },
-        xAxis: { type: 'category' },
-        yAxis: {},
+        xAxis: {
+          type: 'category',
+          axisLabel: {
+            show: true,
+            textStyle: {
+              color: '#ccc'
+            }
+          }
+        },
+        yAxis: {
+          axisLabel: {
+            show: true,
+            textStyle: {
+              color: '#ccc'
+            }
+          }
+        },
         series: [
           {
             type: 'bar',

@@ -63,12 +63,12 @@ export default {
             axisTick: {
               alignWithLabel: true
             },
-            // axisLine: {
-            //   onZero: false,
-            //   lineStyle: {
-            //     color: '#fff'
-            //   }
-            // },
+            axisLabel: {
+              show: true,
+              textStyle: {
+                color: '#ccc'
+              }
+            },
             axisPointer: {
               label: {
                 formatter: function(params) {
@@ -95,7 +95,13 @@ export default {
         ],
         yAxis: [
           {
-            type: 'value'
+            type: 'value',
+            axisLabel: {
+              show: true,
+              textStyle: {
+                color: '#ccc'
+              }
+            }
           }
         ],
         series: [
