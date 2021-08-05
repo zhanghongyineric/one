@@ -1,248 +1,259 @@
 <template>
   <div class="container">
-    <div v-show="showInfo" class="infomation">
-      <el-row :gutter="20">
-        <el-col :md="12" :sm="24">
-          <div class="box" @click="gotoPage('/information-manage/driver-base-information')">
-            <p>驾驶员信息</p>
-            <div class="top-box">
-              <div class="chart-box-left">
-                <bar-chart
-                  :x-data="['从业', '待业', '注销']"
-                  :chart-data="[driverData.work,driverData.unwork,driverData.logout]"
-                  :color-list="['#009966', '#FAC858', '#FF7070']"
-                />
-              </div>
-              <div class="text-box">
-                <span class="num">{{ driverData.all }}</span>
-                <span class="total-num">
-                  <svg-icon :icon-class="'driver'" style="width:25px;height:25px;position:relative;top:5px;" />
-                  驾驶员总数
-                </span>
-              </div>
-              <div class="chart-box-right">
-                <pie-chart :name="'驾驶员'" :chart-data="driverPieData" />
-              </div>
-            </div>
-          </div>
-        </el-col>
-        <el-col :md="12" :sm="24">
-          <div class="box" @click="gotoPage('/information-manage/car-base-information')">
-            <p>车辆信息</p>
-            <div class="top-box">
-              <div class="chart-box-left">
-                <bar-chart
-                  :class-name="'carColChart'"
-                  :x-data="['停运', '注销', '转出', '正常', '暂停']"
-                  :chart-data="[carData.stop,carData.logout,carData.out,carData.normal,carData.pause]"
-                />
-              </div>
-              <div class="text-box">
-                <span class="num">{{ carData.all }}</span>
-                <span class="total-num">
-                  <svg-icon :icon-class="'car'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
-                  车辆总数
-                </span>
-              </div>
-              <div class="chart-box-right">
-                <pie-chart :name="'车辆'" :chart-data="carPieData" />
+    <transition name="fade">
+      <div v-show="showInfo" class="infomation">
+        <el-row :gutter="20">
+          <el-col :md="12" :sm="24">
+            <div class="box" @click="gotoPage('/information-manage/driver-base-information')">
+              <p>驾驶员信息</p>
+              <div class="top-box">
+                <div class="chart-box-left">
+                  <bar-chart
+                    :x-data="['从业', '待业', '注销']"
+                    :chart-data="[driverData.work,driverData.unwork,driverData.logout]"
+                    :color-list="['#009966', '#FAC858', '#FF7070']"
+                  />
+                </div>
+                <div class="text-box">
+                  <span class="num">{{ driverData.all }}</span>
+                  <span class="total-num">
+                    <svg-icon :icon-class="'driver'" style="width:25px;height:25px;position:relative;top:5px;" />
+                    驾驶员总数
+                  </span>
+                </div>
+                <div class="chart-box-right">
+                  <pie-chart :name="'驾驶员'" :chart-data="driverPieData" />
+                </div>
               </div>
             </div>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top: 30px">
-        <el-col :md="8" :sm="24">
-          <div
-            class="box"
-            @click="gotoPage('/information-manage/company-base-information')"
-          >
-            <p>企业信息</p>
-            <div class="top-box">
-              <div class="bottom-chart-box-left bottom-box-position">
-                <bar-chart
-                  :x-data="['营运', '歇业']"
-                  :chart-data="[companyData.normal,companyData.pause]"
-                  :color-list="['#009966', '#FF7070']"
-                />
-              </div>
-              <div class="text-box bottom-box">
-                <span class="num">{{ companyData.all }}</span>
-                <span class="total-num">
-                  <svg-icon :icon-class="'company'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
-                  企业总数
-                </span>
-              </div>
-              <div class="bottom-chart-box-right">
-                <pie-chart :name="'企业'" :chart-data="companyPieData" />
+          </el-col>
+          <el-col :md="12" :sm="24">
+            <div class="box" @click="gotoPage('/information-manage/car-base-information')">
+              <p>车辆信息</p>
+              <div class="top-box">
+                <div class="chart-box-left">
+                  <bar-chart
+                    :class-name="'carColChart'"
+                    :x-data="['停运', '注销', '转出', '正常', '暂停']"
+                    :chart-data="[carData.stop,carData.logout,carData.out,carData.normal,carData.pause]"
+                  />
+                </div>
+                <div class="text-box">
+                  <span class="num">{{ carData.all }}</span>
+                  <span class="total-num">
+                    <svg-icon :icon-class="'car'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
+                    车辆总数
+                  </span>
+                </div>
+                <div class="chart-box-right">
+                  <pie-chart :name="'车辆'" :chart-data="carPieData" />
+                </div>
               </div>
             </div>
-          </div>
-        </el-col>
-        <el-col :md="8" :sm="24">
-          <div class="box" @click="gotoPage('/information-manage/access-platform-information')">
-            <p>接入平台信息</p>
-            <div class="top-box">
-              <div class="bottom-chart-box-left bottom-box-position">
-                <bar-chart
-                  :x-data="['正常', '歇业']"
-                  :chart-data="[platformData.normal,platformData.pause]"
-                  :color-list="['#009966', '#FF7070']"
-                />
-              </div>
-              <div class="text-box bottom-box">
-                <span class="num">{{ platformData.all }}</span>
-                <span class="total-num">
-                  <svg-icon :icon-class="'platform'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
-                  平台总数
-                </span>
-              </div>
-              <div class="bottom-chart-box-right">
-                <pie-chart :name="'接入平台'" :chart-data="platformPieData" />
-              </div>
-            </div>
-          </div>
-        </el-col>
-        <el-col :md="8" :sm="24">
-          <div class="box" @click="gotoPage('/information-manage/service-provider-information')">
-            <p>服务商信息</p>
-            <div class="top-box">
-              <div class="bottom-chart-box-left bottom-box-position">
-                <bar-chart
-                  :x-data="['正常', '注销']"
-                  :chart-data="[serviceData.normal,serviceData.pause]"
-                  :color-list="['#009966', '#FF7070']"
-                />
-              </div>
-              <div class="text-box bottom-box">
-                <span class="num">{{ serviceData.all }}</span>
-                <span class="total-num">
-                  <svg-icon :icon-class="'service'" style="width: 15px;height: 15px;" />
-                  服务商总数
-                </span>
-              </div>
-              <div class="bottom-chart-box-right">
-                <pie-chart :name="'服务商'" :chart-data="servicePieData" />
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px">
+          <el-col :md="8" :sm="24">
+            <div
+              class="box"
+              @click="gotoPage('/information-manage/company-base-information')"
+            >
+              <p>企业信息</p>
+              <div class="top-box">
+                <div class="bottom-chart-box-left bottom-box-position">
+                  <bar-chart
+                    :x-data="['营运', '歇业']"
+                    :chart-data="[companyData.normal,companyData.pause]"
+                    :color-list="['#009966', '#FF7070']"
+                  />
+                </div>
+                <div class="text-box bottom-box">
+                  <span class="num">{{ companyData.all }}</span>
+                  <span class="total-num">
+                    <svg-icon :icon-class="'company'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
+                    企业总数
+                  </span>
+                </div>
+                <div class="bottom-chart-box-right">
+                  <pie-chart :name="'企业'" :chart-data="companyPieData" />
+                </div>
               </div>
             </div>
+          </el-col>
+          <el-col :md="8" :sm="24">
+            <div class="box" @click="gotoPage('/information-manage/access-platform-information')">
+              <p>接入平台信息</p>
+              <div class="top-box">
+                <div class="bottom-chart-box-left bottom-box-position">
+                  <bar-chart
+                    :x-data="['正常', '歇业']"
+                    :chart-data="[platformData.normal,platformData.pause]"
+                    :color-list="['#009966', '#FF7070']"
+                  />
+                </div>
+                <div class="text-box bottom-box">
+                  <span class="num">{{ platformData.all }}</span>
+                  <span class="total-num">
+                    <svg-icon :icon-class="'platform'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
+                    平台总数
+                  </span>
+                </div>
+                <div class="bottom-chart-box-right">
+                  <pie-chart :name="'接入平台'" :chart-data="platformPieData" />
+                </div>
+              </div>
+            </div>
+          </el-col>
+          <el-col :md="8" :sm="24">
+            <div class="box" @click="gotoPage('/information-manage/service-provider-information')">
+              <p>服务商信息</p>
+              <div class="top-box">
+                <div class="bottom-chart-box-left bottom-box-position">
+                  <bar-chart
+                    :x-data="['正常', '注销']"
+                    :chart-data="[serviceData.normal,serviceData.pause]"
+                    :color-list="['#009966', '#FF7070']"
+                  />
+                </div>
+                <div class="text-box bottom-box">
+                  <span class="num">{{ serviceData.all }}</span>
+                  <span class="total-num">
+                    <svg-icon :icon-class="'service'" style="width: 15px;height: 15px;" />
+                    服务商总数
+                  </span>
+                </div>
+                <div class="bottom-chart-box-right">
+                  <pie-chart :name="'服务商'" :chart-data="servicePieData" />
+                </div>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+        <div class="closed-box">
+          <div class="closed-box-inner">
+            <el-row :gutter="20">
+              <el-col :md="8" :span="24">
+                <div class="content-box">
+                  <span>车辆概况</span>
+                </div>
+              </el-col>
+              <el-col :md="8" :span="24">
+                <div class="content-box">
+                  <span>实时在线车辆</span>
+                </div>
+              </el-col>
+              <el-col :md="8" :span="24">
+                <div class="content-box">
+                  <span>事件处理</span>
+                </div>
+              </el-col>
+            </el-row>
           </div>
-        </el-col>
-      </el-row>
-      <div class="closed-box">
-        <div class="closed-box-inner">
-          <el-row :gutter="20">
-            <el-col :md="8" :span="24">
-              <div class="content-box">
-                <span>车辆概况</span>
-              </div>
-            </el-col>
-            <el-col :md="8" :span="24">
-              <div class="content-box">
-                <span>实时在线车辆</span>
-              </div>
-            </el-col>
-            <el-col :md="8" :span="24">
-              <div class="content-box">
-                <span>事件处理</span>
-              </div>
-            </el-col>
-          </el-row>
+        </div>
+        <div class="expand-symbol" @click="showInfo = false">
+          <div class="top-arrow" />
         </div>
       </div>
-      <div class="expand-symbol" @click="showInfo = false">
-        <div class="top-arrow" />
-      </div>
-    </div>
-    <div v-show="!showInfo" class="monitor">
-      <el-row :gutter="20" class="left">
-        <el-col :span="8">
-          <div class="box-monitor">
-            <monitor-pie-chart
-              :chart-data="carChartData"
-              :showlegend="true"
-              :position="['50%','60%']"
-            />
+    </transition>
+    <transition name="fade1">
+      <div v-show="!showInfo" class="monitor">
+        <el-row :gutter="20" class="left">
+          <el-col :span="8">
+            <div class="box-monitor">
+              <monitor-pie-chart
+                :chart-data="carChartData"
+                :showlegend="true"
+                :position="['50%','60%']"
+              />
+            </div>
+            <div class="box-monitor">
+              <monitor-bar-chart :x-data="companyChartXData" :y-data="companyChartYData" :height="'120%'" />
+            </div>
+            <div class="box-monitor">
+              <span class="title">重点关注车辆列表</span>
+              <el-table
+                :data="carList"
+                fit
+                border
+                highlight-current-row
+                style="width:100%;margin-top: 20px;"
+                :header-cell-style="tableHeaderColor"
+                :row-style="tableRowStyle"
+                :cell-style="{padding:'0px'}"
+              >
+                <el-table-column prop="number" label="车牌号码" align="center" />
+                <el-table-column prop="color" label="车牌颜色" align="center" />
+                <el-table-column prop="kind" label="车辆类型" min-width="120" align="center" />
+                <el-table-column prop="driver" label="驾驶员" align="center" />
+                <el-table-column prop="mile" label="行驶里程" align="center" />
+                <el-table-column prop="level" label="安全系数" align="center" />
+              </el-table>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="center">
+              <span class="center-text">实时在线车辆：
+                <span class="center-num">2040</span> 辆</span>
+              <map-chart />
+              <dataset-bar-chart />
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="box-monitor">
+              <span class="title">事件处理</span>
+              <el-table
+                :data="eventList"
+                fit
+                border
+                highlight-current-row
+                style="width:100%;margin-top: 20px;"
+                :header-cell-style="tableHeaderColor"
+                :row-style="tableRowStyle"
+                :cell-style="{padding:'0px'}"
+              >
+                <el-table-column prop="number" label="车牌号码" align="center" />
+                <el-table-column prop="color" label="车牌颜色" align="center" />
+                <el-table-column prop="time" label="定位时间" align="center" />
+                <el-table-column prop="kind" label="事件类型" align="center" />
+                <el-table-column prop="level" label="严重程度" align="center" />
+              </el-table>
+            </div>
+            <div class="box-monitor">
+              <span class="title">考核分析</span>
+              <mutil-pie-chart />
+            </div>
+            <div class="box-monitor">
+              <span class="title">趋势分析</span>
+              <line-chart />
+            </div>
+          </el-col>
+        </el-row>
+        <div class="monitor-top-box">
+          <div class="closed-box-inner">
+            <el-row :gutter="20">
+              <el-col :md="8" :span="24">
+                <div class="content-box">
+                  <span>驾驶员信息</span>
+                </div>
+              </el-col>
+              <el-col :md="8" :span="24">
+                <div class="content-box">
+                  <span>车辆信息</span>
+                </div>
+              </el-col>
+              <el-col :md="8" :span="24">
+                <div class="content-box">
+                  <span>企业信息</span>
+                </div>
+              </el-col>
+            </el-row>
           </div>
-          <div class="box-monitor">
-            <monitor-bar-chart :x-data="companyChartXData" :y-data="companyChartYData" :height="'120%'" />
-          </div>
-          <div class="box-monitor">
-            <span class="title">重点关注车辆列表</span>
-            <el-table
-              :data="carList"
-              fit
-              border
-              highlight-current-row
-              style="width:100%;margin-top: 20px;"
-              :header-cell-style="tableHeaderColor"
-              :row-style="tableRowStyle"
-            >
-              <el-table-column prop="number" label="车牌号码" align="center" />
-              <el-table-column prop="number" label="车牌颜色" align="center" />
-              <el-table-column prop="number" label="车辆类型" align="center" />
-              <el-table-column prop="number" label="驾驶员" align="center" />
-              <el-table-column prop="number" label="行驶里程" align="center" />
-              <el-table-column prop="number" label="安全系数" align="center" />
-            </el-table>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="center" />
-        </el-col>
-        <el-col :span="8">
-          <div class="box-monitor">
-            <span class="title">事件处理</span>
-            <el-table
-              :data="carList"
-              fit
-              border
-              highlight-current-row
-              style="width:100%;margin-top: 20px;"
-              :header-cell-style="tableHeaderColor"
-              :row-style="tableRowStyle"
-            >
-              <el-table-column prop="number" label="车牌号码" align="center" />
-              <el-table-column prop="number" label="车牌颜色" align="center" />
-              <el-table-column prop="number" label="定位时间" align="center" />
-              <el-table-column prop="number" label="事件类型" align="center" />
-              <el-table-column prop="number" label="严重程度" align="center" />
-            </el-table>
-          </div>
-          <div class="box-monitor">
-            <span class="title">考核分析</span>
-            <mutil-pie-chart />
-          </div>
-          <div class="box-monitor">
-            <span class="title">趋势分析</span>
-            <line-chart />
-          </div>
-        </el-col>
-      </el-row>
-      <div class="monitor-top-box">
-        <div class="closed-box-inner">
-          <el-row :gutter="20">
-            <el-col :md="8" :span="24">
-              <div class="content-box">
-                <span>驾驶员信息</span>
-              </div>
-            </el-col>
-            <el-col :md="8" :span="24">
-              <div class="content-box">
-                <span>车辆信息</span>
-              </div>
-            </el-col>
-            <el-col :md="8" :span="24">
-              <div class="content-box">
-                <span>企业信息</span>
-              </div>
-            </el-col>
-          </el-row>
+        </div>
+        <div class="close-symbol" @click="showInfo = true">
+          <div class="bottom-arrow" />
         </div>
       </div>
-      <div class="close-symbol" @click="showInfo = true">
-        <div class="bottom-arrow" />
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -264,6 +275,8 @@ import MonitorPieChart from '@/components/Charts/PieChart.vue'
 import MonitorBarChart from '@/components/Charts/HorizontalBarChart.vue'
 import MutilPieChart from '@/components/Charts/MutilPieChart.vue'
 import LineChart from '@/components/Charts/LineChart.vue'
+import MapChart from '@/components/Charts/MapChart.vue'
+import DatasetBarChart from '@/components/Charts/DatasetBarChart.vue'
 
 export default {
   name: 'InformationHome',
@@ -273,7 +286,9 @@ export default {
     MonitorPieChart,
     MonitorBarChart,
     MutilPieChart,
-    LineChart
+    LineChart,
+    MapChart,
+    DatasetBarChart
   },
   data() {
     return {
@@ -321,15 +336,98 @@ export default {
       carChartData: [],
       companyChartXData: [],
       companyChartYData: [],
+      eventList: [
+        {
+          number: '川Q72782',
+          color: '黄色',
+          time: '17:05:06',
+          kind: '危险驾驶',
+          level: '严重'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          time: '17:05:06',
+          kind: '危险驾驶',
+          level: '严重'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          time: '17:05:06',
+          kind: '危险驾驶',
+          level: '严重'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          time: '17:05:06',
+          kind: '危险驾驶',
+          level: '严重'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          time: '17:05:06',
+          kind: '危险驾驶',
+          level: '严重'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          time: '17:05:06',
+          kind: '危险驾驶',
+          level: '严重'
+        }
+      ],
       carList: [
         {
-          number: 1
+          number: '川Q72782',
+          color: '黄色',
+          level: '3',
+          kind: '普通货运车辆',
+          mile: '1548',
+          driver: '张三'
         },
         {
-          number: 2
+          number: '川Q72782',
+          color: '黄色',
+          level: '3',
+          kind: '普通货运车辆',
+          mile: '1548',
+          driver: '张三'
         },
         {
-          number: 3
+          number: '川Q72782',
+          color: '黄色',
+          level: '3',
+          kind: '普通货运车辆',
+          mile: '1548',
+          driver: '张三'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          level: '3',
+          kind: '普通货运车辆',
+          mile: '1548',
+          driver: '张三'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          level: '3',
+          kind: '普通货运车辆',
+          mile: '1548',
+          driver: '张三'
+        },
+        {
+          number: '川Q72782',
+          color: '黄色',
+          level: '3',
+          kind: '普通货运车辆',
+          mile: '1548',
+          driver: '张三'
         }
       ]
     }
@@ -350,7 +448,7 @@ export default {
       }
     },
     tableRowStyle() {
-      return { 'background-color': '#122230', 'color': '#fff' }
+      return { 'background-color': '#122230', 'color': '#fff', 'height': 0 }
     },
     getEnterpriseRanking() {
       enterpriseRanking({
@@ -359,16 +457,10 @@ export default {
       })
         .then(res => {
           const { data: { list, total }} = res
-          if (total > 7) {
-            for (let i = 6; i >= 0; i--) {
-              this.companyChartXData.push(list[i].unitName)
-              this.companyChartYData.push(list[i].overScore)
-            }
-          } else {
-            for (let i = total - 1; i >= 0; i--) {
-              this.companyChartXData.push(list[i].unitName)
-              this.companyChartYData.push(list[i].overScore)
-            }
+          const startIndex = total > 7 ? 6 : total - 1
+          for (let i = startIndex; i >= 0; i--) {
+            this.companyChartXData.push(list[i].unitName)
+            this.companyChartYData.push(list[i].overScore)
           }
         })
     },
@@ -699,6 +791,44 @@ p {
   width: 100%;
   height: calc(100vh - 110px - 90px);
   background-color: #151D2C;
+  text-align: center;
+}
+
+.center-text {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 700;
+  display: inline-block;
+  margin-top: 20px;
+  letter-spacing: 1px;
+
+  .center-num {
+    color: #2EB5EA;
+    font-size: 30px;
+  }
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 2s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active, 2.1.8 版本以下 */ {
+    opacity: 0
+}
+
+.fade1-enter-active, .fade-leave-active {
+    transition: opacity 2s
+}
+.fade1-enter, .fade-leave-to /* .fade-leave-active, 2.1.8 版本以下 */ {
+    opacity: 0
+}
+
+::v-deep .el-table tbody tr:hover>td {
+     background: #122230 !important
+  }
+
+::v-deep .el-table__body tr.current-row > td {
+  background-color: #122230 !important;
+  color: #fff;
 }
 
 @media screen and (max-width: 1450px) {

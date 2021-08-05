@@ -109,7 +109,7 @@ export default {
             data: this.yData,
             itemStyle: {
               normal: {
-                color: '#EE6666'
+                color: '#CC6666'
               }
             }
           }

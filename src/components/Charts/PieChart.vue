@@ -65,6 +65,7 @@ export default {
       this.setOptions(this.chartData)
     },
     setOptions(data) {
+      const colorList = ['#72E1DE', '#17808F', '#FF9A90', '#FCD967', '#C7E2F5', '#48B078', '#2FC4FE', '#EC4472', '#19F1FF']
       this.chart.setOption({
         tooltip: {
           trigger: 'item'
@@ -106,7 +107,14 @@ export default {
             labelLine: {
               show: false
             },
-            data
+            data,
+            itemStyle: {
+              normal: {
+                color: (params) => {
+                  return colorList[params.dataIndex]
+                }
+              }
+            }
           }
         ]
       })
