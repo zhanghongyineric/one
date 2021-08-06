@@ -18,3 +18,12 @@ export function vehicleProportion(data) {
     data
   })
 }
+
+// 重点关注车辆列表
+export function keyVehicle(data) {
+  return request({
+    url: '/keyVehicle',
+    method: 'POST',
+    data
+  })
+}

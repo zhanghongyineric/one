@@ -181,12 +181,12 @@
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
               >
-                <el-table-column prop="number" label="车牌号码" align="center" show-overflow-tooltip />
-                <el-table-column prop="color" label="车牌颜色" align="center" show-overflow-tooltip />
-                <el-table-column prop="kind" label="车辆类型" show-overflow-tooltip align="center" />
-                <el-table-column prop="driver" label="驾驶员" align="center" show-overflow-tooltip />
-                <el-table-column prop="mile" label="行驶里程" align="center" show-overflow-tooltip />
-                <el-table-column prop="level" label="安全系数" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip />
+                <el-table-column prop="vehicleType" label="车辆类型" show-overflow-tooltip align="center" />
+                <!-- <el-table-column prop="driver" label="驾驶员" align="center" show-overflow-tooltip /> -->
+                <!-- <el-table-column prop="mile" label="行驶里程" align="center" show-overflow-tooltip /> -->
+                <el-table-column prop="vehicleSumFactor" label="安全系数" align="center" show-overflow-tooltip />
               </el-table>
             </div>
           </el-col>
@@ -277,7 +277,8 @@ import {
 } from '@/api/information-manage/home'
 import {
   enterpriseRanking,
-  vehicleProportion
+  vehicleProportion,
+  keyVehicle
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
@@ -390,56 +391,7 @@ export default {
           level: '严重'
         }
       ],
-      carList: [
-        {
-          number: '川Q72782',
-          color: '黄色',
-          level: '3',
-          kind: '普通货运车辆',
-          mile: '1548',
-          driver: '张三'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          level: '3',
-          kind: '普通货运车辆',
-          mile: '1548',
-          driver: '张三'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          level: '3',
-          kind: '普通货运车辆',
-          mile: '1548',
-          driver: '张三'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          level: '3',
-          kind: '普通货运车辆',
-          mile: '1548',
-          driver: '张三'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          level: '3',
-          kind: '普通货运车辆',
-          mile: '1548',
-          driver: '张三'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          level: '3',
-          kind: '普通货运车辆',
-          mile: '1548',
-          driver: '张三'
-        }
-      ]
+      carList: []
     }
   },
   created() {
@@ -450,8 +402,18 @@ export default {
     this.getDriverNum()
     this.getEnterpriseRanking()
     this.getVehicleProportion()
+    this.getKeyVehicle()
   },
   methods: {
+    getKeyVehicle() {
+      keyVehicle({
+        pageNum: 1,
+        pageSize: 10
+      }).then(res => {
+        const { data } = res
+        data.length > 6 ? this.carList = data.slice(0, 6) : this.carList = data
+      })
+    },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) {
         return 'background-color: #202B3A;color: #fff;font-weight: 500;'
@@ -715,7 +677,7 @@ p {
     text-align: center;
     line-height: 70px;
 
-     .title-text {
+      .title-text {
         color: #fff;
         font-size: 18px;
         font-weight: 700;
@@ -764,7 +726,7 @@ p {
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: #0E1521 transparent  transparent  transparent ;
+  border-color: #0E1521 transparent  transparent  transparent;
   position: absolute;
   top: 100px;
   left: 48%;
@@ -832,14 +794,14 @@ p {
 .fade-enter-active, .fade-leave-active {
     transition: opacity 2s
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active, 2.1.8 版本以下 */ {
+.fade-enter, .fade-leave-to {
     opacity: 0.5
 }
 
 .fade1-enter-active, .fade-leave-active {
     transition: opacity 2s
 }
-.fade1-enter, .fade-leave-to /* .fade-leave-active, 2.1.8 版本以下 */ {
+.fade1-enter, .fade-leave-to {
     opacity: 0.5
 }
 
