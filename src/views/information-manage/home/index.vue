@@ -130,8 +130,8 @@
           </el-col>
         </el-row>
         <div class="closed-box">
-          <!-- <div class="closed-box-inner">
-            <el-row :gutter="20">
+          <div class="closed-box-inner">
+            <!-- <el-row :gutter="20">
               <el-col :md="8" :span="24">
                 <div class="content-box">
                   <span>车辆概况</span>
@@ -147,8 +147,8 @@
                   <span>事件处理</span>
                 </div>
               </el-col>
-            </el-row>
-          </div> -->
+            </el-row> -->
+          </div>
         </div>
         <div class="expand-symbol" @click="showInfo = false">
           <div class="top-arrow" />
@@ -181,9 +181,9 @@
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
               >
-                <el-table-column prop="number" label="车牌号码" min-width="120" align="center" show-overflow-tooltip />
+                <el-table-column prop="number" label="车牌号码" align="center" show-overflow-tooltip />
                 <el-table-column prop="color" label="车牌颜色" align="center" show-overflow-tooltip />
-                <el-table-column prop="kind" label="车辆类型" min-width="120" show-overflow-tooltip align="center" />
+                <el-table-column prop="kind" label="车辆类型" show-overflow-tooltip align="center" />
                 <el-table-column prop="driver" label="驾驶员" align="center" show-overflow-tooltip />
                 <el-table-column prop="mile" label="行驶里程" align="center" show-overflow-tooltip />
                 <el-table-column prop="level" label="安全系数" align="center" show-overflow-tooltip />
@@ -680,7 +680,7 @@ p {
 
 .closed-box {
   width: 99%;
-  // height: 100px;
+  height: 50px;
   position: absolute;
   bottom: 0;
   right: 0;
@@ -706,7 +706,7 @@ p {
   width: 100%;
   height: 100%;
   padding: 10px;
-  background-color: #151D2C;
+  background-color: #0E1521;
 
   .content-box {
     background-color: #0E1521;
@@ -742,7 +742,7 @@ p {
   border-style: solid;
   border-color: transparent transparent #0E1521 transparent;
   position: absolute;
-  bottom: 20px;
+  bottom: 50px;
   left: 48%;
   cursor: pointer;
 }
