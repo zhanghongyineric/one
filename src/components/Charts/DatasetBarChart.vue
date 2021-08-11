@@ -16,6 +16,10 @@ export default {
     height: {
       type: String,
       default: '29%'
+    },
+    chartData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -57,17 +61,7 @@ export default {
         },
         tooltip: {},
         dataset: {
-          source: [
-            ['city', '当前在线', '累计在线'],
-            ['成都市', 2000, 3000],
-            ['绵阳市', 900, 1500],
-            ['遂宁市', 1523, 1888],
-            ['巴中市', 999, 1999],
-            ['宜宾市', 2000, 3000],
-            ['达州市', 900, 1500],
-            ['德阳市', 1523, 1888],
-            ['自贡市', 999, 1999]
-          ]
+          source: this.chartData
         },
         xAxis: {
           type: 'category',

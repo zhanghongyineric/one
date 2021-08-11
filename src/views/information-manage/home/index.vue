@@ -193,9 +193,9 @@
           <el-col :span="8">
             <div class="center">
               <span class="center-text">实时在线车辆：
-                <span class="center-num">2040</span> 辆</span>
-              <map-chart />
-              <dataset-bar-chart />
+                <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
+              <map-chart :map-data="mapData" />
+              <dataset-bar-chart :chart-data="mapChartData" />
             </div>
           </el-col>
           <el-col :span="8">
@@ -219,8 +219,10 @@
               </el-table>
             </div>
             <div class="box-monitor">
-              <span class="title">考核分析</span>
-              <mutil-pie-chart />
+              <span class="title" style="display: block;">考核分析</span>
+              <mutil-pie-chart :chart-data="facilitatorChartData" :title="'服务商'" />
+              <mutil-pie-chart :chart-data="mechanismChartData" :title="'运管机构'" />
+              <mutil-pie-chart :chart-data="unitAssessChartData" :title="'运输企业'" />
             </div>
             <div class="box-monitor">
               <span class="title">趋势分析</span>
@@ -278,7 +280,11 @@ import {
 import {
   enterpriseRanking,
   vehicleProportion,
-  keyVehicle
+  keyVehicle,
+  facilitatorAssessmentAnalysis,
+  mechanismAssessmentAnalysis,
+  unitAssessmentAnalysis,
+  onlineVehicle
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
@@ -288,6 +294,8 @@ import MutilPieChart from '@/components/Charts/MutilPieChart.vue'
 import LineChart from '@/components/Charts/LineChart.vue'
 import MapChart from '@/components/Charts/MapChart.vue'
 import DatasetBarChart from '@/components/Charts/DatasetBarChart.vue'
+import getAreaText from '@/utils/AreaCodeToText'
+import { CodeToText } from 'element-china-area-data'
 
 export default {
   name: 'InformationHome',
@@ -391,7 +399,15 @@ export default {
           level: '严重'
         }
       ],
-      carList: []
+      carList: [],
+      totalOnlineCars: 0,
+      mapData: [],
+      mapChartData: [
+        ['city', '当前在线', '累计在线']
+      ],
+      facilitatorChartData: [],
+      mechanismChartData: [],
+      unitAssessChartData: []
     }
   },
   created() {
@@ -403,8 +419,95 @@ export default {
     this.getEnterpriseRanking()
     this.getVehicleProportion()
     this.getKeyVehicle()
+    this.getFacilitator()
+    this.getMechanism()
+    this.getUnit()
+    this.getOnlineVehicle()
   },
   methods: {
+    getFacilitator() {
+      facilitatorAssessmentAnalysis()
+        .then((res) => {
+          const { data } = res
+          this.facilitatorChartData = [
+            {
+              name: '车辆上线率',
+              value: data.vehicleUplineRate * 100
+            },
+            {
+              name: '数据合格率',
+              value: data.dynamicDataQualifiedRate * 100
+            }
+          ]
+        })
+    },
+    getMechanism() {
+      mechanismAssessmentAnalysis()
+        .then(res => {
+          const { data } = res
+          this.mechanismChartData = [
+            {
+              name: '车辆上线率',
+              value: data.vehicleUplineRate * 100
+            },
+            {
+              name: '车辆入网率',
+              value: data.vehicleAccessRate * 100
+            },
+            {
+              name: '数据合格率',
+              value: data.dataQualifiedRate * 100
+            }
+          ]
+        })
+    },
+    getUnit() {
+      unitAssessmentAnalysis()
+        .then(res => {
+          const { data } = res
+          this.unitAssessChartData = [
+            {
+              name: '车辆上线率',
+              value: data.vehicleUplineRate * 100
+            },
+            {
+              name: '车辆入网率',
+              value: data.vehicleAccessRate * 100
+            },
+            {
+              name: '数据合格率',
+              value: data.dataQualifiedRate * 100
+            }
+          ]
+        })
+    },
+    getOnlineVehicle() {
+      onlineVehicle()
+        .then(res => {
+          const { data: { realTimetotal, onlineVehicles }} = res
+          this.totalOnlineCars = realTimetotal
+          onlineVehicles.forEach(item => {
+            const city = CodeToText[getAreaText(item.zoneId)[1]]
+            const { realTimeCount, onlineCount } = item
+            this.mapData.push({
+              value: realTimeCount,
+              name: city
+            })
+            this.mapChartData.push([city, realTimeCount, onlineCount])
+          })
+          // 同一个市可能有很多数据，应将同一个市的所有数据相加
+          if (this.mapChartData.length > 2) {
+            for (let i = 1; i < this.mapChartData.length; i++) {
+              for (let j = i + 1; j < this.mapChartData.length; i++) {
+                if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
+                  this.mapChartData[i][1] += this.mapChartData[j][1]
+                  this.mapChartData[i][2] += this.mapChartData[j][2]
+                }
+              }
+            }
+          }
+        })
+    },
     getKeyVehicle() {
       keyVehicle({
         pageNum: 1,

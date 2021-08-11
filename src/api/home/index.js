@@ -27,3 +27,39 @@ export function keyVehicle(data) {
     data
   })
 }
+
+// 服务商考核分析
+export function facilitatorAssessmentAnalysis(data) {
+  return request({
+    url: '/facilitatorAssessmentAnalysis',
+    method: 'POST',
+    data
+  })
+}
+
+// 机构考核分析
+export function mechanismAssessmentAnalysis(data) {
+  return request({
+    url: '/mechanismAssessmentAnalysis',
+    method: 'POST',
+    data
+  })
+}
+
+// 企业考核分析
+export function unitAssessmentAnalysis(data) {
+  return request({
+    url: '/unitAssessmentAnalysis',
+    method: 'POST',
+    data
+  })
+}
+
+// 地图展示车辆
+export function onlineVehicle(data) {
+  return request({
+    url: '/onlineVehicle',
+    method: 'POST',
+    data
+  })
+}

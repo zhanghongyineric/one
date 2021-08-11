@@ -20,6 +20,10 @@ export default {
     height: {
       type: String,
       default: '70%'
+    },
+    mapData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -28,7 +32,7 @@ export default {
     }
   },
   watch: {
-    chartData: {
+    mapData: {
       deep: true,
       handler(val) {
         this.setOptions(val)
@@ -90,10 +94,7 @@ export default {
               areaColor: '#19F1FF'
             }
           },
-          data: [
-            { 'name': '成都市', 'value': 200 },
-            { 'name': '巴中市', 'value': 100 }
-          ]
+          data: this.mapData
         }],
         tooltip: {
           trigger: 'item',

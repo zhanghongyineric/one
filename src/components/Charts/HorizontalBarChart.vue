@@ -102,6 +102,12 @@ export default {
           axisLabel: {
             textStyle: {
               color: '#ccc'
+            },
+            formatter: function(val) {
+              if (val.length > 10) {
+                return val.substring(0, 10) + '...'
+              }
+              return val
             }
           }
         },

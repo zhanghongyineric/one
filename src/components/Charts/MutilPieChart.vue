@@ -1,6 +1,6 @@
 <!--主要用于监测首页的考核分析部分-->
 <template>
-  <div :style="{height,width}" />
+  <div :style="{height,width}" class="chart" />
 </template>
 <script>
 import * as echarts from 'echarts'
@@ -11,16 +11,32 @@ export default {
   props: {
     width: {
       type: String,
-      default: '100%'
+      default: '33%'
     },
     height: {
       type: String,
-      default: '90%'
+      default: '80%'
+    },
+    chartData: {
+      type: Array,
+      default: () => []
+    },
+    title: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       chart: null
+    }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val)
+      }
     }
   },
   mounted() {
@@ -42,30 +58,19 @@ export default {
     },
     setOptions() {
       const color = ['#6d9de0', '#49d896', '#f5d03a', '#f5853a', '#f5503a']
-      const chartData = [{
-        name: '平台连通率',
-        value: 60
-      },
-      {
-        name: '车辆上线率',
-        value: 50
-      },
-      {
-        name: '车辆入网率',
-        value: 50
-      }
-      ]
       const pieSeries = []
+      const lineYAxis = []
 
-      chartData.forEach((v, i) => {
+      this.chartData.forEach((v, i) => {
         pieSeries.push({
+          name: '设备',
           type: 'pie',
           clockWise: false,
-          hoverAnimation: true,
-          radius: [75 - i * 15 + '%', 68 - i * 15 + '%'],
-          center: ['40%', '50%'],
+          hoverAnimation: false,
+          radius: [65 - i * 15 + '%', 57 - i * 15 + '%'],
+          center: ['50%', '50%'],
           label: {
-            show: true
+            show: false
           },
           data: [{
             value: v.value,
@@ -83,62 +88,86 @@ export default {
           type: 'pie',
           silent: true,
           z: 1,
-          clockWise: false, // 顺时加载
-          hoverAnimation: false, // 鼠标移入变大
-          radius: [75 - i * 15 + '%', 68 - i * 15 + '%'],
-          center: ['40%', '50%'],
+          clockWise: false,
+          hoverAnimation: false,
+          radius: [65 - i * 15 + '%', 57 - i * 15 + '%'],
+          center: ['50%', '50%'],
           label: {
             show: false
           },
           data: [{
-            value: 100,
+            value: 7.5,
             itemStyle: {
-              color: '#e8f4ff' // 圆环颜色
+              color: 'rgba(0, 0, 0, 0)'
             }
-          },
-          {
-            value: 0,
+          }, {
+            value: 2.5,
             name: '',
             itemStyle: {
-              color: 'red'
+              color: 'rgba(0,0,0,0)'
+            }
+          }]
+        })
+        v.percent = v.value.toFixed(0) + '%'
+        lineYAxis.push({
+          value: i,
+          textStyle: {
+            rich: {
+              circle: {
+                color: color[i],
+                padding: [0, 5]
+              }
             }
           }
-          ]
         })
-        v.percent = v.value + '%'
       })
 
       const option = {
         backgroundColor: '#151D2C',
         color: color,
-        legend: {
-          itemWidth: 14,
-          itemHeight: 8,
-          icon: 'circle',
-          left: '80%',
-          top: '20%',
-          formatter: (name) => {
-            return (
-              '{name|' + name + '} {percent|' + chartData.find((item) => {
-                return item.name === name
-              }).percent + '}'
-            )
-          },
-          textStyle: {
-            color: '#beceff', // 元字颜色
-            fontSize: 14,
-            rich: {
-              name: {
-                color: '#a6acba',
-                fontSize: 11
-              },
-              percent: {
-                color: '#fff',
-                fontSize: 11
-              }
-            }
+        title: {
+          subtext: this.title,
+          x: 'center',
+          y: -10,
+          subtextStyle: {
+            color: '#ccc',
+            fontSize: 14
           }
         },
+        grid: {
+          top: '17%',
+          bottom: '61%',
+          left: '48%',
+          containLabel: false
+        },
+        yAxis: [{
+          zlevel: 1000,
+          type: 'category',
+          inverse: true,
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            formatter: (params) => {
+              const item = this.chartData[params]
+              return item.name + ' ' + item.percent
+            },
+            interval: 0,
+            inside: true,
+            textStyle: {
+              color: '#fff',
+              fontSize: 11
+            },
+            show: true
+          },
+          data: lineYAxis
+        }],
+        xAxis: [{
+          show: false
+        }],
         series: pieSeries
       }
       this.chart.setOption(option)
@@ -146,3 +175,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+.chart {
+  display: inline-block;
+  margin-top: 15px;
+}
+</style>
