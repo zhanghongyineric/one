@@ -43,7 +43,7 @@
       >
         <el-table-column label="角色名" prop="roleName" />
         <el-table-column label="角色标识" prop="roleCode" />
-        <el-table-column label="角色描述" prop="roleDesc" show-overflow-tooltip/>
+        <el-table-column label="角色描述" prop="roleDesc" show-overflow-tooltip />
         <el-table-column v-slot="{row}" label="父角色" prop="parentRoleName">
           {{ row.parentRoleName || '-' }}
         </el-table-column>
@@ -123,6 +123,7 @@
               :disabled="dialogStatus==='update' || createFormData.parentRoleCode&&createFormData.parentSystem !=='9'"
               placeholder="请选择菜单所属系统"
               style="width: 100%;"
+              @change="systemChange"
             >
               <el-option
                 v-for="item in optionGroup.systemList"
@@ -133,7 +134,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="菜单权限">
+          <el-form-item label="菜单权限" prop="menuIds">
             <el-tree
               ref="menu-tree"
               :data="optionGroup.menuOptions"
@@ -216,9 +217,6 @@ export default {
         roleCode: [
           { required: true, message: '角色标识不能为空', trigger: 'blur' }
         ],
-        menuIds: [
-          { required: true, message: '菜单不能为空', trigger: 'blur' }
-        ],
         system: [
           { required: true, message: '所属系统不能为空', trigger: 'blur' }
         ]
@@ -241,31 +239,12 @@ export default {
   },
 
   methods: {
-    // 初始化菜单树
-    initMenuOptions(id) {
-      getMenuList({ roleId: id }).then(res => {
-        // 格式化数据
-        const formatMenu = (menu) => {
-          return menu.map(item => {
-            const temp_item = {
-              label: item.title,
-              value: item.id
-            }
 
-            if (item.children && item.children.length) {
-              item.children = formatMenu(item.children)
-            }
-            if (item.children && item.children.length) {
-              temp_item.children = item.children
-            }
-
-            return temp_item
-          })
-        }
-        // 格式化菜单
-        this.optionGroup.menuOptions = formatMenu(res.data)
-      })
+    // 选择系统
+    systemChange(system) {
+      this.getMenuList({ system: system === '9' ? '' : system })
     },
+    // 获取角色
     getRoleOptions() {
       getRoleList({ onlyParent: 1 })
         .then(res => {
@@ -316,7 +295,7 @@ export default {
     handleCreate(row) {
       this.resetCreateFormData()
       this.getRoleOptions()
-      this.initMenuOptions(row && row.id)
+      this.getMenuList({ roleId: row && row.id })
       this.createFormData.parentRoleCode = row && row.roleCode
       this.createFormData.system = row && row.system
       this.createFormData.parentSystem = row && row.system
@@ -346,10 +325,18 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.buttonLoading = true
-
           // 获取选中和半选中的菜单id
           const menuIds = this.$refs['menu-tree'].getCheckedKeys().concat(this.$refs['menu-tree'].getHalfCheckedKeys()).join(',')
+          if (!menuIds.length) {
+            this.$message({
+              type: 'warning',
+              message: '请至少选择一个菜单'
+            })
+            return
+          }
+
+          this.buttonLoading = true
+
           // 新增角色
           addRole({ ...this.createFormData, menuIds }).then(() => {
             this.dialogFormVisible = false
@@ -371,16 +358,7 @@ export default {
     // 点击编辑
     handleUpdate(row) {
       this.getRoleOptions()
-      this.selectFather(row.parentId)
-      getMenuByRole(row.id).then(res => {
-        const checked = res.data
-        checked.forEach((v) => {
-          this.$nextTick(() => {
-            this.$refs['menu-tree'].setChecked(v, true, false)
-          })
-        })
-        this.$refs['dataForm'].clearValidate()
-      })
+      this.createFormData = { ...row } // copy obj
       // 如果弹窗已经渲染好了，直接初始化表单
       if (this.$refs['menu-tree']) {
         this.resetForm()
@@ -396,9 +374,15 @@ export default {
           this.resetForm()
         })
       }
+
+      this.getMenuList({ system: row.system === '9' ? '' : row.system, roleId: row.parentId }).then(_ =>
+        this.setChecked(row)
+      )
+    },
+    // 设置树选中项
+    setChecked(row) {
       // 获取当前角色的选中菜单
       getMenuByRole(row.id).then(res => {
-        this.createFormData = { ...row } // copy obj
         const checked = res.data
         checked.forEach((v) => {
           this.$nextTick(() => {
@@ -409,15 +393,18 @@ export default {
       })
     },
     // 选择父角色
-    selectFather(id, system) {
-      if (system !== '9') {
-        onlineOption.system.list.forEach(({ value, label }) => {
-          if (system === value) {
-            this.optionGroup.systemList = [{ label, value }]
-          }
-        })
-      }
-      getMenuList({ roleId: id }).then(res => {
+    // selectFather(id, system) {
+    //   if (system !== '9') {
+    //     onlineOption.system.list.forEach(({ value, label }) => {
+    //       if (system === value) {
+    //         this.optionGroup.systemList = [{ label, value }]
+    //       }
+    //     })
+    //   }
+    //   this.getMenuList(id)
+    // },
+    getMenuList(params) {
+      return getMenuList(params).then(res => {
         const formatMenu = (menu) => {
           return menu.map(item => {
             const temp_item = {
@@ -443,10 +430,18 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.buttonLoading = true
-
           // 获取选中和半选中的菜单id
           const menuIds = this.$refs['menu-tree'].getCheckedKeys().concat(this.$refs['menu-tree'].getHalfCheckedKeys()).join(',')
+
+          if (!menuIds.length) {
+            this.$message({
+              type: 'warning',
+              message: '请至少选择一个菜单'
+            })
+            return
+          }
+
+          this.buttonLoading = true
 
           editRole({ ...this.createFormData, menuIds }).then(() => {
             this.dialogFormVisible = false
