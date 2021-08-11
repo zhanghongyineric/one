@@ -1,4 +1,4 @@
-<!--主要用于监测首页的横向柱状图-->
+<!-- 主要用于监测首页中间的在线统计柱状图 -->
 <template>
   <div :style="{height,width}" />
 </template>
@@ -15,24 +15,11 @@ export default {
     },
     height: {
       type: String,
-      default: '100%'
+      default: '29%'
     },
-    yData: {
+    chartData: {
       type: Array,
-      required: true
-    },
-    xData: {
-      type: Array,
-      require: true,
       default: () => []
-    },
-    showlegend: {
-      type: Boolean,
-      default: false
-    },
-    position: {
-      type: Array,
-      default: () => ['50%', '50%']
     }
   },
   data() {
@@ -41,16 +28,10 @@ export default {
     }
   },
   watch: {
-    xData: {
+    chartData: {
       deep: true,
-      handler() {
-        this.setOptions()
-      }
-    },
-    yData: {
-      deep: true,
-      handler() {
-        this.setOptions()
+      handler(val) {
+        this.setOptions(val)
       }
     }
   },
@@ -71,24 +52,19 @@ export default {
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
     },
-    setOptions() {
+    setOptions(data) {
       this.chart.setOption({
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          }
-        },
-        title: {
-          text: '安全隐患企业排行',
-          left: 'left',
+        legend: {
           textStyle: {
             color: '#fff'
           }
         },
+        tooltip: {},
+        dataset: {
+          source: this.chartData
+        },
         xAxis: {
-          type: 'value',
-          boundaryGap: [0, 0.01],
+          type: 'category',
           axisLabel: {
             show: true,
             textStyle: {
@@ -97,32 +73,24 @@ export default {
           }
         },
         yAxis: {
-          type: 'category',
-          data: this.xData,
           axisLabel: {
+            show: true,
             textStyle: {
               color: '#ccc'
-            },
-            formatter: function(val) {
-              if (val.length > 10) {
-                return val.substring(0, 10) + '...'
-              }
-              return val
             }
           }
         },
-        grid: {
-          containLabel: true
-        },
         series: [
           {
-            name: '风险程度',
             type: 'bar',
-            data: this.yData,
             itemStyle: {
-              normal: {
-                color: '#FCD967'
-              }
+              color: '#FCD967'
+            }
+          },
+          {
+            type: 'bar',
+            itemStyle: {
+              color: '#2FC4FE'
             }
           }
         ]

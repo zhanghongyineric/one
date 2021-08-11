@@ -4,6 +4,7 @@
 <script>
 import * as echarts from 'echarts'
 import chartResize from './chart-resize'
+import sichuanJson from '@/utils/sichuan.json'
 
 export default {
   mixins: [chartResize],
@@ -14,11 +15,15 @@ export default {
     },
     width: {
       type: String,
-      default: '100%'
+      default: '95%'
     },
     height: {
       type: String,
-      default: '100%'
+      default: '70%'
+    },
+    mapData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -27,7 +32,7 @@ export default {
     }
   },
   watch: {
-    chartData: {
+    mapData: {
       deep: true,
       handler(val) {
         this.setOptions(val)
@@ -48,68 +53,56 @@ export default {
   },
   methods: {
     initChart() {
+      echarts.registerMap('四川', sichuanJson)
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
     },
     setOptions() {
-      console.log(this.chart, 'chart')
-      this.chart.setOptions({
-        title: {
-          text: '在线车辆分布'
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: function(val) {
-            // return val.data.name + '<br>人数: ' + val.data.value + '人'
-          }
-        },
-        series: [
-          {
-            type: 'map',
-            map: '四川',
-            itemStyle: {
-              normal: {
-                areaColor: '#323c48',
-                borderColor: '#111'
-              },
-              emphasis: {
-                areaColor: '#2a333d',
-                label: {
-                  show: true,
-                  color: 'white'
-                }
+      this.chart.setOption({
+        series: [{
+          type: 'map',
+          mapType: '四川',
+          label: {
+            show: true,
+            normal: {
+              textStyle: {
+                color: '#fff'
               }
             },
-            roam: true,
-            top: 70,
-            label: {
-              show: true
+            emphasis: {
+              textStyle: {
+                color: '#24292e'
+              }
+            }
+          },
+          itemStyle: {
+            normal: {
+              label: {
+                show: true// 默认是否显示省份名称
+              },
+              borderWidth: 1,
+              borderColor: '#17CCDA',
+              areaColor: '#17808F'
             },
-            data: [
-              { name: '阿坝藏族羌族自治州', value: 0 },
-              { name: '巴中市', value: 0 },
-              { name: '成都市', value: 0 },
-              { name: '达州市', value: 0 },
-              { name: '德阳市', value: 0 },
-              { name: '甘孜藏族自治州', value: 0 },
-              { name: '广安市', value: 0 },
-              { name: '广元市', value: 0 },
-              { name: '乐山市', value: 0 },
-              { name: '凉山彝族自治州', value: 0 },
-              { name: '泸州市', value: 0 },
-              { name: '眉山市', value: 0 },
-              { name: '绵阳市', value: 0 },
-              { name: '内江市', value: 0 },
-              { name: '南充市', value: 0 },
-              { name: '攀枝花市', value: 0 },
-              { name: '遂宁市', value: 0 },
-              { name: '雅安市', value: 0 },
-              { name: '宜宾市', value: 0 },
-              { name: '资阳市', value: 0 },
-              { name: '自贡市', value: 0 }
-            ]
+            emphasis: {
+              label: {
+                show: true// 选中状态是否显示省份名称
+              },
+              areaStyle: {
+                color: '#17808F'// 选中状态的地图板块颜色
+              },
+              areaColor: '#19F1FF'
+            }
+          },
+          data: this.mapData
+        }],
+        tooltip: {
+          trigger: 'item',
+          formatter: (val) => {
+            if (val.value) return `${val.name}：${val.value}辆`
+            else return `${val.name}：0辆`
           }
-        ]
+        }
       })
     }
   }
