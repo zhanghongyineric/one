@@ -22,24 +22,43 @@
       </div>
       <el-divider />
       <div style="padding-top: 20px;padding-bottom: 20px">
-        <el-input v-model="searchText" :placeholder="searchPlaceholder[searchCond]" class="input-with-select">
+        <el-autocomplete
+          v-model="searchText"
+          :fetch-suggestions="searchSuggestions"
+          placeholder="请输入内容"
+          clearable
+          @select="selectSuggestion"
+        >
           <el-select slot="prepend" v-model="searchCond" placeholder="请选择">
             <el-option label="车牌号" value="plateNum" />
             <el-option label="企业名" value="unitName" />
           </el-select>
-          <el-button slot="append" icon="el-icon-search" @click="search" />
-        </el-input>
+          <i
+            slot="suffix"
+            class="el-icon-search el-input__icon i-cursor"
+            @click="search"
+          />
+          <template slot-scope="{ item }">
+            <div class="name">{{ item.value }}</div>
+            <span class="addr">{{ item.address }}</span>
+          </template>
+        </el-autocomplete>
       </div>
       <div style="margin-bottom: 10px">
-        <el-checkbox v-model="allCheck">全选</el-checkbox>
-        <span class="check-text first-span">已选企业：0家</span>
-        <span class="check-text second-span">已选车辆：0辆</span>
+        <el-checkbox v-model="allCheck" @change="checkedAll">全选</el-checkbox>
+        <span class="check-text first-span">已选企业：{{ checkedUnits }}家</span>
+        <span class="check-text second-span">已选车辆：{{ checkedCars }}辆</span>
       </div>
-      <div class="company-list">
+      <div v-loading="treeLoading" class="company-list">
         <el-tree
+          ref="unitTree"
           :data="treeData"
           :props="defaultProps"
           show-checkbox
+          :highlight-current="true"
+          expand-on-click-node
+          node-key="plateNum"
+          @check-change="checkNode"
         />
       </div>
     </div>
@@ -72,13 +91,15 @@
 import {
   selectPlateNum,
   unitVehicle,
-  vehicleNumber
+  vehicleNumber,
+  vehicleLocationInformation
 } from '@/api/live-monitor/message'
 
 export default {
   name: 'MessageMonitor',
   data() {
     return {
+      treeLoading: false,
       styleSize: {
         height: '',
         width: ''
@@ -102,7 +123,9 @@ export default {
       },
       realTimeCount: 0, // 在线车辆
       onlineCount: 0, // 上线数
-      vehicletotal: 0 // 入网车辆数
+      vehicletotal: 0, // 入网车辆数
+      checkedCars: 0, // 已选中的车辆数
+      checkedUnits: 0 // 已选中的企业数
     }
   },
   created() {
@@ -116,6 +139,54 @@ export default {
     this.getmap()
   },
   methods: {
+    checkedAll() {
+      if (this.allCheck) this.$refs['unitTree'].setCheckedNodes(this.treeData)
+      else this.$refs['unitTree'].setCheckedKeys(this.treeData)
+      this.getChekedNum()
+    },
+    getChekedNum() {
+      this.checkedCars = this.$refs.unitTree.getCheckedKeys(true).length
+      this.checkedUnits = this.$refs.unitTree.getCheckedKeys().length - this.checkedCars
+    },
+    checkNode() {
+      this.getChekedNum()
+    },
+    async searchSuggestions(queryString, cb) {
+      if (queryString) {
+        if (this.searchCond === 'plateNum') {
+          const { data } = await selectPlateNum({ plateNum: queryString })
+          data.forEach(item => {
+            item.label = item.plateNum
+            item.value = item.plateNum
+          })
+          cb(data)
+        } else {
+          const { data } = await unitVehicle({ unitName: queryString })
+          data.forEach(item => {
+            item.label = item.unitName
+            item.value = item.unitName
+          })
+          cb(data)
+        }
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectSuggestion(item) {
+      vehicleLocationInformation([
+        {
+          plateNum: item.plateNum,
+          plateColor: item.plateColor
+        }
+      ])
+        .then((res) => {
+          console.log(res, 'opoppo')
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     getVehicleNumber() {
       vehicleNumber()
         .then((res) => {
@@ -147,6 +218,7 @@ export default {
         })
     },
     getUnitVehicle() {
+      this.treeLoading = true
       unitVehicle({ unitName: '' })
         .then(res => {
           const { data } = res
@@ -157,9 +229,10 @@ export default {
             }
           })
           this.treeData = data
-          console.log(this.treeData, '企业')
+          this.treeLoading = false
         })
         .catch(err => {
+          this.treeLoading = false
           throw err
         })
     },
@@ -175,8 +248,7 @@ export default {
         mapStyle: 'amap://styles/grey'
       })
       this.map.setFitView()
-    },
-    handleChange(val) {}
+    }
   }
 }
 </script>
@@ -353,5 +425,13 @@ export default {
 
 ::v-deep .el-select {
   width: 90px;
+}
+
+::v-deep .el-autocomplete {
+  width: 100% !important;
+}
+
+.i-cursor {
+  cursor: pointer;
 }
 </style>

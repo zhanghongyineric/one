@@ -27,3 +27,12 @@ export function vehicleNumber(data) {
     data
   })
 }
+
+// 获取车辆点位信息
+export function vehicleLocationInformation(data) {
+  return request({
+    url: '/vehicleLocationInformation',
+    method: 'POST',
+    data
+  })
+}

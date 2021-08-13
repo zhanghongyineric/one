@@ -1039,8 +1039,8 @@ export default {
       if (temp === 0 || temp === '0') return '是'
       if (temp === 1 || temp === '1') return '否'
     },
-    zoneFilter(zoneid) {
-      const text = CodeToText[zoneid]
+    zoneFilter(zoneId) {
+      const text = CodeToText[zoneId]
       return text
     }
   },
