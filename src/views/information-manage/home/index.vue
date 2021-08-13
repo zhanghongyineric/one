@@ -376,27 +376,6 @@ export default {
           time: '17:05:06',
           kind: '危险驾驶',
           level: '严重'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
         }
       ],
       carList: [],
