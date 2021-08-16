@@ -68,7 +68,7 @@
         border
         highlight-current-row
         fit
-        style="width: 100%;height:100%;"
+        style="width:100%;height:100%;"
       >
         <el-table-column type="index" />
         <el-table-column prop="number" label="车牌号" />
@@ -99,7 +99,7 @@ export default {
   name: 'MessageMonitor',
   data() {
     return {
-      treeLoading: false,
+      treeLoading: true,
       styleSize: {
         height: '',
         width: ''
@@ -148,8 +148,14 @@ export default {
       this.checkedCars = this.$refs.unitTree.getCheckedKeys(true).length
       this.checkedUnits = this.$refs.unitTree.getCheckedKeys().length - this.checkedCars
     },
-    checkNode() {
-      this.getChekedNum()
+    checkNode(node) {
+      console.log(this.$refs.unitTree.getCheckedNodes())
+
+      if (node.vehicles.length) this.getChekedNum()
+      else {
+        this.checkedCars = 0
+        this.checkedUnits = 1
+      }
     },
     async searchSuggestions(queryString, cb) {
       if (queryString) {
@@ -433,5 +439,9 @@ export default {
 
 .i-cursor {
   cursor: pointer;
+}
+
+::v-deep .el-loading-mask {
+  background-color: #1C2F41;
 }
 </style>

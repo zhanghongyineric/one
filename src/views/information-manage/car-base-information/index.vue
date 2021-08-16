@@ -15,7 +15,7 @@
               <el-form-item label="车辆类型:">
                 <el-select v-model="listQuery.vehicleType" placeholder="请选择车辆类型">
                   <el-option
-                    v-for="item in vehicleTypeOptions"
+                    v-for="item in carKindOptions"
                     :key="item.label"
                     :label="item.value"
                     :value="item.label"
