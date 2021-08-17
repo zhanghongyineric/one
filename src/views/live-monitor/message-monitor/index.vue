@@ -68,20 +68,20 @@
         border
         highlight-current-row
         fit
-        style="width:100%;height:100%;"
+        style="width:100%;"
+        height="200"
       >
-        <el-table-column type="index" />
-        <el-table-column prop="number" label="车牌号" />
-        <el-table-column prop="number" label="所属企业" />
-        <el-table-column prop="number" label="车辆类型" />
-        <el-table-column prop="number" label="是否双驾" />
-        <el-table-column prop="number" label="定位时间" />
-        <el-table-column prop="number" label="接收时间" />
-        <el-table-column prop="number" label="卫星速度" />
-        <el-table-column prop="number" label="记录仪速度" />
-        <el-table-column prop="number" label="限速" />
-        <el-table-column prop="number" label="位置" />
-        <el-table-column prop="number" label="状态" />
+        <el-table-column type="index" label="序号" width="60" align="center" />
+        <el-table-column prop="acc" label="状态" width="100" align="center">
+          <template v-slot="{row}">
+            <span v-if="row.acc === '0'">关闭</span>
+            <span v-else>开启</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="vehiIdNo" label="车牌号" align="center" width="120" />
+        <el-table-column prop="unitName" show-overflow-tooltip label="所属企业" align="center" />
+        <el-table-column prop="speed" label="速度" align="center" width="100" />
+        <el-table-column prop="position" show-overflow-tooltip label="位置" align="center" />
       </el-table>
     </div>
   </div>
@@ -148,14 +148,43 @@ export default {
       this.checkedCars = this.$refs.unitTree.getCheckedKeys(true).length
       this.checkedUnits = this.$refs.unitTree.getCheckedKeys().length - this.checkedCars
     },
-    checkNode(node) {
-      console.log(this.$refs.unitTree.getCheckedNodes())
+    getOnlineVehicleData(nodes) {
+      const req = []
+      nodes.forEach(item => {
+        req.push({
+          plateNum: item.plateNum,
+          plateColor: item.plateColor
+        })
+      })
+      vehicleLocationInformation(req)
+        .then((res) => {
+          const { data } = res
 
-      if (node.vehicles.length) this.getChekedNum()
-      else {
-        this.checkedCars = 0
-        this.checkedUnits = 1
-      }
+          let geocoder; let lnglat = []
+          AMap.plugin('AMap.Geocoder', function() {
+            geocoder = new AMap.Geocoder({ city: '' })
+          })
+          data.forEach(item => {
+            lnglat = [item.latitude, item.longitude]
+            geocoder.getAddress(lnglat, function(status, result) {
+              if (status === 'complete' && result.info === 'OK') {
+                item.position = result.regeocode.formattedAddress
+              }
+            })
+          })
+          this.tableData = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    checkNode(node, state) {
+      if (node.vehicles && node.vehicles.length) {
+        this.getChekedNum()
+        const checkedLeafNodes = this.$refs.unitTree.getCheckedNodes(true)
+        this.getOnlineVehicleData(checkedLeafNodes)
+      } else if (!node.vehicles.length && state) this.checkedUnits += 1
+      else if (!node.vehicles.length && !state) this.checkedUnits -= 1
     },
     async searchSuggestions(queryString, cb) {
       if (queryString) {
@@ -230,9 +259,7 @@ export default {
           const { data } = res
           data.forEach(item => {
             item.plateNum = item.unitName
-            if (item.plateNum.length > 17) {
-              item.plateNum = item.plateNum.substring(0, 17) + '...'
-            }
+            if (item.plateNum.length > 17) item.plateNum = item.plateNum.substring(0, 17) + '...'
           })
           this.treeData = data
           this.treeLoading = false

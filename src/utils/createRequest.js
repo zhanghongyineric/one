@@ -13,12 +13,12 @@ import fileDownload from 'js-file-download'
 let messageBox = null // 存放弹窗实例，避免重复弹窗
 let message = null // 存放提示实例，避免重复弹窗
 
-export default function createRequest(baseUrl) {
+export default function createRequest(baseUrl, wait_time) {
   // 创建axios实例
   const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API + (baseUrl || ''),
     // withCredentials: true, // send cookies when cross-domain requests
-    timeout: 5000 // request timeout
+    timeout: wait_time || 5000 // request timeout
   })
 
   // 请求拦截

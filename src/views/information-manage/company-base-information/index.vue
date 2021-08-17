@@ -136,17 +136,17 @@
           :disabled="disableStatus"
         >
           <el-row>
-            <el-col :md="8" :sm="24">
+            <el-col :md="12" :sm="24">
               <el-form-item label="企业名称:" prop="unitName">
                 <el-input v-model="createFormData.unitName" size="small" clearable placeholder="请输入企业名称" />
               </el-form-item>
             </el-col>
-            <el-col :md="8" :sm="24">
+            <el-col :md="12" :sm="24">
               <el-form-item label="企业简称:" prop="shortName">
                 <el-input v-model="createFormData.shortName" size="small" clearable placeholder="请输入企业简称" />
               </el-form-item>
             </el-col>
-            <el-col :md="8" :sm="24">
+            <!-- <el-col :md="8" :sm="24">
               <el-form-item
                 label="企业级别:"
                 prop="aptitudeLevel"
@@ -165,7 +165,7 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-col>
+            </el-col> -->
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
@@ -545,7 +545,7 @@ export default {
       createFormData: {
         unitName: '',
         shortName: '',
-        aptitudeLevel: '',
+        aptitudeLevel: 1,
         upUnitName: '',
         zoneId: [],
         businessLicense: '',
@@ -570,7 +570,7 @@ export default {
       createFormDataTemp: {
         unitName: '',
         shortName: '',
-        aptitudeLevel: '',
+        aptitudeLevel: 1,
         upUnitName: '',
         zoneId: [],
         businessLicense: '',
@@ -597,7 +597,7 @@ export default {
         unitName: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
         telephone: [{ required: true, trigger: 'blur', validator: validateUnitTel }],
         shortName: [{ required: true, message: '请输入企业简称', trigger: 'blur' }],
-        aptitudeLevel: [{ required: true, message: '请选择企业级别', trigger: 'change' }],
+        // aptitudeLevel: [{ required: true, message: '请选择企业级别', trigger: 'change' }],
         zoneId: [{ required: true, message: '请选择行政区域', trigger: 'change' }],
         businessLicense: [{ required: true, message: '请输入社会统一信用代码', trigger: 'blur' }],
         economicType: [{ required: true, message: '请选择企业经济类型', trigger: 'change' }],

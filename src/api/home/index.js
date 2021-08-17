@@ -1,5 +1,5 @@
 import createRequest from '@/utils/createRequest'
-const request = createRequest('/monitor/homePage')
+const request = createRequest('/monitor/homePage', 60000)
 
 // 安全隐患企业排行
 export function enterpriseRanking(data) {
