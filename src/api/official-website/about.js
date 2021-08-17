@@ -1,9 +1,10 @@
-import request from '@/utils/official-website-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/admin/introduce')
 
 // 获取所有信息
 export function selectFind(data) {
   return request({
-    url: '/introduce/selectFind',
+    url: '/selectFind',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectFind(data) {
 // 新增数据
 export function save(data) {
   return request({
-    url: '/introduce/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -21,7 +22,7 @@ export function save(data) {
 // 新增数据
 export function delData(data) {
   return request({
-    url: '/introduce/delete',
+    url: '/delete',
     method: 'POST',
     data
   })
@@ -30,7 +31,7 @@ export function delData(data) {
 // 查詢所有內容
 export function selectAll(data) {
   return request({
-    url: '/introduce/selectAll',
+    url: '/selectAll',
     method: 'POST',
     data
   })

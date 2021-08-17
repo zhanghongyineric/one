@@ -1,9 +1,10 @@
-import request from '@/utils/information-manage-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/baseInfo/platformInfo')
 
 // 获取查询条件
 export function queryConditions() {
   return request({
-    url: '/platformInfo/queryConditions',
+    url: '/queryConditions',
     method: 'POST'
   })
 }
@@ -11,7 +12,7 @@ export function queryConditions() {
 // 协议版本
 export function protocolVersion() {
   return request({
-    url: '/platformInfo/protocolVersion',
+    url: '/protocolVersion',
     method: 'POST'
   })
 }
@@ -19,7 +20,7 @@ export function protocolVersion() {
 // 查询接入平台信息
 export function selectList(data) {
   return request({
-    url: '/platformInfo/selectList',
+    url: '/selectList',
     method: 'POST',
     data
   })
@@ -28,7 +29,7 @@ export function selectList(data) {
 // 增加接入平台信息
 export function save(data) {
   return request({
-    url: '/platformInfo/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -37,7 +38,7 @@ export function save(data) {
 // 删除接入平台信息
 export function deleteData(data) {
   return request({
-    url: '/platformInfo/delete',
+    url: '/delete',
     method: 'POST',
     data
   })
@@ -46,7 +47,7 @@ export function deleteData(data) {
 // 是否可链接
 export function allowConnect(data) {
   return request({
-    url: '/platformInfo/allowConnect',
+    url: '/allowConnect',
     method: 'POST',
     data
   })
@@ -55,7 +56,7 @@ export function allowConnect(data) {
 // 输入关键字返回服务商名称
 export function facilitatorName(data) {
   return request({
-    url: '/platformInfo/facilitatorName',
+    url: '/facilitatorName',
     method: 'POST',
     data
   })

@@ -1,9 +1,10 @@
-import request from '@/utils/official-website-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/admin/SmallPicture')
 
 // 查询首页小图
 export function selectFind(data) {
   return request({
-    url: '/SmallPicture/selectFind',
+    url: '/selectFind',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectFind(data) {
 // 新增首页小图
 export function save(data) {
   return request({
-    url: '/SmallPicture/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -21,7 +22,7 @@ export function save(data) {
 // 删除首页小图
 export function delData(data) {
   return request({
-    url: '/SmallPicture/delete',
+    url: '/delete',
     method: 'POST',
     data
   })

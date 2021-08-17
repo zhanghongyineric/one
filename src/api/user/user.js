@@ -1,4 +1,5 @@
-import request from '@/utils/request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('')
 
 // 登录
 export function login(data) {

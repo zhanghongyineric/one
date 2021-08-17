@@ -1,9 +1,10 @@
-import request from '@/utils/official-website-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/admin/carousel')
 
 // 获取所有轮播图
 export function selectFind(data) {
   return request({
-    url: '/carousel/selectFind',
+    url: '/selectFind',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectFind(data) {
 // 新增轮播图
 export function save(data) {
   return request({
-    url: '/carousel/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -21,7 +22,7 @@ export function save(data) {
 // 删除轮播图
 export function deleteData(data) {
   return request({
-    url: '/carousel/delete',
+    url: '/delete',
     method: 'POST',
     data
   })

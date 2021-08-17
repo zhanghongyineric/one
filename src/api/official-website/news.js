@@ -1,9 +1,11 @@
-import request from '@/utils/official-website-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/admin/news')
+const baseRequest = createRequest('/admin')
 
 // 新增新闻
 export function save(data) {
   return request({
-    url: '/news/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -11,7 +13,7 @@ export function save(data) {
 
 // 上传图片
 export function upload(data) {
-  return request({
+  return baseRequest({
     url: '/file/upload',
     method: 'POST',
     data
@@ -21,7 +23,7 @@ export function upload(data) {
 // 删除新闻
 export function deleteNews(data) {
   return request({
-    url: '/news/delete',
+    url: '/delete',
     method: 'POST',
     data
   })
@@ -30,7 +32,7 @@ export function deleteNews(data) {
 // 获取所有新闻
 export function getNews(data) {
   return request({
-    url: '/news/selectFind',
+    url: '/selectFind',
     method: 'POST',
     data
   })
@@ -39,7 +41,7 @@ export function getNews(data) {
 // 发布新闻
 export function releaseNews(data) {
   return request({
-    url: '/news/releaseNew',
+    url: '/releaseNew',
     method: 'POST',
     data
   })
@@ -48,7 +50,7 @@ export function releaseNews(data) {
 // 查詢所有內容
 export function selectAll(data) {
   return request({
-    url: '/news/selectAll',
+    url: '/selectAll',
     method: 'POST',
     data
   })

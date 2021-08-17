@@ -1,9 +1,10 @@
-import request from '@/utils/official-website-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/admin/trade')
 
 // 查询行业应用数据
 export function selectFind(data) {
   return request({
-    url: '/trade/selectFind',
+    url: '/selectFind',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectFind(data) {
 // 新增及修改行业应用数据
 export function save(data) {
   return request({
-    url: '/trade/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -21,7 +22,7 @@ export function save(data) {
 // 删除行业应用数据
 export function delData(data) {
   return request({
-    url: '/trade/delete',
+    url: '/delete',
     method: 'POST',
     data
   })
@@ -30,7 +31,7 @@ export function delData(data) {
 // 发布行业应用数据
 export function release(data) {
   return request({
-    url: '/trade/releaseTrade',
+    url: '/releaseTrade',
     method: 'POST',
     data
   })
@@ -39,7 +40,7 @@ export function release(data) {
 // 查詢所有內容
 export function selectAll(data) {
   return request({
-    url: '/trade/selectAll',
+    url: '/selectAll',
     method: 'POST',
     data
   })

@@ -1,9 +1,10 @@
-import request from '@/utils/information-manage-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/baseInfo/facilitator')
 
 // 查询服务商
 export function selectList(data) {
   return request({
-    url: '/facilitator/selectList',
+    url: '/selectList',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectList(data) {
 // 获取状态码
 export function getStatus() {
   return request({
-    url: '/facilitator/status',
+    url: '/status',
     method: 'POST'
   })
 }
@@ -20,7 +21,7 @@ export function getStatus() {
 // 新增服务商
 export function save(data) {
   return request({
-    url: '/facilitator/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -29,17 +30,17 @@ export function save(data) {
 // 删除数据
 export function deleteData(data) {
   return request({
-    url: '/facilitator/delete',
+    url: '/delete',
     method: 'POST',
     data
   })
 }
 
 // 上传图片
-export function upload(data) {
-  return request({
-    url: '/file/upload',
-    method: 'POST',
-    data
-  })
-}
+// export function upload(data) {
+//   return request({
+//     url: '/file/upload',
+//     method: 'POST',
+//     data
+//   })
+// }

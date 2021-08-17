@@ -1,9 +1,10 @@
-import request from '@/utils/information-manage-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/baseInfo/driver')
 
 // 获取列表数据
 export function selectList(data) {
   return request({
-    url: '/driver/selectList',
+    url: '/selectList',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectList(data) {
 // 新增驾驶员
 export function driverSave(data) {
   return request({
-    url: '/driver/driverSave',
+    url: '/driverSave',
     method: 'POST',
     data
   })
@@ -21,7 +22,7 @@ export function driverSave(data) {
 // 根据驾驶员id，查询机动车驾驶证信息
 export function selectDriverLic(data) {
   return request({
-    url: '/driver/selectDriverLic',
+    url: '/selectDriverLic',
     method: 'POST',
     data
   })
@@ -30,7 +31,7 @@ export function selectDriverLic(data) {
 // 根据驾驶员id，查询从业资格证信息
 export function selectQualificationLic(data) {
   return request({
-    url: '/driver/selectQualificationLic',
+    url: '/selectQualificationLic',
     method: 'POST',
     data
   })
@@ -39,7 +40,7 @@ export function selectQualificationLic(data) {
 // 删除驾驶员的信息
 export function deleteDriver(data) {
   return request({
-    url: '/driver/delete',
+    url: '/delete',
     method: 'POST',
     data
   })
@@ -48,7 +49,7 @@ export function deleteDriver(data) {
 // 从业资格证类型
 export function queryQualification(data) {
   return request({
-    url: '/driver/queryQualification',
+    url: '/queryQualification',
     method: 'POST',
     data
   })
@@ -57,7 +58,7 @@ export function queryQualification(data) {
 // 输入关键字返回企业名
 export function enterpriseName(data) {
   return request({
-    url: '/driver/enterpriseName',
+    url: '/enterpriseName',
     method: 'POST',
     data
   })
@@ -66,7 +67,7 @@ export function enterpriseName(data) {
 // 驾驶员状态
 export function driverStatus() {
   return request({
-    url: '/driver/driverStatus',
+    url: '/driverStatus',
     method: 'POST'
   })
 }
@@ -74,7 +75,7 @@ export function driverStatus() {
 // 从业资格证范围
 export function queryRange() {
   return request({
-    url: '/driver/queryRange',
+    url: '/queryRange',
     method: 'POST'
   })
 }
@@ -82,7 +83,7 @@ export function queryRange() {
 // 准驾车型
 export function queryPermitType() {
   return request({
-    url: '/driver/queryPermitType',
+    url: '/queryPermitType',
     method: 'POST'
   })
 }

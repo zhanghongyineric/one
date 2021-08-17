@@ -1,9 +1,10 @@
-import request from '@/utils/official-website-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/admin/version')
 
 // 查询所有的版本数据
 export function selectFind(data) {
   return request({
-    url: '/version/selectFind',
+    url: '/selectFind',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectFind(data) {
 // 增加和修改
 export function save(data) {
   return request({
-    url: '/version/save',
+    url: '/save',
     method: 'POST',
     data
   })
@@ -21,7 +22,7 @@ export function save(data) {
 // 删除
 export function deleteData(data) {
   return request({
-    url: '/version/delete',
+    url: '/delete',
     method: 'POST',
     data
   })
@@ -30,7 +31,7 @@ export function deleteData(data) {
 // 启用版本
 export function release(data) {
   return request({
-    url: '/version/release',
+    url: '/release',
     method: 'POST',
     data
   })
@@ -39,7 +40,7 @@ export function release(data) {
 // 所属系统
 export function sysPort(data) {
   return request({
-    url: '/version/sysPort',
+    url: '/sysPort',
     method: 'POST',
     data
   })
@@ -48,7 +49,7 @@ export function sysPort(data) {
 // 查看该系统历史版本
 export function historicVersion(data) {
   return request({
-    url: '/version/historicVersion',
+    url: '/historicVersion',
     method: 'POST',
     data
   })

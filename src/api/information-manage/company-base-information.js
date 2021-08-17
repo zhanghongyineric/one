@@ -1,9 +1,10 @@
-import request from '@/utils/information-manage-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/baseInfo/enterprose')
 
 // 获取用户列表
 export function fetchList(data) {
   return request({
-    url: '/enterprose/selectList',
+    url: '/selectList',
     method: 'post',
     data
   })
@@ -11,7 +12,7 @@ export function fetchList(data) {
 // 运营状态
 export function companyStatus(data) {
   return request({
-    url: '/enterprose/status',
+    url: '/status',
     method: 'post',
     data
   })
@@ -19,7 +20,7 @@ export function companyStatus(data) {
 // 企业运营类型
 export function companyRoleStatus(data) {
   return request({
-    url: '/enterprose/operationType',
+    url: '/operationType',
     method: 'post',
     data
   })
@@ -27,7 +28,7 @@ export function companyRoleStatus(data) {
 // 企业经济类型
 export function companyEconomyStatus(data) {
   return request({
-    url: '/enterprose/enconomicType',
+    url: '/enconomicType',
     method: 'post',
     data
   })
@@ -35,7 +36,7 @@ export function companyEconomyStatus(data) {
 // 更新
 export function updateCount(data) {
   return request({
-    url: '/enterprose/save',
+    url: '/save',
     method: 'post',
     data
   })
@@ -43,7 +44,7 @@ export function updateCount(data) {
 // 新增
 export function addCount(data) {
   return request({
-    url: '/enterprose/save',
+    url: '/save',
     method: 'post',
     data
   })
@@ -51,7 +52,7 @@ export function addCount(data) {
 // 删除
 export function deleteCount(data) {
   return request({
-    url: '/enterprose/delete',
+    url: '/delete',
     method: 'post',
     data
   })
@@ -60,7 +61,7 @@ export function deleteCount(data) {
 // 输入关键字 返回上级企业单位
 export function upUnitName(data) {
   return request({
-    url: '/enterprose/upUnitName',
+    url: '/upUnitName',
     method: 'post',
     data
   })

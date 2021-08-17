@@ -1,4 +1,5 @@
-import request from '@/utils/information-manage-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/baseInfo')
 
 // 企业信息
 export function companyNumber(data) {

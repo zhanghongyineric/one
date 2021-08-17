@@ -1,9 +1,10 @@
-import request from '@/utils/information-manage-request'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/baseInfo/vehicle')
 
 // 车辆信息分页列表展示（可根据条件查询）
 export function selectList(data) {
   return request({
-    url: '/vehicle/selectList',
+    url: '/selectList',
     method: 'POST',
     data
   })
@@ -12,7 +13,7 @@ export function selectList(data) {
 // 车辆信息新增和修改
 export function vehicleSave(data) {
   return request({
-    url: '/vehicle/vehicleSave',
+    url: '/vehicleSave',
     method: 'POST',
     data
   })
@@ -21,7 +22,7 @@ export function vehicleSave(data) {
 // 模糊查询企业名称
 export function enterpriseName(data) {
   return request({
-    url: '/vehicle/enterpriseName',
+    url: '/enterpriseName',
     method: 'POST',
     data
   })
@@ -30,7 +31,7 @@ export function enterpriseName(data) {
 // 查询条件
 export function queryConditions() {
   return request({
-    url: '/vehicle/queryConditions',
+    url: '/queryConditions',
     method: 'POST'
   })
 }
@@ -38,7 +39,7 @@ export function queryConditions() {
 // 车牌颜色
 export function queryColor() {
   return request({
-    url: '/vehicle/queryColor',
+    url: '/queryColor',
     method: 'POST'
   })
 }
@@ -46,7 +47,7 @@ export function queryColor() {
 // 根据车辆id查询车载入网信息
 export function selectAccessInstallation(data) {
   return request({
-    url: '/vehicle/selectAccessInstallation',
+    url: '/selectAccessInstallation',
     method: 'POST',
     data
   })
@@ -55,7 +56,7 @@ export function selectAccessInstallation(data) {
 // 输入关键字 返回平台名称
 export function platformInfoName(data) {
   return request({
-    url: '/vehicle/platformInfoName',
+    url: '/platformInfoName',
     method: 'POST',
     data
   })
@@ -64,7 +65,7 @@ export function platformInfoName(data) {
 // 输入关键字 返回平台名称
 export function facilitatorName(data) {
   return request({
-    url: '/vehicle/facilitatorName',
+    url: '/facilitatorName',
     method: 'POST',
     data
   })
@@ -73,7 +74,7 @@ export function facilitatorName(data) {
 // 车载入网信息 新增 和 修改
 export function AccessInstallationSave(data) {
   return request({
-    url: '/vehicle/AccessInstallationSave',
+    url: '/AccessInstallationSave',
     method: 'POST',
     data
   })
@@ -82,7 +83,7 @@ export function AccessInstallationSave(data) {
 // 燃料类型
 export function queryFuel() {
   return request({
-    url: '/vehicle/queryFuel',
+    url: '/queryFuel',
     method: 'POST'
   })
 }
@@ -90,7 +91,7 @@ export function queryFuel() {
 // 域名及端口
 export function queryPort() {
   return request({
-    url: '/vehicle/queryPort',
+    url: '/queryPort',
     method: 'POST'
   })
 }
@@ -98,7 +99,7 @@ export function queryPort() {
 // 通讯协议版本
 export function queryProtocol() {
   return request({
-    url: '/vehicle/queryProtocol',
+    url: '/queryProtocol',
     method: 'POST'
   })
 }
@@ -106,7 +107,7 @@ export function queryProtocol() {
 // 通讯模式
 export function queryMode() {
   return request({
-    url: '/vehicle/queryMode',
+    url: '/queryMode',
     method: 'POST'
   })
 }
@@ -114,7 +115,7 @@ export function queryMode() {
 // 定位模式
 export function queryPositioningMode() {
   return request({
-    url: '/vehicle/queryPositioningMode',
+    url: '/queryPositioningMode',
     method: 'POST'
   })
 }
@@ -122,7 +123,7 @@ export function queryPositioningMode() {
 // 根据车辆id，查询车辆运输证信息
 export function selectTransport(data) {
   return request({
-    url: '/vehicle/selectTransport',
+    url: '/selectTransport',
     method: 'POST',
     data
   })
@@ -131,7 +132,7 @@ export function selectTransport(data) {
 // 车辆信息删除
 export function vehicleDelete(data) {
   return request({
-    url: '/vehicle/vehicleDelete',
+    url: '/vehicleDelete',
     method: 'POST',
     data
   })
@@ -140,7 +141,7 @@ export function vehicleDelete(data) {
 // 车辆运营类型
 export function queryOperationType(data) {
   return request({
-    url: '/vehicle/queryOperationType',
+    url: '/queryOperationType',
     method: 'POST',
     data
   })
@@ -149,7 +150,7 @@ export function queryOperationType(data) {
 // 车辆入网信息删除
 export function AccessInstallationDelete(data) {
   return request({
-    url: '/vehicle/AccessInstallationDelete',
+    url: '/AccessInstallationDelete',
     method: 'POST',
     data
   })
@@ -158,7 +159,7 @@ export function AccessInstallationDelete(data) {
 // 保险信息新增和修改
 export function InsuranceSave(data) {
   return request({
-    url: '/vehicle/InsuranceSave',
+    url: '/InsuranceSave',
     method: 'POST',
     data
   })
@@ -167,7 +168,7 @@ export function InsuranceSave(data) {
 // 保险信息删除
 export function InsuranceDelete(data) {
   return request({
-    url: '/vehicle/InsuranceDelete',
+    url: '/InsuranceDelete',
     method: 'POST',
     data
   })
@@ -176,7 +177,7 @@ export function InsuranceDelete(data) {
 // 根据车辆id 查询保险信息
 export function selectInsurance(data) {
   return request({
-    url: '/vehicle/selectInsurance',
+    url: '/selectInsurance',
     method: 'POST',
     data
   })
@@ -185,7 +186,7 @@ export function selectInsurance(data) {
 // 保险类型
 export function queryInsuranceType(data) {
   return request({
-    url: '/vehicle/queryInsuranceType',
+    url: '/queryInsuranceType',
     method: 'POST',
     data
   })
@@ -194,25 +195,25 @@ export function queryInsuranceType(data) {
 // 保险险别
 export function queryInsurance(data) {
   return request({
-    url: '/vehicle/queryInsurance',
+    url: '/queryInsurance',
     method: 'POST',
     data
   })
 }
 
 // 文件上传
-export function upload(data) {
-  return request({
-    url: '/file/upload',
-    method: 'POST',
-    data
-  })
-}
+// export function upload(data) {
+//   return request({
+//     url: '/file/upload',
+//     method: 'POST',
+//     data
+//   })
+// }
 
 // 机动车的使用性质
 export function queryUseNature(data) {
   return request({
-    url: '/vehicle/queryUseNature',
+    url: '/queryUseNature',
     method: 'POST',
     data
   })
@@ -221,7 +222,7 @@ export function queryUseNature(data) {
 // 车身颜色
 export function queryCarColor(data) {
   return request({
-    url: '/vehicle/queryCarColor',
+    url: '/queryCarColor',
     method: 'POST',
     data
   })
