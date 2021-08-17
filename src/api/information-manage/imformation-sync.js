@@ -1,50 +1,51 @@
-import request from '@/utils/imformation-sync'
+import createRequest from '@/utils/createRequest'
+const request = createRequest('/baseInfoJob/conversion')
 
 export function device() {
   return request({
-    url: '/conversion/processDeviceData',
+    url: '/processDeviceData',
     method: 'POST'
   })
 }
 
 export function driver() {
   return request({
-    url: '/conversion/processDriverData',
+    url: '/processDriverData',
     method: 'POST'
   })
 }
 
 export function company() {
   return request({
-    url: '/conversion/processCompanyData',
+    url: '/processCompanyData',
     method: 'POST'
   })
 }
 
 export function certificate() {
   return request({
-    url: '/conversion/processTransLicData',
+    url: '/processTransLicData',
     method: 'POST'
   })
 }
 
 export function car() {
   return request({
-    url: '/conversion/processVehicleData',
+    url: '/processVehicleData',
     method: 'POST'
   })
 }
 
 export function platform() {
   return request({
-    url: '/conversion/processPlatformData',
+    url: '/processPlatformData',
     method: 'POST'
   })
 }
 
 export function gps(data) {
   return request({
-    url: '/conversion/gps',
+    url: '/gps',
     method: 'POST',
     data
   })
