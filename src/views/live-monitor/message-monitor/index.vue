@@ -471,4 +471,13 @@ export default {
 ::v-deep .el-loading-mask {
   background-color: #1C2F41;
 }
+
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 </style>

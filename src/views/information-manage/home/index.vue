@@ -475,9 +475,9 @@ export default {
             this.mapChartData.push([city, realTimeCount, onlineCount])
           })
           // 同一个市可能有很多数据，应将同一个市的所有数据相加
-          if (this.mapChartData.length > 2) {
+          if (this.mapChartData[1]) {
             for (let i = 1; i < this.mapChartData.length; i++) {
-              for (let j = i + 1; j < this.mapChartData.length; i++) {
+              for (let j = i + 1; j < this.mapChartData.length; j++) {
                 if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
                   this.mapChartData[i][1] += this.mapChartData[j][1]
                   this.mapChartData[i][2] += this.mapChartData[j][2]

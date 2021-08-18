@@ -198,7 +198,6 @@ export default {
       })
       this.client.on('message', (topic, message) => {
         message = message.toString()
-        console.log(message)
         const arr = message.split('+')
         this.lineArr.push([arr[1], arr[2]])
         lnglat = [arr[1], arr[2]]
