@@ -112,8 +112,8 @@ export default {
       tableData: [],
       treeData: [],
       defaultProps: {
-        children: 'vehicles',
-        label: 'plateNum'
+        children: 'children',
+        label: 'unitName'
       },
       searchText: '',
       searchCond: 'plateNum',
@@ -252,15 +252,37 @@ export default {
           throw err
         })
     },
+    recursionTree(children) {
+      children.forEach(child => {
+        if (child.children.length) {
+          this.recursionTree(child.children)
+        } else if (!child.children.length && child.vehicles.length) {
+          child.children = child.vehicles
+          child.children.forEach(item => {
+            item.unitName = item.plateNum
+          })
+          console.log(child.children, 'children')
+        }
+      })
+    },
+    getTreeDeep(data) {
+      data.forEach((v, i) => {
+        if (v.children.length) {
+          this.recursionTree(v.children)
+        }
+      })
+    },
     getUnitVehicle() {
       this.treeLoading = true
       unitVehicle({ unitName: '' })
         .then(res => {
           const { data } = res
-          data.forEach(item => {
-            item.plateNum = item.unitName
-            if (item.plateNum.length > 17) item.plateNum = item.plateNum.substring(0, 17) + '...'
-          })
+          this.getTreeDeep(data)
+          console.log(data)
+          // data.forEach(item => {
+          //   item.plateNum = item.unitName
+          //   if (item.plateNum.length > 17) item.plateNum = item.plateNum.substring(0, 17) + '...'
+          // })
           this.treeData = data
           this.treeLoading = false
         })
@@ -302,6 +324,7 @@ export default {
   padding-left: 10px;
   padding-right: 10px;
   overflow-y: auto;
+
 }
 
 ::v-deep .el-divider--horizontal {
@@ -322,6 +345,7 @@ export default {
   padding: 10px 0 0 10px;
   display: flex;
   justify-content: space-between;
+  overflow-x: auto;
 
   div {
     display: inline-block;
@@ -470,14 +494,5 @@ export default {
 
 ::v-deep .el-loading-mask {
   background-color: #1C2F41;
-}
-
-.custom-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
 }
 </style>

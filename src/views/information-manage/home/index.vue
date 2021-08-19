@@ -476,14 +476,29 @@ export default {
           })
           // 同一个市可能有很多数据，应将同一个市的所有数据相加
           if (this.mapChartData[1]) {
-            for (let i = 1; i < this.mapChartData.length; i++) {
-              for (let j = i + 1; j < this.mapChartData.length; j++) {
+            const { length } = this.mapChartData
+            for (let i = 1; i < length; i++) {
+              for (let j = i + 1; j < length; j++) {
                 if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
                   this.mapChartData[i][1] += this.mapChartData[j][1]
                   this.mapChartData[i][2] += this.mapChartData[j][2]
                 }
               }
             }
+            const cityMap = new Map()
+            for (let i = 1; i < this.mapChartData.length; i++) {
+              const city = this.mapChartData[i][0]
+              const online = this.mapChartData[i][1]
+              const total = this.mapChartData[i][2]
+              if (!cityMap.has(city)) {
+                cityMap.set(city, `${city},${online},${total}`)
+              }
+            }
+            const dataArr = [['city', '当前在线', '累计在线']]
+            for (const value of cityMap.values()) {
+              dataArr.push(value.split(','))
+            }
+            this.mapChartData = dataArr
           }
         })
     },
