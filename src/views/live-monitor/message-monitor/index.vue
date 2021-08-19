@@ -26,7 +26,6 @@
           v-model="searchText"
           :fetch-suggestions="searchSuggestions"
           placeholder="请输入内容"
-          clearable
           @select="selectSuggestion"
         >
           <el-select slot="prepend" v-model="searchCond" placeholder="请选择">
@@ -46,7 +45,7 @@
       </div>
       <div style="margin-bottom: 10px">
         <el-checkbox v-model="allCheck" @change="checkedAll">全选</el-checkbox>
-        <span class="check-text first-span">已选企业：{{ checkedUnits }}家</span>
+        <!-- <span class="check-text first-span">已选企业：{{ checkedUnits }}家</span> -->
         <span class="check-text second-span">已选车辆：{{ checkedCars }}辆</span>
       </div>
       <div v-loading="treeLoading" class="company-list">
@@ -57,7 +56,7 @@
           show-checkbox
           :highlight-current="true"
           expand-on-click-node
-          node-key="plateNum"
+          node-key="unitName"
           @check-change="checkNode"
         />
       </div>
@@ -140,13 +139,13 @@ export default {
   },
   methods: {
     checkedAll() {
-      if (this.allCheck) this.$refs['unitTree'].setCheckedNodes(this.treeData)
-      else this.$refs['unitTree'].setCheckedKeys(this.treeData)
-      this.getChekedNum()
-    },
-    getChekedNum() {
-      this.checkedCars = this.$refs.unitTree.getCheckedKeys(true).length
-      this.checkedUnits = this.$refs.unitTree.getCheckedKeys().length - this.checkedCars
+      this.treeLoading = true
+      setTimeout(() => {
+        if (this.allCheck) {
+          this.$refs.unitTree.setCheckedNodes(this.treeData)
+        } else this.$refs.unitTree.setCheckedKeys(this.treeData)
+        this.treeLoading = false
+      }, 1500)
     },
     getOnlineVehicleData(nodes) {
       const req = []
@@ -178,13 +177,12 @@ export default {
           throw err
         })
     },
-    checkNode(node, state) {
-      if (node.vehicles && node.vehicles.length) {
-        this.getChekedNum()
-        const checkedLeafNodes = this.$refs.unitTree.getCheckedNodes(true)
-        this.getOnlineVehicleData(checkedLeafNodes)
-      } else if (!node.vehicles.length && state) this.checkedUnits += 1
-      else if (!node.vehicles.length && !state) this.checkedUnits -= 1
+    checkNode() {
+      let count = 0
+      this.$refs.unitTree.getCheckedKeys(true).forEach(v => {
+        if (v) v.substr(0, 1) === '川' ? count++ : ''
+      })
+      this.checkedCars = count
     },
     async searchSuggestions(queryString, cb) {
       if (queryString) {
@@ -209,14 +207,28 @@ export default {
       }
     },
     selectSuggestion(item) {
-      vehicleLocationInformation([
+      const req = [
         {
           plateNum: item.plateNum,
           plateColor: item.plateColor
         }
-      ])
+      ]
+      vehicleLocationInformation(req)
         .then((res) => {
-          console.log(res, 'opoppo')
+          const { data } = res
+          let geocoder; let lnglat = []
+          AMap.plugin('AMap.Geocoder', function() {
+            geocoder = new AMap.Geocoder({ city: '' })
+          })
+          data.forEach(item => {
+            lnglat = [item.latitude, item.longitude]
+            geocoder.getAddress(lnglat, function(status, result) {
+              if (status === 'complete' && result.info === 'OK') {
+                item.position = result.regeocode.formattedAddress
+              }
+            })
+          })
+          this.tableData = data
         })
         .catch(err => {
           throw err
@@ -279,10 +291,6 @@ export default {
           const { data } = res
           this.getTreeDeep(data)
           console.log(data)
-          // data.forEach(item => {
-          //   item.plateNum = item.unitName
-          //   if (item.plateNum.length > 17) item.plateNum = item.plateNum.substring(0, 17) + '...'
-          // })
           this.treeData = data
           this.treeLoading = false
         })
