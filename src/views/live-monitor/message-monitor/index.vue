@@ -64,7 +64,7 @@
     <div v-show="showTable" class="close-symbol" @click="showTable = false">
       <div class="bottom-arrow" />
     </div>
-    <div v-show="showTable" class="table-box">
+    <div v-show="showTable" v-loading="containerLoading" class="table-box">
       <el-table
         :data="tableData"
         border
@@ -105,7 +105,8 @@ export default {
   name: 'MessageMonitor',
   data() {
     return {
-      treeLoading: true,
+      containerLoading: false,
+      treeLoading: false,
       styleSize: {
         height: '',
         width: ''
@@ -132,7 +133,16 @@ export default {
       onlineCount: 0, // 上线数
       vehicletotal: 0, // 入网车辆数
       checkedCars: 0, // 已选中的车辆数
-      checkedUnits: 0 // 已选中的企业数
+      checkedUnits: 0, // 已选中的企业数
+      markers: [] // 所有标记点位置
+    }
+  },
+  watch: {
+    markers: {
+      deep: true,
+      handler(val) {
+        this.setMarkers()
+      }
     }
   },
   created() {
@@ -166,32 +176,65 @@ export default {
           })
           data.forEach(item => {
             lnglat = [item.latitude, item.longitude]
+            this.markers.push({
+              icon: 'https://webapi.amap.com/images/car.png',
+              position: lnglat
+            })
             geocoder.getAddress(lnglat, function(status, result) {
               if (status === 'complete' && result.info === 'OK') {
                 item.position = result.regeocode.formattedAddress
               }
             })
           })
-          this.tableData = data
+          setTimeout(() => {
+            this.tableData = data
+          }, 500)
         })
         .catch(err => {
           throw err
         })
     },
     checkNode() {
-      console.log(this.$refs.unitTree.getCheckedNodes(true), '选中节点')
-      let count = 0; const req = []
-      this.$refs.unitTree.getCheckedNodes(true).forEach(v => {
-        if (v) {
-          if (v.plateNum.substr(0, 1) === '川') {
-            count++
-            // req.push({ plateNum: v.plateNum, plateColor: v.plateColor })
-            req.push({ plateNum: v.plateNum })
-          }
-        }
+      const checkedNodes = this.$refs.unitTree.getCheckedNodes(true)
+      if (checkedNodes.length === 0) {
+        this.markers = []
+        this.tableData = []
+        this.containerLoading = false
+      } else {
+        this.containerLoading = true
+        setTimeout(() => {
+          let count = 0; const req = []
+          checkedNodes.forEach(v => {
+            if (v) {
+              if (v.plateNum.substr(0, 1) === '川') {
+                count++
+                req.push({ plateNum: v.plateNum, unitName: v.enterpriseName })
+              }
+            }
+          })
+          this.getOnlineVehicleData(req)
+          this.checkedCars = count
+        }, 500)
+      }
+    },
+    setMarkers() {
+      this.map.clearMap()
+      this.map = new AMap.Map('container', {
+        resizeEnable: true,
+        center: [104.06632, 30.572903],
+        zoom: 12,
+        mapStyle: 'amap://styles/grey'
       })
-      this.getOnlineVehicleData(req)
-      this.checkedCars = count
+      this.markers.forEach(marker => {
+        new AMap.Marker({
+          map: this.map,
+          icon: marker.icon,
+          position: [marker.position[0], marker.position[1]],
+          offset: new AMap.Pixel(-13, -30)
+        })
+      })
+      this.map.setFitView()
+      this.containerLoading = false
     },
     async searchSuggestions(queryString, cb) {
       if (queryString) {
@@ -216,32 +259,36 @@ export default {
       }
     },
     selectSuggestion(item) {
-      const req = [
-        {
-          plateNum: item.plateNum,
-          plateColor: item.plateColor
-        }
-      ]
-      vehicleLocationInformation(req)
-        .then((res) => {
-          const { data } = res
-          let geocoder; let lnglat = []
-          AMap.plugin('AMap.Geocoder', function() {
-            geocoder = new AMap.Geocoder({ city: '' })
-          })
-          data.forEach(item => {
-            lnglat = [item.latitude, item.longitude]
-            geocoder.getAddress(lnglat, function(status, result) {
-              if (status === 'complete' && result.info === 'OK') {
-                item.position = result.regeocode.formattedAddress
-              }
+      this.containerLoading = true
+      if (this.searchCond === 'plateNum') {
+        const req = [{ plateNum: item.plateNum }]
+        vehicleLocationInformation(req)
+          .then((res) => {
+            const { data } = res
+            this.markers.push({
+              icon: 'https://webapi.amap.com/images/car.png',
+              position: [data[0].latitude, data[0].longitude]
             })
+            let geocoder; let lnglat = []
+            AMap.plugin('AMap.Geocoder', function() {
+              geocoder = new AMap.Geocoder({ city: '' })
+            })
+            data.forEach(item => {
+              lnglat = [item.latitude, item.longitude]
+              geocoder.getAddress(lnglat, function(status, result) {
+                if (status === 'complete' && result.info === 'OK') {
+                  item.position = result.regeocode.formattedAddress
+                }
+              })
+            })
+            setTimeout(() => {
+              this.tableData = data
+            }, 500)
           })
-          this.tableData = data
-        })
-        .catch(err => {
-          throw err
-        })
+          .catch(err => {
+            throw err
+          })
+      }
     },
     getVehicleNumber() {
       vehicleNumber()
@@ -297,9 +344,6 @@ export default {
       unitVehicle({ unitName: '' })
         .then(res => {
           const { data } = res
-          console.log(data)
-          this.getTreeDeep(data)
-
           this.treeData = data
           this.treeLoading = false
         })
