@@ -386,7 +386,8 @@ export default {
       ],
       facilitatorChartData: [],
       mechanismChartData: [],
-      unitAssessChartData: []
+      unitAssessChartData: [],
+      timer: null
     }
   },
   created() {
@@ -403,7 +404,22 @@ export default {
     this.getUnit()
     this.getOnlineVehicle()
   },
+  // mounted() {
+  //   this.intervalOnlineCars()
+  // },
+  // activated() {
+  //   this.intervalOnlineCars()
+  // },
+  // deactivated() {
+  //   clearInterval(this.timer)
+  //   this.timer = null
+  // },
   methods: {
+    intervalOnlineCars() {
+      this.timer = setInterval(() => {
+        this.getOnlineVehicle()
+      }, 5000)
+    },
     getFacilitator() {
       facilitatorAssessmentAnalysis()
         .then((res) => {

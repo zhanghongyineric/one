@@ -175,7 +175,12 @@ export default {
       setTimeout(() => {
         if (this.allCheck) {
           this.$refs.unitTree.setCheckedNodes(this.treeData)
-        } else this.$refs.unitTree.setCheckedKeys(this.treeData)
+          this.checkNode()
+        } else {
+          this.$refs.unitTree.setCheckedKeys(this.treeData)
+          this.markers = []
+          this.tableData = []
+        }
         this.treeLoading = false
       }, 1500)
     },
@@ -219,7 +224,7 @@ export default {
         setTimeout(() => {
           let count = 0; const req = []
           checkedNodes.forEach(v => {
-            if (v) {
+            if (v && v.plateNum) {
               if (v.plateNum.substr(0, 1) === '川') {
                 count++
                 req.push({ plateNum: v.plateNum, unitName: v.enterpriseName })
