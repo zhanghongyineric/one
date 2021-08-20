@@ -134,13 +134,14 @@ export default {
       vehicletotal: 0, // 入网车辆数
       checkedCars: 0, // 已选中的车辆数
       checkedUnits: 0, // 已选中的企业数
-      markers: [] // 所有标记点位置
+      markers: [], // 所有标记点位置
+      timer: null // 定时调用获取在线车辆数接口
     }
   },
   watch: {
     markers: {
       deep: true,
-      handler(val) {
+      handler() {
         this.setMarkers()
       }
     }
@@ -154,8 +155,21 @@ export default {
   },
   mounted() {
     this.getmap()
+    this.startInterval()
+  },
+  deactivated() {
+    clearInterval(this.timer)
+    this.timer = null
+  },
+  activated() {
+    this.startInterval()
   },
   methods: {
+    startInterval() {
+      this.timer = setInterval(() => {
+        this.getVehicleNumber()
+      }, 4000)
+    },
     checkedAll() {
       this.treeLoading = true
       setTimeout(() => {
