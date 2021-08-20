@@ -18,7 +18,7 @@ export default function createRequest(baseUrl, wait_time) {
   const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API + (baseUrl || ''),
     // withCredentials: true, // send cookies when cross-domain requests
-    timeout: wait_time || 5000 // request timeout
+    timeout: wait_time || 20000 // request timeout
   })
 
   // 请求拦截

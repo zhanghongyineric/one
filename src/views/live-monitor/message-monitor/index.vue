@@ -57,11 +57,14 @@
           :highlight-current="true"
           expand-on-click-node
           node-key="unitName"
-          @check-change="checkNode"
+          @check="checkNode"
         />
       </div>
     </div>
-    <div class="table-box">
+    <div v-show="showTable" class="close-symbol" @click="showTable = false">
+      <div class="bottom-arrow" />
+    </div>
+    <div v-show="showTable" class="table-box">
       <el-table
         :data="tableData"
         border
@@ -83,6 +86,9 @@
         <el-table-column prop="position" show-overflow-tooltip label="位置" align="center" />
       </el-table>
     </div>
+    <div v-show="!showTable" class="expand-symbol" @click="showTable = true">
+      <div class="top-arrow" />
+    </div>
   </div>
 </template>
 
@@ -91,7 +97,8 @@ import {
   selectPlateNum,
   unitVehicle,
   vehicleNumber,
-  vehicleLocationInformation
+  vehicleLocationInformation,
+  selectUnitName
 } from '@/api/live-monitor/message'
 
 export default {
@@ -114,6 +121,7 @@ export default {
         children: 'children',
         label: 'unitName'
       },
+      showTable: true,
       searchText: '',
       searchCond: 'plateNum',
       searchPlaceholder: {
@@ -147,14 +155,7 @@ export default {
         this.treeLoading = false
       }, 1500)
     },
-    getOnlineVehicleData(nodes) {
-      const req = []
-      nodes.forEach(item => {
-        req.push({
-          plateNum: item.plateNum,
-          plateColor: item.plateColor
-        })
-      })
+    getOnlineVehicleData(req) {
       vehicleLocationInformation(req)
         .then((res) => {
           const { data } = res
@@ -178,10 +179,18 @@ export default {
         })
     },
     checkNode() {
-      let count = 0
-      this.$refs.unitTree.getCheckedKeys(true).forEach(v => {
-        if (v) v.substr(0, 1) === '川' ? count++ : ''
+      console.log(this.$refs.unitTree.getCheckedNodes(true), '选中节点')
+      let count = 0; const req = []
+      this.$refs.unitTree.getCheckedNodes(true).forEach(v => {
+        if (v) {
+          if (v.plateNum.substr(0, 1) === '川') {
+            count++
+            // req.push({ plateNum: v.plateNum, plateColor: v.plateColor })
+            req.push({ plateNum: v.plateNum })
+          }
+        }
       })
+      this.getOnlineVehicleData(req)
       this.checkedCars = count
     },
     async searchSuggestions(queryString, cb) {
@@ -194,7 +203,7 @@ export default {
           })
           cb(data)
         } else {
-          const { data } = await unitVehicle({ unitName: queryString })
+          const { data } = await selectUnitName({ unitName: queryString })
           data.forEach(item => {
             item.label = item.unitName
             item.value = item.unitName
@@ -236,13 +245,13 @@ export default {
     },
     getVehicleNumber() {
       vehicleNumber()
-        .then((res) => {
+        .then(res => {
           const { data: { realTimeCount, onlineCount, vehicletotal }} = res
           this.realTimeCount = realTimeCount
           this.onlineCount = onlineCount
           this.vehicletotal = vehicletotal
         })
-        .catch((err) => {
+        .catch(err => {
           throw err
         })
     },
@@ -268,12 +277,11 @@ export default {
       children.forEach(child => {
         if (child.children.length) {
           this.recursionTree(child.children)
-        } else if (!child.children.length && child.vehicles.length) {
+        } else if (!child.children.length && child.vehicles) {
           child.children = child.vehicles
           child.children.forEach(item => {
             item.unitName = item.plateNum
           })
-          console.log(child.children, 'children')
         }
       })
     },
@@ -289,8 +297,9 @@ export default {
       unitVehicle({ unitName: '' })
         .then(res => {
           const { data } = res
-          this.getTreeDeep(data)
           console.log(data)
+          this.getTreeDeep(data)
+
           this.treeData = data
           this.treeLoading = false
         })
@@ -502,5 +511,53 @@ export default {
 
 ::v-deep .el-loading-mask {
   background-color: #1C2F41;
+}
+
+.expand-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent transparent #fff transparent;
+  position: absolute;
+  bottom: 0;
+  left: 60%;
+  cursor: pointer;
+}
+
+.top-arrow {
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #ccc;
+  border-left: 2px solid #ccc;
+  transform: rotate(45deg);
+  position: relative;
+  top: 35px;
+  left: 10px;
+}
+
+.close-symbol {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border-width: 15px;
+  border-style: solid;
+  border-color:  transparent  transparent #fff  transparent;
+  position: absolute;
+  bottom: 200px;
+  left: 60%;
+  cursor: pointer;
+}
+
+.bottom-arrow {
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid #ccc;
+  border-right: 2px solid #ccc;
+  transform: rotate(45deg);
+  position: relative;
+  top: 30px;
+  left: 10px;
 }
 </style>

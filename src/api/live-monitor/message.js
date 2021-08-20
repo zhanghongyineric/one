@@ -36,3 +36,12 @@ export function vehicleLocationInformation(data) {
     data
   })
 }
+
+// 输入关键字返回企业名称
+export function selectUnitName(data) {
+  return request({
+    url: '/selectUnitName',
+    method: 'POST',
+    data
+  })
+}
