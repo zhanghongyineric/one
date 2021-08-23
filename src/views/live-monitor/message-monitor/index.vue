@@ -155,14 +155,14 @@ export default {
   },
   mounted() {
     this.getmap()
-    this.startInterval()
+    // this.startInterval()
   },
   deactivated() {
-    clearInterval(this.timer)
-    this.timer = null
+    // clearInterval(this.timer)
+    // this.timer = null
   },
   activated() {
-    this.startInterval()
+    // this.startInterval()
   },
   methods: {
     startInterval() {
