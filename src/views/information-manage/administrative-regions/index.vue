@@ -4,12 +4,12 @@
       <div class="table-page-search-wrapper">
         <el-form
           class="table-page-search-wrapper search"
-          label-width="45px"
+          label-width="75px"
           size="small"
         >
           <el-row :gutter="48">
             <el-col :md="8" :sm="24">
-              <el-form-item label="名称:">
+              <el-form-item label="区域名称:">
                 <el-input
                   v-model="listQuery.unitName"
                   placeholder="请输入行政区域关键字"
@@ -84,6 +84,7 @@
               v-model="dialogData.upUnitName"
               :options="cityOptions"
               size="small"
+              :props="props"
             />
           </el-form-item>
         </el-form>
@@ -104,8 +105,6 @@ import {
   upUnitName
 } from '@/api/information-manage/regions'
 import Pagination from '@/components/Pagination'
-import { CodeToText, regionDataPlus } from 'element-china-area-data'
-import cityNameToCode from '@/utils/SiChuanCityCode'
 
 export default {
   name: 'AdministrativeRegions',
@@ -127,10 +126,16 @@ export default {
         zoneId: [{ required: true, message: '请输入行政区域编码', trigger: 'blur' }],
         upUnitName: [{ required: true, message: '请选择上级区域', trigger: 'change' }]
       },
-      cityOptions: regionDataPlus,
+      cityOptions: [],
       dialogData: {},
       upUnitData: [],
-      currentRow: {}
+      currentRow: {},
+      props: {
+        label: 'unitName',
+        value: 'unitName',
+        expandTrigger: 'hover',
+        checkStrictly: true
+      }
     }
   },
   mounted() {
@@ -155,9 +160,11 @@ export default {
     handleUpdate(row) {
       this.update = true
       this.dialogData = { ...row }
-      this.dialogData.upUnitName = cityNameToCode(this.dialogData.upUnitName)
       this.currentRow = row
       this.visible = true
+      this.$nextTick(_ => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     handleDelete(row) {
       this.$confirm('确定删除该条数据？')
@@ -194,11 +201,22 @@ export default {
     getUpUnitName() {
       upUnitName()
         .then(res => {
-          this.upUnitData = res.data
+          const { data } = res
+          this.deleteEmptyChildren(data[0])
+          this.upUnitData = data
+          this.cityOptions = data
         })
         .catch(err => {
           throw err
         })
+    },
+    deleteEmptyChildren(value) {
+      if (!value.children.length) value.children = null
+      else {
+        value.children.forEach(item => {
+          this.deleteEmptyChildren(item)
+        })
+      }
     },
     resetQuery() {
       this.listQuery = {
@@ -211,18 +229,22 @@ export default {
     addRegion() {
       this.update = false
       this.visible = true
+      this.$nextTick(_ => {
+        this.$refs['dialogForm'].clearValidate()
+      })
     },
     closeDialog() {
       this.visible = false
+      setTimeout(() => {
+        this.dialogData = {}
+      }, 500)
     },
     submit() {
       this.$refs.dialogForm.validate(valid => {
         if (valid) {
           this.listloading = true
           const { length } = this.dialogData.upUnitName
-          if (!this.dialogData.upUnitName[length - 1]) {
-            this.dialogData.upUnitName = CodeToText[this.dialogData.upUnitName[length - 2]]
-          } else this.dialogData.upUnitName = CodeToText[this.dialogData.upUnitName[length - 1]]
+          this.dialogData.upUnitName = this.dialogData.upUnitName[length - 1]
           this.dialogData.aptitudeLevel = '15'
           this.dialogData.upUnitId = this.getUpUnitId(this.dialogData.upUnitName)
 
@@ -230,7 +252,6 @@ export default {
             this.dialogData.id = this.currentRow.id.toString()
             this.dialogData.unitId = this.currentRow.unitId
           }
-
           save({ ...this.dialogData })
             .then(_ => {
               this.getTableData()
@@ -253,17 +274,19 @@ export default {
     },
     getUpUnitId(name) {
       let unitId = ''
-      if (name === this.upUnitData[0].unitName) return this.upUnitData[0].unitId
-      else unitId = this.recursionUnitData(this.upUnitData[0].children, name)
+      if (name === this.cityOptions[0].unitName) return this.cityOptions[0].unitId
+      else unitId = this.recursionUnitData(this.cityOptions[0].children, name)
       return unitId
     },
     recursionUnitData(children, name) {
-      let id = ''
-      children.forEach(v => {
-        if (v.unitName === name) id = v.unitId
-        else this.recursionUnitData(v.children, name)
-      })
-      return id
+      if (children) {
+        let id = ''
+        children.forEach(v => {
+          if (v.unitName === name) id = v.unitId
+          else this.recursionUnitData(v.children, name)
+        })
+        return id
+      }
     }
   }
 }
