@@ -66,6 +66,7 @@
         custom-class="base-dialog dialog-col-1"
         :visible.sync="visible"
         :title="update ? '修改' : '新增'"
+        :close-on-click-modal="false"
       >
         <el-form
           ref="dialogForm"
@@ -259,6 +260,9 @@ export default {
                 message: this.update ? '修改成功' : '新增成功',
                 type: 'success'
               })
+              setTimeout(() => {
+                this.dialogData = {}
+              }, 500)
             })
             .catch(err => {
               this.listloading = false
