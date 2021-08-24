@@ -104,8 +104,8 @@ import {
   upUnitName
 } from '@/api/information-manage/regions'
 import Pagination from '@/components/Pagination'
-import { CodeToText, regionDataPlus, TextToCode } from 'element-china-area-data'
-import getAreaText from '@/utils/AreaCodeToText'
+import { CodeToText, regionDataPlus } from 'element-china-area-data'
+import cityNameToCode from '@/utils/SiChuanCityCode'
 
 export default {
   name: 'AdministrativeRegions',
@@ -153,13 +153,43 @@ export default {
         })
     },
     handleUpdate(row) {
-      console.log(TextToCode[''], row.upUnitName, '修改')
+      this.update = true
+      this.dialogData = { ...row }
+      this.dialogData.upUnitName = cityNameToCode(this.dialogData.upUnitName)
       this.currentRow = row
       this.visible = true
-    //   console.log(getAreaText(TextToCode[row.upUnitName]))
     },
     handleDelete(row) {
-      console.log(row, '删除')
+      this.$confirm('确定删除该条数据？')
+        .then(_ => {
+          this.listLoading = true
+          const { unitId } = row
+          deleteRegions({ unitId })
+            .then(() => {
+              this.$message({
+                message: '删除成功',
+                type: 'success'
+              })
+              if (this.tableData.length === 1 && this.listQuery.pageNum !== 1) {
+                this.listQuery.pageNum--
+              }
+              this.getTableData()
+            })
+            .catch(err => {
+              this.$message({
+                message: '删除失败',
+                type: 'error'
+              })
+              throw err
+            })
+        })
+        .catch(err => {
+          this.$message({
+            message: '已取消删除',
+            type: 'info'
+          })
+          throw err
+        })
     },
     getUpUnitName() {
       upUnitName()
@@ -195,12 +225,26 @@ export default {
           } else this.dialogData.upUnitName = CodeToText[this.dialogData.upUnitName[length - 1]]
           this.dialogData.aptitudeLevel = '15'
           this.dialogData.upUnitId = this.getUpUnitId(this.dialogData.upUnitName)
+
+          if (this.update) {
+            this.dialogData.id = this.currentRow.id.toString()
+            this.dialogData.unitId = this.currentRow.unitId
+          }
+
           save({ ...this.dialogData })
             .then(_ => {
               this.getTableData()
+              this.$message({
+                message: this.update ? '修改成功' : '新增成功',
+                type: 'success'
+              })
             })
             .catch(err => {
               this.listloading = false
+              this.$message({
+                message: this.update ? '修改失败' : '新增失败',
+                type: 'error'
+              })
               throw err
             })
           this.visible = false

@@ -1,4 +1,4 @@
-const CITY_MAP = new Map([
+const cityMap = new Map([
   ['成都市', '510100'],
   ['自贡市', '510300'],
   ['攀枝花市', '510400'],
@@ -22,4 +22,12 @@ const CITY_MAP = new Map([
   ['凉山彝族自治州', '513400']
 ])
 
-export default CITY_MAP
+const cityNameToCode = (name) => {
+  if (name === '四川省') return ['510000', '']
+  const codeArr = ['510000']
+  codeArr.push(cityMap.get(name))
+  codeArr.push('')
+  return codeArr
+}
+
+export default cityNameToCode
