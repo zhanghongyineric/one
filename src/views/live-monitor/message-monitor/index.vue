@@ -158,16 +158,16 @@ export default {
   },
   mounted() {
     this.getmap()
-    // this.startInterval()
+    this.startInterval()
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
   },
-  // deactivated() {
-  //   clearInterval(this.timer)
-  //   this.timer = null
-  // },
-  // activated() {
-  //   this.startInterval()
-  // },
+  deactivated() {
+    clearInterval(this.timer)
+    this.timer = null
+  },
+  activated() {
+    this.startInterval()
+  },
   methods: {
     startInterval() {
       this.timer = setInterval(() => {
