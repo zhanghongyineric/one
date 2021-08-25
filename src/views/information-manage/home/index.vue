@@ -226,7 +226,7 @@
             </div>
             <div class="box-monitor">
               <span class="title">趋势分析</span>
-              <line-chart />
+              <line-chart :chart-data="trendData" />
             </div>
           </el-col>
         </el-row>
@@ -284,7 +284,8 @@ import {
   facilitatorAssessmentAnalysis,
   mechanismAssessmentAnalysis,
   unitAssessmentAnalysis,
-  onlineVehicle
+  onlineVehicle,
+  trendAnalysis
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
@@ -387,7 +388,8 @@ export default {
       facilitatorChartData: [],
       mechanismChartData: [],
       unitAssessChartData: [],
-      timer: null
+      timer: null,
+      trendData: []
     }
   },
   created() {
@@ -403,6 +405,7 @@ export default {
     this.getMechanism()
     this.getUnit()
     this.getOnlineVehicle()
+    this.getTrendAnalysis()
   },
   // mounted() {
   //   this.intervalOnlineCars()
@@ -418,7 +421,7 @@ export default {
     intervalOnlineCars() {
       this.timer = setInterval(() => {
         this.getOnlineVehicle()
-      }, 5000)
+      }, 30000)
     },
     getFacilitator() {
       facilitatorAssessmentAnalysis()
@@ -434,6 +437,15 @@ export default {
               value: data.dynamicDataQualifiedRate * 100
             }
           ]
+        })
+    },
+    getTrendAnalysis() {
+      trendAnalysis()
+        .then(res => {
+          this.trendData = Object.values(res.data[0])
+        })
+        .catch(err => {
+          throw err
         })
     },
     getMechanism() {

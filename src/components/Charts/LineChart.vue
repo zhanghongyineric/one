@@ -16,11 +16,23 @@ export default {
     height: {
       type: String,
       default: '100%'
+    },
+    chartData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
       chart: null
+    }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val)
+      }
     }
   },
   mounted() {
@@ -112,20 +124,7 @@ export default {
             emphasis: {
               focus: 'series'
             },
-            data: [
-              2000,
-              5000,
-              1200,
-              3000,
-              3300,
-              7000,
-              8000,
-              6000,
-              6100,
-              4100,
-              3900,
-              3500
-            ]
+            data: this.chartData
           }
         ]
       }

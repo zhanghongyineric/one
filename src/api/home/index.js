@@ -63,3 +63,12 @@ export function onlineVehicle(data) {
     data
   })
 }
+
+// 趋势分析
+export function trendAnalysis(data) {
+  return request({
+    url: '/trendAnalysis',
+    method: 'POST',
+    data
+  })
+}
