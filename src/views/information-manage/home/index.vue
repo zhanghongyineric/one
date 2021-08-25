@@ -407,16 +407,16 @@ export default {
     this.getOnlineVehicle()
     this.getTrendAnalysis()
   },
-  // mounted() {
-  //   this.intervalOnlineCars()
-  // },
-  // activated() {
-  //   this.intervalOnlineCars()
-  // },
-  // deactivated() {
-  //   clearInterval(this.timer)
-  //   this.timer = null
-  // },
+  mounted() {
+    this.intervalOnlineCars()
+  },
+  activated() {
+    this.intervalOnlineCars()
+  },
+  deactivated() {
+    clearInterval(this.timer)
+    this.timer = null
+  },
   methods: {
     intervalOnlineCars() {
       this.timer = setInterval(() => {
