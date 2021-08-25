@@ -137,7 +137,8 @@ export default {
       checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
       timer: null, // 定时调用获取在线车辆数接口
-      searchKeys: []
+      searchKeys: [],
+      labelArr: []
     }
   },
   watch: {
@@ -157,15 +158,16 @@ export default {
   },
   mounted() {
     this.getmap()
-    this.startInterval()
+    // this.startInterval()
+    this.labelArr = document.getElementsByClassName('el-tree-node__label')
   },
-  deactivated() {
-    clearInterval(this.timer)
-    this.timer = null
-  },
-  activated() {
-    this.startInterval()
-  },
+  // deactivated() {
+  //   clearInterval(this.timer)
+  //   this.timer = null
+  // },
+  // activated() {
+  //   this.startInterval()
+  // },
   methods: {
     startInterval() {
       this.timer = setInterval(() => {
@@ -294,18 +296,18 @@ export default {
     search() {
       if (this.searchText) {
         this.searchKeys = []
+        document.getElementsByClassName('left-box')[0].scrollTop = 0
         if (this.searchCond === 'plateNum') this.getDataByPlateNum()
         else this.getDataByUnitName()
-        const labelArr = document.getElementsByClassName('el-tree-node__label')
         setTimeout(() => {
-          labelArr.forEach(item => {
+          this.labelArr.forEach(item => {
             if (item.innerText === this.searchText) {
-              setTimeout(() => {
-                document.getElementsByClassName('left-box')[0].scrollTop = item.offsetTop
-              }, 100)
+              console.log(document.getElementsByClassName('left-box')[0].scrollTop, 'scrollTop')
+              console.log(item.offsetTop, 'offsetTop')
+              document.getElementsByClassName('left-box')[0].scrollTop = item.offsetTop
             }
           })
-        }, 200)
+        }, 500)
       }
     },
     getDataByPlateNum() {
