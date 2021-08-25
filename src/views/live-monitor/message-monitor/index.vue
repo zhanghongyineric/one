@@ -26,7 +26,7 @@
           v-model="searchText"
           :fetch-suggestions="searchSuggestions"
           placeholder="请输入内容"
-          @select="selectSuggestion"
+          @select="search"
         >
           <el-select slot="prepend" v-model="searchCond" placeholder="请选择">
             <el-option label="车牌号" value="plateNum" />
@@ -57,6 +57,7 @@
           :highlight-current="true"
           expand-on-click-node
           node-key="unitName"
+          :default-expanded-keys="searchKeys"
           @check="checkNode"
         />
       </div>
@@ -135,7 +136,8 @@ export default {
       checkedCars: 0, // 已选中的车辆数
       checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
-      timer: null // 定时调用获取在线车辆数接口
+      timer: null, // 定时调用获取在线车辆数接口
+      searchKeys: []
     }
   },
   watch: {
@@ -277,38 +279,6 @@ export default {
         return
       }
     },
-    selectSuggestion(item) {
-      this.containerLoading = true
-      if (this.searchCond === 'plateNum') {
-        const req = [{ plateNum: item.plateNum }]
-        vehicleLocationInformation(req)
-          .then((res) => {
-            const { data } = res
-            this.markers.push({
-              icon: 'https://webapi.amap.com/images/car.png',
-              position: [data[0].latitude, data[0].longitude]
-            })
-            let geocoder; let lnglat = []
-            AMap.plugin('AMap.Geocoder', function() {
-              geocoder = new AMap.Geocoder({ city: '' })
-            })
-            data.forEach(item => {
-              lnglat = [item.latitude, item.longitude]
-              geocoder.getAddress(lnglat, function(status, result) {
-                if (status === 'complete' && result.info === 'OK') {
-                  item.position = result.regeocode.formattedAddress
-                }
-              })
-            })
-            setTimeout(() => {
-              this.tableData = data
-            }, 500)
-          })
-          .catch(err => {
-            throw err
-          })
-      }
-    },
     getVehicleNumber() {
       vehicleNumber()
         .then(res => {
@@ -322,18 +292,39 @@ export default {
         })
     },
     search() {
-      if (this.searchCond === 'plateNum') {
-        this.getDataByPlateNum()
-      } else {
-        this.getUnitVehicle()
+      if (this.searchText) {
+        this.searchKeys = []
+        if (this.searchCond === 'plateNum') this.getDataByPlateNum()
+        else this.getDataByUnitName()
+        const labelArr = document.getElementsByClassName('el-tree-node__label')
+        setTimeout(() => {
+          labelArr.forEach(item => {
+            if (item.innerText === this.searchText) {
+              setTimeout(() => {
+                document.getElementsByClassName('left-box')[0].scrollTop = item.offsetTop
+              }, 100)
+            }
+          })
+        }, 200)
       }
     },
     getDataByPlateNum() {
-      selectPlateNum({
-        plateNum: this.searchText
-      })
+      selectPlateNum({ plateNum: this.searchText })
         .then(res => {
-          console.log(res, '车牌')
+          const { data } = res
+          this.searchKeys.push(data[0].unitName)
+          this.$refs.unitTree.setCurrentKey(data[0].plateNum)
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    getDataByUnitName() {
+      selectUnitName({ unitName: this.searchText })
+        .then(res => {
+          const { data } = res
+          this.searchKeys.push(data[0].unitName)
+          this.$refs.unitTree.setCurrentKey(data[0].unitName)
         })
         .catch(err => {
           throw err
@@ -504,6 +495,10 @@ export default {
 
 ::v-deep .el-collapse-item__header {
   border: 0 !important;
+}
+
+::v-deep .el-tree-node.is-current > .el-tree-node__content {
+  background-color: #060D16 !important;
 }
 
 ::v-deep .el-tree {
