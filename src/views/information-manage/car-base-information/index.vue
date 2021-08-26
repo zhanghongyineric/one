@@ -1561,10 +1561,10 @@ export default {
         .then(res => {
           const { data } = res
           if (data) {
-            data.serverIpPort = data.serverIpPort.toString()
-            data.communicationMode = data.communicationMode.toString()
-            data.communicationProtocolVersion = data.communicationProtocolVersion.toString()
-            data.functions = data.functions.split(',')
+            data.serverIpPort = data.serverIpPort ? data.serverIpPort.toString() : null
+            data.communicationMode = data.communicationMode ? data.communicationMode.toString() : null
+            data.communicationProtocolVersion = data.communicationProtocolVersion ? data.communicationProtocolVersion.toString() : null
+            data.functions = data.functions ? data.functions.split(',') : null
             this.accessFormData = {
               ...data,
               id: data.id,
@@ -1584,6 +1584,9 @@ export default {
         .catch(err => {
           throw err
         })
+      this.$nextTick(() => {
+        this.$refs['fourForm'].clearValidate()
+      })
     },
     // 保险信息详情
     showInsuranceDetail(row) {
@@ -1738,9 +1741,10 @@ export default {
       this.$refs['fourForm'].validate(valid => {
         if (valid) {
           this.accessFormData.vehicleId = this.currentRow.vehicleId
+          this.accessFormData.plateNum = this.currentRow.plateNum
           this.accessFormData.functions = this.accessFormData.functions.join(',')
           AccessInstallationSave({ ...this.accessFormData })
-            .then(res => {
+            .then(_ => {
               this.closeAccessDialog()
               this.$message({
                 type: 'success',
