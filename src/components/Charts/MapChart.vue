@@ -59,14 +59,9 @@ export default {
                     seriesIndex: 0,
                     dataIndex: i
                   })
-                  this.chart.dispatchAction({
-                    type: 'hideTip',
-                    seriesIndex: 0,
-                    dataIndex: i
-                  })
                 }
               }
-            }, 2500)
+            }, 2700)
             index++
             if (index > length) index = 0
           }, 3000)

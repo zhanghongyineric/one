@@ -72,3 +72,12 @@ export function trendAnalysis(data) {
     data
   })
 }
+
+// 报警事件
+export function alarmEvent(data) {
+  return request({
+    url: '/alarmEvent',
+    method: 'POST',
+    data
+  })
+}

@@ -174,18 +174,16 @@
               <el-table
                 :data="carList"
                 fit
-                border
                 highlight-current-row
                 style="width:100%;margin-top: 20px;"
                 :header-cell-style="tableHeaderColor"
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
+                height="80%"
               >
-                <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip />
-                <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateNum" label="车牌号码" width="100px" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateColor" label="车牌颜色" width="100px" align="center" show-overflow-tooltip />
                 <el-table-column prop="vehicleType" label="车辆类型" show-overflow-tooltip align="center" />
-                <!-- <el-table-column prop="driver" label="驾驶员" align="center" show-overflow-tooltip /> -->
-                <!-- <el-table-column prop="mile" label="行驶里程" align="center" show-overflow-tooltip /> -->
                 <el-table-column prop="vehicleSumFactor" label="安全系数" align="center" show-overflow-tooltip />
               </el-table>
             </div>
@@ -204,18 +202,17 @@
               <el-table
                 :data="eventList"
                 fit
-                border
                 highlight-current-row
                 style="width:100%;margin-top: 20px;"
                 :header-cell-style="tableHeaderColor"
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
+                height="80%"
               >
-                <el-table-column prop="number" label="车牌号码" align="center" show-overflow-tooltip />
-                <el-table-column prop="color" label="车牌颜色" align="center" show-overflow-tooltip />
-                <el-table-column prop="time" label="定位时间" align="center" show-overflow-tooltip />
-                <el-table-column prop="kind" label="事件类型" align="center" show-overflow-tooltip />
-                <el-table-column prop="level" label="严重程度" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip width="90px" />
+                <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip width="80px" />
+                <el-table-column prop="armTimeStart" label="报警时间" align="center" show-overflow-tooltip width="170px" />
+                <el-table-column prop="armName" label="报警类型" align="center" show-overflow-tooltip />
               </el-table>
             </div>
             <div class="box-monitor">
@@ -225,7 +222,7 @@
               <mutil-pie-chart :chart-data="unitAssessChartData" :title="'运输企业'" />
             </div>
             <div class="box-monitor">
-              <span class="title">趋势分析</span>
+              <span class="title">报警趋势分析</span>
               <line-chart :chart-data="trendData" />
             </div>
           </el-col>
@@ -285,7 +282,8 @@ import {
   mechanismAssessmentAnalysis,
   unitAssessmentAnalysis,
   onlineVehicle,
-  trendAnalysis
+  trendAnalysis,
+  alarmEvent
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
@@ -356,29 +354,7 @@ export default {
       carChartData: [],
       companyChartXData: [],
       companyChartYData: [],
-      eventList: [
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        }
-      ],
+      eventList: [],
       carList: [],
       totalOnlineCars: 0,
       mapData: [],
@@ -407,9 +383,10 @@ export default {
     this.getUnit()
     this.getOnlineVehicle()
     this.getTrendAnalysis()
+    this.getAlarmEvent()
   },
   mounted() {
-    // this.intervalOnlineCars()
+    this.intervalOnlineCars()
   },
   activated() {
     this.intervalOnlineCars()
@@ -419,6 +396,15 @@ export default {
     this.timer = null
   },
   methods: {
+    getAlarmEvent() {
+      alarmEvent()
+        .then(res => {
+          this.eventList = res.data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     intervalOnlineCars() {
       this.timer = setInterval(() => {
         this.getOnlineVehicle()
@@ -443,7 +429,11 @@ export default {
     getTrendAnalysis() {
       trendAnalysis()
         .then(res => {
-          this.trendData = Object.values(res.data[0])
+          const { data } = res
+          for (let i = 1; i < 13; i++) {
+            if (!data[0][i]) data[0][i] = 0
+          }
+          this.trendData = Object.values(data[0])
         })
         .catch(err => {
           throw err
@@ -556,7 +546,7 @@ export default {
         pageSize: 10
       }).then(res => {
         const { data } = res
-        data.length > 6 ? this.carList = data.slice(0, 6) : this.carList = data
+        this.carList = data
       })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -950,9 +940,13 @@ p {
     opacity: 0.5
 }
 
+::v-deep .el-table {
+  background-color: #151D2C !important;
+}
+
 ::v-deep .el-table tbody tr:hover>td {
-     background: #122230 !important
-  }
+  background: #122230 !important;
+}
 
 ::v-deep .el-table__body tr.current-row > td {
   background-color: #122230 !important;
