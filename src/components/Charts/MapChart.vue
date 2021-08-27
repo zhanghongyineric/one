@@ -28,7 +28,8 @@ export default {
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      mapDataMap: new Map()
     }
   },
   watch: {
@@ -36,6 +37,40 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val)
+        if (this.mapData.length) {
+          let index = 0
+          const { length } = this.mapData
+          setInterval(() => {
+            this.chart.dispatchAction({
+              type: 'highlight',
+              seriesIndex: 0,
+              dataIndex: index
+            })
+            this.chart.dispatchAction({
+              type: 'showTip',
+              seriesIndex: 0,
+              dataIndex: index
+            })
+            setTimeout(() => {
+              for (let i = 0; i < length + 1; i++) {
+                if (i !== index) {
+                  this.chart.dispatchAction({
+                    type: 'downplay',
+                    seriesIndex: 0,
+                    dataIndex: i
+                  })
+                  this.chart.dispatchAction({
+                    type: 'hideTip',
+                    seriesIndex: 0,
+                    dataIndex: i
+                  })
+                }
+              }
+            }, 2500)
+            index++
+            if (index > length) index = 0
+          }, 3000)
+        }
       }
     }
   },
@@ -62,6 +97,7 @@ export default {
         series: [{
           type: 'map',
           mapType: '四川',
+          selectedMode: false,
           label: {
             show: true,
             normal: {
@@ -78,7 +114,7 @@ export default {
           itemStyle: {
             normal: {
               label: {
-                show: true// 默认是否显示省份名称
+                show: true
               },
               borderWidth: 1,
               borderColor: '#17CCDA',
@@ -86,10 +122,10 @@ export default {
             },
             emphasis: {
               label: {
-                show: true// 选中状态是否显示省份名称
+                show: true
               },
               areaStyle: {
-                color: '#17808F'// 选中状态的地图板块颜色
+                color: '#17808F'
               },
               areaColor: '#19F1FF'
             }

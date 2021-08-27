@@ -200,7 +200,7 @@
           </el-col>
           <el-col :span="8">
             <div class="box-monitor">
-              <span class="title">事件处理</span>
+              <span class="title">报警事件</span>
               <el-table
                 :data="eventList"
                 fit
@@ -389,7 +389,8 @@ export default {
       mechanismChartData: [],
       unitAssessChartData: [],
       timer: null,
-      trendData: []
+      trendData: [],
+      mapDataMap: new Map()
     }
   },
   created() {
@@ -408,7 +409,7 @@ export default {
     this.getTrendAnalysis()
   },
   mounted() {
-    this.intervalOnlineCars()
+    // this.intervalOnlineCars()
   },
   activated() {
     this.intervalOnlineCars()
@@ -493,6 +494,10 @@ export default {
         .then(res => {
           const { data: { realTimetotal, onlineVehicles }} = res
           this.totalOnlineCars = realTimetotal
+          this.mapData = []
+          this.mapChartData = [
+            ['city', '当前在线', '累计在线']
+          ]
           onlineVehicles.forEach(item => {
             const city = CodeToText[getAreaText(item.zoneId)[1]]
             const { realTimeCount, onlineCount } = item
@@ -502,6 +507,21 @@ export default {
             })
             this.mapChartData.push([city, realTimeCount, onlineCount])
           })
+
+          this.mapData.forEach(v => {
+            const foo = this.mapDataMap.get(v.name)
+            if (!foo) this.mapDataMap.set(v.name, v.value)
+            else this.mapDataMap.set(v.name, (v.value + foo))
+          })
+
+          this.mapData = []
+          for (const item of this.mapDataMap) {
+            this.mapData.push({
+              name: item[0],
+              value: item[1]
+            })
+          }
+
           // 同一个市可能有很多数据，应将同一个市的所有数据相加
           if (this.mapChartData[1]) {
             const { length } = this.mapChartData
