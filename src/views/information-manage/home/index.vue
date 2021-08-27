@@ -151,6 +151,7 @@
             <div class="box-monitor">
               <span class="title">重点关注车辆列表</span>
               <el-table
+                ref="carTable"
                 :data="carList"
                 fit
                 highlight-current-row
@@ -180,6 +181,7 @@
             <div class="box-monitor">
               <span class="title">报警事件</span>
               <el-table
+                ref="eventTable"
                 :data="eventList"
                 fit
                 highlight-current-row
@@ -368,6 +370,18 @@ export default {
   },
   mounted() {
     this.intervalOnlineCars()
+    const etable = this.$refs.eventTable.bodyWrapper
+    const ctable = this.$refs.carTable.bodyWrapper
+    setInterval(() => {
+      etable.scrollTop += 1
+      ctable.scrollTop += 1
+      if (etable.scrollTop + etable.clientHeight >= etable.scrollHeight) {
+        etable.scrollTop = 0
+      }
+      if (ctable.scrollTop + ctable.clientHeight >= ctable.scrollHeight) {
+        ctable.scrollTop = 0
+      }
+    }, 100)
   },
   activated() {
     this.intervalOnlineCars()
