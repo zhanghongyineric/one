@@ -792,7 +792,7 @@ p {
   right: 0;
   left: 0;
   padding-left: 20px;
-  background-color: #151D2C;
+  background-color: #0E1521;
   padding-top: 10px;
 }
 
