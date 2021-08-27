@@ -29,7 +29,8 @@ export default {
   data() {
     return {
       chart: null,
-      mapDataMap: new Map()
+      mapDataMap: new Map(),
+      timer: null
     }
   },
   watch: {
@@ -37,10 +38,12 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val)
+        clearInterval(this.timer)
+        this.timer = null
         if (this.mapData.length) {
           let index = 0
           const { length } = this.mapData
-          setInterval(() => {
+          this.timer = setInterval(() => {
             this.chart.dispatchAction({
               type: 'highlight',
               seriesIndex: 0,

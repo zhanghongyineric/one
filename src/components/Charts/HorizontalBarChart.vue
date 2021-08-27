@@ -43,14 +43,41 @@ export default {
   watch: {
     xData: {
       deep: true,
-      handler() {
+      handler(val) {
         this.setOptions()
       }
     },
     yData: {
       deep: true,
-      handler() {
+      handler(val) {
         this.setOptions()
+        let index = 0
+        const { length } = this.yData
+        setInterval(() => {
+          this.chart.dispatchAction({
+            type: 'highlight',
+            seriesIndex: 0,
+            dataIndex: index
+          })
+          this.chart.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: index
+          })
+          setTimeout(() => {
+            for (let i = 0; i < length + 1; i++) {
+              if (i !== index) {
+                this.chart.dispatchAction({
+                  type: 'downplay',
+                  seriesIndex: 0,
+                  dataIndex: i
+                })
+              }
+            }
+          }, 2700)
+          index++
+          if (index >= length) index = 0
+        }, 3000)
       }
     }
   },

@@ -32,6 +32,33 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val)
+        let index = 0
+        const { length } = this.chartData
+        setInterval(() => {
+          this.chart.dispatchAction({
+            type: 'highlight',
+            seriesIndex: 0,
+            dataIndex: index
+          })
+          this.chart.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: index
+          })
+          setTimeout(() => {
+            for (let i = 0; i < length + 1; i++) {
+              if (i !== index) {
+                this.chart.dispatchAction({
+                  type: 'downplay',
+                  seriesIndex: 0,
+                  dataIndex: i
+                })
+              }
+            }
+          }, 2700)
+          index++
+          if (index >= length) index = 0
+        }, 3000)
       }
     }
   },
@@ -57,14 +84,11 @@ export default {
       const option = {
         color: colors,
         tooltip: {
-          trigger: 'none',
+          trigger: 'axis',
           axisPointer: {
             type: 'cross'
           }
         },
-        // legend: {
-        //   data: ['数量']
-        // },
         grid: {
           top: 70,
           bottom: 50
@@ -84,8 +108,7 @@ export default {
             axisPointer: {
               label: {
                 formatter: function(params) {
-                  return '数量  ' + params.value +
-                    (params.seriesData.length ? '：' + params.seriesData[0].data : '')
+                  return params.value
                 }
               }
             },

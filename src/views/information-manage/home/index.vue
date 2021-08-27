@@ -129,27 +129,6 @@
             </div>
           </el-col>
         </el-row>
-        <div class="closed-box">
-          <div class="closed-box-inner">
-            <!-- <el-row :gutter="20">
-              <el-col :md="8" :span="24">
-                <div class="content-box">
-                  <span>车辆概况</span>
-                </div>
-              </el-col>
-              <el-col :md="8" :span="24">
-                <div class="content-box">
-                  <span>实时在线车辆</span>
-                </div>
-              </el-col>
-              <el-col :md="8" :span="24">
-                <div class="content-box">
-                  <span>事件处理</span>
-                </div>
-              </el-col>
-            </el-row> -->
-          </div>
-        </div>
         <div class="expand-symbol" @click="showInfo = false">
           <div class="top-arrow" />
         </div>
@@ -180,6 +159,7 @@
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
                 height="80%"
+                :stripe="true"
               >
                 <el-table-column prop="plateNum" label="车牌号码" width="100px" align="center" show-overflow-tooltip />
                 <el-table-column prop="plateColor" label="车牌颜色" width="100px" align="center" show-overflow-tooltip />
@@ -208,6 +188,7 @@
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
                 height="80%"
+                :stripe="true"
               >
                 <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip width="90px" />
                 <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip width="80px" />
@@ -485,6 +466,7 @@ export default {
           const { data: { realTimetotal, onlineVehicles }} = res
           this.totalOnlineCars = realTimetotal
           this.mapData = []
+          this.mapDataMap = new Map()
           this.mapChartData = [
             ['city', '当前在线', '累计在线']
           ]
@@ -543,7 +525,7 @@ export default {
     getKeyVehicle() {
       keyVehicle({
         pageNum: 1,
-        pageSize: 10
+        pageSize: 50
       }).then(res => {
         const { data } = res
         this.carList = data
@@ -944,9 +926,13 @@ p {
   background-color: #151D2C !important;
 }
 
-::v-deep .el-table tbody tr:hover>td {
-  background: #122230 !important;
+::v-deep .el-table::before {
+  width: 0 !important;
 }
+
+::v-deep .el-table tbody tr:hover>td {
+     background: #122230 !important;
+  }
 
 ::v-deep .el-table__body tr.current-row > td {
   background-color: #122230 !important;
@@ -964,4 +950,52 @@ p {
     margin: 10px;
   }
 }
+
+::v-deep ::-webkit-scrollbar {
+  // 滚动条的背景
+  width: 1px;
+  height: 14px;
+  background: #151D2C;
+}
+
+::v-deep ::-webkit-scrollbar-track,
+::v-deep ::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  width: 10px;
+  border: 1px solid transparent;
+}
+
+::v-deep ::-webkit-scrollbar-track {
+  box-shadow: 1px 1px 5px #151D2C inset;
+}
+
+::v-deep ::-webkit-scrollbar-thumb {
+  //滚动条的滑块样式修改
+  width: 20px;
+  min-height: 20px;
+  background-clip: content-box;
+  box-shadow: 0 0 0 5px #151D2C inset;
+}
+
+::v-deep ::-webkit-scrollbar-corner {
+  background: #151D2C;
+}
+
+::v-deep .gutter {
+  width: 0px !important;
+  background-color: #151D2C !important;
+}
+
+::v-deep .el-table td {
+  border: 0 !important;
+}
+
+::v-deep .el-table th.is-leaf {
+  border: 0 !important;
+}
+
+::v-deep .el-table__row--striped td {
+  background-color: #222C3C !important;
+}
+
 </style>
