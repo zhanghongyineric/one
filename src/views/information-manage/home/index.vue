@@ -222,10 +222,10 @@
               <el-col :md="8" :span="24">
                 <div class="content-box">
                   <span class="title-text">车辆信息</span>
+                  <span class="little-num">正常：{{ carData.normal }}</span>
                   <span class="little-num">停运：{{ carData.stop }}</span>
                   <span class="little-num">注销：{{ carData.logout }}</span>
                   <span class="little-num">转出：{{ carData.out }}</span>
-                  <span class="little-num">正常：{{ carData.normal }}</span>
                   <span class="little-num">暂停：{{ carData.pause }}</span>
                 </div>
               </el-col>
@@ -389,6 +389,7 @@ export default {
     intervalOnlineCars() {
       this.timer = setInterval(() => {
         this.getOnlineVehicle()
+        this.getAlarmEvent()
       }, 30000)
     },
     getFacilitator() {

@@ -137,7 +137,6 @@ export default {
                 color: '#ccc'
               },
               formatter: function(val) {
-                console.log(val)
                 return val > 9999 ? val / 10000 + '万' : val
               }
             }
