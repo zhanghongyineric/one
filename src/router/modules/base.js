@@ -4,11 +4,11 @@ const baseRouter = [
   {
     path: '/',
     component: Layout,
-    redirect: '/InformationHome',
+    redirect: '/home',
     children: [{
-      path: 'InformationHome',
-      name: 'InformationHome',
-      component: () => import('@/views/information-manage/home'),
+      path: 'home',
+      name: 'Home',
+      component: () => import('@/views/home/index'),
       meta: { title: '首页', icon: 'el-icon-s-home', roles: ['admin'] }
     }]
   },

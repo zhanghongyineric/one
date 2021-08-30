@@ -280,7 +280,7 @@ import getAreaText from '@/utils/AreaCodeToText'
 import { CodeToText } from 'element-china-area-data'
 
 export default {
-  name: 'InformationHome',
+  name: 'Home',
   components: {
     BarChart,
     PieChart,
