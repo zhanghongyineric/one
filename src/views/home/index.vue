@@ -171,7 +171,8 @@
           </el-col>
           <el-col :span="8">
             <div class="center">
-              <span class="center-text">实时在线车辆：
+              <!-- <span class="center-text">实时在线车辆： -->
+              <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
               <map-chart :map-data="mapData" />
               <dataset-bar-chart :chart-data="mapChartData" />
