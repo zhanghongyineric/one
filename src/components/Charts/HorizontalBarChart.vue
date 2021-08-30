@@ -99,7 +99,7 @@ export default {
       this.setOptions(this.chartData)
     },
     setOptions() {
-      const colors = ['#FDEB71', '#FDEB6D', '#FCE657', '#FBE342', '#FBE131', '#F9DD1D', '#F6D602']
+      const colors = ['#FFFFCB', '#FFFEA7', '#FFFD7F', '#FFFE66', '#FFFD4A', '#FFFD29', '#FFFC01']
       this.chart.setOption({
         tooltip: {
           trigger: 'axis',
