@@ -133,8 +133,14 @@ export default {
         tooltip: {
           trigger: 'item',
           formatter: (val) => {
-            if (val.value) return `${val.name}：${val.value}辆`
-            else return `${val.name}：0辆`
+            if (val.value) {
+              return val.name + '：' + '<br/>' +
+              '当前在线：' + val.value + '辆' + '<br/>' +
+              '累计在线：' + val.data.count + '辆'
+            } else return `暂无数据`
+          },
+          textStyle: {
+            align: 'left'
           }
         }
       })

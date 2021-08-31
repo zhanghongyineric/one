@@ -88,8 +88,8 @@ export default {
           position: 'top',
           formatter: (val) => {
             return val.value[0] + '<br/>' +
-            '当前在线：' + val.value[1] + '<br/>' +
-            '累计在线：' + val.value[2]
+            '当前在线：' + val.value[1] + '辆' + '<br/>' +
+            '累计在线：' + val.value[2] + '辆'
           },
           textStyle: {
             align: 'left'

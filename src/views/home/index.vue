@@ -496,22 +496,29 @@ export default {
             const { realTimeCount, onlineCount } = item
             this.mapData.push({
               value: realTimeCount,
-              name: city
+              name: city,
+              count: onlineCount
             })
             this.mapChartData.push([city, realTimeCount, onlineCount])
           })
 
           this.mapData.forEach(v => {
-            const foo = this.mapDataMap.get(v.name)
-            if (!foo) this.mapDataMap.set(v.name, v.value)
-            else this.mapDataMap.set(v.name, (v.value + foo))
+            console.log(v, this.mapDataMap.get(v.name), 'v')
+
+            if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
+            else {
+              const val = this.mapDataMap.get(v.name)[0]
+              const count = this.mapDataMap.get(v.name)[1]
+              this.mapDataMap.set(v.name, [v.value + val, v.count + count])
+            }
           })
 
           this.mapData = []
           for (const item of this.mapDataMap) {
             this.mapData.push({
               name: item[0],
-              value: item[1]
+              value: item[1][0],
+              count: item[1][1]
             })
           }
 
