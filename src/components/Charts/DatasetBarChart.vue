@@ -85,7 +85,15 @@ export default {
           }
         },
         tooltip: {
-          position: 'top'
+          position: 'top',
+          formatter: (val) => {
+            return val.value[0] + '<br/>' +
+            '当前在线：' + val.value[1] + '<br/>' +
+            '累计在线：' + val.value[2]
+          },
+          textStyle: {
+            align: 'left'
+          }
         },
         dataset: {
           source: this.chartData

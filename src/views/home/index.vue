@@ -172,6 +172,8 @@
           <el-col :span="8">
             <div class="center">
               <!-- <span class="center-text">实时在线车辆： -->
+              <span class="center-text" style="margin-right:35px;">入网车辆：
+                <span class="center-num">{{ aCars }}</span> 辆</span>
               <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
               <map-chart :map-data="mapData" />
@@ -186,7 +188,7 @@
                 :data="eventList"
                 fit
                 highlight-current-row
-                style="width:100%;margin-top: 20px;"
+                style="width:100%;margin-top:20px;"
                 :header-cell-style="tableHeaderColor"
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
@@ -341,6 +343,7 @@ export default {
       eventList: [],
       carList: [],
       totalOnlineCars: 0,
+      aCars: 0,
       mapData: [],
       mapChartData: [
         ['city', '当前在线', '累计在线']
@@ -351,6 +354,7 @@ export default {
       timer: null,
       trendData: [],
       mapDataMap: new Map()
+
     }
   },
   created() {
@@ -479,8 +483,9 @@ export default {
     getOnlineVehicle() {
       onlineVehicle()
         .then(res => {
-          const { data: { realTimetotal, onlineVehicles }} = res
+          const { data: { realTimetotal, onlineVehicles, a }} = res
           this.totalOnlineCars = realTimetotal
+          this.aCars = a
           this.mapData = []
           this.mapDataMap = new Map()
           this.mapChartData = [
