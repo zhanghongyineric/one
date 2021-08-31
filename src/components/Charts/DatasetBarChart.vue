@@ -92,8 +92,10 @@ export default {
             '累计在线：' + val.value[2] + '辆'
           },
           textStyle: {
-            align: 'left'
-          }
+            align: 'left',
+            color: '#fff'
+          },
+          backgroundColor: '#151D2C'
         },
         dataset: {
           source: this.chartData

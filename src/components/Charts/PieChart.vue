@@ -95,7 +95,11 @@ export default {
       const colorList = ['#72E1DE', '#6D9DE0', '#339933', '#19F1FF', '#EC4472', '#FF9A90', '#C7E2F5', '#FCD967', '#17808F', '#48B078', '#2FC4FE']
       this.chart.setOption({
         tooltip: {
-          trigger: 'item'
+          trigger: 'item',
+          backgroundColor: '#151D2C',
+          textStyle: {
+            color: '#fff'
+          }
         },
         title: {
           text: '车辆概况',

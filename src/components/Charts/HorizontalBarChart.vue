@@ -105,6 +105,10 @@ export default {
           trigger: 'axis',
           axisPointer: {
             type: 'shadow'
+          },
+          backgroundColor: '#151D2C',
+          textStyle: {
+            color: '#fff'
           }
         },
         title: {

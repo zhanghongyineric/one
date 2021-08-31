@@ -87,6 +87,10 @@ export default {
           trigger: 'axis',
           axisPointer: {
             type: 'cross'
+          },
+          backgroundColor: '#151D2C',
+          textStyle: {
+            color: '#fff'
           }
         },
         grid: {
