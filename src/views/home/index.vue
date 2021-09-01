@@ -154,7 +154,6 @@
                 ref="carTable"
                 :data="carList"
                 fit
-                highlight-current-row
                 style="width:100%;margin-top: 20px;"
                 :header-cell-style="tableHeaderColor"
                 :row-style="tableRowStyle"
@@ -959,8 +958,8 @@ p {
 }
 
 ::v-deep .el-table tbody tr:hover>td {
-     background: #122230 !important;
-  }
+  background: #122230 !important;
+}
 
 ::v-deep .el-table__body tr.current-row > td {
   background-color: #122230 !important;
