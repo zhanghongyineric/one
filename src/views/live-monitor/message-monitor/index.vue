@@ -136,7 +136,6 @@ export default {
       checkedCars: 0, // 已选中的车辆数
       checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
-      timer: null, // 定时调用获取在线车辆数接口
       searchKeys: [],
       labelArr: []
     }
@@ -161,18 +160,17 @@ export default {
     this.startInterval()
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
   },
-  deactivated() {
-    clearInterval(this.timer)
-    this.timer = null
-  },
-  activated() {
-    this.startInterval()
-  },
   methods: {
     startInterval() {
-      this.timer = setInterval(() => {
+      const timer = setInterval(() => {
         this.getVehicleNumber()
-      }, 30000)
+      }, 10000)
+      this.$once('hook:deactivated', () => {
+        clearInterval(timer)
+      })
+      this.$once('hook:activated', () => {
+        this.startInterval()
+      })
     },
     checkedAll() {
       this.treeLoading = true
@@ -302,8 +300,6 @@ export default {
         setTimeout(() => {
           this.labelArr.forEach(item => {
             if (item.innerText === this.searchText) {
-              console.log(document.getElementsByClassName('left-box')[0].scrollTop, 'scrollTop')
-              console.log(item.offsetTop, 'offsetTop')
               document.getElementsByClassName('left-box')[0].scrollTop = item.offsetTop
             }
           })

@@ -350,7 +350,6 @@ export default {
       facilitatorChartData: [],
       mechanismChartData: [],
       unitAssessChartData: [],
-      timer: null,
       trendData: [],
       mapDataMap: new Map()
 
@@ -379,20 +378,9 @@ export default {
     setInterval(() => {
       etable.scrollTop += 1
       ctable.scrollTop += 1
-      if (etable.scrollTop + etable.clientHeight >= etable.scrollHeight) {
-        etable.scrollTop = 0
-      }
-      if (ctable.scrollTop + ctable.clientHeight >= ctable.scrollHeight) {
-        ctable.scrollTop = 0
-      }
+      if (etable.scrollTop + etable.clientHeight >= etable.scrollHeight) etable.scrollTop = 0
+      if (ctable.scrollTop + ctable.clientHeight >= ctable.scrollHeight) ctable.scrollTop = 0
     }, 100)
-  },
-  activated() {
-    this.intervalOnlineCars()
-  },
-  deactivated() {
-    clearInterval(this.timer)
-    this.timer = null
   },
   methods: {
     getAlarmEvent() {
@@ -405,10 +393,16 @@ export default {
         })
     },
     intervalOnlineCars() {
-      this.timer = setInterval(() => {
+      const timer = window.setInterval(() => {
         this.getOnlineVehicle()
         this.getAlarmEvent()
       }, 30000)
+      this.$once('hook:deactivated', () => {
+        clearInterval(timer)
+      })
+      this.$once('hook:activated', () => {
+        this.intervalOnlineCars()
+      })
     },
     getFacilitator() {
       facilitatorAssessmentAnalysis()

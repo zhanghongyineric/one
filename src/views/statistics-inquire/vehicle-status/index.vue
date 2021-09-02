@@ -97,14 +97,13 @@ export default {
       yData: []
     }
   },
+  mounted() {
+    this.getList()
+  },
   methods: {
-    getList() {
-
-    },
+    getList() {},
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) {
-        return 'background-color: #212F40;color: #fff;font-weight: 500;'
-      }
+      if (rowIndex === 0) return 'background-color: #212F40;color: #fff;font-weight: 500;'
     }
   }
 }
