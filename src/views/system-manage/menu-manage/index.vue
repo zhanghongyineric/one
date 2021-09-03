@@ -300,6 +300,9 @@ export default {
         ],
         system: [
           { required: true, message: '请选择所属系统', trigger: 'change' }
+        ],
+        name: [
+          { required: true, message: '路由名称不能为空', trigger: 'blur' }
         ]
       }
     }
@@ -399,8 +402,9 @@ export default {
     submitForm: function() {
       this.$refs['form'].validate(valid => {
         if (valid) {
+          const parentId = Array.isArray(this.form.parentId) ? this.form.parentId[this.form.parentId.length - 1] : this.form.parentId
           if (this.form.id !== undefined) {
-            updateMenu(this.form).then(response => {
+            updateMenu({ ...this.form, parentId }).then(response => {
               this.$notify({
                 type: 'success',
                 message: '修改成功'
@@ -409,7 +413,6 @@ export default {
               this.open = false
             })
           } else {
-            const parentId = Array.isArray(this.form.parentId) ? this.form.parentId[this.form.parentId.length - 1] : this.form.parentId
             addMenu({ ...this.form, parentId }).then(response => {
               this.$notify({
                 type: 'success',
