@@ -76,7 +76,7 @@
         height="200"
       >
         <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column prop="status" label="车辆状态" min-width="120" align="center" />
+        <el-table-column prop="status" label="ACC状态" min-width="120" align="center" />
         <el-table-column prop="time" label="上报时间" min-width="120" align="center" />
         <!-- <el-table-column prop="km" label="GPS里程(公里)" min-width="120" align="center" /> -->
         <el-table-column prop="speed" label="速度(km/h)" min-width="120" align="center" />

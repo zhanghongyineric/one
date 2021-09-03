@@ -64,7 +64,10 @@ export default {
           }
         },
         legend: {
-          data: ['蒸发量', '降水量', '平均温度']
+          data: ['货运车辆', '客运车辆', '入网率'],
+          textStyle: {
+            color: '#fff'
+          }
         },
         xAxis: [
           {
@@ -80,8 +83,8 @@ export default {
             type: 'value',
             name: '车辆数',
             min: 0,
-            max: 250,
-            interval: 50
+            max: 25000,
+            interval: 5000
             // axisLabel: {
             //   formatter: '{value} ml'
             // }
@@ -99,20 +102,20 @@ export default {
         ],
         series: [
           {
-            name: '蒸发量',
+            name: '货运车辆',
             type: 'bar',
-            data: [20, 49, 70, 232, 256]
+            data: [209, 490, 709, 2320, 2560]
           },
           {
-            name: '降水量',
+            name: '客运车辆',
             type: 'bar',
-            data: [26, 59, 90, 264, 287]
+            data: [269, 5934, 904, 2645, 2873]
           },
           {
-            name: '平均温度',
+            name: '入网率',
             type: 'line',
             yAxisIndex: 1,
-            data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+            data: [20, 22, 33, 45, 63]
           }
         ]
       })

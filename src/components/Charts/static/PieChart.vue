@@ -96,7 +96,10 @@ export default {
       this.chart.setOption({
         title: {
           text: '车辆类型入网车辆数占比',
-          left: 'left'
+          left: 'left',
+          textStyle: {
+            color: '#fff'
+          }
         },
         tooltip: {
           trigger: 'item'

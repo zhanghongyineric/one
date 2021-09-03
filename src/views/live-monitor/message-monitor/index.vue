@@ -75,7 +75,7 @@
         height="200"
       >
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="acc" label="状态" width="100" align="center">
+        <el-table-column prop="acc" label="ACC状态" width="100" align="center">
           <template v-slot="{row}">
             <span v-if="row.acc === '0'">关闭</span>
             <span v-else>开启</span>
@@ -85,6 +85,7 @@
         <el-table-column prop="unitName" show-overflow-tooltip label="所属企业" align="center" />
         <el-table-column prop="speed" label="速度" align="center" width="100" />
         <el-table-column prop="position" show-overflow-tooltip label="位置" align="center" />
+        <el-table-column prop="reportTime" show-overflow-tooltip label="上报时间" align="center" />
       </el-table>
     </div>
     <div v-show="!showTable" class="expand-symbol" @click="showTable = true">

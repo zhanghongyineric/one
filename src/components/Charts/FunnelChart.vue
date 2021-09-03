@@ -61,16 +61,18 @@ export default {
     },
     setOptions(data) {
       this.chart.setOption({
-        title: {
-          text: '漏斗图',
-          subtext: '纯属虚构'
-        },
+        // title: {
+        //   text: '入网率'
+        // },
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b} : {c}%'
         },
         legend: {
-          data: ['展现', '点击', '访问', '咨询', '订单']
+          data: ['公交车', '货运车', '包车客运', '危险运输', '其他车辆'],
+          textStyle: {
+            color: '#fff'
+          }
         },
 
         series: [
@@ -110,11 +112,11 @@ export default {
               }
             },
             data: [
-              { value: 60, name: '访问' },
-              { value: 40, name: '咨询' },
-              { value: 20, name: '订单' },
-              { value: 80, name: '点击' },
-              { value: 100, name: '展现' }
+              { value: 44, name: '公交车' },
+              { value: 57, name: '货运车' },
+              { value: 84, name: '包车客运' },
+              { value: 90, name: '危险运输' },
+              { value: 92, name: '其他车辆' }
             ]
           }
         ]
