@@ -5,15 +5,25 @@
         <el-row :gutter="48">
           <el-col :md="6" :sm="24">
             <el-form-item label="地区：">
-              <el-cascader placeholder="请选择地区" size="mini" />
+              <el-cascader
+                v-model="searchQuery.unitId"
+                placeholder="请选择地区"
+                size="mini"
+                :options="areaOptions"
+                :props="areaProps"
+              />
             </el-form-item>
           </el-col>
-          <el-col :md="8" :sm="24">
+          <el-col :md="6" :sm="24">
             <el-form-item label="统计周期：">
-              <span class="time-text">上月</span>
-              <span class="time-text active">本月</span>
+              <span
+                v-for="item in statisticalPeriod"
+                :key="item.value"
+                class="time-text"
+              >{{ item.label }}</span>
+              <!-- <span class="time-text active">本月</span>
               <span class="time-text">本季度</span>
-              <span class="time-text">本年度</span>
+              <span class="time-text">本年度</span> -->
             </el-form-item>
           </el-col>
           <el-col :md="6" :sm="24">
@@ -27,7 +37,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :md="4" :sm="24">
+          <el-col :md="6" :sm="24">
             <div class="table-page-search-submitButtons">
               <el-button size="mini" type="primary" icon="el-icon-search" style="margin-top:5px;" />
             </div>
@@ -40,7 +50,7 @@
         <line-mix-bar />
       </div>
       <div class="right-box">
-        <pie-chart style="display:inline-block;" />
+        <pie-chart :chart-data="chartData" style="display:inline-block;" />
         <funnel-chart style="display:inline-block;" />
       </div>
     </div>
@@ -69,7 +79,7 @@
         </el-table>
       </div>
       <div class="right-box">
-        <line-chart />
+        <line-chart :chart-data="chartData" />
       </div>
     </div>
   </div>
@@ -81,6 +91,10 @@ import Pagination from '@/components/Pagination'
 import FunnelChart from '@/components/Charts/FunnelChart.vue'
 import LineChart from '@/components/Charts/static/LineChart.vue'
 import PieChart from '@/components/Charts/static/PieChart.vue'
+import {
+  areaCode,
+  vehicleSystem
+} from '@/api/statistics-inquire/vehicle-status'
 
 export default {
   name: 'VehicleStatus',
@@ -92,10 +106,42 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
+      searchQuery: {
+        unitId: '800',
+        status: '2',
+        startTime: '',
+        endTime: ''
+      },
+      areaOptions: [],
+      areaProps: {
+        label: 'unitName',
+        children: 'children',
+        value: 'unitId',
+        checkStrictly: true
+      },
       total: 10,
       xData: [],
-      yData: []
+      yData: [],
+      chartData: [],
+      statisticalPeriod: [
+        {
+          label: '本月',
+          value: '2'
+        },
+        {
+          label: '本季度',
+          value: '3'
+        },
+        {
+          label: '本年度',
+          value: '4'
+        }
+      ]
     }
+  },
+  created() {
+    this.getVehicleData()
+    this.getAreaCode()
   },
   mounted() {
     this.getList()
@@ -104,6 +150,29 @@ export default {
     getList() {},
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) return 'background-color: #212F40;color: #fff;font-weight: 500;'
+    },
+    getAreaCode() {
+      areaCode()
+        .then(res => {
+          const { data } = res
+          this.deleteEmptyChilren(data[0])
+          this.areaOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    deleteEmptyChilren(data) {
+      data.children.length === 0 ? data.children = null : data.children.forEach(v => this.deleteEmptyChilren(v))
+    },
+    getVehicleData() {
+      vehicleSystem({ ...this.searchQuery })
+        .then(res => {
+          console.log(res, 'res')
+        })
+        .catch(err => {
+          throw err
+        })
     }
   }
 }
