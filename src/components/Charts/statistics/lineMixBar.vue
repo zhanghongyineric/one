@@ -4,7 +4,7 @@
 </template>
 <script>
 import * as echarts from 'echarts'
-import chartResize from './chart-resize'
+import chartResize from '../chart-resize'
 
 export default {
   mixins: [chartResize],

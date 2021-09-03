@@ -86,11 +86,11 @@
 </template>
 
 <script>
-import lineMixBar from '@/components/Charts/lineMixBar.vue'
+import lineMixBar from '@/components/Charts/statistics/lineMixBar.vue'
 import Pagination from '@/components/Pagination'
-import FunnelChart from '@/components/Charts/FunnelChart.vue'
-import LineChart from '@/components/Charts/static/LineChart.vue'
-import PieChart from '@/components/Charts/static/PieChart.vue'
+import FunnelChart from '@/components/Charts/statistics/FunnelChart.vue'
+import LineChart from '@/components/Charts/statistics/LineChart.vue'
+import PieChart from '@/components/Charts/statistics/PieChart.vue'
 import {
   areaCode,
   vehicleSystem
