@@ -424,10 +424,11 @@ export default {
       trendAnalysis()
         .then(res => {
           const { data } = res
-          for (let i = 1; i < 13; i++) {
-            if (!data[0][i]) data[0][i] = 0
-          }
-          this.trendData = Object.values(data[0])
+          // for (let i = 1; i < 13; i++) {
+          //   if (!data[0][i]) data[0][i] = 0
+          // }
+          // this.trendData = Object.values(data[0])
+          this.trendData = Object.values(data)
         })
         .catch(err => {
           throw err
