@@ -159,7 +159,7 @@ export function fetchDictionaryItem(data) {
   return request({
     url: '/dicts/item/page',
     method: 'post',
-    data
+    data: { ...data, pageSize: 999, pageNum: 1 }
   })
 }
 // 获取所有字典
