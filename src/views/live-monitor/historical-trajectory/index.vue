@@ -180,7 +180,6 @@ export default {
   methods: {
     searchType(queryString, cb) {
       if (queryString) {
-        // this.listQuery.platformName = queryString
         findPlateNum({ plateNum: queryString })
           .then(res => {
             const { data } = res

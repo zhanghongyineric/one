@@ -27,6 +27,19 @@
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="8" :sm="24">
+                <el-form-item label="所属企业:">
+                  <el-autocomplete
+                    v-model="listQuery.unitName"
+                    :fetch-suggestions="searchType"
+                    placeholder="请输入企业名称关键字"
+                    :debounce="500"
+                    size="small"
+                    clearable
+                    @select="selectSearchCompany"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="8" :sm="24">
                 <el-form-item label="运营状态:">
                   <el-select v-model="listQuery.operateStatus" placeholder="请选择运营状态">
                     <el-option
@@ -56,18 +69,6 @@
                   />
                 </el-form-item>
               </el-col>
-              <!-- <el-col :md="8" :sm="24">
-                <el-form-item label="具备功能:">
-                  <el-select v-model="listQuery.functions" placeholder="请选择具备功能">
-                    <el-option
-                      v-for="item in functionsOptions"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col> -->
             </template>
 
             <!--查询操作按钮-->
@@ -107,7 +108,8 @@
           align="center"
         />
         <el-table-column label="车牌号" prop="plateNum" min-width="100" show-overflow-tooltip align="center" />
-        <el-table-column label="车辆类型" prop="vehicleType" min-width="250" align="center">
+        <el-table-column label="所属企业" prop="unitName" min-width="200" show-overflow-tooltip align="center" />
+        <el-table-column label="车辆类型" prop="vehicleType" min-width="120" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.vehicleType | showVehicleType }}</span>
           </template>
@@ -1059,7 +1061,9 @@ export default {
         functions: '',
         vehicleType: '',
         doubleDrivers: null,
-        zoneId: null
+        zoneId: null,
+        unitName: '',
+        unitId: ''
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -1069,7 +1073,9 @@ export default {
         functions: '',
         vehicleType: '',
         doubleDrivers: null,
-        zoneId: null
+        zoneId: null,
+        unitName: '',
+        unitId: ''
       },
       useNatureOptions: [], // 使用性质
       carColorOptions: [], // 车身颜色
@@ -1161,6 +1167,11 @@ export default {
       insuranceDetail: false, // 是否查看保险详情
       carKindOptions: [], // 车辆类型
       plateColorOptions: [] // 车牌颜色
+    }
+  },
+  watch: {
+    'listQuery.unitName'(newv, oldv) {
+      newv === '' ? this.listQuery.unitId = '' : ''
     }
   },
   beforeCreate() {
@@ -1371,6 +1382,10 @@ export default {
     selectCompany(val) {
       this.createFormData.unitId = val.unitId.toString()
       this.createFormData.unitName = val.unitName
+    },
+    selectSearchCompany(v) {
+      console.log(v)
+      this.listQuery.unitId = v.unitId
     },
     // 模糊搜索平台
     searchPlatform(queryString, cb) {
