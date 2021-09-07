@@ -57,7 +57,7 @@
           <el-form-item label="规则名称：" prop="violationName">
             <el-select v-model="formData.violationName" placeholder="请选择规则名称">
               <el-option
-                v-for="{label, value} in ruleOptions"
+                v-for="{label} in ruleOptions"
                 :key="label"
                 :label="label"
                 :value="label"
@@ -94,24 +94,15 @@
           :rules="degreeRule"
         >
           <el-form-item label="违章程度：" prop="degreeLabel">
-            <!-- <el-button
-              v-for="{value,label} in degreeOptions"
-              :key="label"
-              type="primary"
-              size="small"
-              icon="el-icon-setting"
-              @click="changeDegree(value,label)"
-            >{{ value }}</el-button> -->
-
             <el-select
               v-model="degreeLabel"
               size="small"
             >
               <el-option
                 v-for="{value,label} in degreeOptions"
-                :key="label"
-                :value="label"
-                :label="value"
+                :key="value"
+                :value="value"
+                :label="label"
                 @click.native="changeDegree(value,label)"
               />
             </el-select>
@@ -128,18 +119,18 @@
                 >
                   <el-option
                     v-for="{label, value, remark} in violationOptions"
-                    :key="label"
-                    :label="`${value}(${remark})`"
-                    :value="label"
+                    :key="value"
+                    :label="`${label}(${remark})`"
+                    :value="value"
                   />
                 </el-select>
 
                 <el-select v-model="formData.lessNo" size="small" style="width: 100px" @change="changeSymbol">
                   <el-option
                     v-for="{label, value} in symbols"
-                    :key="label"
-                    :label="value"
-                    :value="label"
+                    :key="value"
+                    :label="label"
+                    :value="value"
                   />
                 </el-select>
                 <el-input v-model="formData.lessValue" size="small" style="width: 100px" placeholder="请输入" />
@@ -149,18 +140,18 @@
                 <el-select v-model="formData2.conditionNo" size="small" style="width: 150px" @change="getUnit2">
                   <el-option
                     v-for="{label, value, remark} in violationOptions"
-                    :key="label"
-                    :label="`${value}(${remark})`"
-                    :value="label"
+                    :key="value"
+                    :label="`${label}(${remark})`"
+                    :value="value"
                   />
                 </el-select>
 
                 <el-select v-model="formData2.lessNo" size="small" style="width: 100px">
                   <el-option
                     v-for="{label, value} in symbols"
-                    :key="label"
-                    :label="value"
-                    :value="label"
+                    :key="value"
+                    :label="label"
+                    :value="value"
                   />
                 </el-select>
                 <el-input v-model="formData2.lessValue" size="small" style="width: 100px" placeholder="请输入" />
@@ -290,10 +281,10 @@ export default {
       handler(newVal, oldVal) {
         let sym = ''; let conditionNo = ''
         this.symbols.forEach(({ label, value }) => {
-          if (label === newVal.lessNo) sym = value
+          if (value === newVal.lessNo) sym = label
         })
         this.violationOptions.forEach(({ label, value }) => {
-          if (label === newVal.conditionNo) conditionNo = value
+          if (value === newVal.conditionNo) conditionNo = label
         })
         if (newVal.conditionNo) {
           this.formData.expresion =
@@ -308,10 +299,10 @@ export default {
       handler(newVal, ov) {
         let sym = ''; let conditionNo = ''
         this.symbols.forEach(({ label, value }) => {
-          if (label === newVal.lessNo) sym = value
+          if (value === newVal.lessNo) sym = label
         })
         this.violationOptions.forEach(({ label, value }) => {
-          if (label === newVal.conditionNo) conditionNo = value
+          if (value === newVal.conditionNo) conditionNo = label
         })
         if (newVal.conditionNo) {
           this.formData2.expresion =
@@ -327,10 +318,10 @@ export default {
       handler(newVal, ov) {
         let sym = ''; let conditionNo = ''
         this.symbols.forEach(({ label, value }) => {
-          if (label === newVal.lessNo) sym = value
+          if (value === newVal.lessNo) sym = label
         })
         this.violationOptions.forEach(({ label, value }) => {
-          if (label === newVal.conditionNo) conditionNo = value
+          if (value === newVal.conditionNo) conditionNo = label
         })
         if (newVal.conditionNo) {
           this.formData3.expresion =
@@ -365,8 +356,8 @@ export default {
     this.ruleOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章类型编码'].list
     this.degreeOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章严重程度编码'].list
     this.violationOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章条件'].list
-    this.degreeValue = this.degreeOptions[0].value
-    this.degreeLabel = this.degreeOptions[0].label
+    this.degreeValue = this.degreeOptions[0].label
+    this.degreeLabel = this.degreeOptions[0].value
   },
   methods: {
     getList() {
@@ -384,18 +375,18 @@ export default {
         })
     },
     getUnit(val) {
-      this.violationOptions.forEach(({ label, remark }) => {
-        if (label === val) this.currentUnit = remark
+      this.violationOptions.forEach(({ value, remark }) => {
+        if (value === val) this.currentUnit = remark
       })
     },
     getUnit2(val) {
-      this.violationOptions.forEach(({ label, remark }) => {
-        if (label === val) this.currentUnit2 = remark
+      this.violationOptions.forEach(({ value, remark }) => {
+        if (value === val) this.currentUnit2 = remark
       })
     },
     getUnit3(val) {
-      this.violationOptions.forEach(({ label, remark }) => {
-        if (label === val) this.currentUnit3 = remark
+      this.violationOptions.forEach(({ value, remark }) => {
+        if (value === val) this.currentUnit3 = remark
       })
     },
     updateData(row) {
@@ -482,15 +473,15 @@ export default {
       this.resetFormData()
     },
     changeDegree(value, label) {
-      this.degreeValue = value
-      this.degreeLabel = label
+      this.degreeValue = label
+      this.degreeLabel = value
       this.showCol = true
       this.showCol2 = true
       this.showCol3 = true
       this.resetFormData()
       selectEdit({
         violationNo: this.currentRow.id.toString(),
-        degreeNo: label
+        degreeNo: value
       })
         .then(res => {
           const { data } = res

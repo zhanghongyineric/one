@@ -15,13 +15,12 @@
             </el-col>
             <el-col :md="8" :sm="24">
               <el-form-item label="运营类型:">
-                <el-select v-model="listQuery.operationType" placeholder="请选择企业类型">
-                  <!-- <el-option value="" label="全部" /> -->
+                <el-select v-model="listQuery.operationType" placeholder="请选择运营类型">
                   <el-option
                     v-for="item in optionGroup.companyTypes"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -206,7 +205,7 @@
                 >
                   <el-option
                     v-for="item in optionGroup.economyList"
-                    :key="item.label"
+                    :key="item.value"
                     :label="item.label"
                     :value="item.value"
                   />
@@ -285,8 +284,8 @@
                   <el-option
                     v-for="item in optionGroup.companyTypes"
                     :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -799,6 +798,7 @@ export default {
     },
     // 点击查看详情
     handleDetail(row) {
+      console.log(this.optionGroup.economyList)
       if (row.economicType) row.economicType = parseInt(row.economicType)
       this.rowId = row.unitId
       this.createFormData = { ...row }
