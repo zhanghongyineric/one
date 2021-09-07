@@ -33,7 +33,7 @@ export default {
       const first = matched[0]
 
       if (!this.isDashboard(first)) {
-        matched = [{ path: '/InformationHome', meta: { title: '首页' }}].concat(matched)
+        matched = [{ path: '/home', meta: { title: '首页' }}].concat(matched)
       }
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
@@ -46,7 +46,6 @@ export default {
       return name.trim().toLocaleLowerCase() === 'Home'.toLocaleLowerCase()
     },
     pathCompile(path) {
-      // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
       const { params } = this.$route
       var toPath = pathToRegexp.compile(path)
       return toPath(params)

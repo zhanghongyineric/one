@@ -24,7 +24,8 @@ export default {
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      timer: null
     }
   },
   watch: {
@@ -32,6 +33,30 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val)
+        clearInterval(this.timer)
+        this.timer = null
+        let index = 0
+        const { length } = this.chartData
+        this.timer = setInterval(() => {
+          this.chart.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: index
+          })
+          setTimeout(() => {
+            for (let i = 0; i < length + 1; i++) {
+              if (i !== index) {
+                this.chart.dispatchAction({
+                  type: 'downplay',
+                  seriesIndex: 0,
+                  dataIndex: i
+                })
+              }
+            }
+          }, 2700)
+          index++
+          if (index >= length) index = 0
+        }, 3000)
       }
     }
   },
@@ -59,7 +84,19 @@ export default {
             color: '#fff'
           }
         },
-        tooltip: {},
+        tooltip: {
+          position: 'top',
+          formatter: (val) => {
+            return val.value[0] + '<br/>' +
+            '当前在线：' + val.value[1] + '辆' + '<br/>' +
+            '累计在线：' + val.value[2] + '辆'
+          },
+          textStyle: {
+            align: 'left',
+            color: '#fff'
+          },
+          backgroundColor: '#151D2C'
+        },
         dataset: {
           source: this.chartData
         },

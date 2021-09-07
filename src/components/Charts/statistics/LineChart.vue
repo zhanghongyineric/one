@@ -4,7 +4,7 @@
 </template>
 <script>
 import * as echarts from 'echarts'
-import chartResize from './chart-resize'
+import chartResize from '../chart-resize'
 
 export default {
   mixins: [chartResize],
@@ -24,14 +24,6 @@ export default {
     chartData: {
       type: Array,
       required: true
-    },
-    showlegend: {
-      type: Boolean,
-      default: false
-    },
-    position: {
-      type: Array,
-      default: () => ['50%', '50%']
     }
   },
   data() {
@@ -94,60 +86,18 @@ export default {
     setOptions(data) {
       const colorList = ['#72E1DE', '#6D9DE0', '#339933', '#19F1FF', '#EC4472', '#FF9A90', '#C7E2F5', '#FCD967', '#17808F', '#48B078', '#2FC4FE']
       this.chart.setOption({
-        tooltip: {
-          trigger: 'item',
-          backgroundColor: '#151D2C',
-          textStyle: {
-            color: '#fff'
-          }
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         },
-        title: {
-          text: '车辆概况',
-          left: 'left',
-          textStyle: {
-            color: '#fff'
-          }
+        yAxis: {
+          type: 'value'
         },
-        legend: {
-          top: '10%',
-          left: 'center',
-          textStyle: {
-            fontSize: 10,
-            color: '#fff'
-          },
-          itemWidth: 10,
-          show: this.showlegend
-        },
-        series: [
-          {
-            name: '车辆统计',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            center: this.position,
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '20'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data,
-            itemStyle: {
-              normal: {
-                color: (params) => {
-                  return colorList[params.dataIndex]
-                }
-              }
-            }
-          }
-        ]
+        series: [{
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          type: 'line',
+          smooth: true
+        }]
       })
     }
   }

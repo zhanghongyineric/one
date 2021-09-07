@@ -45,7 +45,9 @@ export default {
     chartData: {
       deep: true,
       handler(val) {
-        this.setOptions(val)
+        this.$nextTick(() => {
+          this.setOptions(val)
+        })
       }
     }
   },

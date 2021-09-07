@@ -26,7 +26,7 @@
           v-model="searchText"
           :fetch-suggestions="searchSuggestions"
           placeholder="请输入内容"
-          @select="selectSuggestion"
+          @select="search"
         >
           <el-select slot="prepend" v-model="searchCond" placeholder="请选择">
             <el-option label="车牌号" value="plateNum" />
@@ -57,6 +57,7 @@
           :highlight-current="true"
           expand-on-click-node
           node-key="unitName"
+          :default-expanded-keys="searchKeys"
           @check="checkNode"
         />
       </div>
@@ -74,7 +75,7 @@
         height="200"
       >
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="acc" label="状态" width="100" align="center">
+        <el-table-column prop="acc" label="ACC状态" width="100" align="center">
           <template v-slot="{row}">
             <span v-if="row.acc === '0'">关闭</span>
             <span v-else>开启</span>
@@ -84,6 +85,7 @@
         <el-table-column prop="unitName" show-overflow-tooltip label="所属企业" align="center" />
         <el-table-column prop="speed" label="速度" align="center" width="100" />
         <el-table-column prop="position" show-overflow-tooltip label="位置" align="center" />
+        <el-table-column prop="reportTime" show-overflow-tooltip label="上报时间" align="center" />
       </el-table>
     </div>
     <div v-show="!showTable" class="expand-symbol" @click="showTable = true">
@@ -135,7 +137,8 @@ export default {
       checkedCars: 0, // 已选中的车辆数
       checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
-      timer: null // 定时调用获取在线车辆数接口
+      searchKeys: [],
+      labelArr: []
     }
   },
   watch: {
@@ -155,20 +158,20 @@ export default {
   },
   mounted() {
     this.getmap()
-    // this.startInterval()
-  },
-  deactivated() {
-    // clearInterval(this.timer)
-    // this.timer = null
-  },
-  activated() {
-    // this.startInterval()
+    this.startInterval()
+    this.labelArr = document.getElementsByClassName('el-tree-node__label')
   },
   methods: {
     startInterval() {
-      this.timer = setInterval(() => {
+      const timer = setInterval(() => {
         this.getVehicleNumber()
-      }, 4000)
+      }, 10000)
+      this.$once('hook:deactivated', () => {
+        clearInterval(timer)
+      })
+      this.$once('hook:activated', () => {
+        this.startInterval()
+      })
     },
     checkedAll() {
       this.treeLoading = true
@@ -277,38 +280,6 @@ export default {
         return
       }
     },
-    selectSuggestion(item) {
-      this.containerLoading = true
-      if (this.searchCond === 'plateNum') {
-        const req = [{ plateNum: item.plateNum }]
-        vehicleLocationInformation(req)
-          .then((res) => {
-            const { data } = res
-            this.markers.push({
-              icon: 'https://webapi.amap.com/images/car.png',
-              position: [data[0].latitude, data[0].longitude]
-            })
-            let geocoder; let lnglat = []
-            AMap.plugin('AMap.Geocoder', function() {
-              geocoder = new AMap.Geocoder({ city: '' })
-            })
-            data.forEach(item => {
-              lnglat = [item.latitude, item.longitude]
-              geocoder.getAddress(lnglat, function(status, result) {
-                if (status === 'complete' && result.info === 'OK') {
-                  item.position = result.regeocode.formattedAddress
-                }
-              })
-            })
-            setTimeout(() => {
-              this.tableData = data
-            }, 500)
-          })
-          .catch(err => {
-            throw err
-          })
-      }
-    },
     getVehicleNumber() {
       vehicleNumber()
         .then(res => {
@@ -322,18 +293,37 @@ export default {
         })
     },
     search() {
-      if (this.searchCond === 'plateNum') {
-        this.getDataByPlateNum()
-      } else {
-        this.getUnitVehicle()
+      if (this.searchText) {
+        this.searchKeys = []
+        document.getElementsByClassName('left-box')[0].scrollTop = 0
+        if (this.searchCond === 'plateNum') this.getDataByPlateNum()
+        else this.getDataByUnitName()
+        setTimeout(() => {
+          this.labelArr.forEach(item => {
+            if (item.innerText === this.searchText) {
+              document.getElementsByClassName('left-box')[0].scrollTop = item.offsetTop
+            }
+          })
+        }, 500)
       }
     },
     getDataByPlateNum() {
-      selectPlateNum({
-        plateNum: this.searchText
-      })
+      selectPlateNum({ plateNum: this.searchText })
         .then(res => {
-          console.log(res, '车牌')
+          const { data } = res
+          this.searchKeys.push(data[0].unitName)
+          this.$refs.unitTree.setCurrentKey(data[0].plateNum)
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    getDataByUnitName() {
+      selectUnitName({ unitName: this.searchText })
+        .then(res => {
+          const { data } = res
+          this.searchKeys.push(data[0].unitName)
+          this.$refs.unitTree.setCurrentKey(data[0].unitName)
         })
         .catch(err => {
           throw err
@@ -504,6 +494,10 @@ export default {
 
 ::v-deep .el-collapse-item__header {
   border: 0 !important;
+}
+
+::v-deep .el-tree-node.is-current > .el-tree-node__content {
+  background-color: #060D16 !important;
 }
 
 ::v-deep .el-tree {

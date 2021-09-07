@@ -63,3 +63,21 @@ export function onlineVehicle(data) {
     data
   })
 }
+
+// 趋势分析
+export function trendAnalysis(data) {
+  return request({
+    url: '/trendAnalysis',
+    method: 'POST',
+    data
+  })
+}
+
+// 报警事件
+export function alarmEvent(data) {
+  return request({
+    url: '/alarmEvent',
+    method: 'POST',
+    data
+  })
+}

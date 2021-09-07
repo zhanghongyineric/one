@@ -129,27 +129,6 @@
             </div>
           </el-col>
         </el-row>
-        <div class="closed-box">
-          <div class="closed-box-inner">
-            <!-- <el-row :gutter="20">
-              <el-col :md="8" :span="24">
-                <div class="content-box">
-                  <span>车辆概况</span>
-                </div>
-              </el-col>
-              <el-col :md="8" :span="24">
-                <div class="content-box">
-                  <span>实时在线车辆</span>
-                </div>
-              </el-col>
-              <el-col :md="8" :span="24">
-                <div class="content-box">
-                  <span>事件处理</span>
-                </div>
-              </el-col>
-            </el-row> -->
-          </div>
-        </div>
         <div class="expand-symbol" @click="showInfo = false">
           <div class="top-arrow" />
         </div>
@@ -172,27 +151,29 @@
             <div class="box-monitor">
               <span class="title">重点关注车辆列表</span>
               <el-table
+                ref="carTable"
                 :data="carList"
                 fit
-                border
-                highlight-current-row
                 style="width:100%;margin-top: 20px;"
                 :header-cell-style="tableHeaderColor"
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
+                height="80%"
+                :stripe="true"
               >
-                <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip />
-                <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateNum" label="车牌号码" width="100px" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateColor" label="车牌颜色" width="100px" align="center" show-overflow-tooltip />
                 <el-table-column prop="vehicleType" label="车辆类型" show-overflow-tooltip align="center" />
-                <!-- <el-table-column prop="driver" label="驾驶员" align="center" show-overflow-tooltip /> -->
-                <!-- <el-table-column prop="mile" label="行驶里程" align="center" show-overflow-tooltip /> -->
                 <el-table-column prop="vehicleSumFactor" label="安全系数" align="center" show-overflow-tooltip />
               </el-table>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="center">
-              <span class="center-text">实时在线车辆：
+              <!-- <span class="center-text">实时在线车辆： -->
+              <span class="center-text" style="margin-right:35px;">入网车辆：
+                <span class="center-num">{{ aCars }}</span> 辆</span>
+              <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
               <map-chart :map-data="mapData" />
               <dataset-bar-chart :chart-data="mapChartData" />
@@ -200,22 +181,23 @@
           </el-col>
           <el-col :span="8">
             <div class="box-monitor">
-              <span class="title">事件处理</span>
+              <span class="title">报警事件</span>
               <el-table
+                ref="eventTable"
                 :data="eventList"
                 fit
-                border
                 highlight-current-row
-                style="width:100%;margin-top: 20px;"
+                style="width:100%;margin-top:20px;"
                 :header-cell-style="tableHeaderColor"
                 :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
+                height="80%"
+                :stripe="true"
               >
-                <el-table-column prop="number" label="车牌号码" align="center" show-overflow-tooltip />
-                <el-table-column prop="color" label="车牌颜色" align="center" show-overflow-tooltip />
-                <el-table-column prop="time" label="定位时间" align="center" show-overflow-tooltip />
-                <el-table-column prop="kind" label="事件类型" align="center" show-overflow-tooltip />
-                <el-table-column prop="level" label="严重程度" align="center" show-overflow-tooltip />
+                <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip width="90px" />
+                <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip width="80px" />
+                <el-table-column prop="armTimeStart" label="报警时间" align="center" show-overflow-tooltip width="170px" />
+                <el-table-column prop="armName" label="报警类型" align="center" show-overflow-tooltip />
               </el-table>
             </div>
             <div class="box-monitor">
@@ -225,8 +207,8 @@
               <mutil-pie-chart :chart-data="unitAssessChartData" :title="'运输企业'" />
             </div>
             <div class="box-monitor">
-              <span class="title">趋势分析</span>
-              <line-chart />
+              <span class="title">报警趋势分析</span>
+              <line-chart :chart-data="trendData" />
             </div>
           </el-col>
         </el-row>
@@ -244,10 +226,10 @@
               <el-col :md="8" :span="24">
                 <div class="content-box">
                   <span class="title-text">车辆信息</span>
+                  <span class="little-num">正常：{{ carData.normal }}</span>
                   <span class="little-num">停运：{{ carData.stop }}</span>
                   <span class="little-num">注销：{{ carData.logout }}</span>
                   <span class="little-num">转出：{{ carData.out }}</span>
-                  <span class="little-num">正常：{{ carData.normal }}</span>
                   <span class="little-num">暂停：{{ carData.pause }}</span>
                 </div>
               </el-col>
@@ -284,7 +266,9 @@ import {
   facilitatorAssessmentAnalysis,
   mechanismAssessmentAnalysis,
   unitAssessmentAnalysis,
-  onlineVehicle
+  onlineVehicle,
+  trendAnalysis,
+  alarmEvent
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
@@ -298,7 +282,7 @@ import getAreaText from '@/utils/AreaCodeToText'
 import { CodeToText } from 'element-china-area-data'
 
 export default {
-  name: 'InformationHome',
+  name: 'Home',
   components: {
     BarChart,
     PieChart,
@@ -355,31 +339,10 @@ export default {
       carChartData: [],
       companyChartXData: [],
       companyChartYData: [],
-      eventList: [
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        },
-        {
-          number: '川Q72782',
-          color: '黄色',
-          time: '17:05:06',
-          kind: '危险驾驶',
-          level: '严重'
-        }
-      ],
+      eventList: [],
       carList: [],
       totalOnlineCars: 0,
+      aCars: 0,
       mapData: [],
       mapChartData: [
         ['city', '当前在线', '累计在线']
@@ -387,7 +350,9 @@ export default {
       facilitatorChartData: [],
       mechanismChartData: [],
       unitAssessChartData: [],
-      timer: null
+      trendData: [],
+      mapDataMap: new Map()
+
     }
   },
   created() {
@@ -403,22 +368,41 @@ export default {
     this.getMechanism()
     this.getUnit()
     this.getOnlineVehicle()
+    this.getTrendAnalysis()
+    this.getAlarmEvent()
   },
-  // mounted() {
-  //   this.intervalOnlineCars()
-  // },
-  // activated() {
-  //   this.intervalOnlineCars()
-  // },
-  // deactivated() {
-  //   clearInterval(this.timer)
-  //   this.timer = null
-  // },
+  mounted() {
+    this.intervalOnlineCars()
+    const etable = this.$refs.eventTable.bodyWrapper
+    const ctable = this.$refs.carTable.bodyWrapper
+    setInterval(() => {
+      etable.scrollTop += 1
+      ctable.scrollTop += 1
+      if (etable.scrollTop + etable.clientHeight >= etable.scrollHeight) etable.scrollTop = 0
+      if (ctable.scrollTop + ctable.clientHeight >= ctable.scrollHeight) ctable.scrollTop = 0
+    }, 100)
+  },
   methods: {
+    getAlarmEvent() {
+      alarmEvent()
+        .then(res => {
+          this.eventList = res.data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     intervalOnlineCars() {
-      this.timer = setInterval(() => {
+      const timer = window.setInterval(() => {
         this.getOnlineVehicle()
-      }, 5000)
+        this.getAlarmEvent()
+      }, 30000)
+      this.$once('hook:deactivated', () => {
+        clearInterval(timer)
+      })
+      this.$once('hook:activated', () => {
+        this.intervalOnlineCars()
+      })
     },
     getFacilitator() {
       facilitatorAssessmentAnalysis()
@@ -434,6 +418,20 @@ export default {
               value: data.dynamicDataQualifiedRate * 100
             }
           ]
+        })
+    },
+    getTrendAnalysis() {
+      trendAnalysis()
+        .then(res => {
+          const { data } = res
+          // for (let i = 1; i < 13; i++) {
+          //   if (!data[0][i]) data[0][i] = 0
+          // }
+          // this.trendData = Object.values(data[0])
+          this.trendData = Object.values(data)
+        })
+        .catch(err => {
+          throw err
         })
     },
     getMechanism() {
@@ -479,17 +477,45 @@ export default {
     getOnlineVehicle() {
       onlineVehicle()
         .then(res => {
-          const { data: { realTimetotal, onlineVehicles }} = res
+          const { data: { realTimetotal, onlineVehicles, a }} = res
           this.totalOnlineCars = realTimetotal
+          this.aCars = a
+          this.mapData = []
+          this.mapDataMap = new Map()
+          this.mapChartData = [
+            ['city', '当前在线', '累计在线']
+          ]
           onlineVehicles.forEach(item => {
             const city = CodeToText[getAreaText(item.zoneId)[1]]
             const { realTimeCount, onlineCount } = item
             this.mapData.push({
               value: realTimeCount,
-              name: city
+              name: city,
+              count: onlineCount
             })
             this.mapChartData.push([city, realTimeCount, onlineCount])
           })
+
+          this.mapData.forEach(v => {
+            console.log(v, this.mapDataMap.get(v.name), 'v')
+
+            if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
+            else {
+              const val = this.mapDataMap.get(v.name)[0]
+              const count = this.mapDataMap.get(v.name)[1]
+              this.mapDataMap.set(v.name, [v.value + val, v.count + count])
+            }
+          })
+
+          this.mapData = []
+          for (const item of this.mapDataMap) {
+            this.mapData.push({
+              name: item[0],
+              value: item[1][0],
+              count: item[1][1]
+            })
+          }
+
           // 同一个市可能有很多数据，应将同一个市的所有数据相加
           if (this.mapChartData[1]) {
             const { length } = this.mapChartData
@@ -521,10 +547,10 @@ export default {
     getKeyVehicle() {
       keyVehicle({
         pageNum: 1,
-        pageSize: 10
+        pageSize: 50
       }).then(res => {
         const { data } = res
-        data.length > 6 ? this.carList = data.slice(0, 6) : this.carList = data
+        this.carList = data
       })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -773,7 +799,7 @@ p {
   right: 0;
   left: 0;
   padding-left: 20px;
-  background-color: #151D2C;
+  background-color: #0E1521;
   padding-top: 10px;
 }
 
@@ -918,9 +944,17 @@ p {
     opacity: 0.5
 }
 
+::v-deep .el-table {
+  background-color: #151D2C !important;
+}
+
+::v-deep .el-table::before {
+  width: 0 !important;
+}
+
 ::v-deep .el-table tbody tr:hover>td {
-     background: #122230 !important
-  }
+  background: #122230 !important;
+}
 
 ::v-deep .el-table__body tr.current-row > td {
   background-color: #122230 !important;
@@ -938,4 +972,52 @@ p {
     margin: 10px;
   }
 }
+
+::v-deep ::-webkit-scrollbar {
+  // 滚动条的背景
+  width: 1px;
+  height: 14px;
+  background: #151D2C;
+}
+
+::v-deep ::-webkit-scrollbar-track,
+::v-deep ::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  width: 10px;
+  border: 1px solid transparent;
+}
+
+::v-deep ::-webkit-scrollbar-track {
+  box-shadow: 1px 1px 5px #151D2C inset;
+}
+
+::v-deep ::-webkit-scrollbar-thumb {
+  //滚动条的滑块样式修改
+  width: 20px;
+  min-height: 20px;
+  background-clip: content-box;
+  box-shadow: 0 0 0 5px #151D2C inset;
+}
+
+::v-deep ::-webkit-scrollbar-corner {
+  background: #151D2C;
+}
+
+::v-deep .gutter {
+  width: 0px !important;
+  background-color: #151D2C !important;
+}
+
+::v-deep .el-table td {
+  border: 0 !important;
+}
+
+::v-deep .el-table th.is-leaf {
+  border: 0 !important;
+}
+
+::v-deep .el-table__row--striped td {
+  background-color: #222C3C !important;
+}
+
 </style>

@@ -10,7 +10,15 @@
           :rules="rules"
         >
           <el-form-item label="车牌号码:" prop="plateNum">
-            <el-input v-model="searchFormData.plateNum" size="small" placeholder="请输入车牌号" clearable />
+            <el-autocomplete
+              v-model="searchFormData.plateNum"
+              size="small"
+              placeholder="请输入车牌号"
+              clearable
+              :fetch-suggestions="searchType"
+              :debounce="500"
+              @select="selectPlateNum"
+            />
           </el-form-item>
           <el-form-item label="起始时间:" prop="startTime">
             <el-date-picker
@@ -28,6 +36,9 @@
               type="datetime"
               placeholder="选择结束日期时间"
               value-format="yyyy-MM-dd HH:mm:ss"
+              :picker-options="pickerOptions"
+              :editable="false"
+              :disabled="!searchFormData.startTime"
             />
           </el-form-item>
 
@@ -76,7 +87,7 @@
         height="200"
       >
         <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column prop="status" label="车辆状态" min-width="120" align="center" />
+        <el-table-column prop="status" label="ACC状态" min-width="120" align="center" />
         <el-table-column prop="time" label="上报时间" min-width="120" align="center" />
         <!-- <el-table-column prop="km" label="GPS里程(公里)" min-width="120" align="center" /> -->
         <el-table-column prop="speed" label="速度(km/h)" min-width="120" align="center" />
@@ -86,10 +97,11 @@
   </div>
 </template>
 <script>
-import { position } from '@/api/live-monitor/history'
+import { position, findPlateNum } from '@/api/live-monitor/history'
 import connect from '@/utils/mqtt'
 
 let TIME_VARIABLE
+const TWENTY_FOUR_HOURS = 1000 * 3600 * 24
 
 export default {
   name: 'HistoricalTrajectory',
@@ -128,6 +140,13 @@ export default {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
         startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
         endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
+      },
+      pickerOptions: {
+        disabledDate: time => {
+          if (this.searchFormData.startTime) {
+            return time.getTime() > new Date(this.searchFormData.startTime).getTime() + TWENTY_FOUR_HOURS
+          }
+        }
       }
     }
   },
@@ -159,6 +178,31 @@ export default {
     })
   },
   methods: {
+    searchType(queryString, cb) {
+      if (queryString) {
+        findPlateNum({ plateNum: queryString })
+          .then(res => {
+            const { data } = res
+            const searchData = []
+            data.forEach(item => {
+              searchData.push({
+                label: item,
+                value: item
+              })
+            })
+            cb(searchData)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectPlateNum(item) {
+      this.searchFormData.plateNum = item.value
+    },
     reset() {
       this.searchFormData = {
         plateNum: '',

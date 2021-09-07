@@ -4,7 +4,7 @@
 </template>
 <script>
 import * as echarts from 'echarts'
-import chartResize from './chart-resize'
+import chartResize from '../chart-resize'
 
 export default {
   mixins: [chartResize],
@@ -15,7 +15,7 @@ export default {
     },
     width: {
       type: String,
-      default: '100%'
+      default: '50%'
     },
     height: {
       type: String,
@@ -94,56 +94,34 @@ export default {
     setOptions(data) {
       const colorList = ['#72E1DE', '#6D9DE0', '#339933', '#19F1FF', '#EC4472', '#FF9A90', '#C7E2F5', '#FCD967', '#17808F', '#48B078', '#2FC4FE']
       this.chart.setOption({
-        tooltip: {
-          trigger: 'item',
-          backgroundColor: '#151D2C',
-          textStyle: {
-            color: '#fff'
-          }
-        },
         title: {
-          text: '车辆概况',
+          text: '车辆类型入网车辆数占比',
           left: 'left',
           textStyle: {
             color: '#fff'
           }
         },
-        legend: {
-          top: '10%',
-          left: 'center',
-          textStyle: {
-            fontSize: 10,
-            color: '#fff'
-          },
-          itemWidth: 10,
-          show: this.showlegend
+        tooltip: {
+          trigger: 'item'
         },
+
         series: [
           {
-            name: '车辆统计',
+            name: '访问来源',
             type: 'pie',
-            radius: ['40%', '70%'],
-            center: this.position,
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-              position: 'center'
-            },
+            radius: '50%',
+            data: [
+              { value: 1048, name: '班线客运' },
+              { value: 735, name: '危险品运输' },
+              { value: 580, name: '公交车' },
+              { value: 484, name: '出租车' },
+              { value: 300, name: '普通货运' }
+            ],
             emphasis: {
-              label: {
-                show: true,
-                fontSize: '20'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data,
-            itemStyle: {
-              normal: {
-                color: (params) => {
-                  return colorList[params.dataIndex]
-                }
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
               }
             }
           }

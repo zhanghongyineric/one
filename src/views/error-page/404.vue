@@ -11,7 +11,7 @@
         <div class="bullshit__oops">OOPS!</div>
         <div class="bullshit__headline">{{ message }}</div>
         <div class="bullshit__info">你访问的地址不存在！</div>
-        <router-link to="/InformationHome" class="bullshit__return-home">
+        <router-link to="/home" class="bullshit__return-home">
           回首页
         </router-link>
       </div>

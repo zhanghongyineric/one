@@ -16,11 +16,50 @@ export default {
     height: {
       type: String,
       default: '100%'
+    },
+    chartData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
       chart: null
+    }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val)
+        let index = 0
+        const { length } = this.chartData
+        setInterval(() => {
+          this.chart.dispatchAction({
+            type: 'highlight',
+            seriesIndex: 0,
+            dataIndex: index
+          })
+          this.chart.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: index
+          })
+          setTimeout(() => {
+            for (let i = 0; i < length + 1; i++) {
+              if (i !== index) {
+                this.chart.dispatchAction({
+                  type: 'downplay',
+                  seriesIndex: 0,
+                  dataIndex: i
+                })
+              }
+            }
+          }, 2700)
+          index++
+          if (index >= length) index = 0
+        }, 3000)
+      }
     }
   },
   mounted() {
@@ -45,14 +84,15 @@ export default {
       const option = {
         color: colors,
         tooltip: {
-          trigger: 'none',
+          trigger: 'axis',
           axisPointer: {
             type: 'cross'
+          },
+          backgroundColor: '#151D2C',
+          textStyle: {
+            color: '#fff'
           }
         },
-        // legend: {
-        //   data: ['数量']
-        // },
         grid: {
           top: 70,
           bottom: 50
@@ -72,8 +112,7 @@ export default {
             axisPointer: {
               label: {
                 formatter: function(params) {
-                  return '数量  ' + params.value +
-                    (params.seriesData.length ? '：' + params.seriesData[0].data : '')
+                  return params.value
                 }
               }
             },
@@ -100,6 +139,9 @@ export default {
               show: true,
               textStyle: {
                 color: '#ccc'
+              },
+              formatter: function(val) {
+                return val > 9999 ? val / 10000 + '万' : val
               }
             }
           }
@@ -112,20 +154,7 @@ export default {
             emphasis: {
               focus: 'series'
             },
-            data: [
-              2000,
-              5000,
-              1200,
-              3000,
-              3300,
-              7000,
-              8000,
-              6000,
-              6100,
-              4100,
-              3900,
-              3500
-            ]
+            data: this.chartData
           }
         ]
       }
