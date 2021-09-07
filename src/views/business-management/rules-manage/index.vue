@@ -59,8 +59,8 @@
               <el-option
                 v-for="{label, value} in ruleOptions"
                 :key="label"
-                :label="value"
-                :value="value"
+                :label="label"
+                :value="label"
               />
             </el-select>
           </el-form-item>

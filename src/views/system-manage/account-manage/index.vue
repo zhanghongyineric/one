@@ -14,12 +14,12 @@
           <el-row :gutter="48">
 
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
+            <el-col :md="6" :sm="24">
               <el-form-item label="关键字:">
-                <el-input v-model="listQuery.keyword" placeholder="请输入关键字" @keyup.enter.native="handleSearch" />
+                <el-input v-model="listQuery.keyword" placeholder="请输入用户名或别名关键字" @keyup.enter.native="handleSearch" />
               </el-form-item>
             </el-col>
-            <el-col :md="8" :sm="24">
+            <el-col :md="6" :sm="24">
               <el-form-item label="状态:">
                 <el-select v-model="listQuery.status" placeholder="请选择状态">
                   <el-option label="全部" value="" />
@@ -32,9 +32,13 @@
                 </el-select>
               </el-form-item>
             </el-col>
-
+            <!-- <el-col :md="6" :sm="24">
+              <el-form-item label="角色:">
+                <el-input v-model="listQuery.keyword" placeholder="请输入角色" @keyup.enter.native="handleSearch" />
+              </el-form-item>
+            </el-col> -->
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
@@ -42,7 +46,6 @@
                 <el-button size="small" @click="resetQuery">重置</el-button>
                 <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
                 <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
-
               </div>
             </el-col>
           </el-row>
