@@ -17,9 +17,30 @@ export default {
       type: String,
       default: '100%'
     },
-    chartData: {
+    legendData: {
       type: Array,
-      default: () => []
+      default: () => [],
+      required: true
+    },
+    xData: {
+      type: Array,
+      default: () => [],
+      required: true
+    },
+    lineData: {
+      type: Array,
+      default: () => [],
+      required: true
+    },
+    barChartData: {
+      type: Array,
+      default: () => [],
+      required: true
+    },
+    ymax: {
+      type: Number,
+      default: 0,
+      required: true
     }
   },
   data() {
@@ -28,7 +49,30 @@ export default {
     }
   },
   watch: {
-    chartData: {
+    legendData: {
+      deep: true,
+      handler(val) {
+        this.setOptions()
+      }
+    },
+    barChartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions()
+      }
+    },
+    xData: {
+      deep: true,
+      handler(val) {
+        this.setOptions()
+      }
+    },
+    ymax: {
+      handler(val) {
+        this.setOptions()
+      }
+    },
+    lineData: {
       deep: true,
       handler(val) {
         this.setOptions()
@@ -55,26 +99,29 @@ export default {
     setOptions() {
       this.chart.setOption({
         tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            crossStyle: {
-              color: '#999'
-            }
-          }
+          trigger: 'axis'
+          // formatter: (val, i) => {
+          //   console.log(val, i)
+          // }
         },
         legend: {
-          data: ['货运车辆', '客运车辆', '入网率'],
+          data: this.legendData,
           textStyle: {
             color: '#fff'
-          }
+          },
+          bottom: 10
         },
         xAxis: [
           {
             type: 'category',
-            data: ['成都市', '遂宁市', '雅安市', '宜宾市', '巴中市'],
+            data: this.xData,
             axisPointer: {
               type: 'shadow'
+            },
+            axisLabel: {
+              textStyle: {
+                color: '#ccc'
+              }
             }
           }
         ],
@@ -82,40 +129,66 @@ export default {
           {
             type: 'value',
             name: '车辆数',
+            nameTextStyle: {
+              color: '#fff'
+            },
             min: 0,
-            max: 25000,
-            interval: 5000
-            // axisLabel: {
-            //   formatter: '{value} ml'
-            // }
+            max: this.ymax,
+            interval: this.ymax / 5,
+            axisLabel: {
+              formatter: '{value} 辆',
+              textStyle: {
+                color: '#ccc'
+              }
+            }
           },
           {
             type: 'value',
             name: '入网率',
+            nameTextStyle: {
+              color: '#fff'
+            },
             min: 0,
             max: 100,
             interval: 20,
             axisLabel: {
-              formatter: '{value} %'
+              formatter: '{value} %',
+              textStyle: {
+                color: '#ccc'
+              }
+            },
+            splitLine: {
+              lineStyle: {
+                color: '#696969'
+              },
+              show: true
             }
           }
         ],
         series: [
-          {
-            name: '货运车辆',
-            type: 'bar',
-            data: [209, 490, 709, 2320, 2560]
-          },
-          {
-            name: '客运车辆',
-            type: 'bar',
-            data: [269, 5934, 904, 2645, 2873]
-          },
+          ...this.barChartData,
           {
             name: '入网率',
             type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#2ec7c9',
+                lineStyle: {
+                  color: '#2ec7c9'
+                }
+              }
+            },
             yAxisIndex: 1,
-            data: [20, 22, 33, 45, 63]
+            data: this.lineData,
+            label: {
+              normal: {
+                show: true,
+                position: 'top',
+                textStyle: {
+                  color: '#fff'
+                }
+              }
+            }
           }
         ]
       })

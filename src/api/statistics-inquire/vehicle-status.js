@@ -18,3 +18,21 @@ export function vehicleSystem(data) {
     data
   })
 }
+
+// 查询车辆类型
+export function vehicleType(data) {
+  return request({
+    url: '/vehicleType',
+    method: 'POST',
+    data
+  })
+}
+
+// 车辆类型扇形，类型入网率统计
+export function sectorStatistics(data) {
+  return request({
+    url: '/sectorStatistics',
+    method: 'POST',
+    data
+  })
+}

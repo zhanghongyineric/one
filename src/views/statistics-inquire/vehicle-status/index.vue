@@ -19,11 +19,9 @@
               <span
                 v-for="item in statisticalPeriod"
                 :key="item.value"
-                class="time-text"
+                :class="['time-text',item.value===searchQuery.status?'active':'']"
+                @click="chooseStatus(item.value)"
               >{{ item.label }}</span>
-              <!-- <span class="time-text active">本月</span>
-              <span class="time-text">本季度</span>
-              <span class="time-text">本年度</span> -->
             </el-form-item>
           </el-col>
           <el-col :md="6" :sm="24">
@@ -47,7 +45,13 @@
     </div>
     <div class="content-box">
       <div class="left-box" style="background-color: #0E1A2A;">
-        <line-mix-bar />
+        <line-mix-bar
+          :x-data="lineMixBarXData"
+          :line-data="accessRateData"
+          :legend-data="legendData"
+          :bar-chart-data="barChartData"
+          :ymax="ymax"
+        />
       </div>
       <div class="right-box">
         <pie-chart :chart-data="chartData" style="display:inline-block;" />
@@ -93,7 +97,8 @@ import LineChart from '@/components/Charts/statistics/LineChart.vue'
 import PieChart from '@/components/Charts/statistics/PieChart.vue'
 import {
   areaCode,
-  vehicleSystem
+  vehicleSystem,
+  sectorStatistics
 } from '@/api/statistics-inquire/vehicle-status'
 
 export default {
@@ -108,7 +113,7 @@ export default {
       },
       searchQuery: {
         unitId: '800',
-        status: '2',
+        status: '1',
         startTime: '',
         endTime: ''
       },
@@ -125,23 +130,22 @@ export default {
       chartData: [],
       statisticalPeriod: [
         {
-          label: '本月',
-          value: '2'
-        },
-        {
-          label: '本季度',
-          value: '3'
-        },
-        {
           label: '本年度',
-          value: '4'
+          value: '1'
         }
-      ]
+      ],
+
+      lineMixBarXData: [],
+      accessRateData: [],
+      legendData: [],
+      barChartData: [],
+      ymax: 0
     }
   },
   created() {
     this.getVehicleData()
     this.getAreaCode()
+    this.getSectorStatistics()
   },
   mounted() {
     this.getList()
@@ -150,6 +154,21 @@ export default {
     getList() {},
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) return 'background-color: #212F40;color: #fff;font-weight: 500;'
+    },
+    chooseStatus(val) {
+      this.searchQuery.status = val
+    },
+    getSectorStatistics() {
+      sectorStatistics({
+        unitId: '800',
+        status: '1'
+      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          throw err
+        })
     },
     getAreaCode() {
       areaCode()
@@ -165,10 +184,79 @@ export default {
     deleteEmptyChilren(data) {
       data.children.length === 0 ? data.children = null : data.children.forEach(v => this.deleteEmptyChilren(v))
     },
+    // 将接口返回数据转换为echarts需要的数据格式
+    getBarChartData(data) {
+      const colorList = ['#91C7AE', '#339999', '#99CCFF', '#66CC99', '#EBAC4A', '#666699', '#FF99CC', '#CC9933', '#FFCC33', '#003333']
+      const vehicleCountMap = new Map()
+      const allVehicleCountMap = new Map()
+      data.forEach(v => {
+        this.lineMixBarXData.push(v.zoneName)
+        this.accessRateData.push(v.networkAccessRate * 100)
+        v.typeAndProbabilitys.forEach(item => {
+          this.legendData.push(item.vehicleTypeName)
+        })
+      })
+      this.legendData = Array.from(new Set(this.legendData))
+      this.legendData.forEach((v, index) => {
+        allVehicleCountMap.set(v, {
+          name: v,
+          type: 'bar',
+          stack: '应入网',
+          data: [],
+          itemStyle: {
+            normal: {
+              color: colorList[index]
+            }
+          }
+        })
+        vehicleCountMap.set(v, {
+          name: v,
+          type: 'bar',
+          stack: '入网',
+          data: [],
+          itemStyle: {
+            normal: {
+              color: colorList[index]
+            }
+          }
+        })
+      })
+      data.forEach((v, index) => {
+        v.typeAndProbabilitys.forEach(item => {
+          vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
+          allVehicleCountMap.get(item.vehicleTypeName).data.push(item.allVehicleCount)
+        })
+        for (const value of vehicleCountMap.values()) {
+          if (value.data.length < index + 1) {
+            value.data.push(0)
+          }
+        }
+        for (const value of allVehicleCountMap.values()) {
+          if (value.data.length < index + 1) {
+            value.data.push(0)
+          }
+        }
+      })
+      this.barChartData = [...allVehicleCountMap.values(), ...vehicleCountMap.values()]
+    },
+    getMaxYdata(data) {
+      data.forEach(item => {
+        if (item.allVehicleCount > this.ymax) {
+          this.ymax = item.allVehicleCount
+        }
+      })
+      let num = '1'
+      for (let i = 0; i < JSON.stringify(this.ymax).length; i++) {
+        num += '0'
+      }
+      this.ymax = parseInt(num)
+    },
     getVehicleData() {
       vehicleSystem({ ...this.searchQuery })
         .then(res => {
-          console.log(res, 'res')
+          const { data } = res
+          this.getBarChartData(data)
+          this.getMaxYdata(data)
         })
         .catch(err => {
           throw err
@@ -242,5 +330,6 @@ export default {
 ::v-deep .el-table,
 ::v-deep .has-gutter {
   background-color: #212F40 !important;
+  color: #fff;
 }
 </style>
