@@ -36,9 +36,9 @@
                   <el-select v-model="listQuery.driverVelType" size="small" placeholder="请选择准驾车型">
                     <el-option
                       v-for="item in driverVelTyeOptions"
-                      :key="item.value"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.label"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -49,9 +49,9 @@
                   <el-select v-model="listQuery.qualificationRange" placeholder="请选择从业资格范围">
                     <el-option
                       v-for="item in qualificationRangeOption"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -59,16 +59,16 @@
               <el-col :md="8" :sm="24">
                 <el-form-item label="所属地区:">
                   <el-cascader v-model="listQuery.qualificationCity" size="small" :options="cityOptions" />
-                </el-form-item>
+                </el-form-item>、
               </el-col>
               <el-col :md="8" :sm="24">
-                <el-form-item label="状态:">
-                  <el-select v-model="listQuery.status" placeholder="请选择状态">
+                <el-form-item label="营运状态:">
+                  <el-select v-model="listQuery.status" placeholder="请选择营运状态">
                     <el-option
                       v-for="item in driverStatusOption"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -317,8 +317,8 @@
                   <el-option
                     v-for="item in driverVelTyeOptions"
                     :key="item.value"
-                    :label="item.value"
-                    :value="item.label"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -397,9 +397,9 @@
                 <el-select v-model="dialogData.qualificationType" size="small" placeholder="请选择从业资格证类型">
                   <el-option
                     v-for="item in queryQualificationOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -411,9 +411,9 @@
                 <el-select v-model="dialogData.qualificationRange" size="small" placeholder="请选择从业资格范围">
                   <el-option
                     v-for="item in qualificationRangeOption"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -467,9 +467,9 @@
                 <el-select v-model="dialogData.status" size="small" placeholder="请选择营运状态">
                   <el-option
                     v-for="item in driverStatusOption"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>

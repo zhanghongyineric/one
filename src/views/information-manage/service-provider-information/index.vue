@@ -287,6 +287,7 @@ export default {
         .then(res => {
           const { data } = res
           data.forEach(item => {
+            console.log(item, 'item')
             if (item.value === '正常') {
               this.optionGroup[1].value = parseInt(item.label)
             } else {

@@ -16,9 +16,9 @@
                 <el-select v-model="listQuery.vehicleType" placeholder="请选择车辆类型">
                   <el-option
                     v-for="item in carKindOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -44,9 +44,9 @@
                   <el-select v-model="listQuery.operateStatus" placeholder="请选择运营状态">
                     <el-option
                       v-for="item in operateStatusOptions"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -200,9 +200,9 @@
                 <el-select v-model="createFormData.operateType" clearable placeholder="请选择车辆类型">
                   <el-option
                     v-for="item in vehicleTypeOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -282,9 +282,9 @@
                 >
                   <el-option
                     v-for="item in plateColorOptions"
-                    :key="item.label"
-                    :value="item.label"
-                    :label="item.value"
+                    :key="item.value"
+                    :value="item.value"
+                    :label="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -298,9 +298,9 @@
                 >
                   <el-option
                     v-for="item in carColorOptions"
-                    :key="item.label"
-                    :value="item.label"
-                    :label="item.value"
+                    :key="item.value"
+                    :value="item.value"
+                    :label="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -314,9 +314,9 @@
                 >
                   <el-option
                     v-for="item in fuelTypeOptions"
-                    :key="item.label"
-                    :value="item.label"
-                    :label="item.value"
+                    :key="item.value"
+                    :value="item.value"
+                    :label="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -431,9 +431,9 @@
                 <el-select v-model="createFormData.vehicleType" clearable size="small" placeholder="请选择机动车车辆类型">
                   <el-option
                     v-for="item in carKindOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -456,9 +456,9 @@
                 <el-select v-model="createFormData.useNature" clearable size="small" placeholder="请选择车辆使用性质">
                   <el-option
                     v-for="item in useNatureOptions"
-                    :key="item.label"
-                    :value="item.label"
-                    :label="item.value"
+                    :key="item.value"
+                    :value="item.value"
+                    :label="item.label"
                   />
                 </el-select>
               </el-form-item>
@@ -640,9 +640,9 @@
               <el-select v-model="accessFormData.accessWay" size="small" placeholder="请选择入网方式">
                 <el-option
                   v-for="item in accessWayOptions"
-                  :key="item.label"
-                  :label="item.value"
-                  :value="item.label"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
                 />
               </el-select>
             </el-form-item>
@@ -673,9 +673,9 @@
                 <el-select v-model="accessFormData.serverIpPort" clearable size="small" placeholder="请选择服务器域名及端口">
                   <el-option
                     v-for="item in portOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -700,9 +700,9 @@
                 <el-select v-model="accessFormData.communicationProtocolVersion" clearable size="small" placeholder="请选择通讯协议版本">
                   <el-option
                     v-for="item in protocolOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -712,9 +712,9 @@
                 <el-select v-model="accessFormData.locateMode" clearable size="small" placeholder="请选择定位模式">
                   <el-option
                     v-for="item in positionModeOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -726,9 +726,9 @@
                 <el-select v-model="accessFormData.communicationMode" clearable size="small" placeholder="请选择通讯模式">
                   <el-option
                     v-for="item in modeOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -770,9 +770,9 @@
               <el-select v-model="accessFormData.functions" clearable size="small" multiple placeholder="请选择主要功能">
                 <el-option
                   v-for="item in functionsOptions"
-                  :key="item.label"
-                  :label="item.value"
-                  :value="item.label"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
                 />
               </el-select>
             </el-form-item>
@@ -911,9 +911,9 @@
                   >
                     <el-option
                       v-for="item in insuranceTypeOptions"
-                      :key="item.label"
-                      :value="item.label"
-                      :label="item.value"
+                      :key="item.value"
+                      :value="item.value"
+                      :label="item.label"
                     />
                   </el-select>
                 </el-form-item>
@@ -928,9 +928,9 @@
                   >
                     <el-option
                       v-for="item in riskTypeOptions"
-                      :key="item.label"
-                      :value="item.label"
-                      :label="item.value"
+                      :key="item.value"
+                      :value="item.value"
+                      :label="item.label"
                     />
                   </el-select>
                 </el-form-item>

@@ -23,9 +23,9 @@
                 <el-select v-model="listQuery.serviceVehicleTypeCode" placeholder="请选择服务车辆类型">
                   <el-option
                     v-for="item in serviceCarKinds"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -38,9 +38,9 @@
                   <el-select v-model="listQuery.functions" placeholder="请选择平台支持功能">
                     <el-option
                       v-for="item in platformSupportFeatures"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -50,9 +50,9 @@
                   <el-select v-model="listQuery.typeCode" placeholder="请选择接入平台类型">
                     <el-option
                       v-for="item in accessPlatformKinds"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -62,9 +62,9 @@
                   <el-select v-model="listQuery.characterCode" placeholder="请选择接入平台性质">
                     <el-option
                       v-for="item in accessPlatformBelong"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -74,9 +74,9 @@
                   <el-select v-model="listQuery.status" size="small" placeholder="请选择平台状态">
                     <el-option
                       v-for="item in platformStatus"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -86,9 +86,9 @@
                   <el-select v-model="listQuery.keepOnRecord" placeholder="请选择备案状态">
                     <el-option
                       v-for="item in recordStatus"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -227,9 +227,9 @@
                 <el-select v-model="dialogData.protocolVersion" size="small" placeholder="请选择版本协议">
                   <el-option
                     v-for="item in protocolVersionOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -251,9 +251,9 @@
                 <el-select v-model="dialogData.characterCode" size="small" placeholder="请选择接入平台性质">
                   <el-option
                     v-for="item in accessPlatformBelong"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -265,9 +265,9 @@
                 <el-select v-model="dialogData.typeCode" size="small" placeholder="请选择接入平台类型">
                   <el-option
                     v-for="item in accessPlatformKinds"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -289,9 +289,9 @@
                 <el-select v-model="dialogData.status" placeholder="请选择平台状态">
                   <el-option
                     v-for="item in platformStatus"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -330,9 +330,9 @@
                 <el-select v-model="dialogData.allowConnect" size="small" placeholder="请选择是否可连接">
                   <el-option
                     v-for="item in allowConnectOptions"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -356,9 +356,9 @@
                 <el-select v-model="dialogData.keepOnRecord" size="small" placeholder="请选择备案状态">
                   <el-option
                     v-for="item in recordStatus"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -392,9 +392,9 @@
                 >
                   <el-option
                     v-for="item in platformSupportFeatures"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -409,9 +409,9 @@
                 >
                   <el-option
                     v-for="item in serviceCarKinds"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -456,8 +456,8 @@ export default {
         let text
         that.accessPlatformBelong.forEach(item => {
           // eslint-disable-next-line eqeqeq
-          if (item.label == code) {
-            text = item.value
+          if (item.value == code) {
+            text = item.label
           }
         })
         return text
@@ -468,8 +468,8 @@ export default {
         let text
         that.accessPlatformKinds.forEach(item => {
           // eslint-disable-next-line eqeqeq
-          if (item.label == code) {
-            text = item.value
+          if (item.value == code) {
+            text = item.label
           }
         })
         return text
@@ -481,8 +481,8 @@ export default {
         fnArr.forEach(f => {
           that.platformSupportFeatures.forEach(item => {
             // eslint-disable-next-line eqeqeq
-            if (item.label == f) {
-              const temp = item.value
+            if (item.value == f) {
+              const temp = item.label
               textArr.push(temp)
             }
           })
@@ -497,8 +497,8 @@ export default {
         fnArr.forEach(f => {
           that.serviceCarKinds.forEach(item => {
             // eslint-disable-next-line eqeqeq
-            if (item.label == f) {
-              const temp = item.value
+            if (item.value == f) {
+              const temp = item.label
               textArr.push(temp)
             }
           })
@@ -511,8 +511,8 @@ export default {
       if (status) {
         let text
         that.platformStatus.forEach(item => {
-          if (item.label === status) {
-            text = item.value
+          if (item.value === status) {
+            text = item.label
           }
         })
 
@@ -523,8 +523,8 @@ export default {
       if (status) {
         let text
         that.platformStatus.forEach(item => {
-          if (item.label === status) {
-            text = item.value
+          if (item.value === status) {
+            text = item.label
           }
         })
         if (text === '正常') {
@@ -542,8 +542,8 @@ export default {
       let text
       that.recordStatus.forEach(item => {
         // eslint-disable-next-line eqeqeq
-        if (item.label == record) {
-          text = item.value
+        if (item.value == record) {
+          text = item.label
         }
       })
       return text
