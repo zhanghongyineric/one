@@ -59,7 +59,7 @@
               <el-col :md="8" :sm="24">
                 <el-form-item label="所属地区:">
                   <el-cascader v-model="listQuery.qualificationCity" size="small" :options="cityOptions" />
-                </el-form-item>、
+                </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="营运状态:">

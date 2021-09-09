@@ -1030,8 +1030,8 @@ export default {
         return '不确定类型'
       } else {
         that.carKindOptions.forEach(item => {
-          if (type && type.toString() === item.label) {
-            typeText = item.value
+          if (type && type.toString() === item.value) {
+            typeText = item.label
           }
         })
         return typeText
@@ -1331,7 +1331,7 @@ export default {
             const { data } = res
             this.plateColorOptions = data
             data.forEach(item => {
-              this.plateColorMap.set(item.label, item.value)
+              this.plateColorMap.set(item.value, item.label)
             })
           })
         })
@@ -1347,7 +1347,7 @@ export default {
             const { data } = res
             this.operateStatusOptions = data['运营状态']
             data['运营状态'].forEach(item => {
-              this.operateStatusMap.set(item.label, item.value)
+              this.operateStatusMap.set(item.value, item.label)
             })
             this.carKindOptions = data['车辆类型']
             this.functionsOptions = data['具备功能']

@@ -697,10 +697,10 @@ export default {
           this.platformStatus = data['平台状态']
           this.recordStatus = data['备案状态']
           this.recordStatus.forEach(item => {
-            item.label = parseInt(item.label)
+            item.value = parseInt(item.value)
           })
           this.platformStatus.forEach(item => {
-            item.label = parseInt(item.label)
+            item.value = parseInt(item.value)
           })
         })
         .catch(err => {

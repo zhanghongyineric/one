@@ -59,27 +59,26 @@
       </div>
     </div>
     <div class="content-box">
-      <div class="left-box">
-        <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="listQuery.pageNum"
-          :limit.sync="listQuery.pageSize"
-          style="background-color:#0E1521;"
-          @pagination="getList"
-        />
+      <div class="left-box" style="padding: 10px;">
         <el-table
-          v-model="tableData"
+          :data="tableData"
           :striped="true"
           fit
           border
           :header-cell-style="tableHeaderColor"
         >
-          <el-table-column label="地区" align="center" />
-          <el-table-column label="应入网车辆总数（辆）" align="center" />
-          <el-table-column label="入网车辆总数（辆）" align="center" />
-          <el-table-column label="总入网率" align="center" />
-          <el-table-column label="新增入网车辆" align="center" />
+          <el-table-column label="地区" align="center" prop="zoneName" />
+          <el-table-column label="应入网车辆总数（辆）" align="center" prop="allVehicleCount" />
+          <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" />
+          <el-table-column label="总入网率" align="center" prop="networkAccessRate">
+            <template v-slot="{row}">
+              <span>{{ row.networkAccessRate | networkAccessRateFilter }}</span>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column
+            v-for="item in twoLevelColums"
+            :key="item."
+          /> -->
         </el-table>
       </div>
       <div class="right-box">
@@ -91,7 +90,6 @@
 
 <script>
 import lineMixBar from '@/components/Charts/statistics/lineMixBar.vue'
-import Pagination from '@/components/Pagination'
 import FunnelChart from '@/components/Charts/statistics/FunnelChart.vue'
 import LineChart from '@/components/Charts/statistics/LineChart.vue'
 import PieChart from '@/components/Charts/statistics/PieChart.vue'
@@ -104,7 +102,12 @@ import {
 
 export default {
   name: 'VehicleStatus',
-  components: { lineMixBar, Pagination, FunnelChart, PieChart, LineChart },
+  components: { lineMixBar, FunnelChart, PieChart, LineChart },
+  filters: {
+    networkAccessRateFilter(rate) {
+      return rate * 100 + '%'
+    }
+  },
   data() {
     return {
       tableData: [],
@@ -142,7 +145,9 @@ export default {
       accessRateData: [],
       legendData: [],
       barChartData: [],
-      ymax: 0
+      ymax: 0,
+
+      twoLevelColums: []
     }
   },
   created() {
@@ -151,17 +156,17 @@ export default {
     this.getSectorStatistics()
     this.getVehicleTrends()
   },
-  mounted() {
-    this.getList()
-  },
   methods: {
-    getList() {},
+    getTableData(data) {
+      const dataTemp = data
+      this.tableData = dataTemp
+      console.log(dataTemp, 'dataTemp')
+    },
     getVehicleTrends() {
       vehicleTrends({ year: '2021' })
         .then(res => {
-          console.log(res)
           const { data } = res
-          for (let i = 0; i < 12; i++) {
+          for (let i = 1; i <= 12; i++) {
             if (!data[i]) data[i] = 0
           }
           this.lineChartData = Object.values(data)
@@ -259,6 +264,8 @@ export default {
           }
         }
       })
+      console.log(allVehicleCountMap, 'allVehicleCountMap')
+      this.twoLevelColums = allVehicleCountMap.keys()
       this.barChartData = [...allVehicleCountMap.values(), ...vehicleCountMap.values()]
     },
     getMaxYdata(data) {
@@ -279,6 +286,7 @@ export default {
           const { data } = res
           this.getBarChartData(data)
           this.getMaxYdata(data)
+          this.getTableData(data)
         })
         .catch(err => {
           throw err
@@ -349,7 +357,7 @@ export default {
 
 ::v-deep .el-input__inner,
 ::v-deep .el-range-input,
-::v-deep .el-table,
+// ::v-deep .el-table,
 ::v-deep .has-gutter {
   background-color: #212F40 !important;
   color: #fff;
