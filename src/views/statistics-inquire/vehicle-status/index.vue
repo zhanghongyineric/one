@@ -160,6 +160,11 @@ export default {
       vehicleTrends({ year: '2021' })
         .then(res => {
           console.log(res)
+          const { data } = res
+          for (let i = 0; i < 12; i++) {
+            if (!data[i]) data[i] = 0
+          }
+          this.lineChartData = Object.values(data)
         })
         .catch(err => {
           throw err

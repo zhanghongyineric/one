@@ -1,4 +1,3 @@
-<!-- 主要用于监测首页饼状图 -->
 <template>
   <div :class="className" :style="{height,width}" />
 </template>
@@ -35,34 +34,7 @@ export default {
     chartData: {
       deep: true,
       handler(val) {
-        this.setOptions(val)
-        let index = 0
-        const { length } = this.chartData
-        setInterval(() => {
-          this.chart.dispatchAction({
-            type: 'highlight',
-            seriesIndex: 0,
-            dataIndex: index
-          })
-          this.chart.dispatchAction({
-            type: 'showTip',
-            seriesIndex: 0,
-            dataIndex: index
-          })
-          setTimeout(() => {
-            for (let i = 0; i < length + 1; i++) {
-              if (i !== index) {
-                this.chart.dispatchAction({
-                  type: 'downplay',
-                  seriesIndex: 0,
-                  dataIndex: i
-                })
-              }
-            }
-          }, 2700)
-          index++
-          if (index >= length) index = 0
-        }, 3000)
+        this.setOptions()
       }
     }
   },
@@ -83,19 +55,66 @@ export default {
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
     },
-    setOptions(data) {
-      const colorList = ['#72E1DE', '#6D9DE0', '#339933', '#19F1FF', '#EC4472', '#FF9A90', '#C7E2F5', '#FCD967', '#17808F', '#48B078', '#2FC4FE']
+    setOptions() {
       this.chart.setOption({
+        title: {
+          text: '入网车辆趋势',
+          textStyle: {
+            color: '#fff'
+          },
+          x: 10,
+          y: 10
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        grid: {
+          y: 70,
+          y2: 40,
+          x: 100,
+          x2: 50
+        },
         xAxis: {
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          axisPointer: {
+            type: 'shadow'
+          },
+          axisLabel: {
+            textStyle: {
+              color: '#ccc'
+            }
+          },
+          data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          nameTextStyle: {
+            color: '#fff'
+          },
+          splitLine: {
+            lineStyle: {
+              color: '#696969'
+            },
+            show: true
+          },
+          axisLabel: {
+            formatter: '{value} 辆',
+            textStyle: {
+              color: '#ccc'
+            }
+          }
         },
         series: [{
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          data: this.chartData,
           type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#61A0A8',
+              lineStyle: {
+                color: '#61A0A8'
+              }
+            }
+          },
           smooth: true
         }]
       })

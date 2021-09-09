@@ -100,9 +100,6 @@ export default {
       this.chart.setOption({
         tooltip: {
           trigger: 'axis'
-          // formatter: (val, i) => {
-          //   console.log(val, i)
-          // }
         },
         legend: {
           data: this.legendData,
