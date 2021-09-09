@@ -36,3 +36,12 @@ export function sectorStatistics(data) {
     data
   })
 }
+
+// 入网车辆趋势
+export function vehicleTrends(data) {
+  return request({
+    url: '/vehicleTrends',
+    method: 'POST',
+    data
+  })
+}

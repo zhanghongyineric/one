@@ -37,7 +37,7 @@ export default {
       deep: true,
       handler(val) {
         this.$nextTick(() => {
-          this.setOptions(val)
+          this.setOptions()
         })
       }
     }
@@ -57,46 +57,60 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el)
-      this.setOptions(this.chartData)
+      this.setOptions()
     },
-    setOptions(data) {
+    setOptions() {
+      const colorList = [
+        '#1D4F77',
+        '#286C91',
+        '#1C3C63',
+        '#3B92C5',
+        '#439DC3',
+        '#84BCD1',
+        '#A1C1CC',
+        '#CFDDDF',
+        '#E6E9EA'
+      ]
       this.chart.setOption({
-        // title: {
-        //   text: '入网率'
-        // },
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c}%'
-        },
-        legend: {
-          data: ['公交车', '货运车', '包车客运', '危险运输', '其他车辆'],
+        title: {
+          text: '入网率：',
           textStyle: {
             color: '#fff'
-          }
+          },
+          x: 10,
+          y: 10
         },
-
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c}%',
+          show: true
+        },
         series: [
           {
             name: '漏斗图',
             type: 'funnel',
-            left: '10%',
+            left: '45%',
             top: 60,
-            // x2: 80,
             bottom: 60,
-            width: '80%',
-            // height: {totalHeight} - y - y2,
+            width: '50%',
             min: 0,
             max: 100,
-            minSize: '0%',
+            minSize: '30%',
             maxSize: '100%',
             sort: 'descending',
             gap: 2,
             label: {
               show: true,
-              position: 'inside'
+              position: 'inside',
+              formatter: (params) => {
+                return params.value + '%'
+              },
+              textStyle: {
+                color: '#fff'
+              }
             },
             labelLine: {
-              length: 10,
+              length: 20,
               lineStyle: {
                 width: 1,
                 type: 'solid'
@@ -104,20 +118,67 @@ export default {
             },
             itemStyle: {
               borderColor: '#fff',
-              borderWidth: 1
+              borderWidth: 1,
+              normal: {
+                color: (params) => {
+                  return colorList[params.dataIndex]
+                }
+              }
             },
             emphasis: {
               label: {
                 fontSize: 20
               }
             },
-            data: [
-              { value: 44, name: '公交车' },
-              { value: 57, name: '货运车' },
-              { value: 84, name: '包车客运' },
-              { value: 90, name: '危险运输' },
-              { value: 92, name: '其他车辆' }
-            ]
+            data: this.chartData
+          },
+          {
+            name: '漏斗图',
+            type: 'funnel',
+            left: '45%',
+            top: 60,
+            hoverAnimation: false,
+            silent: true,
+            bottom: 60,
+            width: '50%',
+            min: 0,
+            max: 100,
+            minSize: '30%',
+            maxSize: '100%',
+            sort: 'descending',
+            gap: 2,
+            label: {
+              show: true,
+              position: 'left',
+              formatter: (params) => {
+                return params.name
+              },
+              textStyle: {
+                color: '#fff'
+              }
+            },
+            labelLine: {
+              length: 20,
+              lineStyle: {
+                width: 1,
+                type: 'solid'
+              }
+            },
+            itemStyle: {
+              borderColor: '#fff',
+              borderWidth: 1,
+              normal: {
+                color: (params) => {
+                  return colorList[params.dataIndex]
+                }
+              }
+            },
+            emphasis: {
+              label: {
+                fontSize: 20
+              }
+            },
+            data: this.chartData
           }
         ]
       })

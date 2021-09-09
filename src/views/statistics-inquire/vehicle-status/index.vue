@@ -54,8 +54,8 @@
         />
       </div>
       <div class="right-box">
-        <pie-chart :chart-data="chartData" style="display:inline-block;" />
-        <funnel-chart style="display:inline-block;" />
+        <pie-chart :chart-data="pieChartData" style="display:inline-block;" />
+        <funnel-chart :chart-data="funnelChartData" style="display:inline-block;" />
       </div>
     </div>
     <div class="content-box">
@@ -83,7 +83,7 @@
         </el-table>
       </div>
       <div class="right-box">
-        <line-chart :chart-data="chartData" />
+        <line-chart :chart-data="lineChartData" />
       </div>
     </div>
   </div>
@@ -98,7 +98,8 @@ import PieChart from '@/components/Charts/statistics/PieChart.vue'
 import {
   areaCode,
   vehicleSystem,
-  sectorStatistics
+  sectorStatistics,
+  vehicleTrends
 } from '@/api/statistics-inquire/vehicle-status'
 
 export default {
@@ -122,12 +123,14 @@ export default {
         label: 'unitName',
         children: 'children',
         value: 'unitId',
-        checkStrictly: true
+        checkStrictly: false
       },
       total: 10,
       xData: [],
       yData: [],
-      chartData: [],
+      pieChartData: [],
+      funnelChartData: [],
+      lineChartData: [],
       statisticalPeriod: [
         {
           label: '本年度',
@@ -146,12 +149,22 @@ export default {
     this.getVehicleData()
     this.getAreaCode()
     this.getSectorStatistics()
+    this.getVehicleTrends()
   },
   mounted() {
     this.getList()
   },
   methods: {
     getList() {},
+    getVehicleTrends() {
+      vehicleTrends({ year: '2021' })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) return 'background-color: #212F40;color: #fff;font-weight: 500;'
     },
@@ -164,7 +177,11 @@ export default {
         status: '1'
       })
         .then(res => {
-          console.log(res)
+          const { data } = res
+          data.forEach(v => {
+            this.pieChartData.push({ value: v.vehicleCount, name: v.vehicleTypeName })
+            this.funnelChartData.push({ value: v.networkAccessRate * 100, name: v.vehicleTypeName })
+          })
         })
         .catch(err => {
           throw err
