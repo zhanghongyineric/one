@@ -37,7 +37,7 @@ export default {
   methods: {
     goLogin() {
       this.$store.dispatch('user/resetToken').then(() => {
-        this.$router.push(`/login?redirect=InformationHome&query=${JSON.stringify(this.$route.query)}`)
+        this.$router.push(`/login?redirect=home&query=${JSON.stringify(this.$route.query)}`)
         location.reload()
       })
     }
