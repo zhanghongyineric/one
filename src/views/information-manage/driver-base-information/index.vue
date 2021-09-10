@@ -527,8 +527,8 @@ export default {
     statusFilter(status) {
       let text
       that.driverStatusOption.forEach(item => {
-        if (item.label === status) {
-          text = item.value
+        if (item.value === status) {
+          text = item.label
         }
       })
       return text
@@ -536,8 +536,8 @@ export default {
     driverVelTypeFilter(type) {
       let text
       that.driverVelTyeOptions.forEach(item => {
-        if (item.label === type) {
-          text = item.value
+        if (item.value === type) {
+          text = item.label
         }
       })
       return text
@@ -546,8 +546,8 @@ export default {
       if (range) {
         let text
         that.qualificationRangeOption.forEach(item => {
-          if (item.label === range.toString()) {
-            text = item.value
+          if (item.value === range.toString()) {
+            text = item.label
           }
         })
         return text

@@ -416,8 +416,8 @@ export default {
       if (role) {
         let roleText
         that.optionGroup.companyTypes.forEach(item => {
-          if (item.label === role) {
-            roleText = item.value
+          if (item.value === role) {
+            roleText = item.label
           }
         })
         return roleText
@@ -426,8 +426,8 @@ export default {
     companyStatusFilter: function(status) {
       let statusText
       that.optionGroup.accountTypeList.forEach(item => {
-        if (item.label === status) {
-          statusText = item.value
+        if (item.value === status) {
+          statusText = item.label
         }
       })
       return statusText
@@ -686,34 +686,35 @@ export default {
         .then(res => {
           const { data } = res
           data.forEach(item => {
-            if (item.value === '集体') {
-              this.optionGroup.economyList[0].value = parseInt(item.label)
-            } else if (item.value === '私营') {
-              this.optionGroup.economyList[1].value = parseInt(item.label)
-            } else if (item.value === '个体') {
-              this.optionGroup.economyList[2].value = parseInt(item.label)
-            } else if (item.value === '联营') {
-              this.optionGroup.economyList[3].value = parseInt(item.label)
-            } else if (item.value === '股份制') {
-              this.optionGroup.economyList[4].value = parseInt(item.label)
-            } else if (item.value === '外商独资') {
-              this.optionGroup.economyList[5].value = parseInt(item.label)
-            } else if (item.value === '港,澳,台商投资企业') {
-              this.optionGroup.economyList[6].value = parseInt(item.label)
-            } else if (item.value === '有限责任') {
-              this.optionGroup.economyList[7].value = parseInt(item.label)
-            } else if (item.value === '其他经济') {
-              this.optionGroup.economyList[8].value = parseInt(item.label)
-            } else if (item.value === '有限') {
-              this.optionGroup.economyList[9].value = parseInt(item.label)
-            } else if (item.value === '个人独资') {
-              this.optionGroup.economyList[10].value = parseInt(item.label)
-            } else if (item.value === '普通合伙') {
-              this.optionGroup.economyList[11].value = parseInt(item.label)
-            } else if (item.value === '其他有限责任公司') {
-              this.optionGroup.economyList[12].value = parseInt(item.label)
-            } else if (item.value === '国有') {
-              this.optionGroup.economyList[13].value = parseInt(item.label)
+            console.log(data)
+            if (item.label === '集体') {
+              this.optionGroup.economyList[0].value = parseInt(item.value)
+            } else if (item.label === '私营') {
+              this.optionGroup.economyList[1].value = parseInt(item.value)
+            } else if (item.label === '个体') {
+              this.optionGroup.economyList[2].value = parseInt(item.value)
+            } else if (item.label === '联营') {
+              this.optionGroup.economyList[3].value = parseInt(item.value)
+            } else if (item.label === '股份制') {
+              this.optionGroup.economyList[4].value = parseInt(item.value)
+            } else if (item.label === '外商独资') {
+              this.optionGroup.economyList[5].value = parseInt(item.value)
+            } else if (item.label === '港,澳,台商投资企业') {
+              this.optionGroup.economyList[6].value = parseInt(item.value)
+            } else if (item.label === '有限责任') {
+              this.optionGroup.economyList[7].value = parseInt(item.value)
+            } else if (item.label === '其他经济') {
+              this.optionGroup.economyList[8].value = parseInt(item.value)
+            } else if (item.label === '有限') {
+              this.optionGroup.economyList[9].value = parseInt(item.value)
+            } else if (item.label === '个人独资') {
+              this.optionGroup.economyList[10].value = parseInt(item.value)
+            } else if (item.label === '普通合伙') {
+              this.optionGroup.economyList[11].value = parseInt(item.value)
+            } else if (item.label === '其他有限责任公司') {
+              this.optionGroup.economyList[12].value = parseInt(item.value)
+            } else if (item.label === '国有') {
+              this.optionGroup.economyList[13].value = parseInt(item.value)
             }
           })
           this.listLoading = false
