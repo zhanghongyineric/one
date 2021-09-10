@@ -142,9 +142,9 @@
                 >
                   <el-option
                     v-for="{label,value} in sysOptions"
-                    :key="label"
-                    :label="value"
-                    :value="label"
+                    :key="value"
+                    :label="label"
+                    :value="value"
                   />
                 </el-select>
               </el-form-item>
@@ -200,7 +200,7 @@ export default {
       if (sys) {
         let text
         that.sysOptions.forEach(item => {
-          if (sys === item.label) text = item.value
+          if (sys === item.value) text = item.label
         })
         return text
       }

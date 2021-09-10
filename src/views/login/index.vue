@@ -229,14 +229,13 @@ export default {
       sysPort()
         .then(res => {
           res.data.forEach(item => {
-            if (item.value === '管理端·检测端') {
-              this.systemCode = item.label
+            if (item.label === '管理端·检测端') {
+              this.systemCode = item.value
             }
           })
           historicVersion({ port: this.systemCode })
             .then(res => {
               if (res.data) {
-                console.log(res)
                 const { data: { number, content, historyContent }} = res
                 this.version = number
                 const eleItem = document.getElementsByClassName('version-drawer')[0]
