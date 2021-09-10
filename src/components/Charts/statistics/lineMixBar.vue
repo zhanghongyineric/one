@@ -52,30 +52,40 @@ export default {
     legendData: {
       deep: true,
       handler(val) {
-        this.setOptions()
+        this.$nextTick(() => {
+          this.setOptions()
+        })
       }
     },
     barChartData: {
       deep: true,
       handler(val) {
-        this.setOptions()
+        this.$nextTick(() => {
+          this.setOptions()
+        })
       }
     },
     xData: {
       deep: true,
       handler(val) {
-        this.setOptions()
+        this.$nextTick(() => {
+          this.setOptions()
+        })
       }
     },
     ymax: {
       handler(val) {
-        this.setOptions()
+        this.$nextTick(() => {
+          this.setOptions()
+        })
       }
     },
     lineData: {
       deep: true,
       handler(val) {
-        this.setOptions()
+        this.$nextTick(() => {
+          this.setOptions()
+        })
       }
     }
   },
@@ -97,6 +107,33 @@ export default {
       this.setOptions(this.chartData)
     },
     setOptions() {
+      let series = []
+      series = [
+        ...this.barChartData,
+        {
+          name: '入网率',
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#2ec7c9',
+              lineStyle: {
+                color: '#2ec7c9'
+              }
+            }
+          },
+          yAxisIndex: 1,
+          data: this.lineData,
+          label: {
+            normal: {
+              show: true,
+              position: 'top',
+              textStyle: {
+                color: '#fff'
+              }
+            }
+          }
+        }
+      ]
       this.chart.setOption({
         tooltip: {
           trigger: 'axis'
@@ -162,32 +199,7 @@ export default {
             }
           }
         ],
-        series: [
-          ...this.barChartData,
-          {
-            name: '入网率',
-            type: 'line',
-            itemStyle: {
-              normal: {
-                color: '#2ec7c9',
-                lineStyle: {
-                  color: '#2ec7c9'
-                }
-              }
-            },
-            yAxisIndex: 1,
-            data: this.lineData,
-            label: {
-              normal: {
-                show: true,
-                position: 'top',
-                textStyle: {
-                  color: '#fff'
-                }
-              }
-            }
-          }
-        ]
+        series
       })
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" style="width:100%">
     <div class="table-page-search-wrapper search-box">
       <el-form label-width="100px">
         <el-row :gutter="48">
@@ -14,7 +14,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :md="6" :sm="24">
+          <!-- <el-col :md="6" :sm="24">
             <el-form-item label="统计周期：">
               <span
                 v-for="item in statisticalPeriod"
@@ -23,21 +23,30 @@
                 @click="chooseStatus(item.value)"
               >{{ item.label }}</span>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :md="6" :sm="24">
             <el-form-item label="时间范围：">
               <el-date-picker
-                type="daterange"
+                v-model="time"
+                type="monthrange"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 size="mini"
+                value-format="yyyyMM"
+                @change="changeDate"
               />
             </el-form-item>
           </el-col>
           <el-col :md="6" :sm="24">
             <div class="table-page-search-submitButtons">
-              <el-button size="mini" type="primary" icon="el-icon-search" style="margin-top:5px;" />
+              <el-button
+                size="mini"
+                type="primary"
+                icon="el-icon-search"
+                style="margin-top:5px;"
+                @click="search"
+              />
             </div>
           </el-col>
         </el-row>
@@ -59,26 +68,36 @@
       </div>
     </div>
     <div class="content-box">
-      <div class="left-box" style="padding: 10px;">
+      <div class="left-box">
         <el-table
           :data="tableData"
-          :striped="true"
+          stripe
           fit
-          border
+          :border="false"
           :header-cell-style="tableHeaderColor"
+          height="100%"
+          style="width:100%"
+          :highlight-current-row="false"
+          size="small"
         >
-          <el-table-column label="地区" align="center" prop="zoneName" />
-          <el-table-column label="应入网车辆总数（辆）" align="center" prop="allVehicleCount" />
-          <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" />
+          <el-table-column label="地区" align="center" prop="zoneName" min-width="110" fixed />
+          <el-table-column label="应入网车辆总数（辆）" align="center" prop="allVehicleCount" min-width="170" />
+          <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" min-width="160" />
           <el-table-column label="总入网率" align="center" prop="networkAccessRate">
             <template v-slot="{row}">
               <span>{{ row.networkAccessRate | networkAccessRateFilter }}</span>
             </template>
           </el-table-column>
-          <!-- <el-table-column
+          <el-table-column
             v-for="item in twoLevelColums"
-            :key="item."
-          /> -->
+            :key="item"
+            :label="item"
+            align="center"
+          >
+            <el-table-column label="应入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'all'" min-width="170" align="center" />
+            <el-table-column label="入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'count'" min-width="160" align="center" />
+            <el-table-column label="总入网率" :prop="allVehicleTypeNames.get(item) + 'rate'" align="center" />
+          </el-table-column>
         </el-table>
       </div>
       <div class="right-box">
@@ -116,11 +135,11 @@ export default {
         pageSize: 10
       },
       searchQuery: {
-        unitId: '800',
-        status: '1',
-        startTime: '',
-        endTime: ''
+        unitId: '634',
+        startTime: '202101',
+        endTime: '202109'
       },
+      time: ['202101', '202109'],
       areaOptions: [],
       areaProps: {
         label: 'unitName',
@@ -128,9 +147,6 @@ export default {
         value: 'unitId',
         checkStrictly: false
       },
-      total: 10,
-      xData: [],
-      yData: [],
       pieChartData: [],
       funnelChartData: [],
       lineChartData: [],
@@ -147,7 +163,8 @@ export default {
       barChartData: [],
       ymax: 0,
 
-      twoLevelColums: []
+      twoLevelColums: [],
+      allVehicleTypeNames: new Map()
     }
   },
   created() {
@@ -156,14 +173,32 @@ export default {
     this.getSectorStatistics()
     this.getVehicleTrends()
   },
+  mounted() {},
   methods: {
-    getTableData(data) {
+    getTableData(data, allVehicle, vehicle, netRate) {
       const dataTemp = data
+      const keys = [...allVehicle.keys()]
+      dataTemp.forEach((item, i) => {
+        keys.forEach((key, j) => {
+          let allCount = ''; let count = ''; let rate = ''
+          allCount = this.allVehicleTypeNames.get(key) + 'all'
+          count = this.allVehicleTypeNames.get(key) + 'count'
+          rate = this.allVehicleTypeNames.get(key) + 'rate'
+          item[allCount] = allVehicle.get(key).data[i]
+          item[count] = vehicle.get(key).data[i]
+          item[rate] = netRate.get(key)[i]
+        })
+      })
       this.tableData = dataTemp
-      console.log(dataTemp, 'dataTemp')
+    },
+    changeDate() {
+      this.searchQuery.startTime = this.time[0]
+      this.searchQuery.endTime = this.time[1]
     },
     getVehicleTrends() {
-      vehicleTrends({ year: '2021' })
+      this.lineChartData = []
+      if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
+      vehicleTrends({ year: '2021', unitId: this.searchQuery.unitId })
         .then(res => {
           const { data } = res
           for (let i = 1; i <= 12; i++) {
@@ -176,16 +211,19 @@ export default {
         })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) return 'background-color: #212F40;color: #fff;font-weight: 500;'
+      if (rowIndex === 0) return 'background-color:#1C2733;font-weight: 500;'
     },
-    chooseStatus(val) {
-      this.searchQuery.status = val
+    search() {
+      this.getSectorStatistics()
+      this.getVehicleData()
+      this.getVehicleTrends()
+      // this.barChartData = []
     },
     getSectorStatistics() {
-      sectorStatistics({
-        unitId: '800',
-        status: '1'
-      })
+      this.pieChartData = []
+      this.funnelChartData = []
+      if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
+      sectorStatistics({ ...this.searchQuery })
         .then(res => {
           const { data } = res
           data.forEach(v => {
@@ -216,6 +254,7 @@ export default {
       const colorList = ['#91C7AE', '#339999', '#99CCFF', '#66CC99', '#EBAC4A', '#666699', '#FF99CC', '#CC9933', '#FFCC33', '#003333']
       const vehicleCountMap = new Map()
       const allVehicleCountMap = new Map()
+      const networkAccessRateMap = new Map()
       data.forEach(v => {
         this.lineMixBarXData.push(v.zoneName)
         this.accessRateData.push(v.networkAccessRate * 100)
@@ -247,11 +286,13 @@ export default {
             }
           }
         })
+        networkAccessRateMap.set(v, [])
       })
       data.forEach((v, index) => {
         v.typeAndProbabilitys.forEach(item => {
           vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
           allVehicleCountMap.get(item.vehicleTypeName).data.push(item.allVehicleCount)
+          networkAccessRateMap.get(item.vehicleTypeName).push(item.networkAccessRate * 100 + '%')
         })
         for (const value of vehicleCountMap.values()) {
           if (value.data.length < index + 1) {
@@ -263,10 +304,17 @@ export default {
             value.data.push(0)
           }
         }
+        for (const value of networkAccessRateMap.values()) {
+          if (value.length < index + 1) {
+            value.push('')
+          }
+        }
       })
-      console.log(allVehicleCountMap, 'allVehicleCountMap')
-      this.twoLevelColums = allVehicleCountMap.keys()
+
+      this.twoLevelColums = [...allVehicleCountMap.keys()]
       this.barChartData = [...allVehicleCountMap.values(), ...vehicleCountMap.values()]
+      console.log(this.barChartData)
+      this.getTableData(data, allVehicleCountMap, vehicleCountMap, networkAccessRateMap)
     },
     getMaxYdata(data) {
       data.forEach(item => {
@@ -281,16 +329,53 @@ export default {
       this.ymax = parseInt(num)
     },
     getVehicleData() {
+      this.lineMixBarXData = []
+      this.accessRateData = []
+      this.legendData = []
+      this.barChartData = []
+      this.ymax = 0
+      this.twoLevelColums = []
+      this.allVehicleTypeNames = new Map()
+      this.tableData = []
+      if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
       vehicleSystem({ ...this.searchQuery })
         .then(res => {
           const { data } = res
-          this.getBarChartData(data)
-          this.getMaxYdata(data)
-          this.getTableData(data)
+          this.getAllVehicleType(data.vehicleTypeDtos)
+          this.getBarChartData(data.vehicleSystemDtos)
+          this.getMaxYdata(data.vehicleSystemDtos)
+          // 合计
+          const sumObj = {
+            zoneName: '合计',
+            allVehicleCount: data.allVehicleCount,
+            vehicleCount: data.vehicleCount,
+            networkAccessRate: data.TotalNetworkAccessRate
+          }
+          this.twoLevelColums.forEach(v => {
+            data.vehicleTypeDtos.forEach(item => {
+              if (item.typeName === v) {
+                sumObj[this.allVehicleTypeNames.get(v) + 'all'] = item.allTypeCount
+                sumObj[this.allVehicleTypeNames.get(v) + 'count'] = item.typeCount
+                sumObj[this.allVehicleTypeNames.get(v) + 'rate'] = item.networkAccessRate * 100 + '%'
+              }
+            })
+          })
+          this.tableData.push(sumObj)
         })
         .catch(err => {
           throw err
         })
+    },
+    getAllVehicleType(types) {
+      const chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz'
+      const maxLen = chars.length
+      types.forEach(item => {
+        let typeFiled = ''
+        for (let i = 0; i < 4; i++) {
+          typeFiled += chars.charAt(Math.floor(Math.random() * maxLen))
+        }
+        this.allVehicleTypeNames.set(item.typeName, typeFiled)
+      })
     }
   }
 }
@@ -361,5 +446,52 @@ export default {
 ::v-deep .has-gutter {
   background-color: #212F40 !important;
   color: #fff;
+}
+
+::v-deep .el-table thead.is-group th {
+  background-color: #212F40 !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+}
+
+::v-deep .el-table__fixed {
+  color: #fff !important;
+}
+
+::v-deep .el-table {
+  overflow: auto !important;
+  background-color: #1C2733 !important;
+  color: #fff !important;
+}
+
+::v-deep .el-table__row--striped td {
+  background-color: #1C2733 !important;
+}
+
+::v-deep .el-table__row {
+  background-color: #222C3C !important;
+}
+
+::v-deep .el-table tbody tr { pointer-events:none !important; }
+
+::v-deep .el-table td {
+  border: 0 !important;
+}
+
+::v-deep .el-table--border {
+  border: 0 !important;
+}
+
+::v-deep .cell {
+  color: #ccc !important;
+  font-weight: 700 !important;
+}
+
+::v-deep .el-range-separator {
+  color: #ccc !important;
+}
+
+::v-deep .el-table__fixed::before {
+  height: 0 !important;
 }
 </style>
