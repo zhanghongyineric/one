@@ -273,12 +273,12 @@
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="终端接入IP：" prop="deviceIp">
+              <el-form-item label="上级平台IP：" prop="deviceIp">
                 <el-input v-model="dialogData.deviceIp" placeholder="请输入终端接入IP" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="终端接入端口：" prop="devicePort">
+              <el-form-item label="上级平台端口：" prop="devicePort">
                 <el-input v-model="dialogData.devicePort" placeholder="请输入终端接入端口" size="small" />
               </el-form-item>
             </el-col>
@@ -297,12 +297,12 @@
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="接入平台IP：" prop="ip">
+              <el-form-item label="下级平台IP：" prop="ip">
                 <el-input v-model="dialogData.ip" placeholder="请输入接入平台IP" size="small" />
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="接入平台端口：" prop="port">
+              <el-form-item label="下级平台端口：" prop="port">
                 <el-input v-model="dialogData.port" placeholder="请输入接入平台端口" size="small" />
               </el-form-item>
             </el-col>
