@@ -33,7 +33,7 @@ export default {
   watch: {
     chartData: {
       deep: true,
-      handler(val) {
+      handler() {
         this.setOptions()
       }
     }
@@ -57,20 +57,20 @@ export default {
     },
     setOptions() {
       this.chart.setOption({
-        title: {
-          text: '入网车辆趋势',
-          textStyle: {
-            color: '#fff'
-          },
-          x: 10,
-          y: 10
-        },
+        // title: {
+        //   text: '入网车辆趋势',
+        //   textStyle: {
+        //     color: '#fff'
+        //   },
+        //   x: 10,
+        //   y: 10
+        // },
         tooltip: {
           trigger: 'axis'
         },
         grid: {
-          y: 70,
-          y2: 40,
+          y: 40,
+          y2: 60,
           x: 100,
           x2: 50
         },

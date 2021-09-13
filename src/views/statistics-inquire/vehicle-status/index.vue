@@ -101,6 +101,16 @@
         </el-table>
       </div>
       <div class="right-box">
+        <span class="trend-title">入网车辆趋势</span>
+        <el-date-picker
+          v-model="trendYear"
+          type="year"
+          placeholder="选择年"
+          size="mini"
+          class="trend-date-picker"
+          value-format="yyyy"
+          @change="getVehicleTrends"
+        />
         <line-chart :chart-data="lineChartData" />
       </div>
     </div>
@@ -164,7 +174,8 @@ export default {
       ymax: 0,
 
       twoLevelColums: [],
-      allVehicleTypeNames: new Map()
+      allVehicleTypeNames: new Map(),
+      trendYear: '2021'
     }
   },
   created() {
@@ -173,7 +184,10 @@ export default {
     this.getSectorStatistics()
     this.getVehicleTrends()
   },
-  mounted() {},
+  mounted() {
+    const currentDate = new Date()
+    this.trendYear = currentDate.getFullYear().toString()
+  },
   methods: {
     getTableData(data, allVehicle, vehicle, netRate) {
       const dataTemp = data
@@ -198,7 +212,10 @@ export default {
     getVehicleTrends() {
       this.lineChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
-      vehicleTrends({ year: '2021', unitId: this.searchQuery.unitId })
+      vehicleTrends({
+        year: this.trendYear,
+        unitId: this.searchQuery.unitId
+      })
         .then(res => {
           const { data } = res
           for (let i = 1; i <= 12; i++) {
@@ -493,5 +510,23 @@ export default {
 
 ::v-deep .el-table__fixed::before {
   height: 0 !important;
+}
+
+::v-deep .el-table--group::after {
+  width: 0 !important;
+}
+
+.trend-title {
+  font-size: 18px;
+  font-weight: 700;
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 15px;
+}
+
+.trend-date-picker {
+  position: absolute;
+  right: 20px;
+  margin-top: 10px;
 }
 </style>
