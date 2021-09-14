@@ -41,6 +41,16 @@ export default {
       type: Number,
       default: 0,
       required: true
+    },
+    yname: {
+      type: String,
+      default: '',
+      required: true
+    },
+    lineName: {
+      type: String,
+      default: '',
+      required: true
     }
   },
   data() {
@@ -128,7 +138,7 @@ export default {
         yAxis: [
           {
             type: 'value',
-            name: '车辆数',
+            name: this.yname,
             nameTextStyle: {
               color: '#fff'
             },
@@ -144,7 +154,7 @@ export default {
           },
           {
             type: 'value',
-            name: '入网率',
+            name: this.lineName,
             nameTextStyle: {
               color: '#fff'
             },

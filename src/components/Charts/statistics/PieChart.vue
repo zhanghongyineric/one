@@ -1,4 +1,3 @@
-<!-- 主要用于监测首页饼状图 -->
 <template>
   <div :class="className" :style="{height,width}" />
 </template>
@@ -24,6 +23,11 @@ export default {
     chartData: {
       type: Array,
       default: () => [],
+      required: true
+    },
+    title: {
+      type: String,
+      default: '',
       required: true
     }
   },
@@ -61,7 +65,7 @@ export default {
       const colorList = ['#749F83', '#5EA8C8', '#91C7AE', '#337DA2', '#F1C67D', '#DF8330', '#C7E2F5', '#FCD967', '#17808F', '#48B078', '#2FC4FE']
       this.chart.setOption({
         title: {
-          text: '车辆类型入网车辆数占比：',
+          text: this.title,
           x: 10,
           y: 10,
           textStyle: {

@@ -55,6 +55,8 @@
     <div class="content-box">
       <div class="left-box" style="background-color: #0E1A2A;">
         <line-mix-bar
+          :yname="'车辆数'"
+          :line-name="'入网率'"
           :x-data="lineMixBarXData"
           :line-data="accessRateData"
           :legend-data="legendData"
@@ -63,8 +65,8 @@
         />
       </div>
       <div class="right-box">
-        <pie-chart :chart-data="pieChartData" style="display:inline-block;" />
-        <funnel-chart :chart-data="funnelChartData" style="display:inline-block;" />
+        <pie-chart :chart-data="pieChartData" :title="'车辆类型入网车辆数占比：'" style="display:inline-block;" />
+        <funnel-chart :chart-data="funnelChartData" :title="'入网率：'" style="display:inline-block;" />
       </div>
     </div>
     <div class="content-box">

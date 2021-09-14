@@ -25,6 +25,11 @@ export default {
       type: Array,
       require: true,
       default: () => []
+    },
+    title: {
+      type: String,
+      default: '',
+      required: true
     }
   },
   data() {
@@ -35,7 +40,7 @@ export default {
   watch: {
     chartData: {
       deep: true,
-      handler(val) {
+      handler() {
         this.$nextTick(() => {
           this.setOptions()
         })
@@ -73,7 +78,7 @@ export default {
       ]
       this.chart.setOption({
         title: {
-          text: '入网率：',
+          text: this.title,
           textStyle: {
             color: '#fff'
           },
