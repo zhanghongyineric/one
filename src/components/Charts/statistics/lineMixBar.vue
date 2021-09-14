@@ -51,41 +51,31 @@ export default {
   watch: {
     legendData: {
       deep: true,
-      handler(val) {
-        this.$nextTick(() => {
-          this.setOptions()
-        })
+      handler() {
+        this.setOptions()
       }
     },
     barChartData: {
       deep: true,
-      handler(val) {
-        this.$nextTick(() => {
-          this.setOptions()
-        })
+      handler() {
+        this.setOptions()
       }
     },
     xData: {
       deep: true,
-      handler(val) {
-        this.$nextTick(() => {
-          this.setOptions()
-        })
+      handler() {
+        this.setOptions()
       }
     },
     ymax: {
-      handler(val) {
-        this.$nextTick(() => {
-          this.setOptions()
-        })
+      handler() {
+        this.setOptions()
       }
     },
     lineData: {
       deep: true,
-      handler(val) {
-        this.$nextTick(() => {
-          this.setOptions()
-        })
+      handler() {
+        this.initChart()
       }
     }
   },
@@ -103,37 +93,13 @@ export default {
   },
   methods: {
     initChart() {
+      // 首先销毁实例，否则更新数据后仍然会展示部分旧数据
+      this.chart = echarts.init(this.$el).dispose()
+      // 其次创建echarts实例
       this.chart = echarts.init(this.$el)
-      this.setOptions(this.chartData)
+      this.setOptions()
     },
     setOptions() {
-      let series = []
-      series = [
-        ...this.barChartData,
-        {
-          name: '入网率',
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: '#2ec7c9',
-              lineStyle: {
-                color: '#2ec7c9'
-              }
-            }
-          },
-          yAxisIndex: 1,
-          data: this.lineData,
-          label: {
-            normal: {
-              show: true,
-              position: 'top',
-              textStyle: {
-                color: '#fff'
-              }
-            }
-          }
-        }
-      ]
       this.chart.setOption({
         tooltip: {
           trigger: 'axis'
@@ -199,7 +165,32 @@ export default {
             }
           }
         ],
-        series
+        series: [
+          ...this.barChartData,
+          {
+            name: '入网率',
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#2ec7c9',
+                lineStyle: {
+                  color: '#2ec7c9'
+                }
+              }
+            },
+            yAxisIndex: 1,
+            data: this.lineData,
+            label: {
+              normal: {
+                show: true,
+                position: 'top',
+                textStyle: {
+                  color: '#fff'
+                }
+              }
+            }
+          }
+        ]
       })
     }
   }
