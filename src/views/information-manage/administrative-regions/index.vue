@@ -19,7 +19,7 @@
             </el-col>
             <el-col :md="8" :sm="24">
               <div class="table-page-search-submitButtons">
-                <el-button type="primary" size="small" @click="getTableData">查询</el-button>
+                <el-button type="primary" size="small" @click="search">查询</el-button>
                 <el-button type="primary" size="small" @click="resetQuery">所有区域</el-button>
                 <el-button type="primary" size="small" @click="addRegion">添加</el-button>
               </div>
@@ -144,6 +144,11 @@ export default {
     this.getUpUnitName()
   },
   methods: {
+    search() {
+      this.listQuery.pageNum = 1
+      this.listQuery.pageSize = 10
+      this.getTableData()
+    },
     getTableData() {
       this.listLoading = true
       selectRegionCode({ ...this.listQuery })

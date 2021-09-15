@@ -27,6 +27,7 @@
                     :debounce="500"
                     size="small"
                     clearable
+                    style="width:100%;"
                     @select="searchCompany"
                   />
                 </el-form-item>
@@ -58,7 +59,7 @@
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="所属地区:">
-                  <el-cascader v-model="listQuery.qualificationCity" size="small" :options="cityOptions" />
+                  <el-cascader v-model="listQuery.qualificationCity" style="width:100%;" size="small" :options="cityOptions" />
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">

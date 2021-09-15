@@ -35,6 +35,7 @@
                     :debounce="500"
                     size="small"
                     clearable
+                    style="width:100%;"
                     @select="selectSearchCompany"
                   />
                 </el-form-item>
@@ -66,6 +67,7 @@
                     size="small"
                     :options="cityOptions"
                     placeholder="请选择所属地区"
+                    style="width:100%;"
                   />
                 </el-form-item>
               </el-col>
