@@ -87,6 +87,11 @@ export default {
       handler() {
         this.initChart()
       }
+    },
+    yname: {
+      handler() {
+        this.initChart()
+      }
     }
   },
   mounted() {

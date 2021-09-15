@@ -109,7 +109,7 @@
         />
         <el-table-column label="车牌号" prop="plateNum" min-width="100" show-overflow-tooltip align="center" />
         <el-table-column label="所属企业" prop="unitName" min-width="200" show-overflow-tooltip align="center" />
-        <el-table-column label="车辆类型" prop="vehicleType" min-width="120" align="center">
+        <el-table-column label="车辆类型" prop="vehicleType" min-width="120" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span>{{ scope.row.vehicleType | showVehicleType }}</span>
           </template>

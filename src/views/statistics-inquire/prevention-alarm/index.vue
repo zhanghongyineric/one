@@ -15,16 +15,22 @@
               />
             </el-form-item>
           </el-col>
-          <!-- <el-col :md="6" :sm="24">
-            <el-form-item label="统计周期：">
-              <span
-                v-for="item in statisticalPeriod"
-                :key="item.value"
-                :class="['time-text',item.value===searchQuery.status?'active':'']"
-                @click="chooseStatus(item.value)"
-              >{{ item.label }}</span>
+          <el-col :md="6" :sm="24">
+            <el-form-item label="报警类型：">
+              <el-select
+                v-model="alarmType"
+                placeholder="请选择报警类型"
+                size="mini"
+              >
+                <el-option
+                  v-for="{value,label} in alarmsType"
+                  :key="value"
+                  :value="value"
+                  :label="label"
+                />
+              </el-select>
             </el-form-item>
-          </el-col> -->
+          </el-col>
           <el-col :md="6" :sm="24">
             <el-form-item label="时间范围：">
               <el-date-picker
@@ -61,13 +67,13 @@
           :legend-data="legendData"
           :bar-chart-data="barChartData"
           :ymax="ymax"
-          :yname="'向前碰撞次数'"
-          :line-name="'向前碰撞总次数'"
+          :yname="yname"
+          :line-name="yLineName"
         />
       </div>
       <div class="right-box">
-        <pie-chart :chart-data="pieChartData" :title="'车辆类型向前碰撞次数占比：'" style="display:inline-block;" />
-        <funnel-chart :chart-data="funnelChartData" :title="'向前碰撞报警总次数：'" style="display:inline-block;" />
+        <pie-chart :chart-data="pieChartData" :title="pieTitle" style="display:inline-block;" />
+        <funnel-chart :chart-data="funnelChartData" :title="funnelTitle" style="display:inline-block;" />
       </div>
     </div>
     <div class="content-box">
@@ -126,11 +132,12 @@ import FunnelChart from '@/components/Charts/statistics/FunnelChart.vue'
 import LineChart from '@/components/Charts/statistics/LineChart.vue'
 import PieChart from '@/components/Charts/statistics/PieChart.vue'
 import {
-  areaCode
+  areaCode,
+  alarmsVehicleType,
   // vehicleSystem,
-  // sectorStatistics,
-  // vehicleTrends
-} from '@/api/statistics-inquire/vehicle-status'
+  sectorStatistics,
+  alarmsVehicleTrends
+} from '@/api/statistics-inquire/prevention-alarm'
 
 export default {
   name: 'PreventionAlarm',
@@ -142,6 +149,7 @@ export default {
   },
   data() {
     return {
+      alarmType: '',
       tableData: [],
       listQuery: {
         pageNum: 1,
@@ -153,6 +161,7 @@ export default {
         endTime: '202109'
       },
       time: ['202101', '202109'],
+      alarmsType: [],
       areaOptions: [],
       areaProps: {
         label: 'unitName',
@@ -175,17 +184,22 @@ export default {
       legendData: [],
       barChartData: [],
       ymax: 0,
+      yname: '',
+      yLineName: '',
+      pieTitle: '',
+      funnelTitle: '',
 
       twoLevelColums: [],
       allVehicleTypeNames: new Map(),
-      trendYear: '2021'
+      trendYear: '2021',
+
+      alarmsTypeMap: new Map()
     }
   },
   created() {
+    this.getAlarmsVehicleType()
     this.getVehicleData()
     this.getAreaCode()
-    this.getSectorStatistics()
-    this.getVehicleTrends()
   },
   mounted() {
     const currentDate = new Date()
@@ -212,26 +226,48 @@ export default {
       this.searchQuery.startTime = this.time[0]
       this.searchQuery.endTime = this.time[1]
     },
+    getAlarmsVehicleType() {
+      alarmsVehicleType()
+        .then((res) => {
+          const { data } = res
+          this.alarmType = '601000'
+          this.alarmsType = data
+          data.forEach(v => {
+            this.alarmsTypeMap.set(v.value, v.label)
+          })
+          const type = this.alarmsTypeMap.get(this.alarmType)
+          this.yname = type + '次数'
+          this.yLineName = type + '总次数'
+          this.pieTitle = '车辆类型' + type + '次数占比：'
+          this.funnelTitle = type + '次数占比：'
+          this.getSectorStatistics()
+          this.getVehicleTrends()
+        })
+        .catch((err) => {
+          throw err
+        })
+    },
     getVehicleTrends() {
       this.lineChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
-      // vehicleTrends({
-      //   year: this.trendYear,
-      //   unitId: this.searchQuery.unitId
-      // })
-      //   .then(res => {
-      //     const { data } = res
-      //     for (let i = 1; i <= 12; i++) {
-      //       if (!data[i]) data[i] = 0
-      //     }
-      //     this.lineChartData = Object.values(data)
-      //   })
-      //   .catch(err => {
-      //     throw err
-      //   })
+      alarmsVehicleTrends({
+        year: this.trendYear,
+        unitId: this.searchQuery.unitId
+      })
+        .then(res => {
+          const { data } = res
+          console.log(data, '趋势')
+          // for (let i = 1; i <= 12; i++) {
+          //   if (!data[i]) data[i] = 0
+          // }
+          // this.lineChartData = Object.values(data)
+        })
+        .catch(err => {
+          throw err
+        })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) return 'background-color:#1C2733;font-weight: 500;'
+      if (rowIndex === 0) return 'background-color:#1C2733;font-weight:500;'
     },
     search() {
       this.getSectorStatistics()
@@ -243,17 +279,30 @@ export default {
       this.pieChartData = []
       this.funnelChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
-      // sectorStatistics({ ...this.searchQuery })
-      //   .then(res => {
-      //     const { data } = res
-      //     data.forEach(v => {
-      //       this.pieChartData.push({ value: v.vehicleCount, name: v.vehicleTypeName })
-      //       this.funnelChartData.push({ value: v.networkAccessRate * 100, name: v.vehicleTypeName })
-      //     })
-      //   })
-      //   .catch(err => {
-      //     throw err
-      //   })
+      sectorStatistics({ ...this.searchQuery })
+        .then(res => {
+          const { data } = res
+          let sum = 0
+          data.forEach(v => {
+            if (this.alarmType === '601000') {
+              sum += v.vehicleOverSpeedNum
+            } else {
+              sum += v.vehicleOfflineMoveNum
+            }
+          })
+          data.forEach(v => {
+            if (this.alarmType === '601000') {
+              this.pieChartData.push({ value: v.vehicleOverSpeedNum, name: v.vehicleTypeName })
+              this.funnelChartData.push({ value: Math.ceil(v.vehicleOverSpeedNum / sum * 100), name: v.vehicleTypeName })
+            } else {
+              this.pieChartData.push({ value: v.vehicleOfflineMoveNum, name: v.vehicleTypeName })
+              this.funnelChartData.push({ value: Math.ceil(v.vehicleOfflineMoveNum / sum * 100), name: v.vehicleTypeName })
+            }
+          })
+        })
+        .catch(err => {
+          throw err
+        })
     },
     getAreaCode() {
       areaCode()
