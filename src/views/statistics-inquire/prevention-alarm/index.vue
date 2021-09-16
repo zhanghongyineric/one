@@ -69,6 +69,9 @@
           :ymax="ymax"
           :yname="yname"
           :line-name="yLineName"
+          :line-min="0"
+          :line-max="ymax"
+          :line-formatter="'{value}'"
         />
       </div>
       <div class="right-box">
@@ -90,7 +93,7 @@
           size="small"
         >
           <el-table-column label="地区" align="center" prop="zoneName" min-width="110" fixed />
-          <el-table-column label="向前碰撞报警总次数" align="center" prop="allVehicleCount" min-width="170" />
+          <el-table-column :label="tableLabel + '总次数（次）'" align="center" :prop="alarmType === '601000' ? 'vehicleOverSpeedNum' : 'vehicleOfflineMoveNum'" min-width="170" />
           <!-- <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" min-width="160" />
           <el-table-column label="总入网率" align="center" prop="networkAccessRate">
             <template v-slot="{row}">
@@ -103,9 +106,9 @@
             :label="item"
             align="center"
           >
-            <el-table-column label="应入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'all'" min-width="170" align="center" />
-            <el-table-column label="入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'count'" min-width="160" align="center" />
-            <el-table-column label="总入网率" :prop="allVehicleTypeNames.get(item) + 'rate'" align="center" />
+            <el-table-column :label="tableLabel + '次数（次）'" :prop="allVehicleTypeNames.get(item)" min-width="170" align="center" />
+            <!-- <el-table-column label="入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'count'" min-width="160" align="center" />
+            <el-table-column label="总入网率" :prop="allVehicleTypeNames.get(item) + 'rate'" align="center" /> -->
           </el-table-column>
         </el-table>
       </div>
@@ -134,7 +137,7 @@ import PieChart from '@/components/Charts/statistics/PieChart.vue'
 import {
   areaCode,
   alarmsVehicleType,
-  // vehicleSystem,
+  alarmsVehicleSystem,
   sectorStatistics,
   alarmsVehicleTrends
 } from '@/api/statistics-inquire/prevention-alarm'
@@ -156,7 +159,7 @@ export default {
         pageSize: 10
       },
       searchQuery: {
-        unitId: '634',
+        unitId: '800',
         startTime: '202101',
         endTime: '202109'
       },
@@ -193,7 +196,13 @@ export default {
       allVehicleTypeNames: new Map(),
       trendYear: '2021',
 
-      alarmsTypeMap: new Map()
+      alarmsTypeMap: new Map(),
+      tableLabel: ''
+    }
+  },
+  watch: {
+    alarmType() {
+      this.alarmType === '601000' ? this.tableLabel = '普通超速报警' : '离线位移报警'
     }
   },
   created() {
@@ -256,11 +265,28 @@ export default {
       })
         .then(res => {
           const { data } = res
-          console.log(data, '趋势')
-          // for (let i = 1; i <= 12; i++) {
-          //   if (!data[i]) data[i] = 0
-          // }
-          // this.lineChartData = Object.values(data)
+          const trendData = []
+          for (let i = 1; i <= 12; i++) {
+            let index
+            if (i < 10) index = `0${i}`
+            else index = i
+            data.forEach(item => {
+              if (item.alarmDate === this.trendYear + index) {
+                trendData.push(item)
+              }
+            })
+            if (!trendData[i - 1]) {
+              trendData.push({
+                alarmDate: `${this.trendYear}${index}`,
+                vehicleOfflineMoveNum: 0,
+                vehicleOverSpeedNum: 0
+              })
+            }
+          }
+          trendData.forEach(item => {
+            if (this.alarmType === '601000') this.lineChartData.push(item.vehicleOverSpeedNum)
+            else this.lineChartData.push(item.vehicleOfflineMoveNum)
+          })
         })
         .catch(err => {
           throw err
@@ -326,8 +352,9 @@ export default {
       const networkAccessRateMap = new Map()
       data.forEach(v => {
         this.lineMixBarXData.push(v.zoneName)
-        this.accessRateData.push(v.networkAccessRate * 100)
-        v.typeAndProbabilitys.forEach(item => {
+        if (this.alarmType === '601000') this.accessRateData.push(v.vehicleOverSpeedNum)
+        else this.accessRateData.push(v.vehicleOfflineMoveNum)
+        v.alarmTypes.forEach(item => {
           this.legendData.push(item.vehicleTypeName)
         })
       })
@@ -336,7 +363,7 @@ export default {
         allVehicleCountMap.set(v, {
           name: v,
           type: 'bar',
-          stack: '应入网',
+          stack: '车辆类型',
           data: [],
           itemStyle: {
             normal: {
@@ -344,50 +371,56 @@ export default {
             }
           }
         })
-        vehicleCountMap.set(v, {
-          name: v,
-          type: 'bar',
-          stack: '入网',
-          data: [],
-          itemStyle: {
-            normal: {
-              color: colorList[index]
-            }
-          }
-        })
-        networkAccessRateMap.set(v, [])
+        // vehicleCountMap.set(v, {
+        //   name: v,
+        //   type: 'bar',
+        //   stack: '入网',
+        //   data: [],
+        //   itemStyle: {
+        //     normal: {
+        //       color: colorList[index]
+        //     }
+        //   }
+        // })
+        // networkAccessRateMap.set(v, [])
       })
+
       data.forEach((v, index) => {
-        v.typeAndProbabilitys.forEach(item => {
-          vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
-          allVehicleCountMap.get(item.vehicleTypeName).data.push(item.allVehicleCount)
-          networkAccessRateMap.get(item.vehicleTypeName).push(item.networkAccessRate * 100 + '%')
+        v.alarmTypes.forEach(item => {
+          // vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
+          if (this.alarmType === '601000') {
+            allVehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleOverSpeedNum)
+          } else allVehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleOfflineMoveNum)
+          // networkAccessRateMap.get(item.vehicleTypeName).push(item.networkAccessRate * 100 + '%')
         })
-        for (const value of vehicleCountMap.values()) {
-          if (value.data.length < index + 1) {
-            value.data.push(0)
-          }
-        }
-        for (const value of allVehicleCountMap.values()) {
-          if (value.data.length < index + 1) {
-            value.data.push(0)
-          }
-        }
-        for (const value of networkAccessRateMap.values()) {
-          if (value.length < index + 1) {
-            value.push('')
-          }
-        }
+        this.legendData.forEach((item, index1) => {
+          allVehicleCountMap.get(item).data.length < index + 1 ? allVehicleCountMap.get(item).data.push(0) : ''
+        })
+        // for (const value of vehicleCountMap.values()) {
+        //   if (value.data.length < index + 1) {
+        //     value.data.push(0)
+        //   }
+        // }
+        // for (const value of allVehicleCountMap.values()) {
+        //   if (value.data.length < index + 1) {
+        //     value.data.push(0)
+        //   }
+        // }
+        // for (const value of networkAccessRateMap.values()) {
+        //   if (value.length < index + 1) {
+        //     value.push('')
+        //   }
+        // }
       })
 
       this.twoLevelColums = [...allVehicleCountMap.keys()]
-      this.barChartData = [...allVehicleCountMap.values(), ...vehicleCountMap.values()]
-      this.getTableData(data, allVehicleCountMap, vehicleCountMap, networkAccessRateMap)
+      this.barChartData = [...allVehicleCountMap.values()]
+      // this.getTableData(data, allVehicleCountMap, vehicleCountMap, networkAccessRateMap)
     },
     getMaxYdata(data) {
       data.forEach(item => {
-        if (item.allVehicleCount > this.ymax) {
-          this.ymax = item.allVehicleCount
+        if (item.vehicleOverSpeedNum > this.ymax) {
+          this.ymax = item.vehicleOverSpeedNum
         }
       })
       let num = '1'
@@ -406,33 +439,40 @@ export default {
       this.allVehicleTypeNames = new Map()
       this.tableData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
-      // vehicleSystem({ ...this.searchQuery })
-      //   .then(res => {
-      //     const { data } = res
-      //     this.getAllVehicleType(data.vehicleTypeDtos)
-      //     this.getBarChartData(data.vehicleSystemDtos)
-      //     this.getMaxYdata(data.vehicleSystemDtos)
-      //     // 合计
-      //     const sumObj = {
-      //       zoneName: '合计',
-      //       allVehicleCount: data.allVehicleCount,
-      //       vehicleCount: data.vehicleCount,
-      //       networkAccessRate: data.TotalNetworkAccessRate
-      //     }
-      //     this.twoLevelColums.forEach(v => {
-      //       data.vehicleTypeDtos.forEach(item => {
-      //         if (item.typeName === v) {
-      //           sumObj[this.allVehicleTypeNames.get(v) + 'all'] = item.allTypeCount
-      //           sumObj[this.allVehicleTypeNames.get(v) + 'count'] = item.typeCount
-      //           sumObj[this.allVehicleTypeNames.get(v) + 'rate'] = item.networkAccessRate * 100 + '%'
-      //         }
-      //       })
-      //     })
-      //     this.tableData.push(sumObj)
-      //   })
-      //   .catch(err => {
-      //     throw err
-      //   })
+      alarmsVehicleSystem({ ...this.searchQuery })
+        .then(res => {
+          const { data } = res
+          console.log(data, 'data')
+          this.getAllVehicleType(data.alarmTypeDtos)
+          this.getBarChartData(data.alarmDtos)
+          this.getMaxYdata(data.alarmDtos)
+          data.alarmDtos.forEach(item => {
+            item.alarmTypes.forEach(v => {
+              const filed = this.allVehicleTypeNames.get(v.vehicleTypeName)
+              if (this.alarmType === '601000') item[filed] = v.vehicleOverSpeedNum
+              else item[filed] = v.vehicleOfflineMoveNum
+            })
+          })
+          this.tableData = data.alarmDtos
+
+          // 合计
+          const sum = this.alarmType === '601000' ? 'vehicleOverSpeedNum' : 'vehicleOfflineMoveNum'
+          const sumObj = { zoneName: '合计' }
+          sumObj[sum] = this.alarmType === '601000' ? data.totalVehicleOverSpeedNum : data.totalVehicleOfflineMoveNum
+          this.twoLevelColums.forEach(v => {
+            data.alarmTypeDtos.forEach(item => {
+              if (item.vehicleTypeName === v) {
+                this.alarmType === '601000'
+                  ? sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOverSpeedNum
+                  : sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOfflineMoveNum
+              }
+            })
+          })
+          this.tableData.push(sumObj)
+        })
+        .catch(err => {
+          throw err
+        })
     },
     getAllVehicleType(types) {
       const chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz'
@@ -442,7 +482,7 @@ export default {
         for (let i = 0; i < 4; i++) {
           typeFiled += chars.charAt(Math.floor(Math.random() * maxLen))
         }
-        this.allVehicleTypeNames.set(item.typeName, typeFiled)
+        this.allVehicleTypeNames.set(item.vehicleTypeName, typeFiled)
       })
     }
   }
@@ -565,6 +605,10 @@ export default {
 
 ::v-deep .el-table--group::after {
   width: 0 !important;
+}
+
+::v-deep .el-table::before {
+  height: 0 !important;
 }
 
 .trend-title {

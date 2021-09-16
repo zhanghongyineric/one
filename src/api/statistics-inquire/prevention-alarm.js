@@ -34,3 +34,12 @@ export function sectorStatistics(data) {
     data
   })
 }
+
+// 主防报警 条形图统计统计
+export function alarmsVehicleSystem(data) {
+  return request({
+    url: '/alarmsVehicleSystem',
+    method: 'POST',
+    data
+  })
+}

@@ -51,6 +51,18 @@ export default {
       type: String,
       default: '',
       required: true
+    },
+    lineMin: {
+      type: Number,
+      default: 0
+    },
+    lineMax: {
+      type: Number,
+      default: 100
+    },
+    lineFormatter: {
+      type: String,
+      default: '{value} %'
     }
   },
   data() {
@@ -151,7 +163,7 @@ export default {
             max: this.ymax,
             interval: this.ymax / 5,
             axisLabel: {
-              formatter: '{value} 辆',
+              formatter: '{value}',
               textStyle: {
                 color: '#ccc'
               }
@@ -163,11 +175,11 @@ export default {
             nameTextStyle: {
               color: '#fff'
             },
-            min: 0,
-            max: 100,
-            interval: 20,
+            min: this.lineMin,
+            max: this.lineMax,
+            interval: this.lineMax / 5,
             axisLabel: {
-              formatter: '{value} %',
+              formatter: this.lineFormatter,
               textStyle: {
                 color: '#ccc'
               }
@@ -183,7 +195,7 @@ export default {
         series: [
           ...this.barChartData,
           {
-            name: '入网率',
+            name: this.lineName,
             type: 'line',
             itemStyle: {
               normal: {

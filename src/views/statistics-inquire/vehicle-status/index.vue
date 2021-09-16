@@ -332,6 +332,7 @@ export default {
 
       this.twoLevelColums = [...allVehicleCountMap.keys()]
       this.barChartData = [...allVehicleCountMap.values(), ...vehicleCountMap.values()]
+      console.log(this.barChartData, 'this.barChartData')
       this.getTableData(data, allVehicleCountMap, vehicleCountMap, networkAccessRateMap)
     },
     getMaxYdata(data) {

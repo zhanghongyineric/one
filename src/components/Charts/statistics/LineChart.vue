@@ -98,7 +98,7 @@ export default {
             show: true
           },
           axisLabel: {
-            formatter: '{value} 辆',
+            formatter: '{value}',
             textStyle: {
               color: '#ccc'
             }

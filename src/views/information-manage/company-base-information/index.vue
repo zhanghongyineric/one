@@ -33,9 +33,9 @@
                   <el-select v-model="listQuery.status" placeholder="请选择运营状态">
                     <el-option
                       v-for="item in optionGroup.accountTypeList"
-                      :key="item.label"
-                      :label="item.value"
-                      :value="item.label"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
