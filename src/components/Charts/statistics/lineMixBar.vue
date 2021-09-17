@@ -122,6 +122,7 @@ export default {
     initChart() {
       // 首先销毁实例，否则更新数据后仍然会展示部分旧数据
       this.chart = echarts.init(this.$el).dispose()
+      this.chart = null
       // 其次创建echarts实例
       this.chart = echarts.init(this.$el)
       this.setOptions()

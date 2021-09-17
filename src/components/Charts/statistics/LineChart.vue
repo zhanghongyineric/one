@@ -52,6 +52,8 @@ export default {
   },
   methods: {
     initChart() {
+      this.chart = echarts.init(this.$el).dispose()
+      this.chart = null
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
     },

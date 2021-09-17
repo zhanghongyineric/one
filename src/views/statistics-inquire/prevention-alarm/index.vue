@@ -12,6 +12,7 @@
                 size="mini"
                 :options="areaOptions"
                 :props="areaProps"
+                @change="search"
               />
             </el-form-item>
           </el-col>
@@ -21,6 +22,7 @@
                 v-model="alarmType"
                 placeholder="请选择报警类型"
                 size="mini"
+                @change="search"
               >
                 <el-option
                   v-for="{value,label} in alarmsType"
@@ -80,7 +82,7 @@
       </div>
     </div>
     <div class="content-box">
-      <div class="left-box">
+      <div class="left-box" :style="tableWidth">
         <el-table
           :data="tableData"
           stripe
@@ -93,7 +95,7 @@
           size="small"
         >
           <el-table-column label="地区" align="center" prop="zoneName" min-width="110" fixed />
-          <el-table-column :label="tableLabel + '总次数（次）'" align="center" :prop="alarmType === '601000' ? 'vehicleOverSpeedNum' : 'vehicleOfflineMoveNum'" min-width="170" />
+          <el-table-column :label="tableLabel + '总次数（次）'" align="center" :prop="tableProp" min-width="170" />
           <!-- <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" min-width="160" />
           <el-table-column label="总入网率" align="center" prop="networkAccessRate">
             <template v-slot="{row}">
@@ -197,12 +199,27 @@ export default {
       trendYear: '2021',
 
       alarmsTypeMap: new Map(),
-      tableLabel: ''
+      tableLabel: '',
+      tableProp: '',
+      tableWidth: 'width:55%;'
     }
   },
   watch: {
     alarmType() {
-      this.alarmType === '601000' ? this.tableLabel = '普通超速报警' : '离线位移报警'
+      // this.alarmType === '601000' ? this.tableLabel = '普通超速报警' : '离线位移报警'
+      if (this.alarmType === '601000') {
+        this.tableLabel = '普通超速报警'
+        this.tableProp = 'vehicleOverSpeedNum'
+      } else if (this.alarmType === '608000') {
+        this.tableLabel = '离线位移报警'
+        this.tableProp = 'vehicleOfflineMoveNum'
+      } else {
+        this.tableProp = null
+      }
+      this.tableWidth = 'width:55.5%;'
+      setTimeout(() => {
+        this.tableWidth = 'width:55%'
+      }, 300)
     }
   },
   created() {
@@ -285,7 +302,7 @@ export default {
           }
           trendData.forEach(item => {
             if (this.alarmType === '601000') this.lineChartData.push(item.vehicleOverSpeedNum)
-            else this.lineChartData.push(item.vehicleOfflineMoveNum)
+            else if (this.alarmType === '608000') this.lineChartData.push(item.vehicleOfflineMoveNum)
           })
         })
         .catch(err => {
@@ -296,6 +313,7 @@ export default {
       if (rowIndex === 0) return 'background-color:#1C2733;font-weight:500;'
     },
     search() {
+      this.tableData = []
       this.getSectorStatistics()
       this.getVehicleData()
       this.getVehicleTrends()
@@ -312,7 +330,7 @@ export default {
           data.forEach(v => {
             if (this.alarmType === '601000') {
               sum += v.vehicleOverSpeedNum
-            } else {
+            } else if (this.alarmType === '608000') {
               sum += v.vehicleOfflineMoveNum
             }
           })
@@ -320,7 +338,7 @@ export default {
             if (this.alarmType === '601000') {
               this.pieChartData.push({ value: v.vehicleOverSpeedNum, name: v.vehicleTypeName })
               this.funnelChartData.push({ value: Math.ceil(v.vehicleOverSpeedNum / sum * 100), name: v.vehicleTypeName })
-            } else {
+            } else if (this.alarmType === '608000') {
               this.pieChartData.push({ value: v.vehicleOfflineMoveNum, name: v.vehicleTypeName })
               this.funnelChartData.push({ value: Math.ceil(v.vehicleOfflineMoveNum / sum * 100), name: v.vehicleTypeName })
             }
@@ -347,13 +365,13 @@ export default {
     // 将接口返回数据转换为echarts需要的数据格式
     getBarChartData(data) {
       const colorList = ['#91C7AE', '#339999', '#99CCFF', '#66CC99', '#EBAC4A', '#666699', '#FF99CC', '#CC9933', '#FFCC33', '#003333']
-      const vehicleCountMap = new Map()
+      // const vehicleCountMap = new Map()
       const allVehicleCountMap = new Map()
-      const networkAccessRateMap = new Map()
+      // const networkAccessRateMap = new Map()
       data.forEach(v => {
         this.lineMixBarXData.push(v.zoneName)
         if (this.alarmType === '601000') this.accessRateData.push(v.vehicleOverSpeedNum)
-        else this.accessRateData.push(v.vehicleOfflineMoveNum)
+        else if (this.alarmType === '608000') this.accessRateData.push(v.vehicleOfflineMoveNum)
         v.alarmTypes.forEach(item => {
           this.legendData.push(item.vehicleTypeName)
         })
@@ -390,7 +408,7 @@ export default {
           // vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
           if (this.alarmType === '601000') {
             allVehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleOverSpeedNum)
-          } else allVehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleOfflineMoveNum)
+          } else if (this.alarmType === '608000') allVehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleOfflineMoveNum)
           // networkAccessRateMap.get(item.vehicleTypeName).push(item.networkAccessRate * 100 + '%')
         })
         this.legendData.forEach((item, index1) => {
@@ -450,21 +468,24 @@ export default {
             item.alarmTypes.forEach(v => {
               const filed = this.allVehicleTypeNames.get(v.vehicleTypeName)
               if (this.alarmType === '601000') item[filed] = v.vehicleOverSpeedNum
-              else item[filed] = v.vehicleOfflineMoveNum
+              else if (this.alarmType === '608000') item[filed] = v.vehicleOfflineMoveNum
             })
           })
           this.tableData = data.alarmDtos
 
           // 合计
-          const sum = this.alarmType === '601000' ? 'vehicleOverSpeedNum' : 'vehicleOfflineMoveNum'
+          let sum
+          if (this.alarmType === '601000') sum = 'vehicleOverSpeedNum'
+          else if (this.alarmType === '608000') sum = 'vehicleOfflineMoveNum'
           const sumObj = { zoneName: '合计' }
           sumObj[sum] = this.alarmType === '601000' ? data.totalVehicleOverSpeedNum : data.totalVehicleOfflineMoveNum
           this.twoLevelColums.forEach(v => {
             data.alarmTypeDtos.forEach(item => {
               if (item.vehicleTypeName === v) {
-                this.alarmType === '601000'
-                  ? sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOverSpeedNum
-                  : sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOfflineMoveNum
+                if (this.alarmType === '601000') sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOverSpeedNum
+                else if (this.alarmType === '608000') sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOfflineMoveNum
+                // ? sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOverSpeedNum
+                // : sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOfflineMoveNum
               }
             })
           })
