@@ -25,7 +25,8 @@ const baseRouter = [
   },
   {
     path: '/login',
-    component: () => import('@/views/login'),
+    // component: () => import('@/views/login/new-login/index'),
+    component: () => import('@/views/login/index'),
     hidden: true
   },
   {
