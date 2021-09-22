@@ -1,104 +1,110 @@
 <template>
-  <div class="login-page">
-    <div id="contPar" class="contPar">
-      <div id="page1" style="z-index:1;">
-        <div class="title0">四川省交通运输第三方监测平台</div>
-        <div class="title1">助力政府监管，降低安全隐患</div>
-        <div class="imgGroug">
-          <ul>
-            <img alt="" class="img0 png" draggable="false" src="./img/page1_0.png">
-            <img alt="" class="img1 png" draggable="false" src="./img/page1_1.png">
-            <img alt="" class="img2 png" draggable="false" src="./img/page1_2.png">
-          </ul>
+  <div class="login-page f-col ai-c jc-sb">
+    <div class="for-justify-content" />
+    <div class="login-box">
+      <div class="left">
+        <div class="description">
+          <h1>{{ title }}</h1>
+          <h2>助力政府监管，降低安全隐患</h2>
+          <h2>
+            <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
+          </h2>
+          <el-drawer
+            custom-class="version-drawer ql-editor"
+            :visible.sync="drawer"
+            :direction="direction"
+            :with-header="false"
+            :modal="false"
+            size="20%"
+          />
+          <span v-if="drawer" class="history-version-text">历史版本信息</span>
+          <h3>监测·管理端</h3>
         </div>
-        <img alt="" class="img3 png" draggable="false" src="./img/page1_3.jpg">
+      </div>
+      <div class="right">
+        <h2 class="welcome">欢迎登录</h2>
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form"
+          auto-complete="on"
+          size="small"
+          label-position="left"
+        >
+          <el-form-item prop="username">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="username"
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+              name="username"
+              type="text"
+              tabindex="1"
+              auto-complete="off"
+              clearable
+            />
+          </el-form-item>
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              clearable
+              :type="passwordType"
+              placeholder="请输入密码"
+              name="password"
+              tabindex="2"
+              auto-complete="off"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+
+          <!--滑动验证-->
+          <div id="captcha" :class="showSliderImage?'showSliderImage':'hideSliderImage'" />
+          <p class="slider-placeholder">
+            向右滑动填充拼图
+            <span v-show="showFinishSliderTip" class="finishSlider">请先完成拼图</span>
+          </p>
+          <div style="overflow: hidden;text-align: center">
+            <el-button
+              :loading="loading"
+              type="primary"
+              size="large"
+              class="login-button"
+              @click.native.prevent="handleLogin"
+            >
+              登录
+            </el-button>
+          </div>
+        </el-form>
+
       </div>
     </div>
-    <div class="right">
-      <h2 class="welcome">欢迎登录</h2>
-      <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        auto-complete="on"
-        size="small"
-        label-position="left"
-      >
-        <el-form-item prop="username">
-          <span class="svg-container">
-            <svg-icon icon-class="user" />
-          </span>
-          <el-input
-            ref="username"
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            name="username"
-            type="text"
-            tabindex="1"
-            auto-complete="off"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <span class="svg-container">
-            <svg-icon icon-class="password" />
-          </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            clearable
-            :type="passwordType"
-            placeholder="请输入密码"
-            name="password"
-            tabindex="2"
-            auto-complete="off"
-            @keyup.enter.native="handleLogin"
-          />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
-        </el-form-item>
 
-        <!--滑动验证-->
-        <div id="captcha" :class="showSliderImage?'showSliderImage':'hideSliderImage'" />
-        <p class="slider-placeholder">
-          向右滑动填充拼图
-          <span v-show="showFinishSliderTip" class="finishSlider">请先完成拼图</span>
-        </p>
-        <div style="overflow: hidden;text-align: center;margin-top:50px;">
-          <el-button
-            :loading="loading"
-            type="primary"
-            size="large"
-            class="login-button"
-            @click.native.prevent="handleLogin"
-          >
-            登录
-          </el-button>
-        </div>
-      </el-form>
-      <h2>
-        <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
-      </h2>
-      <el-drawer
-        custom-class="version-drawer ql-editor"
-        :visible.sync="drawer"
-        :direction="direction"
-        :with-header="false"
-        :modal="false"
-        size="20%"
-      />
-      <span v-if="drawer" class="history-version-text">历史版本信息</span>
+    <div class="footer">
+      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备20014004号</a>
+      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备20014004号-2</a>
+      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51010702002449">
+        <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
+        川公网安备 51010702002449 号
+      </a>
     </div>
     <div :class="[drawer ? 'close-symbol' : 'expand-symbol']" @click="switchDrawer">
       <div :class="[drawer ? 'left-arrow' : 'right-arrow']" />
     </div>
   </div>
 </template>
+
 <script>
-import $ from 'jquery'
 import './libs/jigsaw'
 import './libs/jigsaw.css'
 import { historicVersion, sysPort } from '@/api/system-manage/version-manage'
@@ -157,7 +163,6 @@ export default {
     this.getSysPort()
   },
   mounted() {
-    this.startAnimation()
     let isInSlider = false // 鼠标是否在拼图区域
     let isMouseDown = false // 鼠标是否处于按下状态
     const _this = this
@@ -220,51 +225,6 @@ export default {
     }
   },
   methods: {
-    startAnimation() {
-      const mainObj = {
-        $par: $('#contPar'),
-        init: function() {
-          if (this.is_pc()) {
-            const a = this.$par.children().eq(0)
-            const b = a.find('.img1,.img2')
-            const d = a.find('.img3')
-            const g = {
-              margin_left: parseInt(a.find('.img1').css('margin-left')),
-              margin_top: parseInt(a.find('.img1').css('margin-top'))
-            }
-            const i = {
-              margin_left: parseInt(a.find('.img3').css('margin-left')),
-              margin_top: parseInt(a.find('.img3').css('margin-top'))
-            }
-            a.mousemove(function(a) {
-              const l = mainObj.getWinW()
-              const m = mainObj.getWinH()
-              const n = a.screenX
-              const o = a.screenY
-              const p = 0.03 * (n - l / 2)
-              const q = 0.02 * (o - m / 2)
-              b.css({ 'margin-left': g.margin_left - 0.3 * p + 'px', 'margin-top': g.margin_top - 0.3 * q + 'px' })
-              d.css({ 'margin-left': i.margin_left + 1.2 * p + 'px', 'margin-top': i.margin_top + 1.2 * q + 'px' })
-            })
-          } else {
-            $(document).bind('touchmove', function(a) { a.preventDefault() })
-            $('img').bind('touchend', function(a) { a.preventDefault() })
-          }
-          $('img').each(function() {
-            const a = $(this).attr('data-src')
-            a != null && $(this).attr('src', a).removeAttr('data-src').addClass('png')
-          })
-        },
-        getWinW: function() { return $(window).width() },
-        getWinH: function() { return $(window).height() },
-        is_pc: function() {
-          for (let a = ['Android', 'iPhone', 'Windows Phone', 'iPod', 'iPad', 'BlackBerry', 'MeeGo', 'SymbianOS'],
-            b = navigator.userAgent, c = a.length, d = 0; c > d;
-            d++) { if (b.indexOf(a[d]) > 0) return !1 } return !0
-        }
-      }
-      mainObj.init()
-    },
     getSysPort() {
       sysPort()
         .then(res => {
@@ -322,13 +282,17 @@ export default {
         }
       })
     },
+    toHistoryVersion() {
+      this.$router.push({ path: '/HistoryVersions', query: { code: this.systemCode }})
+    },
     switchDrawer() {
       this.drawer = !this.drawer
-      this.drawer ? this.arrowStyle = 'left-arrow' : this.arrowStyle = 'right-arrow'
+      this.drawer ? this.arrowStyle = 'left-arrow' : this.arrowStyle = 'right=arrow'
     }
   }
 }
 </script>
+
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
@@ -341,7 +305,7 @@ $input_bg: #fff; //input背景颜色
 $input_font_size: 14px;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-page .el-input input {
+  .login-container .el-input input {
     color: $cursor;
   }
 }
@@ -376,7 +340,7 @@ $input_font_size: 14px;
   }
 
   .el-form-item {
-    // margin-bottom: 47px;
+    margin-bottom: 47px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
@@ -388,27 +352,93 @@ $input_font_size: 14px;
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-@import './css/style.css';
 
 $bg: #2d3a4b;
 $dark_gray: #889aa4;
 $light_gray: #eee;
 
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.login-page {
+  min-width: 1180px;
+  min-height: 750px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background: rgb(227, 240, 255) url("../../assets/login_images/bg.png") no-repeat center; //先显示背景颜色，再显示背景图
+
+  .logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    img {
+      width: 70px;
+    }
+  }
+
+  .login-box {
+    display: flex;
+    width: 1156px;
+    height: 600px;
+    margin:  0 auto -50px;
+    overflow: hidden;
+    box-shadow: 0px 0px 13px 5px rgb(14 25 80 / 20%);
+    border-radius: 10px;
+
+    .left {
+      width: 716px;
+      height: 600px;
+      overflow: hidden;
+      background: rgb(227, 240, 255) url("../../assets/login_images/traffic.jpg") no-repeat center;
+      background-size: auto 100%;
+
+      .description {
+        height: 600px;
+        padding-top: 190px;
+        background-image: linear-gradient(to bottom, rgba(47, 213, 201, 0.8), rgba(71, 148, 230, 0.8));
+
+        h1, h2, h3 {
+          margin: 0;
+          text-align: center;
+          color: white;
+          font-weight: normal;
+        }
+
+        h1 {
+          font-size: 40px;
+          line-height: 90px;
+          font-family: 'SimSun,Microsoft YaHei",微软雅黑,"MicrosoftJhengHei",华文细黑,STHeiti,MingLiu ';
+        }
+
+        h2 {
+          font-size: 26px;
+          line-height: 70px;
+          letter-spacing: 3px;
+        }
+
+        h3 {
+          padding-top: 90px;
+          font-size: 24px;
+          line-height: 70px;
+          letter-spacing: 3px;
+        }
+      }
+    }
+
     .right {
       flex: 1;
-      height: 500px;
-      width: 440px;
+      height: 100%;
       background: white;
-      padding-top: 30px;
-      position: absolute;
-      right: 5%;
-      top: 20%;
-      border-radius: 10px;
-      z-index: 999;
+      padding-top: 60px;
 
       .welcome {
         letter-spacing: 2px;
-        margin: 0 0 20px;
+        margin: 0 0 50px;
         display: block;
         text-align: center;
         color: #0092e7;
@@ -478,7 +508,7 @@ $light_gray: #eee;
         height: 38px;
         text-align: center;
         line-height: 38px;
-        margin-top: 40px;
+        margin-top: 15px;
         background: #f7f9fa;
         color: #45494c;
         border: 1px solid transparent;
@@ -506,7 +536,7 @@ $light_gray: #eee;
       //显示图片时
       #captcha.showSliderImage {
         bottom: 110px;
-        height: 232px;
+        height: 234px;
       }
 
       #captcha.hideSliderImage {
@@ -516,23 +546,28 @@ $light_gray: #eee;
           display: none !important;
         }
       }
-
-      h2 {
-          font-size: 26px;
-          line-height: 50px;
-          letter-spacing: 3px;
-          text-align: center;
-          color: #0092e7;
-          font-weight: normal;
-          margin-top: -20px;
-        }
     }
+  }
+}
 
-::v-deep .version-drawer {
-  padding: 70px 20px 20px !important;
-  min-width: 250px !important;
-  background-color:rgba(255,255,255,1) !important;
-  overflow-y: auto !important;
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+
+  a {
+    display: flex;
+    align-items: center;
+    height: 16px;
+    line-height: 16px;
+    color: white;
+
+    img {
+      margin-right: 4px;
+    }
+  }
 }
 
 .history-version-text {
@@ -545,6 +580,18 @@ $light_gray: #eee;
   font-weight: 700;
   color: #0092e7;
 }
+
+::v-deep .version-drawer {
+  padding: 70px 20px 20px !important;
+  min-width: 250px !important;
+  background-color:rgba(255,255,255,0.3) !important;
+  overflow-y: auto !important;
+}
+
+::v-deep .el-drawer__container ::-webkit-scrollbar{
+    display: none !important;
+}
+
 .expand-symbol {
   width: 60px;
   height: 60px;
@@ -594,5 +641,4 @@ $light_gray: #eee;
   top: 10px;
   right: 10px;
 }
-
 </style>

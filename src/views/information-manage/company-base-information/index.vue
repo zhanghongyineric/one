@@ -14,8 +14,8 @@
               </el-form-item>
             </el-col>
             <el-col :md="8" :sm="24">
-              <el-form-item label="运营类型:">
-                <el-select v-model="listQuery.operationType" placeholder="请选择运营类型">
+              <el-form-item label="所属行业:">
+                <el-select v-model="listQuery.operationType" placeholder="请选择所属行业">
                   <el-option
                     v-for="item in optionGroup.companyTypes"
                     :key="item.value"
@@ -86,7 +86,7 @@
         <el-table-column v-slot="{row}" label="企业名称" prop="unitName" min-width="400" show-overflow-tooltip align="center">
           {{ row.unitName || '-' }}
         </el-table-column>
-        <el-table-column v-slot="{row}" label="运营类型" prop="operationType" min-width="300" align="center">
+        <el-table-column v-slot="{row}" label="所属行业" prop="operationType" min-width="300" align="center">
           {{ row.operationType | companyRoleFilter }}
         </el-table-column>
         <el-table-column v-slot="{row}" label="所属地区" prop="zoneId" min-width="200" align="center">
