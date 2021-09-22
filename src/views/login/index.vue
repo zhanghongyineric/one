@@ -2,7 +2,7 @@
   <div class="login-page">
     <div id="contPar" class="contPar">
       <div id="page1" style="z-index:1;">
-        <div class="title0">四川省交通运输第三方监测平台</div>
+        <div class="title0">四川省交通安全风控大数据平台</div>
         <div class="title1">助力政府监管，降低安全隐患</div>
         <div class="imgGroug">
           <ul>
@@ -82,6 +82,7 @@
       <h2>
         <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
       </h2>
+      <p class="system-text">监测·管理端</p>
       <el-drawer
         custom-class="version-drawer ql-editor"
         :visible.sync="drawer"
@@ -398,7 +399,8 @@ $light_gray: #eee;
       flex: 1;
       height: 500px;
       width: 440px;
-      background: white;
+      // background: white;
+      border: 2px solid;
       padding-top: 30px;
       position: absolute;
       right: 5%;
@@ -531,7 +533,7 @@ $light_gray: #eee;
 ::v-deep .version-drawer {
   padding: 70px 20px 20px !important;
   min-width: 250px !important;
-  background-color:rgba(255,255,255,1) !important;
+  background-color:transparent !important;
   overflow-y: auto !important;
 }
 
@@ -594,5 +596,9 @@ $light_gray: #eee;
   top: 10px;
   right: 10px;
 }
-
+.system-text {
+  text-align: center;
+  color: #0092e7;
+  font-size: 14px;
+}
 </style>
