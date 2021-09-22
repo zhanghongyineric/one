@@ -161,18 +161,18 @@
                 <el-select v-model="formData3.conditionNo" size="small" style="width: 150px" @change="getUnit3">
                   <el-option
                     v-for="{label, value, remark} in violationOptions"
-                    :key="label"
-                    :label="`${value}(${remark})`"
-                    :value="label"
+                    :key="value"
+                    :label="`${label}(${remark})`"
+                    :value="value"
                   />
                 </el-select>
 
                 <el-select v-model="formData3.lessNo" size="small" style="width: 100px">
                   <el-option
                     v-for="{label, value} in symbols"
-                    :key="label"
-                    :label="value"
-                    :value="label"
+                    :key="value"
+                    :label="label"
+                    :value="value"
                   />
                 </el-select>
                 <el-input v-model="formData3.lessValue" size="small" style="width: 100px" placeholder="请输入" />

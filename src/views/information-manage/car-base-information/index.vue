@@ -65,7 +65,7 @@
                   <el-cascader
                     v-model="listQuery.zoneId"
                     size="small"
-                    :options="cityOptions"
+                    :options="searchCityOptions"
                     placeholder="请选择所属地区"
                     style="width:100%;"
                   />
@@ -1016,7 +1016,7 @@ import {
   queryUseNature,
   queryCarColor
 } from '@/api/information-manage/car-base-information'
-import { provinceAndCityData, CodeToText } from 'element-china-area-data'
+import { provinceAndCityData, CodeToText, regionData } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import getAreaText from '@/utils/AreaCodeToText'
 
@@ -1055,6 +1055,7 @@ export default {
       dialogFormVisible: false,
       list: [], // 表格数据
       listLoading: true, // 表格加载状态
+      searchCityOptions: regionData,
       listQuery: {
         pageNum: 1,
         pageSize: 10,
@@ -1438,7 +1439,9 @@ export default {
     },
     // 点击搜索
     handleSearch() {
-      if (this.listQuery.zoneId) { this.listQuery.zoneId = this.listQuery.zoneId[1] }
+      if (this.listQuery.zoneId) {
+        this.listQuery.zoneId = this.listQuery.zoneId[2] || this.listQuery.zoneId[1]
+      }
       this.listQuery.pageNum = 1 // 重置pageNum
       this.getList()
     },

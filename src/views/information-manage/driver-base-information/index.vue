@@ -84,7 +84,7 @@
                 :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
               >
                 <el-button size="small" @click="resetQuery">重置</el-button>
-                <el-button type="primary" size="small" @click="getList">查询</el-button>
+                <el-button type="primary" size="small" @click="search">查询</el-button>
                 <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
                 <el-button type="text" @click="advanced=!advanced">
                   {{ advanced ? '收起' : '展开' }}
@@ -652,6 +652,10 @@ export default {
     this.getList()
   },
   methods: {
+    search() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
     getPermitType() {
       queryPermitType()
         .then(res => {

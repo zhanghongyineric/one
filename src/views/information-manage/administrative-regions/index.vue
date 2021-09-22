@@ -249,8 +249,10 @@ export default {
       this.$refs.dialogForm.validate(valid => {
         if (valid) {
           this.listloading = true
-          const { length } = this.dialogData.upUnitName
-          this.dialogData.upUnitName = this.dialogData.upUnitName[length - 1]
+          if (Array.isArray(this.dialogData.upUnitName)) {
+            const { length } = this.dialogData.upUnitName
+            this.dialogData.upUnitName = this.dialogData.upUnitName[length - 1]
+          }
           this.dialogData.aptitudeLevel = '15'
           this.dialogData.upUnitId = this.getUpUnitId(this.dialogData.upUnitName)
 
