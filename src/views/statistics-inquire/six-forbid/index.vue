@@ -219,7 +219,7 @@ export default {
       this.tableWidth = 'width:55.5%;'
       setTimeout(() => {
         this.tableWidth = 'width:55%'
-      }, 300)
+      })
     }
   },
   created() {
