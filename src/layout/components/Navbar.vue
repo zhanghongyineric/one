@@ -5,6 +5,7 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div v-if="role" class="right-menu">
+      <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">去政府·企业端</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
           <span style="font-weight: bold;margin-right: 15px">当前身份:{{ roleName }}</span>
@@ -35,6 +36,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import ChangePassword from './ChangePassword'
 import Hamburger from '@/components/Hamburger'
 import connect from '@/utils/mqtt'
+import Cookies from 'js-cookie'
 
 export default {
   components: {
@@ -44,7 +46,8 @@ export default {
   },
   data() {
     return {
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      showLink: false
     }
   },
   computed: {
@@ -57,7 +60,17 @@ export default {
       'area'
     ])
   },
+  mounted() {
+    this.showLink = this.role === 'admin'
+  },
   methods: {
+    setCookie() {
+      Cookies.set('pc_safe_code', Cookies.get('monitor'))
+      setTimeout(() => {
+        // window.open('http://localhost:9529/#/home')
+        window.open('http://www.fk.myzx.sc.cn/#/home')
+      })
+    },
     initMqtt() {
       this.client = connect()
       this.client.on('connect', () => {
@@ -151,6 +164,14 @@ export default {
 
     &:focus {
       outline: none;
+    }
+
+    .to-gu {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4ea1db;
+      text-decoration: underline;
+      margin-right: 20px;
     }
 
     .role {
