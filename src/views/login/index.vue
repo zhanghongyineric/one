@@ -625,7 +625,7 @@ $light_gray: #eee;
   align-items: center;
   height: 50px;
   position:fixed;
-  bottom: 10px;
+  bottom: 0;
 
   a {
     display: flex;
