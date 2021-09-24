@@ -154,7 +154,7 @@ export default {
   },
   data() {
     return {
-      alarmType: '',
+      alarmType: '681001',
       tableData: [],
       listQuery: {
         pageNum: 1,
@@ -256,12 +256,15 @@ export default {
       sixStrictlyProhibitViolationType()
         .then((res) => {
           const { data } = res
-          this.alarmType = '681001'
+          // this.alarmType = '681001'
+          console.log(this.alarmType, 'alarmType')
           this.alarmsType = data
           data.forEach(v => {
             this.alarmsTypeMap.set(v.value, v.label)
           })
           const type = this.alarmsTypeMap.get(this.alarmType)
+          console.log(type, 'type')
+          console.log(this.alarmsTypeMap, 'alarmsTypeMap')
           this.yname = type + '次数'
           this.yLineName = type + '总次数'
           this.pieTitle = type + '次数占比：'
@@ -317,6 +320,11 @@ export default {
       this.getSectorStatistics()
       this.getVehicleData()
       this.getVehicleTrends()
+      const type = this.alarmsTypeMap.get(this.alarmType)
+      this.yname = type + '次数'
+      this.yLineName = type + '总次数'
+      this.pieTitle = type + '次数占比：'
+      this.funnelTitle = type + '次数占比：'
       // this.barChartData = []
     },
     getSectorStatistics() {

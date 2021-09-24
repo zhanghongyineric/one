@@ -264,7 +264,7 @@ export default {
           const type = this.alarmsTypeMap.get(this.alarmType)
           this.yname = type + '次数'
           this.yLineName = type + '总次数'
-          this.pieTitle = '车辆类型' + type + '次数占比：'
+          this.pieTitle = type + '次数占比：'
           this.funnelTitle = type + '次数占比：'
           this.getSectorStatistics()
           this.getVehicleTrends()
@@ -317,6 +317,11 @@ export default {
       this.getSectorStatistics()
       this.getVehicleData()
       this.getVehicleTrends()
+      const type = this.alarmsTypeMap.get(this.alarmType)
+      this.yname = type + '次数'
+      this.yLineName = type + '总次数'
+      this.pieTitle = type + '次数占比：'
+      this.funnelTitle = type + '次数占比：'
       // this.barChartData = []
     },
     getSectorStatistics() {
