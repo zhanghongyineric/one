@@ -5,7 +5,8 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div v-if="role" class="right-menu">
-      <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">去政府·企业端</a>
+      <img src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
+      <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">政府·企业端</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
           <span style="font-weight: bold;margin-right: 15px">当前身份:{{ roleName }}</span>
@@ -161,6 +162,13 @@ export default {
     display: flex;
     height: 100%;
     line-height: 50px;
+
+    .icon-to-gu {
+      width: 25px;
+      height: 25px;
+      margin-top:13px;
+      cursor: pointer;
+    }
 
     &:focus {
       outline: none;

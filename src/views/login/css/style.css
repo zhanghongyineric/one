@@ -7,7 +7,7 @@ body{
 	color:#4d6287;
 	font-size:12px;
 	background:#191c2c;
-	overflow:hidden
+	overflow:auto;
 }
 
 img{
@@ -20,15 +20,21 @@ img{
 #page1 .img3,
 #page1 .imgGroug,
 .title0,
-.title1{
+.title1,
+.right{
 	position:absolute;
 	top:50%;
-	left:50%
+	left:35%;
+}
+
+.right {
+	margin-top: -280px;
+	left: 57%;
 }
 
 .title0,
 .title1 {
-    left: 0;
+    left: -15%;
     width: 100%;
     text-align: center;
     color:#2ec0f6;

@@ -12,87 +12,88 @@
           </ul>
         </div>
         <img alt="" class="img3 png" draggable="false" src="./img/page1_3.jpg">
+        <div class="right">
+          <h2 class="welcome">欢迎登录</h2>
+          <el-form
+            ref="loginForm"
+            :model="loginForm"
+            :rules="loginRules"
+            class="login-form"
+            auto-complete="on"
+            size="small"
+            label-position="left"
+          >
+            <el-form-item prop="username">
+              <span class="svg-container">
+                <svg-icon icon-class="user" />
+              </span>
+              <el-input
+                ref="username"
+                v-model="loginForm.username"
+                placeholder="请输入用户名"
+                name="username"
+                type="text"
+                tabindex="1"
+                auto-complete="off"
+                clearable
+              />
+            </el-form-item>
+            <el-form-item prop="password">
+              <span class="svg-container">
+                <svg-icon icon-class="password" />
+              </span>
+              <el-input
+                :key="passwordType"
+                ref="password"
+                v-model="loginForm.password"
+                clearable
+                :type="passwordType"
+                placeholder="请输入密码"
+                name="password"
+                tabindex="2"
+                auto-complete="off"
+                @keyup.enter.native="handleLogin"
+              />
+              <span class="show-pwd" @click="showPwd">
+                <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+              </span>
+            </el-form-item>
+
+            <!--滑动验证-->
+            <div id="captcha" :class="showSliderImage?'showSliderImage':'hideSliderImage'" />
+            <p class="slider-placeholder">
+              向右滑动填充拼图
+              <span v-show="showFinishSliderTip" class="finishSlider">请先完成拼图</span>
+            </p>
+            <div style="overflow: hidden;text-align: center;margin-top:50px;">
+              <el-button
+                :loading="loading"
+                type="primary"
+                size="large"
+                class="login-button"
+                @click.native.prevent="handleLogin"
+              >
+                登录
+              </el-button>
+            </div>
+          </el-form>
+          <h2>
+            <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
+          </h2>
+          <p class="system-text">监测·管理端</p>
+          <el-drawer
+            custom-class="version-drawer ql-editor"
+            :visible.sync="drawer"
+            :direction="direction"
+            :with-header="false"
+            :modal="false"
+            size="20%"
+          />
+          <span v-if="drawer" class="history-version-text">历史版本信息</span>
+        </div>
       </div>
     </div>
-    <div class="right">
-      <h2 class="welcome">欢迎登录</h2>
-      <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        auto-complete="on"
-        size="small"
-        label-position="left"
-      >
-        <el-form-item prop="username">
-          <span class="svg-container">
-            <svg-icon icon-class="user" />
-          </span>
-          <el-input
-            ref="username"
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            name="username"
-            type="text"
-            tabindex="1"
-            auto-complete="off"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <span class="svg-container">
-            <svg-icon icon-class="password" />
-          </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            clearable
-            :type="passwordType"
-            placeholder="请输入密码"
-            name="password"
-            tabindex="2"
-            auto-complete="off"
-            @keyup.enter.native="handleLogin"
-          />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
-        </el-form-item>
 
-        <!--滑动验证-->
-        <div id="captcha" :class="showSliderImage?'showSliderImage':'hideSliderImage'" />
-        <p class="slider-placeholder">
-          向右滑动填充拼图
-          <span v-show="showFinishSliderTip" class="finishSlider">请先完成拼图</span>
-        </p>
-        <div style="overflow: hidden;text-align: center;margin-top:50px;">
-          <el-button
-            :loading="loading"
-            type="primary"
-            size="large"
-            class="login-button"
-            @click.native.prevent="handleLogin"
-          >
-            登录
-          </el-button>
-        </div>
-      </el-form>
-      <h2>
-        <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
-      </h2>
-      <p class="system-text">监测·管理端</p>
-      <el-drawer
-        custom-class="version-drawer ql-editor"
-        :visible.sync="drawer"
-        :direction="direction"
-        :with-header="false"
-        :modal="false"
-        size="20%"
-      />
-      <span v-if="drawer" class="history-version-text">历史版本信息</span>
-    </div>
     <div :class="[drawer ? 'close-symbol' : 'expand-symbol']" @click="switchDrawer">
       <div :class="[drawer ? 'left-arrow' : 'right-arrow']" />
     </div>
@@ -395,6 +396,11 @@ $bg: #2d3a4b;
 $dark_gray: #889aa4;
 $light_gray: #eee;
 
+// .login-page {
+//   width: 100%;
+//   min-width: 1300px;
+// }
+
     .right {
       flex: 1;
       height: 500px;
@@ -402,9 +408,9 @@ $light_gray: #eee;
       // background: white;
       border: 2px solid;
       padding-top: 30px;
-      position: absolute;
-      right: 5%;
-      top: 20%;
+      // position: absolute;
+      // right: 17%;
+      // top: 20%;
       border-radius: 10px;
       z-index: 999;
 
