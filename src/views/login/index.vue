@@ -77,10 +77,11 @@
               </el-button>
             </div>
           </el-form>
+          <h3 class="welcome system-text">监测·管理端</h3>
           <h2>
             <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
           </h2>
-          <p class="system-text">监测·管理端</p>
+
           <el-drawer
             custom-class="version-drawer ql-editor"
             :visible.sync="drawer"
@@ -96,6 +97,14 @@
 
     <div :class="[drawer ? 'close-symbol' : 'expand-symbol']" @click="switchDrawer">
       <div :class="[drawer ? 'left-arrow' : 'right-arrow']" />
+    </div>
+    <div class="footer">
+      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备20014004号</a>
+      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备20014004号-2</a>
+      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51010702002449">
+        <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
+        川公网安备 51010702002449 号
+      </a>
     </div>
   </div>
 </template>
@@ -419,7 +428,7 @@ $light_gray: #eee;
         margin: 0 0 20px;
         display: block;
         text-align: center;
-        color: #0092e7;
+        color: #2ec0f6;
         font-size: 30px;
         font-weight: normal;
       }
@@ -438,7 +447,7 @@ $light_gray: #eee;
 
       .svg-container {
         padding: 6px 5px 6px 15px;
-        color: #0092e7;
+        color: #2ec0f6;
         vertical-align: middle;
         width: 30px;
         display: inline-block;
@@ -526,14 +535,14 @@ $light_gray: #eee;
       }
 
       h2 {
-          font-size: 26px;
-          line-height: 50px;
-          letter-spacing: 3px;
-          text-align: center;
-          color: #0092e7;
-          font-weight: normal;
-          margin-top: -20px;
-        }
+        font-size: 16px;
+        line-height: 50px;
+        letter-spacing: 3px;
+        text-align: center;
+        color: #2ec0f6;
+        font-weight: normal;
+        margin-top: -10px;
+      }
     }
 
 ::v-deep .version-drawer {
@@ -551,7 +560,7 @@ $light_gray: #eee;
   display: block;
   font-size: 20px;
   font-weight: 700;
-  color: #0092e7;
+  color: #2ec0f6;
 }
 .expand-symbol {
   width: 60px;
@@ -559,7 +568,7 @@ $light_gray: #eee;
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: transparent  transparent  transparent #fff;
+  border-color: transparent  transparent  transparent #2ec0f6;
   position: fixed;
   top: 48%;
   left: 0;
@@ -573,7 +582,7 @@ $light_gray: #eee;
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: transparent  transparent  transparent #fff;
+  border-color: transparent  transparent  transparent #2ec0f6;
   position: fixed;
   top: 48%;
   left: 20%;
@@ -584,8 +593,8 @@ $light_gray: #eee;
 .right-arrow {
   width: 10px;
   height: 10px;
-  border-top: 2px solid #ccc;
-  border-right: 2px solid #ccc;
+  border-top: 2px solid #0092e7;
+  border-right: 2px solid #0092e7;
   transform: rotate(45deg);
   position: relative;
   top: 10px;
@@ -595,8 +604,8 @@ $light_gray: #eee;
 .left-arrow {
   width: 10px;
   height: 10px;
-  border-bottom: 2px solid #ccc;
-  border-left: 2px solid #ccc;
+  border-bottom: 2px solid #0092e7;
+  border-left: 2px solid #0092e7;
   transform: rotate(45deg);
   position: relative;
   top: 10px;
@@ -604,7 +613,30 @@ $light_gray: #eee;
 }
 .system-text {
   text-align: center;
-  color: #0092e7;
-  font-size: 14px;
+  color: #2ec0f6;
+  // font-size: 20px;
+  margin-top: -20px !important;
+  font-size: 25px !important;
+}
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  position:fixed;
+  bottom: 10px;
+
+  a {
+    display: flex;
+    align-items: center;
+    height: 16px;
+    line-height: 16px;
+    color: #2ec0f6;
+
+    img {
+      margin-right: 4px;
+    }
+  }
 }
 </style>
