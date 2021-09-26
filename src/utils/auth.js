@@ -11,5 +11,7 @@ export function setToken(token) {
 }
 
 export function removeToken() {
+  Cookies.remove(TokenKey, { domain: 'myzx.sc.cn' })// 移除政府企业端种植的cookie
+
   return Cookies.remove(TokenKey)
 }
