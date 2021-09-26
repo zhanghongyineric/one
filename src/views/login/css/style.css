@@ -5,7 +5,7 @@
 body{
 	font-family:'微软雅黑','黑体',serif,'宋体';
 	color:#4d6287;
-	font-size:12px;
+	/* font-size:12px; */
 	background:#191c2c;
 	overflow:auto;
 }
