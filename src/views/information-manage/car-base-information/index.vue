@@ -1387,7 +1387,6 @@ export default {
       this.createFormData.unitName = val.unitName
     },
     selectSearchCompany(v) {
-      console.log(v)
       this.listQuery.unitId = v.unitId
     },
     // 模糊搜索平台
