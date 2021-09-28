@@ -178,7 +178,7 @@ export default {
       font-size: 14px;
       font-weight: 700;
       color: #4ea1db;
-      text-decoration: underline;
+      text-decoration: none;
       margin-right: 20px;
     }
 

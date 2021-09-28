@@ -36,6 +36,11 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+// 使用视频播放
+import Video from 'video.js'
+import 'video.js/dist/video-js.css'
+Vue.prototype.$video = Video
+
 Vue.use(ElementUI)
 
 import * as Echarts from 'echarts'

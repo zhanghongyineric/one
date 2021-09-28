@@ -1,5 +1,5 @@
 import createRequest from '@/utils/createRequest'
-const request = createRequest('/baseInfo/rule/alarm')
+const request = createRequest('/monitor/alarmDetails')
 
 // 行政区域
 export function areaCode() {

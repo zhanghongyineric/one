@@ -18,7 +18,12 @@
             </el-col>
             <el-col :md="6" :sm="24">
               <el-form-item label="车牌号:">
-                <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" size="small" clearable />
+                <el-input
+                  v-model="listQuery.plateNum"
+                  placeholder="请输入车牌号"
+                  size="small"
+                  clearable
+                />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -38,13 +43,17 @@
             <template v-if="advanced">
               <el-col :md="6" :sm="24">
                 <el-form-item label="车辆类型:">
-                  <el-select v-model="listQuery.vehicleType" size="small" placeholder="请选择车辆类型">
-                  <!-- <el-option
-                      v-for="item in driverVelTyeOptions"
-                      :key="item.label"
+                  <el-select
+                    v-model="listQuery.vehicleType"
+                    size="small"
+                    placeholder="请选择车辆类型"
+                  >
+                    <el-option
+                      v-for="item in vehicleTypeOptions"
+                      :key="item.value"
                       :label="item.label"
                       :value="item.value"
-                    /> -->
+                    />
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -58,6 +67,7 @@
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
                     size="small"
+                    value-format="yyyy-MM-dd HH:mm:ss"
                   />
                 </el-form-item>
               </el-col>
@@ -90,18 +100,27 @@
       >
         <el-table-column type="index" label="编号" width="50" align="center" />
         <el-table-column prop="plateNum" label="车牌号" width="150" show-overflow-tooltip align="center" />
-        <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" />
-        <el-table-column prop="alarmType" label="报警类型" min-width="150" align="center">
+        <el-table-column prop="plateColor" label="车牌颜色" min-width="100" align="center">
           <template slot-scope="scope">
-            {{ scope.row.alarmType | alarmTypeFilter }}
+            {{ scope.row.plateColor | plateColorFilter }}
           </template>
         </el-table-column>
-        <el-table-column prop="startTime" label="开始时间" width="220" align="center" show-overflow-tooltip />
         <el-table-column prop="vehicleType" label="车辆类型" min-width="110" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             {{ scope.row.vehicleType | vehicleTypeFilter }}
           </template>
         </el-table-column>
+        <!-- 此处驾驶员 -->
+        <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" />
+
+        <el-table-column prop="alarmType" label="报警类型" min-width="150" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.alarmType | alarmTypeFilter }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="startTime" label="开始时间" width="220" align="center" show-overflow-tooltip />
+        <el-table-column prop="endtime" label="结束时间" width="220" align="center" show-overflow-tooltip />
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -109,7 +128,7 @@
               type="primary"
               size="small"
               @click="showDetails(scope.row)"
-            >查看详情</el-button>
+            >报警详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -120,6 +139,37 @@
         :limit.sync="listQuery.pageSize"
         @pagination="getList"
       />
+      <el-dialog
+        title="报警详情"
+        :visible.sync="visible"
+        top="100px"
+      >
+        <div class="image-box">
+          <span class="title-text">报警图片：</span>
+          <span v-if="alarmPhotos.length < 0">暂无图片</span>
+          <div v-else>
+            <el-image
+              v-for="item in alarmPhotos"
+              :key="item.fs"
+              :src="item.downloadUrl"
+              :preview-src-list="previewPhotos"
+              class="alarm-images"
+            />
+          </div>
+        </div>
+        <span class="title-text">报警视频：</span>
+        <span v-if="alarmVideos.length < 0">暂无视频</span>
+        <div v-else>
+          <div v-for="(item,index) in alarmVideos" :key="item.fs" class="alarm-videos">
+            <video
+              :id="'video' + index"
+              class="video-js "
+            >
+              <source type="video/mp4" :src="item.downloadUrl">
+            </video>
+          </div>
+        </div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -139,6 +189,13 @@ export default {
   name: 'AlarmDetail',
   components: { Pagination },
   filters: {
+    plateColorFilter(color) {
+      let text = color
+      that.plateColorOptions.forEach(v => {
+        v.value === color ? text = v.label : ''
+      })
+      return text
+    },
     alarmTypeFilter(type) {
       let text = type
       that.alarmTypeOptions.forEach(item => {
@@ -157,13 +214,15 @@ export default {
   data() {
     return {
       advanced: false,
+      visible: false,
       total: 0,
       listQuery: {
         pageNum: 1,
         pageSize: 10,
-        startTime: '2021-9-25 00:00:00',
-        endTime: '2021-9-26 00:00:00',
-        regionId: '800'
+        startTime: '',
+        endTime: '',
+        regionId: '800',
+        time: []
       },
       tableData: [],
       listLoading: false,
@@ -176,7 +235,26 @@ export default {
         checkStrictly: false
       },
       vehicleTypeOptions: [],
-      alarmTypeOptions: []
+      alarmTypeOptions: [],
+      plateColorOptions: [],
+
+      alarmPhotos: [],
+      alarmVideos: [],
+      previewPhotos: []
+    }
+  },
+  watch: {
+    alarmPhotos(val) {
+      val.forEach(item => {
+        this.previewPhotos.push(item.downloadUrl)
+      })
+    },
+    'listQuery.time': {
+      deep: true,
+      handler: function(newV, oldV) {
+        this.listQuery.startTime = this.listQuery.time[0]
+        this.listQuery.endTime = this.listQuery.time[1]
+      }
     }
   },
   created() {
@@ -184,13 +262,27 @@ export default {
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
     this.alarmTypeOptions = onlineOption['报警类型编码'].list
-    console.log(this.vehicleTypeOptions)
+    this.plateColorOptions = onlineOption['车牌颜色编码'].list
+    this.getDate()
   },
   mounted() {
     this.getAreaCode()
     this.getList()
   },
   methods: {
+    getDate() {
+      const date = new Date()
+      let nowMonth = date.getMonth() + 1
+      let strDate = date.getDate()
+      let endDate = date.getDate() + 1
+      const seperator = '-'
+      if (nowMonth >= 1 && nowMonth <= 9) nowMonth = '0' + nowMonth
+      if (strDate >= 0 && strDate <= 9) strDate = '0' + strDate
+      if (endDate >= 0 && endDate <= 9) endDate = '0' + endDate
+      this.listQuery.time[0] = date.getFullYear() + seperator + nowMonth + seperator + strDate + ' 00:00:00'
+      this.listQuery.time[1] = date.getFullYear() + seperator + nowMonth + seperator + endDate + ' 00:00:00'
+      this.listQuery.startTime = this.listQuery.time[0]
+    },
     getAreaCode() {
       areaCode()
         .then(res => {
@@ -234,27 +326,58 @@ export default {
       }
     },
     showDetails(row) {
-      axios.get('http://121.36.18.123/StandardApiAction_alarmEvidence.action', {
-        jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
-        toMap: 2,
-        guid: row.guid,
-        devIdno: row.devIdno,
-        alarmType: row.alarmType,
-        begintime: row.startTime
+      this.visible = true
+      axios.get('http://192.168.0.80:9123', {
+        params: {
+          jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
+          toMap: 2,
+          guid: '00040492631921210928003058000700',
+          devIdno: '040492631921',
+          alarmType: 603,
+          begintime: '2021-09-28 00:30:58'
+        },
+        timeout: 10000
       })
-        .then(res => {
-          console.log(res)
+        .then(({ data }) => {
+          this.alarmPhotos = data.images
+          this.alarmVideos = data.vedios
+          this.initVideo()
         })
         .catch(err => {
           throw err
         })
     },
-    search() {},
+    // 初始化视频方法
+    initVideo() {
+      if (this.alarmVideos.length > 0) {
+        for (let index = 0; index < this.alarmVideos.length; index++) {
+          setTimeout(() => {
+            this.$video('video' + index, {
+              controls: true,
+              autoplay: 'muted',
+              preload: 'auto',
+              notSupportedMessage: '此视频暂无法播放，请稍后再试',
+              aspectRatio: '4:3',
+              playbackRates: [0.5, 1, 1.5, 2, 3],
+              controlBar: {
+                'currentTimeDisplay': true,
+                'timeDivider': true,
+                'durationDisplay': true,
+                'remainingTimeDisplay': false
+              }
+            })
+          })
+        }
+      }
+    },
+    search() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
     getList() {
       this.listLoading = true
       activeDefenseAlarm({ ...this.listQuery })
         .then(({ data }) => {
-          console.log(data)
           this.total = data.total
           this.tableData = data.list
           this.listLoading = false
@@ -267,3 +390,27 @@ export default {
   }
 }
 </script>
+<style scoped>
+.alarm-images {
+  width:280px;
+  margin-right: 10px;
+}
+
+.alarm-videos {
+  width: 280px !important;
+  height: 280px !important;
+  display: inline-block !important;
+  margin-right: 10px;
+}
+
+.title-text {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.image-box {
+  margin: 30px 0;
+}
+</style>
