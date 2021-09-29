@@ -165,7 +165,7 @@ export default {
     startInterval() {
       const timer = setInterval(() => {
         this.getVehicleNumber()
-      }, 10000)
+      }, 30000)
       this.$once('hook:deactivated', () => {
         clearInterval(timer)
       })

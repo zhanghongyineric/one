@@ -27,34 +27,44 @@
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
-              <el-form-item label="所属企业:">
-                <el-autocomplete
-                  v-model="listQuery.unitName"
-                  :fetch-suggestions="searchType"
-                  placeholder="请输入企业名称关键字"
-                  :debounce="500"
+              <el-form-item label="车辆类型:">
+                <el-select
+                  v-model="listQuery.vehicleType"
                   size="small"
-                  clearable
-                  style="width:100%;"
-                  @select="selectSearchCompany"
-                />
+                  placeholder="请选择车辆类型"
+                >
+                  <el-option
+                    v-for="item in vehicleTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <template v-if="advanced">
               <el-col :md="6" :sm="24">
-                <el-form-item label="车辆类型:">
-                  <el-select
-                    v-model="listQuery.vehicleType"
+                <el-form-item label="驾驶员:">
+                  <el-input
+                    v-model="listQuery.personName"
+                    placeholder="请输入驾驶员姓名"
                     size="small"
-                    placeholder="请选择车辆类型"
-                  >
-                    <el-option
-                      v-for="item in vehicleTypeOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
+                    clearable
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
+                <el-form-item label="所属企业:">
+                  <el-autocomplete
+                    v-model="listQuery.unitName"
+                    :fetch-suggestions="searchType"
+                    placeholder="请输入企业名称关键字"
+                    :debounce="500"
+                    size="small"
+                    clearable
+                    style="width:100%;"
+                    @select="selectSearchCompany"
+                  />
                 </el-form-item>
               </el-col>
 
@@ -68,6 +78,7 @@
                     end-placeholder="结束日期"
                     size="small"
                     value-format="yyyy-MM-dd HH:mm:ss"
+                    :picker-options="pickerOptions"
                   />
                 </el-form-item>
               </el-col>
@@ -110,10 +121,10 @@
             {{ scope.row.vehicleType | vehicleTypeFilter }}
           </template>
         </el-table-column>
-        <!-- 此处驾驶员 -->
-        <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" />
+        <el-table-column prop="personName" label="驾驶员" min-width="100" align="center" show-overflow-tooltip />
+        <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" show-overflow-tooltip />
 
-        <el-table-column prop="alarmType" label="报警类型" min-width="150" align="center">
+        <el-table-column prop="alarmType" label="报警类型" min-width="150" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row.alarmType | alarmTypeFilter }}
           </template>
@@ -143,7 +154,19 @@
         title="报警详情"
         :visible.sync="visible"
         top="100px"
+        :before-close="closeDialog"
       >
+        <div class="alarm-info">
+          <span><span class="info-title">车牌号：</span>{{ currentRow.plateNum }}</span>
+          <span><span class="info-title">车牌颜色：</span>{{ currentRow.plateColor }}</span>
+          <span><span class="info-title">车辆类型：</span>{{ currentRow.vehicleType }}</span>
+          <span><span class="info-title">报警类型：</span>{{ currentRow.alarmType }}</span>
+        </div>
+        <div class="alarm-info" style="margin-top:10px;">
+          <span><span class="info-title">所属企业：</span>{{ currentRow.unitName }}</span>
+          <span><span class="info-title">开始时间：</span>{{ currentRow.startTime }}</span>
+          <span><span class="info-title">结束时间：</span>{{ currentRow.endtime }}</span>
+        </div>
         <div class="image-box">
           <span class="title-text">报警图片：</span>
           <span v-if="alarmPhotos.length < 0">暂无图片</span>
@@ -191,23 +214,17 @@ export default {
   filters: {
     plateColorFilter(color) {
       let text = color
-      that.plateColorOptions.forEach(v => {
-        v.value === color ? text = v.label : ''
-      })
+      that.plateColorOptions[color] ? text = that.plateColorOptions[color] : ''
       return text
     },
     alarmTypeFilter(type) {
       let text = type
-      that.alarmTypeOptions.forEach(item => {
-        item.value === type ? text = item.label : ''
-      })
+      that.alarmTypeOptions[type] ? text = that.alarmTypeOptions[type] : ''
       return text
     },
     vehicleTypeFilter(type) {
       let text = type
-      that.vehicleTypeOptions.forEach(v => {
-        v.value === type ? text = v.label : ''
-      })
+      that.vehicleTypeOptions[type] ? text = that.vehicleTypeOptions[type] : ''
       return text
     }
   },
@@ -221,7 +238,7 @@ export default {
         pageSize: 10,
         startTime: '',
         endTime: '',
-        regionId: '800',
+        regionId: '',
         time: []
       },
       tableData: [],
@@ -240,7 +257,16 @@ export default {
 
       alarmPhotos: [],
       alarmVideos: [],
-      previewPhotos: []
+      previewPhotos: [],
+
+      pickerOptions: {
+        disabledDate: time => {
+          // if (this.listQuery.startTime) {
+          //   return time.getTime() > new Date(this.listQuery.startTime).getTime() + TWENTY_FOUR_HOURS || time.getTime() < new Date(this.listQuery.startTime).getTime() + TWENTY_FOUR_HOURS
+          // }
+        }
+      },
+      currentRow: {}
     }
   },
   watch: {
@@ -252,22 +278,27 @@ export default {
     'listQuery.time': {
       deep: true,
       handler: function(newV, oldV) {
-        this.listQuery.startTime = this.listQuery.time[0]
-        this.listQuery.endTime = this.listQuery.time[1]
+        if (!this.listQuery.time) {
+          this.listQuery.startTime = ''
+          this.listQuery.endTime = ''
+        } else {
+          this.listQuery.startTime = this.listQuery.time[0]
+          this.listQuery.endTime = this.listQuery.time[1]
+        }
       }
     }
   },
   created() {
     that = this
+    this.getAreaCode()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
-    this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
-    this.alarmTypeOptions = onlineOption['报警类型编码'].list
-    this.plateColorOptions = onlineOption['车牌颜色编码'].list
+    this.vehicleTypeOptions = onlineOption['vehicle_type_code'].map
+    this.alarmTypeOptions = onlineOption['报警类型编码'].map
+    this.plateColorOptions = onlineOption['车牌颜色编码'].map
     this.getDate()
   },
   mounted() {
-    this.getAreaCode()
-    this.getList()
+    // this.getList()
   },
   methods: {
     getDate() {
@@ -289,6 +320,9 @@ export default {
           const { data } = res
           this.deleteEmptyChilren(data[0])
           this.areaOptions = data
+          // this.listQuery.regionId = data[0].children[0].unitId
+          this.listQuery.regionId = '800'
+          this.getList()
         })
         .catch(err => {
           throw err
@@ -324,9 +358,32 @@ export default {
         pageSize: 10,
         pageNum: 1
       }
+      this.getList()
+    },
+    closeDialog() {
+      this.visible = false
+      setTimeout(() => {
+        this.currentRow = {}
+      }, 300)
     },
     showDetails(row) {
+      Object.assign(this.currentRow, row)
+      this.currentRow.plateColor = that.plateColorOptions[parseInt(row.plateColor)]
+      this.currentRow.alarmType = that.alarmTypeOptions[parseInt(row.alarmType)] || '无'
+      this.currentRow.vehicleType = that.vehicleTypeOptions[parseInt(row.vehicleType)]
+      this.currentRow.endtime = row.endtime || '无'
       this.visible = true
+      // axios.get('http://192.168.0.80:9123', {
+      //   params: {
+      //     jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
+      //     toMap: 2,
+      //     guid: row.guid,
+      //     devIdno: row.devIdno,
+      //     alarmType: row.alarmType,
+      //     begintime: row.startTime
+      //   },
+      //   timeout: 10000
+      // })
       axios.get('http://192.168.0.80:9123', {
         params: {
           jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
@@ -398,7 +455,6 @@ export default {
 
 .alarm-videos {
   width: 280px !important;
-  height: 280px !important;
   display: inline-block !important;
   margin-right: 10px;
 }
@@ -412,5 +468,16 @@ export default {
 
 .image-box {
   margin: 30px 0;
+}
+
+.alarm-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+.info-title {
+  font-weight: 700;
+
 }
 </style>
