@@ -639,4 +639,8 @@ $light_gray: #eee;
     }
   }
 }
+
+::v-deep .el-drawer__container ::-webkit-scrollbar{
+    display: none !important;
+}
 </style>
