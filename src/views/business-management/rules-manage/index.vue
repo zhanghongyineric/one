@@ -311,7 +311,6 @@ export default {
 
         if (this.formData.expresion) this.expresion = this.formData.expresion + '\xa0\xa0' + '且' + '\xa0\xa0' + this.formData2.expresion
         else this.expresion = this.formData2.expresion
-        console.log(this.expresion)
       },
       deep: true
     },
@@ -413,7 +412,9 @@ export default {
           const { data } = res
           if (data.length) {
             this.update = true
-            const unitArr = data[0].expresion.split('\xa0\xa0').join('').split('且')
+            console.log(data[0].expresion, 'expresion update')
+            const unitArr = data[0].expresion.split('\xa0').join('').split('且')
+            console.log(unitArr, 'unitArr update')
             this.currentUnit = unitArr[0] ? unitArr[0][unitArr[0].length - 1] : ''
             this.currentUnit2 = unitArr[1] ? unitArr[1][unitArr[1].length - 1] : ''
             this.currentUnit3 = unitArr[2] ? unitArr[2][unitArr[2].length - 1] : ''
@@ -491,7 +492,9 @@ export default {
           const { data } = res
           if (data.length) {
             this.update = true
-            const unitArr = data[0].expresion.split('\xa0\xa0').join('').split('且')
+            console.log(data[0].expresion, 'expresion change')
+            const unitArr = data[0].expresion.split('\xa0').join('').split('且')
+            console.log(unitArr, 'unitArr change')
             this.currentUnit = unitArr[0] ? unitArr[0][unitArr[0].length - 1] : ''
             this.currentUnit2 = unitArr[1] ? unitArr[1][unitArr[1].length - 1] : ''
             this.currentUnit3 = unitArr[2] ? unitArr[2][unitArr[2].length - 1] : ''

@@ -136,7 +136,7 @@ export default {
   components: { lineMixBar, FunnelChart, PieChart, LineChart },
   filters: {
     networkAccessRateFilter(rate) {
-      return rate * 100 + '%'
+      return (rate * 100).toFixed() + '%'
     }
   },
   data() {
@@ -247,7 +247,7 @@ export default {
           const { data } = res
           data.forEach(v => {
             this.pieChartData.push({ value: v.vehicleCount, name: v.vehicleTypeName })
-            this.funnelChartData.push({ value: v.networkAccessRate * 100, name: v.vehicleTypeName })
+            this.funnelChartData.push({ value: (v.networkAccessRate * 100).toFixed(), name: v.vehicleTypeName })
           })
         })
         .catch(err => {
@@ -276,7 +276,7 @@ export default {
       const networkAccessRateMap = new Map()
       data.forEach(v => {
         this.lineMixBarXData.push(v.zoneName)
-        this.accessRateData.push(v.networkAccessRate * 100)
+        this.accessRateData.push((v.networkAccessRate * 100).toFixed())
         v.typeAndProbabilitys.forEach(item => {
           this.legendData.push(item.vehicleTypeName)
         })
@@ -311,7 +311,7 @@ export default {
         v.typeAndProbabilitys.forEach(item => {
           vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
           allVehicleCountMap.get(item.vehicleTypeName).data.push(item.allVehicleCount)
-          networkAccessRateMap.get(item.vehicleTypeName).push(item.networkAccessRate * 100 + '%')
+          networkAccessRateMap.get(item.vehicleTypeName).push((item.networkAccessRate * 100).toFixed() + '%')
         })
         for (const value of vehicleCountMap.values()) {
           if (value.data.length < index + 1) {
@@ -375,7 +375,7 @@ export default {
               if (item.typeName === v) {
                 sumObj[this.allVehicleTypeNames.get(v) + 'all'] = item.allTypeCount
                 sumObj[this.allVehicleTypeNames.get(v) + 'count'] = item.typeCount
-                sumObj[this.allVehicleTypeNames.get(v) + 'rate'] = item.networkAccessRate * 100 + '%'
+                sumObj[this.allVehicleTypeNames.get(v) + 'rate'] = (item.networkAccessRate * 100).toFixed() + '%'
               }
             })
           })

@@ -12,7 +12,7 @@ export function areaCode() {
 // 主防报警明细
 export function activeDefenseAlarm(data) {
   return request({
-    url: 'activeDefenseAlarm',
+    url: 'alarm',
     method: 'POST',
     data
   })
