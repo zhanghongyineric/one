@@ -373,28 +373,28 @@ export default {
       this.currentRow.vehicleType = that.vehicleTypeOptions[parseInt(row.vehicleType)]
       this.currentRow.endtime = row.endtime || '无'
       this.visible = true
+      axios.get('https://www.api.gosmooth.com.cn:9123', {
+        params: {
+          jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
+          toMap: 2,
+          guid: row.guid,
+          devIdno: row.devIdno,
+          alarmType: row.alarmType,
+          begintime: row.startTime
+        },
+        timeout: 10000
+      })
       // axios.get('http://192.168.0.80:9123', {
       //   params: {
       //     jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
       //     toMap: 2,
-      //     guid: row.guid,
-      //     devIdno: row.devIdno,
-      //     alarmType: row.alarmType,
-      //     begintime: row.startTime
+      //     guid: '00040492631921210928003058000700',
+      //     devIdno: '040492631921',
+      //     alarmType: 603,
+      //     begintime: '2021-09-28 00:30:58'
       //   },
       //   timeout: 10000
       // })
-      axios.get('http://192.168.0.80:9123', {
-        params: {
-          jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
-          toMap: 2,
-          guid: '00040492631921210928003058000700',
-          devIdno: '040492631921',
-          alarmType: 603,
-          begintime: '2021-09-28 00:30:58'
-        },
-        timeout: 10000
-      })
         .then(({ data }) => {
           this.alarmPhotos = data.images
           this.alarmVideos = data.vedios
