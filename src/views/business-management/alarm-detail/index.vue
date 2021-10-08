@@ -124,10 +124,10 @@
         <el-table-column prop="personName" label="驾驶员" min-width="100" align="center" show-overflow-tooltip />
         <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" show-overflow-tooltip />
 
-        <el-table-column prop="alarmType" label="报警类型" min-width="150" align="center" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row.alarmType | alarmTypeFilter }}
-          </template>
+        <el-table-column prop="cbArmName" label="川标报警名称" min-width="160" align="center" show-overflow-tooltip>
+          <!-- <template slot-scope="scope">
+            {{ scope.row.cbArmType | alarmTypeFilter }}
+          </template> -->
         </el-table-column>
 
         <el-table-column prop="startTime" label="开始时间" width="220" align="center" show-overflow-tooltip />
