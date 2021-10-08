@@ -197,7 +197,7 @@
                 <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip width="90px" />
                 <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip width="80px" />
                 <el-table-column prop="armTimeStart" label="报警时间" align="center" show-overflow-tooltip width="170px" />
-                <el-table-column prop="armName" label="报警类型" align="center" show-overflow-tooltip />
+                <el-table-column prop="cbArmName" label="报警类型" align="center" show-overflow-tooltip />
               </el-table>
             </div>
             <div class="box-monitor">
@@ -387,6 +387,8 @@ export default {
       alarmEvent()
         .then(res => {
           this.eventList = res.data
+          const onlineOptions = JSON.parse(localStorage.getItem('onlineOption'))['车牌颜色编码'].map
+          this.eventList.forEach(item => { item.plateColor = onlineOptions[item.plateColor] })
         })
         .catch(err => {
           throw err
@@ -497,8 +499,6 @@ export default {
           })
 
           this.mapData.forEach(v => {
-            console.log(v, this.mapDataMap.get(v.name), 'v')
-
             if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
             else {
               const val = this.mapDataMap.get(v.name)[0]
