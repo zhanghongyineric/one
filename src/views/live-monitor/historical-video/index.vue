@@ -1,6 +1,13 @@
 <template>
-  <div>
-    <el-image style="width: 100%" :src="require('@/assets/wait.png')" />
+  <div class="layout-content">
+    <el-card class="box-card">
+      <div class="table-page-search-wrapper">
+        <el-form :model="listQuery" label-width="80px">
+          <el-row :gutter="48">s
+          </el-row>
+        </el-form>
+      </div>
+    </el-card>
   </div>
 </template>
 

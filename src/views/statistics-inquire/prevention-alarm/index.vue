@@ -25,10 +25,10 @@
                 @change="search"
               >
                 <el-option
-                  v-for="{value,label} in alarmsType"
-                  :key="value"
-                  :value="value"
-                  :label="label"
+                  v-for="{cbArmType,cbArmName} in alarmsType"
+                  :key="cbArmType"
+                  :value="cbArmType"
+                  :label="cbArmName"
                 />
               </el-select>
             </el-form-item>
@@ -163,9 +163,9 @@ export default {
       searchQuery: {
         unitId: '800',
         startTime: '202101',
-        endTime: '202109'
+        endTime: '202110'
       },
-      time: ['202101', '202109'],
+      time: ['202101', '202110'],
       alarmsType: [],
       areaOptions: [],
       areaProps: {
@@ -256,10 +256,10 @@ export default {
       alarmsVehicleType()
         .then((res) => {
           const { data } = res
-          this.alarmType = '601000'
+          this.alarmType = 'T101001'
           this.alarmsType = data
           data.forEach(v => {
-            this.alarmsTypeMap.set(v.value, v.label)
+            this.alarmsTypeMap.set(v.cbArmType, v.cbArmName)
           })
           const type = this.alarmsTypeMap.get(this.alarmType)
           this.yname = type + '次数'
@@ -295,15 +295,25 @@ export default {
             if (!trendData[i - 1]) {
               trendData.push({
                 alarmDate: `${this.trendYear}${index}`,
-                vehicleOfflineMoveNum: 0,
-                vehicleOverSpeedNum: 0
+                fatigueDrivingNum: 0,
+                driverDetectionFunctionNum: 0,
+                smokingNum: 0,
+                driverNotNum: 0,
+                noVisualLongTimeNum: 0,
+                answerPhoneNum: 0
               })
             }
           }
+          console.log(trendData, 'trendData')
           trendData.forEach(item => {
-            if (this.alarmType === '601000') this.lineChartData.push(item.vehicleOverSpeedNum)
-            else if (this.alarmType === '608000') this.lineChartData.push(item.vehicleOfflineMoveNum)
+            if (this.alarmType === 'T101001') this.lineChartData.push(item.fatigueDrivingNum || 0)
+            else if (this.alarmType === 'T101006') this.lineChartData.push(item.driverDetectionFunctionNum || 0)
+            else if (this.alarmType === 'T101005') this.lineChartData.push(item.smokingNum || 0)
+            else if (this.alarmType === 'T101004') this.lineChartData.push(item.driverNotNum || 0)
+            else if (this.alarmType === 'T101003') this.lineChartData.push(item.noVisualLongTimeNum || 0)
+            else if (this.alarmType === 'T101002') this.lineChartData.push(item.answerPhoneNum || 0)
           })
+          console.log(this.lineChartData, 'this.lineChartData')
         })
         .catch(err => {
           throw err
@@ -333,19 +343,58 @@ export default {
           const { data } = res
           let sum = 0
           data.forEach(v => {
-            if (this.alarmType === '601000') {
-              sum += v.vehicleOverSpeedNum
-            } else if (this.alarmType === '608000') {
-              sum += v.vehicleOfflineMoveNum
+            if (this.alarmType === 'T101001') {
+              sum += v.fatigueDrivingNum
+            } else if (this.alarmType === 'T101006') {
+              sum += v.driverDetectionFunctionNum
+            } else if (this.alarmType === 'T101005') {
+              sum += v.smokingNum
+            } else if (this.alarmType === 'T101004') {
+              sum += v.driverNotNum
+            } else if (this.alarmType === 'T101003') {
+              sum += v.noVisualLongTimeNum
+            } else if (this.alarmType === 'T101002') {
+              sum += v.answerPhoneNum
             }
           })
+          const vehicleTypeMap = JSON.parse(localStorage.getItem('onlineOption'))['vehicle_type_code'].map
           data.forEach(v => {
-            if (this.alarmType === '601000') {
-              this.pieChartData.push({ value: v.vehicleOverSpeedNum, name: v.vehicleTypeName })
-              this.funnelChartData.push({ value: Math.ceil(v.vehicleOverSpeedNum / sum * 100), name: v.vehicleTypeName })
-            } else if (this.alarmType === '608000') {
-              this.pieChartData.push({ value: v.vehicleOfflineMoveNum, name: v.vehicleTypeName })
-              this.funnelChartData.push({ value: Math.ceil(v.vehicleOfflineMoveNum / sum * 100), name: v.vehicleTypeName })
+            if (this.alarmType === 'T101001') {
+              this.pieChartData.push({ value: v.fatigueDrivingNum, name: vehicleTypeMap[v.vehicleType] })
+              this.funnelChartData.push({
+                value: Math.ceil(v.fatigueDrivingNum === 0 ? '' : v.fatigueDrivingNum / sum * 100),
+                name: vehicleTypeMap[v.vehicleType]
+              })
+            } else if (this.alarmType === 'T101006') {
+              this.pieChartData.push({ value: v.driverDetectionFunctionNum, name: vehicleTypeMap[v.vehicleType] })
+              this.funnelChartData.push({
+                value: Math.ceil(v.driverDetectionFunctionNum === 0 ? '' : v.driverDetectionFunctionNum / sum * 100),
+                name: vehicleTypeMap[v.vehicleType]
+              })
+            } else if (this.alarmType === 'T101005') {
+              this.pieChartData.push({ value: v.smokingNum, name: vehicleTypeMap[v.vehicleType] })
+              this.funnelChartData.push({
+                value: Math.ceil(v.smokingNum === 0 ? '' : v.smokingNum / sum * 100),
+                name: vehicleTypeMap[v.vehicleType]
+              })
+            } else if (this.alarmType === 'T101004') {
+              this.pieChartData.push({ value: v.driverNotNum, name: vehicleTypeMap[v.vehicleType] })
+              this.funnelChartData.push({
+                value: Math.ceil(v.driverNotNum === 0 ? '' : v.driverNotNum / sum * 100),
+                name: vehicleTypeMap[v.vehicleType]
+              })
+            } else if (this.alarmType === 'T101003') {
+              this.pieChartData.push({ value: v.noVisualLongTimeNum, name: vehicleTypeMap[v.vehicleType] })
+              this.funnelChartData.push({
+                value: Math.ceil(v.noVisualLongTimeNum === 0 ? '' : v.noVisualLongTimeNum / sum * 100),
+                name: vehicleTypeMap[v.vehicleType]
+              })
+            } else if (this.alarmType === 'T101002') {
+              this.pieChartData.push({ value: v.answerPhoneNum, name: vehicleTypeMap[v.vehicleType] })
+              this.funnelChartData.push({
+                value: Math.ceil(v.answerPhoneNum === 0 ? '' : v.answerPhoneNum / sum * 100),
+                name: vehicleTypeMap[v.vehicleType]
+              })
             }
           })
         })
@@ -370,15 +419,18 @@ export default {
     // 将接口返回数据转换为echarts需要的数据格式
     getBarChartData(data) {
       const colorList = ['#91C7AE', '#339999', '#99CCFF', '#66CC99', '#EBAC4A', '#666699', '#FF99CC', '#CC9933', '#FFCC33', '#003333']
-      // const vehicleCountMap = new Map()
       const allVehicleCountMap = new Map()
-      // const networkAccessRateMap = new Map()
+      const vehicleTypeMap = JSON.parse(localStorage.getItem('onlineOption'))['vehicle_type_code'].map
       data.forEach(v => {
         this.lineMixBarXData.push(v.zoneName)
-        if (this.alarmType === '601000') this.accessRateData.push(v.vehicleOverSpeedNum)
-        else if (this.alarmType === '608000') this.accessRateData.push(v.vehicleOfflineMoveNum)
+        if (this.alarmType === 'T101001') this.accessRateData.push(v.fatigueDrivingNum)
+        else if (this.alarmType === 'T101006') this.accessRateData.push(v.driverDetectionFunctionNum)
+        else if (this.alarmType === 'T101005') this.accessRateData.push(v.smokingNum)
+        else if (this.alarmType === 'T101004') this.accessRateData.push(v.driverNotNum)
+        else if (this.alarmType === 'T101003') this.accessRateData.push(v.noVisualLongTimeNum)
+        else if (this.alarmType === 'T101002') this.accessRateData.push(v.answerPhoneNum)
         v.alarmTypes.forEach(item => {
-          this.legendData.push(item.vehicleTypeName)
+          this.legendData.push(vehicleTypeMap[item.vehicleType])
         })
       })
       this.legendData = Array.from(new Set(this.legendData))
@@ -394,46 +446,23 @@ export default {
             }
           }
         })
-        // vehicleCountMap.set(v, {
-        //   name: v,
-        //   type: 'bar',
-        //   stack: '入网',
-        //   data: [],
-        //   itemStyle: {
-        //     normal: {
-        //       color: colorList[index]
-        //     }
-        //   }
-        // })
-        // networkAccessRateMap.set(v, [])
       })
 
       data.forEach((v, index) => {
         v.alarmTypes.forEach(item => {
           // vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
-          if (this.alarmType === '601000') {
-            allVehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleOverSpeedNum)
-          } else if (this.alarmType === '608000') allVehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleOfflineMoveNum)
+          if (this.alarmType === 'T101001') {
+            allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item.fatigueDrivingNum)
+          } else if (this.alarmType === 'T101006') allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item.driverDetectionFunctionNum)
+          else if (this.alarmType === 'T101005') allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item.smokingNum)
+          else if (this.alarmType === 'T101004') allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item.driverNotNum)
+          else if (this.alarmType === 'T101003') allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item.noVisualLongTimeNum)
+          else if (this.alarmType === 'T101002') allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item.answerPhoneNum)
           // networkAccessRateMap.get(item.vehicleTypeName).push(item.networkAccessRate * 100 + '%')
         })
         this.legendData.forEach((item, index1) => {
           allVehicleCountMap.get(item).data.length < index + 1 ? allVehicleCountMap.get(item).data.push(0) : ''
         })
-        // for (const value of vehicleCountMap.values()) {
-        //   if (value.data.length < index + 1) {
-        //     value.data.push(0)
-        //   }
-        // }
-        // for (const value of allVehicleCountMap.values()) {
-        //   if (value.data.length < index + 1) {
-        //     value.data.push(0)
-        //   }
-        // }
-        // for (const value of networkAccessRateMap.values()) {
-        //   if (value.length < index + 1) {
-        //     value.push('')
-        //   }
-        // }
       })
 
       this.twoLevelColums = [...allVehicleCountMap.keys()]
@@ -442,8 +471,8 @@ export default {
     },
     getMaxYdata(data) {
       data.forEach(item => {
-        if (item.vehicleOverSpeedNum > this.ymax) {
-          this.ymax = item.vehicleOverSpeedNum
+        if (item.fatigueDrivingNum > this.ymax) {
+          this.ymax = item.fatigueDrivingNum
         }
       })
       let num = '1'
@@ -465,32 +494,58 @@ export default {
       alarmsVehicleSystem({ ...this.searchQuery })
         .then(res => {
           const { data } = res
-          console.log(data, 'data')
           this.getAllVehicleType(data.alarmTypeDtos)
           this.getBarChartData(data.alarmDtos)
           this.getMaxYdata(data.alarmDtos)
+          const vehicleTypeMap = JSON.parse(localStorage.getItem('onlineOption'))['vehicle_type_code'].map
           data.alarmDtos.forEach(item => {
             item.alarmTypes.forEach(v => {
-              const filed = this.allVehicleTypeNames.get(v.vehicleTypeName)
-              if (this.alarmType === '601000') item[filed] = v.vehicleOverSpeedNum
-              else if (this.alarmType === '608000') item[filed] = v.vehicleOfflineMoveNum
+              const filed = this.allVehicleTypeNames.get(vehicleTypeMap[v.vehicleType])
+              if (this.alarmType === 'T101001') item[filed] = v.fatigueDrivingNum
+              else if (this.alarmType === 'T101006') item[filed] = v.driverDetectionFunctionNum
+              else if (this.alarmType === 'T101005') item[filed] = v.smokingNum
+              else if (this.alarmType === 'T101004') item[filed] = v.driverNotNum
+              else if (this.alarmType === 'T101003') item[filed] = v.noVisualLongTimeNum
+              else if (this.alarmType === 'T101002') item[filed] = v.answerPhoneNum
             })
           })
           this.tableData = data.alarmDtos
 
           // 合计
           let sum
-          if (this.alarmType === '601000') sum = 'vehicleOverSpeedNum'
-          else if (this.alarmType === '608000') sum = 'vehicleOfflineMoveNum'
           const sumObj = { zoneName: '合计' }
-          sumObj[sum] = this.alarmType === '601000' ? data.totalVehicleOverSpeedNum : data.totalVehicleOfflineMoveNum
+
+          if (this.alarmType === 'T101001') {
+            sum = 'fatigueDrivingNum'
+            sumObj[sum] = data.totalFatigueDrivingNum
+          } else if (this.alarmType === 'T101006') {
+            sum = 'driverDetectionFunctionNum'
+            sumObj[sum] = data.totalDriverDetectionFunctionNum
+          } else if (this.alarmType === 'T101005') {
+            sum = 'smokingNum'
+            sumObj[sum] = data.totalSmokingNum
+          } else if (this.alarmType === 'T101004') {
+            sum = 'driverNotNum'
+            sumObj[sum] = data.totalDriverNotNum
+          } else if (this.alarmType === 'T101003') {
+            sum = 'noVisualLongTimeNum'
+            sumObj[sum] = data.totalNoVisualLongTimeNum
+          } else if (this.alarmType === 'T101002') {
+            sum = 'answerPhoneNum'
+            sumObj[sum] = data.totalAnswerPhoneNum
+          }
+
+          // sumObj[sum] = this.alarmType === '601000' ? data.totalVehicleOverSpeedNum : data.totalVehicleOfflineMoveNum
+          console.log(this.twoLevelColums, this.allVehicleTypeNames, 'this.twoLevelColums')
           this.twoLevelColums.forEach(v => {
             data.alarmTypeDtos.forEach(item => {
-              if (item.vehicleTypeName === v) {
-                if (this.alarmType === '601000') sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOverSpeedNum
-                else if (this.alarmType === '608000') sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOfflineMoveNum
-                // ? sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOverSpeedNum
-                // : sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOfflineMoveNum
+              if (vehicleTypeMap[item.vehicleType] === v) {
+                if (this.alarmType === 'T101001') sumObj[this.allVehicleTypeNames.get(v)] = item.fatigueDrivingNum
+                else if (this.alarmType === 'T101006') sumObj[this.allVehicleTypeNames.get(v)] = item.driverDetectionFunctionNum
+                else if (this.alarmType === 'T101005') sumObj[this.allVehicleTypeNames.get(v)] = item.smokingNum
+                else if (this.alarmType === 'T101004') sumObj[this.allVehicleTypeNames.get(v)] = item.driverNotNum
+                else if (this.alarmType === 'T101003') sumObj[this.allVehicleTypeNames.get(v)] = item.noVisualLongTimeNum
+                else if (this.alarmType === 'T101002') sumObj[this.allVehicleTypeNames.get(v)] = item.answerPhoneNum
               }
             })
           })
@@ -503,12 +558,13 @@ export default {
     getAllVehicleType(types) {
       const chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz'
       const maxLen = chars.length
+      const vehicleTypeMap = JSON.parse(localStorage.getItem('onlineOption'))['vehicle_type_code'].map
       types.forEach(item => {
         let typeFiled = ''
         for (let i = 0; i < 4; i++) {
           typeFiled += chars.charAt(Math.floor(Math.random() * maxLen))
         }
-        this.allVehicleTypeNames.set(item.vehicleTypeName, typeFiled)
+        this.allVehicleTypeNames.set(vehicleTypeMap[item.vehicleType], typeFiled)
       })
     }
   }
