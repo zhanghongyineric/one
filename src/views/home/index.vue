@@ -252,6 +252,7 @@
 </template>
 
 <script>
+const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 import {
   companyNumber,
   serviceNumber,
@@ -387,8 +388,8 @@ export default {
       alarmEvent()
         .then(res => {
           this.eventList = res.data
-          const onlineOptions = JSON.parse(localStorage.getItem('onlineOption'))['车牌颜色编码'].map
-          this.eventList.forEach(item => { item.plateColor = onlineOptions[item.plateColor] })
+          const colorMap = onlineOption['车牌颜色编码'].map
+          this.eventList.forEach(item => { item.plateColor = colorMap[item.plateColor] })
         })
         .catch(err => {
           throw err
@@ -551,6 +552,12 @@ export default {
       }).then(res => {
         const { data } = res
         this.carList = data
+        const colorMap = onlineOption['车牌颜色编码'].map
+        const vehicleMap = onlineOption['vehicle_type_code'].map
+        this.carList.forEach(item => {
+          item.plateColor = colorMap[item.plateColor]
+          item.vehicleType = vehicleMap[item.vehicleType]
+        })
       })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -582,10 +589,11 @@ export default {
       })
         .then(res => {
           const { data } = res
+          const vehicleMap = onlineOption['vehicle_type_code'].map
           data.forEach(item => {
             this.carChartData.push({
               value: item.count,
-              name: item.vehicleType
+              name: vehicleMap[item.vehicleType]
             })
           })
         })
