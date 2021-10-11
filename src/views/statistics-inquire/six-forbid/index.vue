@@ -25,10 +25,10 @@
                 @change="search"
               >
                 <el-option
-                  v-for="{value,label} in alarmsType"
-                  :key="value"
-                  :value="value"
-                  :label="label"
+                  v-for="{cbArmType,cbArmName} in alarmsType"
+                  :key="cbArmType"
+                  :value="cbArmType"
+                  :label="cbArmName"
                 />
               </el-select>
             </el-form-item>
@@ -96,12 +96,6 @@
         >
           <el-table-column label="地区" align="center" prop="zoneName" min-width="110" fixed />
           <el-table-column :label="tableLabel + '总次数（次）'" align="center" :prop="tableProp" min-width="170" />
-          <!-- <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" min-width="160" />
-          <el-table-column label="总入网率" align="center" prop="networkAccessRate">
-            <template v-slot="{row}">
-              <span>{{ row.networkAccessRate | networkAccessRateFilter }}</span>
-            </template>
-          </el-table-column> -->
           <el-table-column
             v-for="item in twoLevelColums"
             :key="item"
@@ -109,8 +103,6 @@
             align="center"
           >
             <el-table-column :label="tableLabel + '次数（次）'" :prop="allVehicleTypeNames.get(item)" min-width="170" align="center" />
-            <!-- <el-table-column label="入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'count'" min-width="160" align="center" />
-            <el-table-column label="总入网率" :prop="allVehicleTypeNames.get(item) + 'rate'" align="center" /> -->
           </el-table-column>
         </el-table>
       </div>
@@ -144,6 +136,9 @@ import {
   sectorStatistics
 } from '@/api/statistics-inquire/six-forbid'
 
+// 车辆类型字典
+const vehicleTypeMap = JSON.parse(localStorage.getItem('onlineOption'))['vehicle_type_code'].map
+
 export default {
   name: 'SixForbid',
   components: { lineMixBar, FunnelChart, PieChart, LineChart },
@@ -154,7 +149,7 @@ export default {
   },
   data() {
     return {
-      alarmType: '681001',
+      alarmType: '',
       tableData: [],
       listQuery: {
         pageNum: 1,
@@ -162,10 +157,10 @@ export default {
       },
       searchQuery: {
         unitId: '800',
-        startTime: '202101',
-        endTime: '202109'
+        startTime: '',
+        endTime: ''
       },
-      time: ['202101', '202109'],
+      time: ['', ''],
       alarmsType: [],
       areaOptions: [],
       areaProps: {
@@ -196,9 +191,12 @@ export default {
 
       twoLevelColums: [],
       allVehicleTypeNames: new Map(),
+
       trendYear: '2021',
 
       alarmsTypeMap: new Map(),
+      alarmsTypeToNameMap: new Map(),
+      typeFiled: '',
       tableLabel: '',
       tableProp: '',
       tableWidth: 'width:55%;'
@@ -206,32 +204,36 @@ export default {
   },
   watch: {
     alarmType() {
-      // this.alarmType === '601000' ? this.tableLabel = '普通超速报警' : '离线位移报警'
-      if (this.alarmType === '681001') {
-        this.tableLabel = '白天高速大于20%报警'
-        this.tableProp = 'sumAlarmCount'
-      } else if (this.alarmType === '684000') {
-        this.tableLabel = '疲劳驾驶报警'
-        this.tableProp = 'tiredNum'
-      } else {
-        this.tableProp = null
-      }
+      this.tableProp = this.alarmsTypeToNameMap.get(this.alarmType)
+      this.tableLabel = this.alarmsTypeMap.get(this.alarmType)
       this.tableWidth = 'width:55.5%;'
       setTimeout(() => {
         this.tableWidth = 'width:55%'
       })
+      this.typeFiled = this.alarmsTypeToNameMap.get(this.alarmType)
     }
   },
   created() {
-    this.getAlarmsVehicleType()
-    this.getVehicleData()
-    this.getAreaCode()
+    this.getDate()
   },
   mounted() {
-    const currentDate = new Date()
-    this.trendYear = currentDate.getFullYear().toString()
+    this.getAlarmsVehicleType()
   },
   methods: {
+    getDate() {
+      const currentDate = new Date()
+      this.trendYear = currentDate.getFullYear().toString()
+      let month = currentDate.getMonth() + 1
+      month = month < 10 ? `0${month}` : `${month}`
+      this.time[0] = this.trendYear + '01'
+      this.time[1] = this.trendYear + month
+      this.searchQuery.startTime = this.time[0]
+      this.searchQuery.endTime = this.time[1]
+      setTimeout(() => {
+        this.getAreaCode()
+        this.getVehicleData()
+      })
+    },
     getTableData(data, allVehicle, vehicle, netRate) {
       const dataTemp = data
       const keys = [...allVehicle.keys()]
@@ -256,19 +258,18 @@ export default {
       sixStrictlyProhibitViolationType()
         .then((res) => {
           const { data } = res
-          // this.alarmType = '681001'
-          console.log(this.alarmType, 'alarmType')
-          this.alarmsType = data
+          const { cbArmType, cbArmName } = data[0]
           data.forEach(v => {
-            this.alarmsTypeMap.set(v.value, v.label)
+            v.fieldName = v.fieldName.replace(/\_(\w)/g, (_, text) => (text.toUpperCase()))
+            this.alarmsTypeMap.set(v.cbArmType, v.cbArmName)
+            this.alarmsTypeToNameMap.set(v.cbArmType, v.fieldName)
           })
-          const type = this.alarmsTypeMap.get(this.alarmType)
-          console.log(type, 'type')
-          console.log(this.alarmsTypeMap, 'alarmsTypeMap')
-          this.yname = type + '次数'
-          this.yLineName = type + '总次数'
-          this.pieTitle = type + '次数占比：'
-          this.funnelTitle = type + '次数占比：'
+          this.alarmsType = data
+          this.alarmType = cbArmType
+          this.yname = cbArmName + '次数'
+          this.yLineName = cbArmName + '总次数'
+          this.pieTitle = cbArmName + '次数占比：'
+          this.funnelTitle = cbArmName + '次数占比：'
           this.getSectorStatistics()
           this.getVehicleTrends()
         })
@@ -284,29 +285,17 @@ export default {
         unitId: this.searchQuery.unitId
       })
         .then(res => {
-          const { data } = res
-          const trendData = []
+          const { data } = res; const trendData = []; const types = {}
+          for (const v of this.alarmsTypeToNameMap.values()) { types[v] = 0 }
           for (let i = 1; i <= 12; i++) {
             let index
-            if (i < 10) index = `0${i}`
-            else index = i
+            i < 10 ? index = `0${i}` : index = i
             data.forEach(item => {
-              if (item.alarmDate === this.trendYear + index) {
-                trendData.push(item)
-              }
+              if (item.alarmDate === this.trendYear + index) trendData.push(item)
             })
-            if (!trendData[i - 1]) {
-              trendData.push({
-                alarmDate: `${this.trendYear}${index}`,
-                sumAlarmCount: 0,
-                tiredNum: 0
-              })
-            }
+            if (!trendData[i - 1]) trendData.push({ alarmDate: `${this.trendYear}${index}`, ...types })
           }
-          trendData.forEach(item => {
-            if (this.alarmType === '681001') this.lineChartData.push(item.sumAlarmCount)
-            else if (this.alarmType === '684000') this.lineChartData.push(item.tiredNum)
-          })
+          trendData.forEach(item => { this.lineChartData.push(item[this.typeFiled] || 0) })
         })
         .catch(err => {
           throw err
@@ -325,7 +314,6 @@ export default {
       this.yLineName = type + '总次数'
       this.pieTitle = type + '次数占比：'
       this.funnelTitle = type + '次数占比：'
-      // this.barChartData = []
     },
     getSectorStatistics() {
       this.pieChartData = []
@@ -335,21 +323,13 @@ export default {
         .then(res => {
           const { data } = res
           let sum = 0
+          data.forEach(v => { sum += v[this.typeFiled] })
           data.forEach(v => {
-            if (this.alarmType === '681001') {
-              sum += v.sumAlarmCount
-            } else if (this.alarmType === '684000') {
-              sum += v.tiredNum
-            }
-          })
-          data.forEach(v => {
-            if (this.alarmType === '681001') {
-              this.pieChartData.push({ value: v.sumAlarmCount, name: v.vehicleTypeName })
-              this.funnelChartData.push({ value: Math.ceil(v.sumAlarmCount / sum * 100), name: v.vehicleTypeName })
-            } else if (this.alarmType === '684000') {
-              this.pieChartData.push({ value: v.tiredNum, name: v.vehicleTypeName })
-              this.funnelChartData.push({ value: Math.ceil(v.tiredNum / sum * 100), name: v.vehicleTypeName })
-            }
+            this.pieChartData.push({ value: v[this.typeFiled], name: vehicleTypeMap[v.vehicleType] })
+            this.funnelChartData.push({
+              value: Math.ceil(v[this.typeFiled] === 0 ? '' : v[this.typeFiled] / sum * 100),
+              name: vehicleTypeMap[v.vehicleType]
+            })
           })
         })
         .catch(err => {
@@ -373,15 +353,12 @@ export default {
     // 将接口返回数据转换为echarts需要的数据格式
     getBarChartData(data) {
       const colorList = ['#91C7AE', '#339999', '#99CCFF', '#66CC99', '#EBAC4A', '#666699', '#FF99CC', '#CC9933', '#FFCC33', '#003333']
-      // const vehicleCountMap = new Map()
       const allVehicleCountMap = new Map()
-      // const networkAccessRateMap = new Map()
       data.forEach(v => {
         this.lineMixBarXData.push(v.zoneName)
-        if (this.alarmType === '681001') this.accessRateData.push(v.sumAlarmCount)
-        else if (this.alarmType === '684000') this.accessRateData.push(v.tiredNum)
+        this.accessRateData.push(v[this.typeFiled])
         v.sixStopVehicleTypeDtos.forEach(item => {
-          this.legendData.push(item.vehicleTypeName)
+          this.legendData.push(vehicleTypeMap[item.vehicleType])
         })
       })
       this.legendData = Array.from(new Set(this.legendData))
@@ -397,57 +374,23 @@ export default {
             }
           }
         })
-        // vehicleCountMap.set(v, {
-        //   name: v,
-        //   type: 'bar',
-        //   stack: '入网',
-        //   data: [],
-        //   itemStyle: {
-        //     normal: {
-        //       color: colorList[index]
-        //     }
-        //   }
-        // })
-        // networkAccessRateMap.set(v, [])
       })
 
       data.forEach((v, index) => {
         v.sixStopVehicleTypeDtos.forEach(item => {
-          // vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
-          if (this.alarmType === '681001') {
-            allVehicleCountMap.get(item.vehicleTypeName).data.push(item.sumAlarmCount)
-          } else if (this.alarmType === '684000') allVehicleCountMap.get(item.vehicleTypeName).data.push(item.tiredNum)
-          // networkAccessRateMap.get(item.vehicleTypeName).push(item.networkAccessRate * 100 + '%')
+          allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item[this.typeFiled])
         })
         this.legendData.forEach((item, index1) => {
           allVehicleCountMap.get(item).data.length < index + 1 ? allVehicleCountMap.get(item).data.push(0) : ''
         })
-        // for (const value of vehicleCountMap.values()) {
-        //   if (value.data.length < index + 1) {
-        //     value.data.push(0)
-        //   }
-        // }
-        // for (const value of allVehicleCountMap.values()) {
-        //   if (value.data.length < index + 1) {
-        //     value.data.push(0)
-        //   }
-        // }
-        // for (const value of networkAccessRateMap.values()) {
-        //   if (value.length < index + 1) {
-        //     value.push('')
-        //   }
-        // }
       })
 
       this.twoLevelColums = [...allVehicleCountMap.keys()]
       this.barChartData = [...allVehicleCountMap.values()]
-      // this.getTableData(data, allVehicleCountMap, vehicleCountMap, networkAccessRateMap)
     },
     getMaxYdata(data) {
       data.forEach(item => {
-        if (item.sumAlarmCount > this.ymax) {
-          this.ymax = item.sumAlarmCount
-        }
+        item[this.typeFiled] > this.ymax ? this.ymax = item[this.typeFiled] : ''
       })
       let num = '1'
       for (let i = 0; i < JSON.stringify(this.ymax).length; i++) {
@@ -473,27 +416,20 @@ export default {
           this.getMaxYdata(data.sixStopVehicleDtos)
           data.sixStopVehicleDtos.forEach(item => {
             item.sixStopVehicleTypeDtos.forEach(v => {
-              const filed = this.allVehicleTypeNames.get(v.vehicleTypeName)
-              if (this.alarmType === '681001') item[filed] = v.sumAlarmCount
-              else if (this.alarmType === '684000') item[filed] = v.tiredNum
+              const filed = this.allVehicleTypeNames.get(vehicleTypeMap[v.vehicleType])
+              item[filed] = v[this.typeFiled]
             })
           })
           this.tableData = data.sixStopVehicleDtos
 
           // 合计
-          let sum
-          if (this.alarmType === '681001') sum = 'sumAlarmCount'
-          else if (this.alarmType === '684000') sum = 'tiredNum'
           const sumObj = { zoneName: '合计' }
-          sumObj[sum] = this.alarmType === '681001' ? data.totalSpeedingNum : data.totalFatigueDrivingNum
+          const sum = this.typeFiled
+          const foo = ([first, ...rest]) => first.toUpperCase() + rest.join('')
+          sumObj[sum] = data['total' + foo(this.typeFiled)]
           this.twoLevelColums.forEach(v => {
             data.sixStopVehicleTypes.forEach(item => {
-              if (item.vehicleTypeName === v) {
-                if (this.alarmType === '681001') sumObj[this.allVehicleTypeNames.get(v)] = item.sumAlarmCount
-                else if (this.alarmType === '684000') sumObj[this.allVehicleTypeNames.get(v)] = item.tiredNum
-                // ? sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOverSpeedNum
-                // : sumObj[this.allVehicleTypeNames.get(v)] = item.vehicleOfflineMoveNum
-              }
+              vehicleTypeMap[item.vehicleType] === v ? sumObj[this.allVehicleTypeNames.get(v)] = item[this.typeFiled] : ''
             })
           })
           this.tableData.push(sumObj)
@@ -510,12 +446,13 @@ export default {
         for (let i = 0; i < 4; i++) {
           typeFiled += chars.charAt(Math.floor(Math.random() * maxLen))
         }
-        this.allVehicleTypeNames.set(item.vehicleTypeName, typeFiled)
+        this.allVehicleTypeNames.set(vehicleTypeMap[item.vehicleType], typeFiled)
       })
     }
   }
 }
 </script>
+
 <style scoped lang="scss">
 .container {
   width: 100%;
