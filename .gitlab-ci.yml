@@ -1,0 +1,15 @@
+image: sonarsource/sonar-scanner-cli:latest
+variables:
+  SONAR_HOST_URL: "http://192.168.0.54:9000"
+sonarqube-check:
+  script:
+    - sonar-scanner -X
+        -Dsonar.qualitygate.wait=true
+        -Dsonar.projectKey=mingya-web-ma
+        -Dsonar.projectName=mingya-web-ma
+        -Dsonar.projectVersion=1.0
+        -Dsonar.sources=./
+        -Dsonar.java.binaries=./
+  allow_failure: true
+  only:
+    - master
