@@ -394,7 +394,6 @@ export default {
   padding-left: 10px;
   padding-right: 10px;
   overflow-y: auto;
-
 }
 
 ::v-deep .el-divider--horizontal {
