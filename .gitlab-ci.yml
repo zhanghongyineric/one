@@ -5,11 +5,12 @@ sonarqube-check:
   script:
     - sonar-scanner -X
         -Dsonar.qualitygate.wait=true
-        -Dsonar.projectKey=mingya-web-ma
-        -Dsonar.projectName=mingya-web-ma
+        -Dsonar.projectKey=MingYa-Web-MA
+        -Dsonar.projectName=MingYa-Web-MA
         -Dsonar.projectVersion=1.0
         -Dsonar.sources=./
         -Dsonar.java.binaries=./
   allow_failure: true
   only:
     - master
+    - dev
