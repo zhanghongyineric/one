@@ -55,12 +55,17 @@
           :props="defaultProps"
           show-checkbox
           :highlight-current="true"
-          expand-on-click-node
+          :expand-on-click-node="false"
           node-key="unitName"
           :default-expanded-keys="searchKeys"
+          :render-content="renderContent"
           @check="checkNode"
+          @node-click="nodeClick"
         />
       </div>
+    </div>
+    <div class="video-container">
+      <video id="videoElement" muted width="200px" height="200px" />
     </div>
     <div v-show="showTable" class="close-symbol" @click="showTable = false">
       <div class="bottom-arrow" />
@@ -102,6 +107,11 @@ import {
   vehicleLocationInformation,
   selectUnitName
 } from '@/api/live-monitor/message'
+import flvjs from 'flv.js'
+
+let that
+// 车牌颜色map
+const plateColorMap = JSON.parse(localStorage.getItem('onlineOption'))['车牌颜色编码'].map
 
 export default {
   name: 'MessageMonitor',
@@ -138,7 +148,40 @@ export default {
       checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
       searchKeys: [],
-      labelArr: []
+      labelArr: [],
+
+      flvPlayer: null,
+
+      renderContent: function(h, { node, data, store }) {
+        const { unitName, plateColor, status, cameraNum } = node.data
+        const onlineStyle = 'margin-right:5px;' + (status === '1' ? 'color:#62EA93' : '')
+        const plateNumStyle = 'margin-right:20px;' + (status === '1' ? 'color:#62EA93' : '')
+        const cameraStyle = cameraNum === null ? 'display:none;' : 'margin-right:5px;color:#409EFF;'
+        if (unitName[0] === '川') {
+          return (
+            <div style='color:#ccc;'>
+              <i class='el-icon-truck' style={onlineStyle}></i>
+              <span style={plateNumStyle}>{unitName}{plateColorMap[plateColor][0]}</span>
+              <i
+                class='el-icon-video-camera-solid'
+                style={cameraStyle}
+              ></i>
+              <i
+                class='el-icon-video-camera'
+                style={cameraStyle}
+                on-click={() => that.openFlv()}
+              ></i>
+              <i class='el-icon-location' style='color:#409EFF;'></i>
+            </div>
+          )
+        } else {
+          return (
+            <div style='color:#ccc;'>
+              <span>{unitName}</span>
+            </div>
+          )
+        }
+      }
     }
   },
   watch: {
@@ -155,13 +198,43 @@ export default {
     this.getHeight()
     this.getUnitVehicle()
     this.getVehicleNumber()
+    that = this
   },
   mounted() {
     this.getmap()
     this.startInterval()
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
+    this.createFlvPlayer()
+  },
+  beforeDestroy() {
+    this.pausemix()
   },
   methods: {
+    openFlv() {
+      console.log('flv')
+    },
+    createFlvPlayer() {
+      const url = 'http://121.36.18.123:6604/3/3?AVType=1&jsession=12345678&DevIDNO=010355311770&Channel=0&Stream=1'
+      if (flvjs.isSupported()) {
+        const videoElement = document.getElementById('videoElement')
+        this.flvPlayer = flvjs.createPlayer({
+          type: 'flv',
+          isLive: true,
+          url
+        })
+
+        this.flvPlayer.attachMediaElement(videoElement)
+        this.flvPlayer.load()
+        this.flvPlayer.play()
+      }
+    },
+    pausemix() {
+      this.flvPlayer.pause()
+      this.flvPlayer.unload()
+      this.flvPlayer.detachMediaElement()
+      this.flvPlayer.destroy()
+      this.flvPlayer = null
+    },
     startInterval() {
       const timer = setInterval(() => {
         this.getVehicleNumber()
@@ -331,13 +404,20 @@ export default {
     },
     recursionTree(children) {
       children.forEach(child => {
-        if (child.children.length) {
-          this.recursionTree(child.children)
-        } else if (!child.children.length && child.vehicles) {
-          child.children = child.vehicles
-          child.children.forEach(item => {
-            item.unitName = item.plateNum
-          })
+        let { cameraNum } = child
+        const { children, terminalName } = child
+        if (children.length) {
+          this.recursionTree(children)
+        } else if (!children.length) {
+          if (cameraNum !== null) {
+            cameraNum = parseInt(cameraNum)
+            for (let i = 1; i <= cameraNum; i++) {
+              children.push({
+                unitName: `通道${i}`,
+                devIdNo: terminalName
+              })
+            }
+          }
         }
       })
     },
@@ -348,11 +428,16 @@ export default {
         }
       })
     },
+    nodeClick(data, node, mine) {
+      console.log(data, node, mine)
+    },
     getUnitVehicle() {
       this.treeLoading = true
       unitVehicle({ unitName: '' })
         .then(res => {
           const { data } = res
+          console.log(data)
+          this.getTreeDeep(data)
           this.treeData = data
           this.treeLoading = false
         })
@@ -394,6 +479,17 @@ export default {
   padding-left: 10px;
   padding-right: 10px;
   overflow-y: auto;
+}
+
+.video-container {
+  height: calc(100vh - 84px);
+  width: calc(100% - 400px);
+  background-color: #fff;
+  z-index: 99;
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: none;
 }
 
 ::v-deep .el-divider--horizontal {

@@ -1,5 +1,5 @@
 import createRequest from '@/utils/createRequest'
-const request = createRequest('/monitor/message')
+const request = createRequest('/monitor/message', 60000)
 
 // 输入关键字 返回车牌
 export function selectPlateNum(data) {
