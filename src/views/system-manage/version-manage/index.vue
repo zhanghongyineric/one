@@ -4,35 +4,11 @@
       <div class="table-page-search-wrapper">
         <el-form :model="listQuery" label-width="80px" size="small">
           <el-row :gutter="48">
-            <!-- <el-col :md="8" :sm="24">
-              <el-form-item label="版本号:">
-                <el-input v-model="listQuery.number" placeholder="请输入版本号" @keyup.enter.native="handleSearch" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="所属系统:">
-                <el-select
-                  v-model="listQuery.port"
-                  placeholder="请选择所属系统"
-                >
-                  <el-option
-                    v-for="{label,value} in sysOptions"
-                    :key="label"
-                    :label="value"
-                    :value="label"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col> -->
             <el-col :md="8" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
-              >
-                <!-- <el-button size="small" @click="resetQuery">重置</el-button> -->
-                <!-- <el-button type="primary" size="small" @click="getTableData">查询</el-button> -->
-                <!-- <el-button type="primary" size="small" @click="openDialog">新增</el-button> -->
-              </div>
+              />
             </el-col>
           </el-row>
         </el-form>
@@ -45,50 +21,30 @@
         highlight-current-row
         style="width: 100%;"
       >
-        <el-table-column label="版本号" prop="number" width="130px" />
-        <el-table-column label="所属系统" prop="port" width="200px">
+        <el-table-column label="版本号" prop="number" width="130px" align="center" />
+        <el-table-column label="所属系统" prop="port" min-width="200px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.port | portFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="版本描述" prop="content" show-overflow-tooltip />
-        <!-- <el-table-column label="状态" prop="status" width="100px">
+        <el-table-column label="更新时间" prop="updateTime" min-width="200px" align="center" show-overflow-tooltip />
+        <el-table-column label="操作" align="center" width="180px" fixed="right">
           <template slot-scope="scope">
-            <span v-if="scope.row.status === '1'" style="color:green">启用</span>
-            <span v-else style="color:red">禁用</span>
-          </template>
-        </el-table-column> -->
-        <el-table-column label="操作" align="center" width="120px" fixed="right">
-          <template slot-scope="scope">
-            <!-- <el-button
-              size="mini"
-              type="primary"
-              @click="handlePush(scope.row)"
-            >发布
-            </el-button> -->
             <el-button
               size="mini"
               type="warning"
               @click="handleUpdate(scope.row)"
             >修改
             </el-button>
-            <!-- <el-button
+            <el-button
               size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-            >删除
-            </el-button> -->
+              type="primary"
+              @click="handleDetail(scope.row)"
+            >详情
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <!-- <Pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="listQuery.pageNum"
-        :limit.sync="listQuery.pageSize"
-        @pagination="getTableData"
-      /> -->
 
       <el-dialog
         :title="titles[type]"
@@ -149,22 +105,6 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <!-- <el-col v-if="type === 'update'" :span="24">
-              <el-form-item label="状态:" prop="status">
-                <el-select
-                  v-model="formData.status"
-                  placeholder="请选择状态"
-                  size="small"
-                >
-                  <el-option
-                    v-for="{label,value} in statusOptions"
-                    :key="value"
-                    :label="label"
-                    :value="value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col> -->
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -175,6 +115,15 @@
             确认
           </el-button>
         </div>
+      </el-dialog>
+      <el-dialog
+        title="详情"
+        :visible.sync="detailVisible"
+        :before-close="closeDialog"
+        :close-on-click-modal="false"
+        top="50px"
+      >
+        <div id="detail-content" />
       </el-dialog>
     </el-card>
   </div>
@@ -217,6 +166,7 @@ export default {
       sysOptions: [],
       total: 0,
       visible: false,
+      detailVisible: false,
       formData: {},
       statusOptions: [
         {
@@ -252,6 +202,7 @@ export default {
   methods: {
     closeDialog() {
       this.visible = false
+      this.detailVisible = false
       this.formData = {}
     },
     getTableData() {
@@ -369,6 +320,12 @@ export default {
       this.visible = true
       this.formData = { ...row }
       this.currentRow = row
+    },
+    handleDetail(row) {
+      this.detailVisible = true
+      this.$nextTick(() => {
+        document.getElementById('detail-content').innerHTML = row.content
+      })
     },
     resetQuery() {
       this.listQuery = {

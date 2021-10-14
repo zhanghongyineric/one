@@ -43,11 +43,6 @@ const baseRouter = [
     path: '/nopermission',
     component: () => import('@/views/error-page/noPermission'),
     hidden: true
-  },
-  {
-    path: '/HistoryVersions',
-    component: () => import('@/views/system-manage/version-manage/history-versions'),
-    hidden: true
   }
 ]
 
