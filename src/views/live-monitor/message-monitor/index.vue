@@ -173,14 +173,14 @@ export default {
               <i class='el-icon-truck' style={onlineStyle}></i>
               <span style={plateNumStyle}>{unitName}{plateColorMap[plateColor][0]}</span>
               <i
+                class='el-icon-video-camera'
+                style={cameraStyle}
+                on-click={() => that.openIfram(terminalName, status)}
+              ></i>
+              <i
                 class='el-icon-video-camera-solid'
                 style={cameraStyle}
                 on-click={() => that.toHistory()}
-              ></i>
-              <i
-                class='el-icon-video-camera'
-                style={cameraStyle}
-                on-click={() => that.openIfram(terminalName)}
               ></i>
               <i
                 class='el-icon-location'
@@ -224,19 +224,30 @@ export default {
     this.pausemix()
   },
   methods: {
-    openIfram(id) {
-      const devNo = id
-      this.videoSrc = `http://121.36.18.123/808gps/open/player/video.html?lang=zh&devIdno=${devNo}&account=myyfb&password=myyfb123`
-      this.showVideo = true
+    openIfram(id, status) {
+      if (status !== '1') {
+        this.$message({
+          type: 'warning',
+          message: '该设备当前不在线，无法查看视频！'
+        })
+      } else {
+        const devNo = id
+        this.videoSrc = `http://121.36.18.123/808gps/open/player/video.html?lang=zh&devIdno=${devNo}&account=myyfb&password=myyfb123`
+        this.showVideo = true
+      }
     },
     closeIframe() {
       this.videoSrc = ''
       this.showVideo = false
     },
-    getLocation(node) {
-      this.nodeList.push(node)
-      this.$refs.unitTree.setChecked(node, true)
-      this.checkNode()
+    getLocation(data) {
+      this.$router.push({
+        path: '/live-monitor/historical-trajectory',
+        query: { plateNum: data.unitName }
+      })
+      // this.nodeList.push(node)
+      // this.$refs.unitTree.setChecked(node, true)
+      // this.checkNode()
     },
     toHistory() {
       this.$router.push('/live-monitor/historical-video')

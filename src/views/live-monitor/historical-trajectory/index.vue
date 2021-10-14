@@ -161,6 +161,9 @@ export default {
     this.topic = this.token + '/private/' + Date.parse(new Date())
   },
   mounted() {
+    if (this.$route.query) {
+      this.searchFormData.plateNum = this.$route.query.plateNum
+    }
     this.getmap([30.572903, 104.06632])
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
