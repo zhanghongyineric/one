@@ -322,9 +322,11 @@ export default {
     },
     setMarkers() {
       this.map.clearMap()
+      const centerLng = this.markers[this.markers.length - 1].position[0]
+      const centerLat = this.markers[this.markers.length - 1].position[1]
       this.map = new AMap.Map('container', {
         resizeEnable: true,
-        center: [104.06632, 30.572903],
+        center: [centerLng, centerLat],
         zoom: 12,
         mapStyle: 'amap://styles/grey'
       })
@@ -336,7 +338,7 @@ export default {
           offset: new AMap.Pixel(-13, -30)
         })
       })
-      this.map.setFitView()
+      // this.map.setFitView()
       this.containerLoading = false
     },
     async searchSuggestions(queryString, cb) {
@@ -458,7 +460,7 @@ export default {
       this.map = new AMap.Map('container', {
         resizeEnable: true,
         center: [104.06632, 30.572903],
-        zoom: 12,
+        zoom: 10,
         mapStyle: 'amap://styles/grey'
       })
       this.map.setFitView()
