@@ -324,7 +324,9 @@ export default {
     handleDetail(row) {
       this.detailVisible = true
       this.$nextTick(() => {
-        document.getElementById('detail-content').innerHTML = row.content
+        const { content, historyContent } = row
+        document.getElementById('detail-content').innerHTML =
+        historyContent ? content + historyContent : content
       })
     },
     resetQuery() {
