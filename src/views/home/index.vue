@@ -396,12 +396,13 @@ export default {
         })
     },
     intervalOnlineCars() {
-      const timer = window.setInterval(() => {
+      let timer = window.setInterval(() => {
         this.getOnlineVehicle()
         this.getAlarmEvent()
       }, 30000)
       this.$once('hook:deactivated', () => {
         clearInterval(timer)
+        timer = null
       })
       this.$once('hook:activated', () => {
         this.intervalOnlineCars()

@@ -60,12 +60,18 @@
           :default-expanded-keys="searchKeys"
           :render-content="renderContent"
           @check="checkNode"
-          @node-click="nodeClick"
         />
       </div>
     </div>
-    <div class="video-container">
-      <video id="videoElement" muted width="200px" height="200px" />
+    <div v-if="showVideo" id="videoContainer" class="video-container">
+      <i class="el-icon-close iframe-close" @click="closeIframe" />
+      <iframe
+        id="videoIframe"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        :src="videoSrc"
+      />
     </div>
     <div v-show="showTable" class="close-symbol" @click="showTable = false">
       <div class="bottom-arrow" />
@@ -107,7 +113,7 @@ import {
   vehicleLocationInformation,
   selectUnitName
 } from '@/api/live-monitor/message'
-import flvjs from 'flv.js'
+// import flvjs from 'flv.js'
 
 let that
 // 车牌颜色map
@@ -149,11 +155,15 @@ export default {
       markers: [], // 所有标记点位置
       searchKeys: [],
       labelArr: [],
+      videoSrc: '',
+
+      showVideo: false,
 
       flvPlayer: null,
+      nodeList: [],
 
       renderContent: function(h, { node, data, store }) {
-        const { unitName, plateColor, status, cameraNum } = node.data
+        const { unitName, plateColor, status, cameraNum, terminalName } = node.data
         const onlineStyle = 'margin-right:5px;' + (status === '1' ? 'color:#62EA93' : '')
         const plateNumStyle = 'margin-right:20px;' + (status === '1' ? 'color:#62EA93' : '')
         const cameraStyle = cameraNum === null ? 'display:none;' : 'margin-right:5px;color:#409EFF;'
@@ -165,13 +175,18 @@ export default {
               <i
                 class='el-icon-video-camera-solid'
                 style={cameraStyle}
+                on-click={() => that.toHistory()}
               ></i>
               <i
                 class='el-icon-video-camera'
                 style={cameraStyle}
-                on-click={() => that.openFlv()}
+                on-click={() => that.openIfram(terminalName)}
               ></i>
-              <i class='el-icon-location' style='color:#409EFF;'></i>
+              <i
+                class='el-icon-location'
+                style='color:#409EFF;'
+                on-click={() => that.getLocation(node.data)}
+              ></i>
             </div>
           )
         } else {
@@ -204,43 +219,35 @@ export default {
     this.getmap()
     this.startInterval()
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
-    this.createFlvPlayer()
   },
   beforeDestroy() {
     this.pausemix()
   },
   methods: {
-    openFlv() {
-      console.log('flv')
+    openIfram(id) {
+      const devNo = id
+      this.videoSrc = `http://121.36.18.123/808gps/open/player/video.html?lang=zh&devIdno=${devNo}&account=myyfb&password=myyfb123`
+      this.showVideo = true
     },
-    createFlvPlayer() {
-      const url = 'http://121.36.18.123:6604/3/3?AVType=1&jsession=12345678&DevIDNO=010355311770&Channel=0&Stream=1'
-      if (flvjs.isSupported()) {
-        const videoElement = document.getElementById('videoElement')
-        this.flvPlayer = flvjs.createPlayer({
-          type: 'flv',
-          isLive: true,
-          url
-        })
-
-        this.flvPlayer.attachMediaElement(videoElement)
-        this.flvPlayer.load()
-        this.flvPlayer.play()
-      }
+    closeIframe() {
+      this.videoSrc = ''
+      this.showVideo = false
     },
-    pausemix() {
-      this.flvPlayer.pause()
-      this.flvPlayer.unload()
-      this.flvPlayer.detachMediaElement()
-      this.flvPlayer.destroy()
-      this.flvPlayer = null
+    getLocation(node) {
+      this.nodeList.push(node)
+      this.$refs.unitTree.setChecked(node, true)
+      this.checkNode()
+    },
+    toHistory() {
+      this.$router.push('/live-monitor/historical-video')
     },
     startInterval() {
-      const timer = setInterval(() => {
+      let timer = setInterval(() => {
         this.getVehicleNumber()
       }, 30000)
       this.$once('hook:deactivated', () => {
         clearInterval(timer)
+        timer = null
       })
       this.$once('hook:activated', () => {
         this.startInterval()
@@ -270,7 +277,7 @@ export default {
             geocoder = new AMap.Geocoder({ city: '' })
           })
           data.forEach(item => {
-            lnglat = [item.latitude, item.longitude]
+            lnglat = [item.longitude, item.latitude]
             this.markers.push({
               icon: 'https://webapi.amap.com/images/car.png',
               position: lnglat
@@ -286,6 +293,7 @@ export default {
           }, 500)
         })
         .catch(err => {
+          this.containerLoading = false
           throw err
         })
     },
@@ -428,16 +436,12 @@ export default {
         }
       })
     },
-    nodeClick(data, node, mine) {
-      console.log(data, node, mine)
-    },
     getUnitVehicle() {
       this.treeLoading = true
       unitVehicle({ unitName: '' })
         .then(res => {
           const { data } = res
-          console.log(data)
-          this.getTreeDeep(data)
+          // this.getTreeDeep(data)
           this.treeData = data
           this.treeLoading = false
         })
@@ -489,7 +493,6 @@ export default {
   position: absolute;
   right: 0;
   top: 0;
-  display: none;
 }
 
 ::v-deep .el-divider--horizontal {
@@ -711,5 +714,15 @@ export default {
   position: relative;
   top: 30px;
   left: 10px;
+}
+
+.iframe-close {
+  font-size:2.0rem;
+  color: #fff;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  background-color: #060D16;
+  cursor: pointer;
 }
 </style>
