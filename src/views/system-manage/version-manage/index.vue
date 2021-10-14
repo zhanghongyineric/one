@@ -68,6 +68,7 @@
                   size="small"
                   clearable
                   style="width: 200px"
+                  :disabled="disabled"
                 />
               </el-form-item>
             </el-col>
@@ -77,6 +78,7 @@
                   ref="myQuillEditor"
                   v-model="formData.content"
                   :options="editorOption"
+                  @focus="focus($event)"
                 />
               </el-form-item>
             </el-col>
@@ -86,6 +88,7 @@
                   ref="historyQuillEditor"
                   v-model="formData.historyContent"
                   :options="editorOption"
+                  @focus="focus($event)"
                 />
               </el-form-item>
             </el-col>
@@ -95,6 +98,7 @@
                   v-model="formData.port"
                   placeholder="请选择所属系统"
                   size="small"
+                  :disabled="disabled"
                 >
                   <el-option
                     v-for="{label,value} in sysOptions"
@@ -183,13 +187,14 @@ export default {
         content: [{ required: true, message: '请输入版本描述', trigger: 'blur' }],
         port: [{ required: true, message: '请选择所属系统', trigger: 'change' }]
       },
-      type: 'add',
+      type: 'update',
       titles: {
-        add: '新增',
+        detail: '详情',
         update: '修改'
       },
       currentRow: {},
-      editorOption: {}
+      editorOption: {},
+      disabled: false
     }
   },
   beforeCreate() {
@@ -200,6 +205,13 @@ export default {
     this.getTableData()
   },
   methods: {
+    // 获取焦点事件
+    focus(event) {
+      if (this.type === 'detail') {
+        this.disabled = true
+        event.enable(false) // 设置富文本编辑器不可编辑
+      }
+    },
     closeDialog() {
       this.visible = false
       this.detailVisible = false
@@ -322,12 +334,11 @@ export default {
       this.currentRow = row
     },
     handleDetail(row) {
-      this.detailVisible = true
-      this.$nextTick(() => {
-        const { content, historyContent } = row
-        document.getElementById('detail-content').innerHTML =
-        historyContent ? content + historyContent : content
-      })
+      this.type = 'detail'
+      this.visible = true
+      this.formData = { ...row }
+      this.currentRow = row
+      this.disabled = true
     },
     resetQuery() {
       this.listQuery = {
