@@ -26,3 +26,11 @@ export function enterpriseName(data) {
     data
   })
 }
+
+// 查询川报警类型
+export function alarmType() {
+  return request({
+    url: '/alarmType',
+    method: 'POST'
+  })
+}

@@ -82,6 +82,23 @@
                   />
                 </el-form-item>
               </el-col>
+
+              <el-col :md="6" :sm="24">
+                <el-form-item label="报警类型:">
+                  <el-select
+                    v-model="listQuery.alarmType"
+                    size="small"
+                    placeholder="请选择报警类型"
+                  >
+                    <el-option
+                      v-for="item in alarmTypeOptions"
+                      :key="item.cbArmType"
+                      :label="item.cbArmName"
+                      :value="item.cbArmType"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
             </template>
             <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
@@ -132,6 +149,7 @@
 
         <el-table-column prop="startTime" label="开始时间" width="220" align="center" show-overflow-tooltip />
         <el-table-column prop="endtime" label="结束时间" width="220" align="center" show-overflow-tooltip />
+        <el-table-column prop="Protime" label="持续时长" width="120" align="center" show-overflow-tooltip />
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -203,7 +221,8 @@ import axios from 'axios'
 import {
   areaCode,
   activeDefenseAlarm,
-  enterpriseName
+  enterpriseName,
+  alarmType
 } from '@/api/live-monitor/alarm-detail'
 
 let that
@@ -219,12 +238,12 @@ export default {
     },
     alarmTypeFilter(type) {
       let text = type
-      that.alarmTypeOptions[type] ? text = that.alarmTypeOptions[type] : ''
+      that.alarmTypeMap[type] ? text = that.alarmTypeMap[type] : ''
       return text
     },
     vehicleTypeFilter(type) {
       let text = type
-      that.vehicleTypeOptions[type] ? text = that.vehicleTypeOptions[type] : ''
+      that.vehicleTypeMap[type] ? text = that.vehicleTypeMap[type] : ''
       return text
     }
   },
@@ -239,7 +258,8 @@ export default {
         startTime: '',
         endTime: '',
         regionId: '',
-        time: []
+        time: [],
+        alarmType: ''
       },
       tableData: [],
       listLoading: false,
@@ -251,7 +271,9 @@ export default {
         expandTrigger: 'hover',
         checkStrictly: false
       },
+      vehicleTypeMap: null,
       vehicleTypeOptions: [],
+      alarmTypeMap: null,
       alarmTypeOptions: [],
       plateColorOptions: [],
 
@@ -292,15 +314,26 @@ export default {
     that = this
     this.getAreaCode()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
-    this.vehicleTypeOptions = onlineOption['vehicle_type_code'].map
-    this.alarmTypeOptions = onlineOption['报警类型编码'].map
+    this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
+    this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
+    this.alarmTypeMap = onlineOption['报警类型编码'].map
     this.plateColorOptions = onlineOption['车牌颜色编码'].map
     this.getDate()
   },
   mounted() {
-    // this.getList()
+    this.getAlarmType()
   },
   methods: {
+    getAlarmType() {
+      alarmType()
+        .then(res => {
+          const { data } = res
+          this.alarmTypeOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     getDate() {
       const date = new Date()
       let nowMonth = date.getMonth() + 1
@@ -358,6 +391,7 @@ export default {
         pageSize: 10,
         pageNum: 1
       }
+      this.getDate()
       this.getList()
     },
     closeDialog() {
@@ -369,8 +403,8 @@ export default {
     showDetails(row) {
       Object.assign(this.currentRow, row)
       this.currentRow.plateColor = that.plateColorOptions[parseInt(row.plateColor)]
-      this.currentRow.alarmType = that.alarmTypeOptions[parseInt(row.alarmType)] || '无'
-      this.currentRow.vehicleType = that.vehicleTypeOptions[parseInt(row.vehicleType)]
+      this.currentRow.alarmType = that.alarmTypeMap[parseInt(row.alarmType)] || '无'
+      this.currentRow.vehicleType = that.vehicleTypeMap[parseInt(row.vehicleType)]
       this.currentRow.endtime = row.endtime || '无'
       this.visible = true
       axios.get('https://www.api.gosmooth.com.cn:9123', {
