@@ -371,9 +371,9 @@ export default {
     this.getOnlineVehicle()
     this.getTrendAnalysis()
     this.getAlarmEvent()
+    this.intervalOnlineCars()
   },
   mounted() {
-    this.intervalOnlineCars()
     const etable = this.$refs.eventTable.bodyWrapper
     const ctable = this.$refs.carTable.bodyWrapper
     setInterval(() => {

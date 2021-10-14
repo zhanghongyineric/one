@@ -213,11 +213,11 @@ export default {
     this.getHeight()
     this.getUnitVehicle()
     this.getVehicleNumber()
+    this.startInterval()
     that = this
   },
   mounted() {
     this.getmap()
-    this.startInterval()
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
   },
   beforeDestroy() {
@@ -242,12 +242,12 @@ export default {
       this.$router.push('/live-monitor/historical-video')
     },
     startInterval() {
-      let timer = setInterval(() => {
+      let timer1 = window.setInterval(() => {
         this.getVehicleNumber()
       }, 30000)
       this.$once('hook:deactivated', () => {
-        clearInterval(timer)
-        timer = null
+        clearInterval(timer1)
+        timer1 = null
       })
       this.$once('hook:activated', () => {
         this.startInterval()
