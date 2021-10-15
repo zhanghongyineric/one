@@ -259,7 +259,8 @@ export default {
         endTime: '',
         regionId: '',
         time: [],
-        alarmType: ''
+        alarmType: '',
+        plateNum: ''
       },
       tableData: [],
       listLoading: false,

@@ -349,7 +349,7 @@ export default {
               data.forEach(item => {
                 const lat = item.latitude
                 const lng = item.longitude
-                this.lineArr.push([lng, lat])
+                this.lineArr.push([lat, lng])
                 let data = {}
                 lnglat = [lat, lng]
                 geocoder.getAddress(lnglat, (status, result) => {
