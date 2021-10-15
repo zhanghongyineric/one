@@ -112,9 +112,9 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: '川J6238Q',
-        startTime: '2021-10-15 00:00:00',
-        endTime: '2021-10-15 17:00:00'
+        plateNum: '',
+        startTime: '',
+        endTime: ''
       },
       loading: false,
       map: null,
