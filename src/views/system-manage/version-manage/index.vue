@@ -210,6 +210,9 @@ export default {
       if (this.type === 'detail') {
         this.disabled = true
         event.enable(false) // 设置富文本编辑器不可编辑
+      } else {
+        this.disabled = false
+        event.enable(true)
       }
     },
     closeDialog() {
@@ -324,11 +327,10 @@ export default {
           })
         })
     },
-    handleSearch() {
-
-    },
+    handleSearch() {},
     handleUpdate(row) {
       this.type = 'update'
+      this.disabled = false
       this.visible = true
       this.formData = { ...row }
       this.currentRow = row
