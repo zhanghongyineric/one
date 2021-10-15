@@ -112,9 +112,9 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: '',
-        startTime: '',
-        endTime: ''
+        plateNum: '川J6238Q',
+        startTime: '2021-10-15 00:00:00',
+        endTime: '2021-10-15 17:00:00'
       },
       loading: false,
       map: null,
@@ -351,7 +351,7 @@ export default {
                 const lng = item.longitude
                 this.lineArr.push([lat, lng])
                 let data = {}
-                lnglat = [lat, lng]
+                lnglat = [lng, lat]
                 geocoder.getAddress(lnglat, (status, result) => {
                   if (status === 'complete' && result.info === 'OK') {
                     data = {
