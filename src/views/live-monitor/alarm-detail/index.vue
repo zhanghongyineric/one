@@ -2,7 +2,7 @@
   <div class="layout-content">
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="80px">
+        <el-form :model="listQuery" label-width="110px">
           <el-row :gutter="48">
             <el-col :md="6" :sm="24">
               <el-form-item label="地区：">
@@ -84,11 +84,11 @@
               </el-col>
 
               <el-col :md="6" :sm="24">
-                <el-form-item label="报警类型:">
+                <el-form-item label="川标报警名称:">
                   <el-select
                     v-model="listQuery.alarmType"
                     size="small"
-                    placeholder="请选择报警类型"
+                    placeholder="请选择川标报警名称"
                   >
                     <el-option
                       v-for="item in alarmTypeOptions"

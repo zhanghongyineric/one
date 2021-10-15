@@ -166,7 +166,14 @@ export default {
         const { unitName, plateColor, status, cameraNum, terminalName } = node.data
         const onlineStyle = 'margin-right:5px;' + (status === '1' ? 'color:#62EA93' : '')
         const plateNumStyle = 'margin-right:20px;' + (status === '1' ? 'color:#62EA93' : '')
-        const cameraStyle = cameraNum === null ? 'display:none;' : 'margin-right:5px;color:#409EFF;'
+        let cameraStyle
+        if (cameraNum === null) {
+          cameraStyle = 'display:none;'
+        } else if (cameraNum && status === '1') {
+          cameraStyle = 'margin-right:5px;color:#409EFF;'
+        } else {
+          cameraStyle = 'margin-right:5px;color:#ccc;'
+        }
         if (unitName[0] === '川') {
           return (
             <div style='color:#ccc;'>
@@ -184,7 +191,7 @@ export default {
               ></i>
               <i
                 class='el-icon-location'
-                style='color:#409EFF;'
+                style={status === '1' ? 'color:#409EFF;' : ''}
                 on-click={() => that.getLocation(node.data)}
               ></i>
             </div>
@@ -552,6 +559,8 @@ export default {
     .text {
       font-size: 12px;
       color: #269DDD;
+      font-weight: 700;
+      letter-spacing: 1px;
     }
 }
 

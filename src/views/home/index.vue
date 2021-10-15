@@ -397,6 +397,7 @@ export default {
     },
     intervalOnlineCars() {
       let timer = window.setInterval(() => {
+        console.log('in')
         this.getOnlineVehicle()
         this.getAlarmEvent()
       }, 30000)
