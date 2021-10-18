@@ -309,6 +309,12 @@ export default {
           this.listQuery.endTime = this.listQuery.time[1]
         }
       }
+    },
+    'listQuery.unitName': {
+      deep: true,
+      handler: function(newV, oldV) {
+        if (newV === '') this.listQuery.unitId = ''
+      }
     }
   },
   created() {
@@ -468,7 +474,11 @@ export default {
     },
     getList() {
       this.listLoading = true
-      activeDefenseAlarm({ ...this.listQuery })
+      let { regionId } = this.listQuery
+      if (regionId.length === 2 || regionId.length === 1) {
+        regionId = regionId[regionId.length - 1]
+      }
+      activeDefenseAlarm({ ...this.listQuery, regionId })
         .then(({ data }) => {
           this.total = data.total
           this.tableData = data.list
