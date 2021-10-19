@@ -173,6 +173,7 @@
         :visible.sync="visible"
         top="100px"
         :before-close="closeDialog"
+        custom-class="customClass"
       >
         <div class="alarm-info">
           <span><span class="info-title">车牌号：</span>{{ currentRow.plateNum }}</span>
@@ -187,8 +188,8 @@
         </div>
         <div class="image-box">
           <span class="title-text">报警图片：</span>
-          <span v-if="alarmPhotos.length < 0">暂无图片</span>
-          <div v-else>
+
+          <div>
             <el-image
               v-for="item in alarmPhotos"
               :key="item.fs"
@@ -199,8 +200,8 @@
           </div>
         </div>
         <span class="title-text">报警视频：</span>
-        <span v-if="alarmVideos.length < 0">暂无视频</span>
-        <div v-else>
+
+        <div style="min-height:150px;">
           <div v-for="(item,index) in alarmVideos" :key="item.fs" class="alarm-videos">
             <video
               :id="'video' + index"
@@ -294,9 +295,11 @@ export default {
   },
   watch: {
     alarmPhotos(val) {
-      val.forEach(item => {
-        this.previewPhotos.push(item.downloadUrl)
-      })
+      if (val) {
+        val.forEach(item => {
+          this.previewPhotos.push(item.downloadUrl)
+        })
+      }
     },
     'listQuery.time': {
       deep: true,
@@ -395,8 +398,14 @@ export default {
     },
     resetQuery() {
       this.listQuery = {
+        pageNum: 1,
         pageSize: 10,
-        pageNum: 1
+        startTime: '',
+        endTime: '',
+        regionId: '800',
+        time: [],
+        alarmType: '',
+        plateNum: ''
       }
       this.getDate()
       this.getList()
@@ -414,7 +423,7 @@ export default {
       this.currentRow.vehicleType = that.vehicleTypeMap[parseInt(row.vehicleType)]
       this.currentRow.endtime = row.endtime || '无'
       this.visible = true
-      axios.get('https://www.api.gosmooth.com.cn:9123', {
+      axios.get('https://www.api.gosmooth.com.cn/attach', {
         params: {
           jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
           toMap: 2,
@@ -513,6 +522,7 @@ export default {
 
 .image-box {
   margin: 30px 0;
+  min-height: 150px;
 }
 
 .alarm-info {
@@ -523,6 +533,5 @@ export default {
 
 .info-title {
   font-weight: 700;
-
 }
 </style>

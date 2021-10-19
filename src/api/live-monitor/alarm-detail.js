@@ -4,7 +4,7 @@ const request = createRequest('/monitor/alarmDetails')
 // 行政区域
 export function areaCode() {
   return request({
-    url: 'areaCode',
+    url: '/areaCode',
     method: 'POST'
   })
 }
@@ -12,7 +12,7 @@ export function areaCode() {
 // 主防报警明细
 export function activeDefenseAlarm(data) {
   return request({
-    url: 'alarm',
+    url: '/alarm',
     method: 'POST',
     data
   })
@@ -21,7 +21,7 @@ export function activeDefenseAlarm(data) {
 // 输入关键字 返回企业名称
 export function enterpriseName(data) {
   return request({
-    url: 'enterpriseName',
+    url: '/enterpriseName',
     method: 'POST',
     data
   })

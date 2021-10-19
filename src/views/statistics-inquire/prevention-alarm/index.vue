@@ -266,7 +266,7 @@ export default {
         .then((res) => {
           const { data } = res
           data.forEach(v => {
-            v.fieldName = v.fieldName.replace(/\_(\w)/g, (_, text) => (text.toUpperCase()))
+            v.fieldName = v.fieldName ? v.fieldName.replace(/\_(\w)/g, (_, text) => (text.toUpperCase())) : ''
             this.alarmsTypeMap.set(v.cbArmType, v.cbArmName)
             this.alarmsTypeToNameMap.set(v.cbArmType, v.fieldName)
           })

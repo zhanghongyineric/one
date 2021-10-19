@@ -5,7 +5,7 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div v-if="role" class="right-menu">
-      <img src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
+      <img v-if="showLink" src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
       <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">政府·企业端</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">

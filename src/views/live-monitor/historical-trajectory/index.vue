@@ -164,7 +164,14 @@ export default {
     if (this.$route.query) {
       this.searchFormData.plateNum = this.$route.query.plateNum
     }
-    this.getmap([30.572903, 104.06632])
+    // this.getmap([30.572903, 104.06632])
+    this.map = new AMap.Map('container', {
+      resizeEnable: true,
+      center: [104.06632, 30.572903],
+      zoom: 12,
+      mapStyle: 'amap://styles/grey'
+    })
+    this.map.setFitView()
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
     // 连接mqtt
@@ -288,7 +295,6 @@ export default {
         // 计算轨迹播放时间
         TIME_VARIABLE = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
       }
-      this.map.setFitView()
     },
     // 开始播放
     startmove() {
@@ -364,7 +370,7 @@ export default {
                   }
                 })
               })
-              this.getmap([data[0].latitude, data[1].longitude])
+              this.getmap([data[0].longitude, data[0].latitude])
               this.setLine()
               this.loading = false
             })
@@ -376,7 +382,14 @@ export default {
       })
     },
     setLine() {
+      // this.map = new AMap.Map('container', {
+      //   resizeEnable: true,
+      //   center: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
+      //   zoom: 12,
+      //   mapStyle: 'amap://styles/grey'
+      // })
       if (this.lineArrlast.length > 0) {
+        console.log(this.map, 'this.map')
         this.marker = new AMap.Marker({
           map: this.map,
           position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
@@ -399,6 +412,7 @@ export default {
     },
     // 初始化回放路线
     initPolyline() {
+      console.log(this.map, 'line')
       this.polyline = new AMap.Polyline({
         map: this.map,
         path: this.lineArrlast,
