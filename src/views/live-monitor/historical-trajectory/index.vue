@@ -449,9 +449,9 @@ export default {
 </script>
 <style scoped lang="scss">
 .contbtn {
-  position: fixed;
-  top: 15%;
-  left: 12%;
+  position: absolute;
+  top: 3%;
+  left: 3%;
   min-height: 130px;
   min-width: 200px;
   background: #304156;

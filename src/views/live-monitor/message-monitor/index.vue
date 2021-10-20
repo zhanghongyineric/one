@@ -59,6 +59,7 @@
           node-key="unitName"
           :default-expanded-keys="searchKeys"
           :render-content="renderContent"
+          :check-on-click-node="true"
           @check="checkNode"
         />
       </div>
@@ -182,17 +183,17 @@ export default {
               <i
                 class='el-icon-video-camera'
                 style={cameraStyle}
-                on-click={() => that.openIfram(terminalName, status)}
+                on-click={(e) => that.openIfram(terminalName, status, e)}
               ></i>
               <i
                 class='el-icon-video-camera-solid'
                 style={cameraStyle}
-                on-click={() => that.toHistory()}
+                on-click={(e) => that.toHistory(e)}
               ></i>
               <i
-                class='el-icon-location'
+                class='el-icon-refresh-left'
                 style={status === '1' ? 'color:#409EFF;' : ''}
-                on-click={() => that.getLocation(node.data)}
+                on-click={(e) => that.getLocation(node.data, e)}
               ></i>
             </div>
           )
@@ -231,7 +232,7 @@ export default {
     this.pausemix()
   },
   methods: {
-    openIfram(id, status) {
+    openIfram(id, status, e) {
       if (status !== '1') {
         this.$message({
           type: 'warning',
@@ -242,22 +243,29 @@ export default {
         this.videoSrc = `http://121.36.18.123/808gps/open/player/video.html?lang=zh&devIdno=${devNo}&account=myyfb&password=myyfb123`
         this.showVideo = true
       }
+      this.stopPropagation(e)
     },
     closeIframe() {
       this.videoSrc = ''
       this.showVideo = false
     },
-    getLocation(data) {
+    getLocation(data, e) {
       this.$router.push({
         path: '/live-monitor/historical-trajectory',
         query: { plateNum: data.unitName }
       })
-      // this.nodeList.push(node)
-      // this.$refs.unitTree.setChecked(node, true)
-      // this.checkNode()
+      this.stopPropagation(e)
     },
-    toHistory() {
+    stopPropagation(e) {
+      if (e && e.stopPropagation) {
+        e.stopPropagation()
+      } else {
+        e.cancelBubble = true
+      }
+    },
+    toHistory(e) {
       this.$router.push('/live-monitor/historical-video')
+      this.stopPropagation(e)
     },
     startInterval() {
       let timer1 = window.setInterval(() => {
@@ -340,6 +348,7 @@ export default {
     },
     setMarkers() {
       this.map.clearMap()
+      console.log(this.markers)
       const centerLng = this.markers[this.markers.length - 1].position[0]
       const centerLat = this.markers[this.markers.length - 1].position[1]
       this.map = new AMap.Map('container', {
