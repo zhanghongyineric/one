@@ -213,11 +213,16 @@ export default {
     alarmType() {
       this.tableProp = this.alarmsTypeToNameMap.get(this.alarmType)
       this.tableLabel = this.alarmsTypeMap.get(this.alarmType)
-      this.tableWidth = 'width:55.5%;'
-      setTimeout(() => {
-        this.tableWidth = 'width:55%'
-      })
       this.typeFiled = this.alarmsTypeToNameMap.get(this.alarmType)
+    },
+    tableData: {
+      deep: true,
+      handler(nval, oval) {
+        this.tableWidth = 'width:55.5%;'
+        setTimeout(() => {
+          this.tableWidth = 'width:55%'
+        })
+      }
     }
   },
   created() {
