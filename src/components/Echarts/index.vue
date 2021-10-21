@@ -7,7 +7,7 @@ import * as echarts from 'echarts'
 import resize from './mixins/resize'
 
 export default {
-  name:'Echarts',
+  name: 'Echarts',
   mixins: [resize],
   props: {
     className: {
@@ -25,7 +25,7 @@ export default {
     autoResize: {
       type: Boolean,
       default: true
-    },
+    }
   },
   data() {
     return {
@@ -45,12 +45,12 @@ export default {
     this.chart = null
   },
   methods: {
-    //初始化图表
+    // 初始化图表
     initChart() {
       this.chart = echarts.init(this.$el)
     },
-    //设置数据
-    setOption(options){
+    // 设置数据
+    setOption(options) {
       this.chart.setOption(options)
     }
   }

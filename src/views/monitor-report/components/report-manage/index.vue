@@ -1,5 +1,5 @@
 <template>
-<div>报告管理</div>
+  <div>报告管理</div>
 </template>
 
 <script>

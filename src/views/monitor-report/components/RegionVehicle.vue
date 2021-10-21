@@ -3,10 +3,36 @@
     <div slot="header" class="f jc-sb ai-c">
       <span class="title">区县车辆统计情况</span>
       <div class="buttons">
-        <el-button v-show="!editing" type="primary" plain size="mini" icon="el-icon-edit" @click="editing = true">编辑表格</el-button>
-        <el-button v-show="editing" type="primary" plain size="mini" icon="el-icon-check" @click="finishEdit">完成编辑
+        <el-popover trigger="hover">
+          <div>
+            <el-checkbox
+              v-for="(item,index) in tableHead"
+              :key="index"
+              v-model="item.visible"
+              :disabled="item.disabled"
+              style="display:block;"
+              @change="renderChartByTableData"
+            >
+              {{ item.label }}
+            </el-checkbox>
+          </div>
+          <el-button slot="reference" type="primary" plain size="mini" icon="el-icon-setting" class="header-setting">
+            表头设置
+          </el-button>
+        </el-popover>
+        <el-button v-show="!editing" type="primary" plain size="mini" icon="el-icon-edit" @click="editing = true">编辑表格
         </el-button>
-        <el-button type="primary" plain size="mini" icon="el-icon-download">导出表格</el-button>
+        <el-button v-show="editing" type="success" plain size="mini" icon="el-icon-check" @click="finishEdit">完成编辑
+        </el-button>
+        <el-button
+          type="primary"
+          plain
+          size="mini"
+          icon="el-icon-download"
+          :loading="downloadLoading"
+          @click="handleDownload"
+        >导出表格
+        </el-button>
       </div>
     </div>
     <el-table
@@ -16,43 +42,31 @@
       border
     >
       <el-table-column
-        prop="title"
-        label="地区"
-      >
-      </el-table-column>
-      <el-table-column
-        v-for="head in tableHead"
-        :prop="head"
-        :label="head"
+        v-for="head in visibleTableHead"
+        :key="head.prop"
+        :prop="head.prop"
+        :label="head.label"
       >
         <template v-slot="{row}">
-          <span v-show="!editing">{{ row[head] }}</span>
-          <el-input v-show="editing" v-model="row[head]" size="small"/>
+          <span v-show="!editing || head.prop === 'name'">{{ row[head.prop] }}</span>
+          <el-input v-show="editing && head.prop !== 'name'" v-model="row[head.prop]" size="small" />
         </template>
       </el-table-column>
-      <!--<el-table-column
-        prop="巴中"
-        label="巴中"
-      >
-        <template v-slot="{row}">
-          <span v-show="!editing">{{row['巴中']}}</span>
-          <el-input v-show="editing" v-model="row['巴中']" size="small"/>
-        </template>
-      </el-table-column>-->
     </el-table>
-    <Echarts ref="lineChart"/>
+    <Echarts ref="lineChart" />
   </el-card>
 </template>
 
 <script>
 import Echarts from '@/components/Echarts'
+import { deepClone } from '@/utils'
 
 export default {
   name: 'RegionVehicle',
   components: { Echarts },
   props: {
     data: {
-      type: Array,
+      type: Object,
       required: true
     },
     loading: {
@@ -62,82 +76,66 @@ export default {
   },
   data() {
     return {
-      editing: false,//编辑中
-      tableHead: [],//表头
-      tableData: []//表格数据
+      downloadLoading: false, // 表格下载加载状态
+      editing: false, // 编辑中
+      tableHead: [], // 表头
+      tableData: []// 表格数据
+    }
+  },
+  computed: {
+    visibleTableHead() {
+      return this.tableHead.filter(head => head.visible)
     }
   },
   watch: {
-    data(data) {
-      this.setOption(data)
+    data: {
+      deep: true,
+      handler(data) {
+        this.setOption(deepClone(data))
+      }
     }
   },
   methods: {
     finishEdit() {
       this.editing = false
-      this.renderChartByTableData()
+      this.renderChartByTableData(this.tableHead, this.tableData)
     },
-    //把数据格式化为表格和图表需要的数据
-    setOption(data) {
+    // 把数据格式化为表格和图表需要的数据
+    setOption({ tableHead, tableData }) {
       // 格式化表格数据
-      this.tableHead = data.map(item => item.name)
-      const tableData = [
-        { title: '上月上线数' },
-        { title: '本月上线数' },
-        { title: '上月车辆报警数' },
-        { title: '本月车辆报警数' }
-      ]
-      data.forEach(item => {
-        tableData[0][item.name] = item.a
-        tableData[1][item.name] = item.b
-        tableData[2][item.name] = item.c
-        tableData[3][item.name] = item.d
-      })
-      this.tableData = tableData //tableData[0][item.name] = item.a 修改this.tableData[0]不会触发响应式
+      this.tableHead = tableHead.map((head, index) => ({ ...head, visible: true, disabled: index === 0 }))
+      this.tableData = tableData
       this.renderChartByTableData()
     },
-    //通过表格数据渲染图表
+    // 通过表格数据渲染图表
     renderChartByTableData() {
-      let lastMonthOnline = []//上月上线数
-      let thisMonthOnline = []//本月上线数
-      let lastMonthAlarms = []//上月车辆报警数
-      let thisMonthAlarms = []//本月车辆报警数
-      this.tableData.forEach((row, index) => {
-        const chartData = Object.values(row).slice(1)
-        switch (index) {
-          case 0: {
-            lastMonthOnline = chartData
-            break
-          }
-          case 1: {
-            thisMonthOnline = chartData
-            break
-          }
-          case 2: {
-            lastMonthAlarms = chartData
-            break
-          }
-          case 3: {
-            thisMonthAlarms = chartData
-            break
-          }
-        }
+      const legend = [] // 图表图例
+      const xAxisData = this.tableHead.slice(1).filter(head => head.visible).map(item => item.label)
+      // 判断一个字段是否需要显示
+      const isVisible = (prop) => {
+        return this.tableHead.find(head => head.prop === prop).visible
+      }
+      // 筛选出需要展示的图表数据
+      const chartData = this.tableData.map(data => {
+        const cData = []
 
+        legend.push(data.name)
+        Object.keys(data).slice(1).forEach(key => {
+          if (isVisible(key)) {
+            cData.push(data[key])
+          }
+        })
+        return cData
       })
+
       this.$refs['lineChart'].setOption({
         tooltip: {
           trigger: 'axis'
         },
         legend: {
-          data: ['上月上线数', '本月上线数', '上月车辆报警数', '本月车辆报警数']
+          data: legend
         },
         color: ['#D97559', '#E4C477', '#5087EC', '#68BBC4'],
-        grid: {
-          // left: '3%',
-          // right: '4%',
-          // bottom: '3%',
-          // containLabel: true
-        },
         toolbox: {
           right: 10,
           feature: {
@@ -152,36 +150,57 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: this.tableHead
+          data: xAxisData
         },
         yAxis: {
           type: 'value'
         },
         series: [
           {
-            name: '上月上线数',
+            name: legend[0],
             type: 'bar',
             barWidth: 30,
-            data: lastMonthOnline
+            data: chartData[0]
           },
           {
-            name: '本月上线数',
+            name: legend[1],
             type: 'bar',
             barWidth: 30,
-            data: thisMonthOnline
+            data: chartData[1]
           },
           {
-            name: '上月车辆报警数',
+            name: legend[2],
             type: 'line',
-            data: lastMonthAlarms
+            data: chartData[2]
           },
           {
-            name: '本月车辆报警数',
+            name: legend[3],
             type: 'line',
-            data: thisMonthAlarms
+            data: chartData[3]
           }
         ]
       })
+    },
+    // 下载表格
+    handleDownload() {
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = this.tableHead.filter(head => head.visible).map(item => item.label)// 表头显示文字
+        const filterVal = this.tableHead.filter(head => head.visible).map(item => item.prop)// 表格字段
+        const list = this.tableData // 表格数据
+        const data = this.formatJson(filterVal, list)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: '区县车辆统计情况',
+          autoWidth: true,
+          bookType: 'xlsx'// 导出文件类型
+        })
+        this.downloadLoading = false
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
     }
   }
 }
@@ -194,5 +213,9 @@ export default {
   span {
     line-height: 32px;
   }
+}
+
+.header-setting {
+  margin-right: 10px;
 }
 </style>
