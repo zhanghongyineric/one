@@ -45,22 +45,9 @@
 
     </div>
     <div class="right-box">
-      <div class="video-box">
-        <video
-          id="videoId"
-          class="video-js"
-        >
-          <source
-            type="video/mp4"
-            src="http://121.36.90.54:80/StandardApiAction_addDownloadTask.action?jsession=493241e518fd406b99806bd6968a401c&did=014487901319&fbtm=2021-10-18 19:23:34&fetm=2021-10-18 19:38:02&sbtm=2021-10-18 19:23:34&setm=2021-10-18 19:38:02&lab=&fph=;0;0;21;10;18;69814;70682;0;0_0_0_1&vtp=0&len=104236176&chn=0&dtp=2"
-          >
-        </video>
+      <div id="cmsv6flash" class="video-box">
+        <iframe src="/test.html" width="100%" height="100%" frameborder="0" />
       </div>
-      <div class="video-box" />
-      <div class="video-box" />
-      <div class="video-box" />
-      <div class="video-box" />
-      <div class="video-box" />
     </div>
   </div>
 </template>
@@ -130,20 +117,6 @@ export default {
     this.getList()
   },
   mounted() {
-    this.$video('videoId', {
-      controls: true,
-      autoplay: 'muted',
-      preload: 'auto',
-      notSupportedMessage: '此视频暂无法播放，请稍后再试',
-      aspectRatio: '4:3',
-      playbackRates: [0.5, 1, 1.5, 2, 3],
-      controlBar: {
-        'currentTimeDisplay': true,
-        'timeDivider': true,
-        'durationDisplay': true,
-        'remainingTimeDisplay': false
-      }
-    })
   },
   methods: {
     handleNodeClick() {},
@@ -154,10 +127,10 @@ export default {
             params: {
               jsession: res.data.jsession,
               DownType: 2,
-              DevIDNO: '014487901319',
+              DevIDNO: '014487901322',
               YEAR: 2021,
               MON: 10,
-              DAY: 18,
+              DAY: 20,
               BEG: 0,
               END: 86399,
 
@@ -170,7 +143,8 @@ export default {
               RES: 0,
               STREAM: 0,
               STORE: 0
-            }
+            },
+            timeout: 20000
           })
             .then(res => {
               console.log(res.data)
@@ -214,12 +188,12 @@ export default {
 }
 
 .video-box {
-  width: 50%;
-  height: 33%;
+  width: 100%;
+  height: 100%;
   /* background-color:#000; */
-  border: 3px solid #fff;
+  /* border: 3px solid #fff; */
   box-sizing: border-box;
-  display: inline-block;
+  /* display: inline-block; */
 }
 
 .btn-box {

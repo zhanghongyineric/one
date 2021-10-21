@@ -651,7 +651,7 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="车载终端名称:" prop="terminalName">
+              <el-form-item label="车载终端号:" prop="terminalName">
                 <el-input v-model="accessFormData.terminalName" clearable size="small" placeholder="请输入" />
               </el-form-item>
             </el-col>
@@ -768,8 +768,8 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="主要功能:" prop="functions">
-              <el-select v-model="accessFormData.functions" clearable size="small" multiple placeholder="请选择主要功能">
+            <el-form-item label="设备类型:" prop="functions">
+              <el-select v-model="accessFormData.functions" clearable size="small" multiple placeholder="请选择设备类型">
                 <el-option
                   v-for="item in functionsOptions"
                   :key="item.value"
@@ -1129,7 +1129,7 @@ export default {
         hostType: [{ required: true, message: '请输入主机型号', trigger: 'blur' }],
         internetCard: [{ required: true, message: '请输入物联网卡号', trigger: 'blur' }],
         cameraNum: [{ required: true, message: '请输入视频通道数', trigger: 'blur' }],
-        functions: [{ required: true, message: '请选择主要功能', trigger: 'change' }]
+        functions: [{ required: true, message: '请选择设备类型', trigger: 'change' }]
       },
       fiveRules: {
         number: [{ required: true, message: '请输入保险单号', trigger: 'blur' }],
@@ -1196,6 +1196,7 @@ export default {
   },
   mounted() {
     this.getList()
+    this.functionsOptions = JSON.parse(localStorage.getItem('onlineOption'))['equipment_terminal_type'].list
   },
   methods: {
     getList() {
@@ -1353,7 +1354,6 @@ export default {
               this.operateStatusMap.set(item.value, item.label)
             })
             this.carKindOptions = data['车辆类型']
-            this.functionsOptions = data['具备功能']
             this.accessWayOptions = data['入网方式']
             this.listLoading = false
           })
