@@ -24,7 +24,7 @@
     </div>
     <el-table
       v-loading="loading"
-      :data="tableData"
+      :data="data.tableData"
       style="width: 100%;margin-bottom: 30px;"
       border
     >
@@ -34,33 +34,32 @@
       />
       <el-table-column
         label="报警数"
-        prop="a"
+        prop="b"
       />
       <el-table-column
         label="轻微"
-        prop="a"
+        prop="c"
       />
       <el-table-column
         label="一般"
-        prop="a"
+        prop="d"
       />
       <el-table-column
         label="严重"
-        prop="a"
+        prop="e"
       />
       <el-table-column
         label="报警环比数"
-        prop="a"
+        prop="f"
       />
     </el-table>
     <Echarts ref="lineChart" />
-    <EditChartDialog :visible.sync="dialogVisible" :chart-data="chartData" @updateChartData="updateChartData" />
+    <EditChartDialog :visible.sync="dialogVisible" :table-head="tableHead" :table-data="tableData" :type="type" @updateChartData="updateChartData" />
   </el-card>
 </template>
 
 <script>
 import Echarts from '@/components/Echarts'
-import { deepClone } from '@/utils'
 import EditChartDialog from '@/views/monitor-report/components/EditChartDialog'
 
 export default {
@@ -74,24 +73,66 @@ export default {
     loading: {
       type: Boolean,
       required: true
+    },
+    type: {
+      type: String,
+      required: true
     }
   },
   data() {
     return {
       dialogVisible: false, // 弹窗可见性
       downloadLoading: false, // 表格下载加载状态
-      tableData: [], // 表格数据
-      chartData: []
-      // 图表数据
+      chartData: [], // 图表数据
+      chartLegend: [], // 图表图例
+      tableHead: [], // 编辑表格的表头
+      tableData: []// 编辑表格的表格数据
     }
   },
   watch: {
-    data({ chartData, tableData }) {
-      if (chartData.length) {
-        this.chartData = chartData
-        this.renderChart(chartData)
+    data({ chartData }) {
+      this.chartData = chartData
+      if (this.chartData.length) {
+        const types = ['疲劳驾驶', '时段禁行', '离线位移', '超速报警']
+        const length = this.chartData[0].length
+        /*
+          根据图表数据构建周报或者月报的表格表头和数据
+        */
+
+        // 构建表头和图例
+        this.chartLegend = []
+        this.tableHead = [{ 'label': '报警名称', prop: 'name' }]
+        if (this.type === 'week') {
+          const weekMap = ['一', '二', '三', '四', '五', '六', '日']
+
+          for (let i = 0; i < 7; i++) {
+            this.tableHead.push({
+              'label': `星期${weekMap[i]}`, prop: String(i)
+            })
+            this.chartLegend.push(`星期${weekMap[i]}`)
+          }
+        } else {
+          for (let i = 0; i < length; i++) {
+            this.tableHead.push({
+              'label': `${i + 1}日`,
+              prop: String(i)
+            })
+            this.chartLegend.push(`${i + 1}日`)
+          }
+        }
+        // 构建表格数据
+        this.tableData = chartData.map((item, index) => {
+          const obj = { name: types[index] }
+
+          item['name'] = types[0]
+          item.forEach((value, index) => {
+            obj[index] = value
+          })
+
+          return obj
+        })
+        this.renderChart()
       }
-      this.tableData = deepClone(tableData)
     }
   },
   methods: {
@@ -101,9 +142,7 @@ export default {
       this.renderChart(data)
     },
     // 通过表格数据渲染图表
-    renderChart(data) {
-      const chartData = data.map(item => Object.values(item))
-
+    renderChart() {
       this.$refs['lineChart'].setOption({
         tooltip: {
           trigger: 'axis'
@@ -126,7 +165,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: this.chartLegend
         },
         yAxis: {
           type: 'value'
@@ -135,22 +174,22 @@ export default {
           {
             name: '疲劳驾驶',
             type: 'line',
-            data: chartData[0]
+            data: this.chartData[0]
           },
           {
             name: '时段禁行',
             type: 'line',
-            data: chartData[1]
+            data: this.chartData[1]
           },
           {
             name: '离线位移',
             type: 'line',
-            data: chartData[2]
+            data: this.chartData[2]
           },
           {
             name: '超速报警',
             type: 'line',
-            data: chartData[3]
+            data: this.chartData[3]
           }
         ]
       })

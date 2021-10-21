@@ -2,23 +2,23 @@
   <el-dialog
     title="编辑图表数据"
     :visible.sync="dialogVisible"
+    :width="dialogWidth"
   >
     <el-table
       :data="tableData"
       style="width: 100%"
     >
       <el-table-column
-        prop="type"
-        label="报警名称"
-      />
-      <el-table-column
         v-for="head in tableHead"
-        :key="head.props"
+        :key="head.prop"
         v-slot="{row}"
-        :prop="head.props"
+        :prop="head.prop"
         :label="head.label"
       >
-        <el-input v-model="row[head.props]" />
+        <template>
+          <span v-if="head.prop==='name'">{{ row[head.prop] }}</span>
+          <el-input-number v-else v-model="row[head.prop]" :controls="false" />
+        </template>
       </el-table-column>
     </el-table>
     <span slot="footer" class="dialog-footer">
@@ -36,24 +36,17 @@ export default {
       type: Boolean,
       required: true
     },
-    chartData: {
+    type: {
+      type: String,
+      required: true
+    },
+    tableHead: {
       type: Array,
       required: true
-    }
-  },
-  // inject: ['demo', 'test'],
-  data() {
-    return {
-      tableHead: [
-        { label: '周一', props: 'monday' },
-        { label: '周二', props: 'tuesday' },
-        { label: '周三', props: 'wednesday' },
-        { label: '周四', props: 'thursday' },
-        { label: '周五', props: 'friday' },
-        { label: '周六', props: 'saturday' },
-        { label: '周日', props: 'sunday' }
-      ], // 表头数据
-      tableData: []
+    },
+    tableData: {
+      type: Array,
+      required: true
     }
   },
   computed: {
@@ -65,39 +58,18 @@ export default {
         this.$emit('update:visible', false)
       }
     },
-    data: {
-      get() {
-        const types = ['疲劳驾驶', '时段禁行', '离线位移', '超速报警']
-
-        console.log(this.chartData.map((item, index) => ({ type: types[index], ...item })))
-        return this.chartData.map((item, index) => ({ type: types[index], ...item }))
-      },
-      set(data) {
-        console.log(data)
-        this.$emit('update:tableData', data)
-      }
+    dialogWidth() {
+      return this.type === 'week' ? '50%' : '100%'
     }
-  },
-  watch: {
-    chartData(data) {
-      const types = ['疲劳驾驶', '时段禁行', '离线位移', '超速报警']
-
-      this.tableData = data.map((item, index) => ({ type: types[index], ...item }))
-    }
-  },
-  created() {
-    // console.log(this.demo, this.test)
   },
   methods: {
     confirm() {
-      console.log(this.demo)
-      return
       this.dialogVisible = false
       const chartData = this.tableData.map(item => {
         const temp = { ...item }
 
-        delete temp.type
-        return temp
+        delete temp.name
+        return Object.values(temp)
       })
       this.$emit('updateChartData', chartData)
     }
@@ -105,6 +77,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+::v-deep {
+  .el-input-number {
+    width: 60px;
+
+    .el-input__inner {
+      padding: 0 !important;
+    }
+  }
+}
 
 </style>

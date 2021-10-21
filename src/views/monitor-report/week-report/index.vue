@@ -52,7 +52,6 @@
 
       <main class="main">
         <div v-show="!listQuery.platform" class="choose-platform"><i class="el-icon-warning" />请先选择平台</div>
-
         <el-row v-show="listQuery.platform" :gutter="10">
           <el-col :span="12">
             <!--区县车辆统计情况-->
@@ -80,6 +79,7 @@
               ref="regionVehicle"
               :data="vehicleTendencyData"
               :loading="listLoading"
+              type="week"
               style="margin-bottom: 10px;"
             />
             <!--违章报警排名前十-->
@@ -113,6 +113,10 @@ export default {
     ChoosePlatform },
   data() {
     return {
+      test: {
+        text: 1,
+        array: []
+      },
       list: [], // 表格数据
       listLoading: true, // 加载状态
       buttonLoading: false, // 弹窗按钮加载状态
@@ -251,44 +255,33 @@ export default {
         ]
         this.vehicleTendencyData = {
           chartData: [
-            {
-              monday: 1,
-              tuesday: 2,
-              wednesday: 3,
-              thursday: 4,
-              friday: 5,
-              saturday: 6,
-              sunday: 7
-            },
-            {
-              monday: 11,
-              tuesday: 12,
-              wednesday: 13,
-              thursday: 14,
-              friday: 15,
-              saturday: 16,
-              sunday: 17
-            },
-            {
-              monday: 21,
-              tuesday: 22,
-              wednesday: 23,
-              thursday: 24,
-              friday: 25,
-              saturday: 26,
-              sunday: 27
-            },
-            {
-              monday: 31,
-              tuesday: 32,
-              wednesday: 33,
-              thursday: 34,
-              friday: 35,
-              saturday: 36,
-              sunday: 37
-            }
+            [1231, 2, 3, 2134, 5, 6, 7],
+            [122, 2, 3, 2134, 1235, 6, 7],
+            [131, 2, 1233, 4, 745, 13, 7],
+            [1231, 1232, 3, 4, 3, 6, 7]
           ],
-          tableData: []
+          tableData: [
+            {
+              name: '疲劳驾驶',
+              a: 1,
+              b: 2
+            },
+            {
+              name: '时段禁行',
+              a: 1,
+              b: 2
+            },
+            {
+              name: '离线位移',
+              a: 1,
+              b: 2
+            },
+            {
+              name: '超速报警',
+              a: 1,
+              b: 2
+            }
+          ]
         }
       }, 100)
     },

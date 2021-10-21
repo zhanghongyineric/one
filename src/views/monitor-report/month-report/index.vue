@@ -82,6 +82,7 @@
               ref="regionVehicle"
               :data="vehicleTendencyData"
               :loading="listLoading"
+              type="month"
               style="margin-bottom: 10px;"
             />
             <!--服务商考核-->
@@ -511,42 +512,10 @@ export default {
         ]
         this.vehicleTendencyData = {
           chartData: [
-            {
-              monday: 1,
-              tuesday: 2,
-              wednesday: 3,
-              thursday: 4,
-              friday: 5,
-              saturday: 6,
-              sunday: 7
-            },
-            {
-              monday: 11,
-              tuesday: 12,
-              wednesday: 13,
-              thursday: 14,
-              friday: 15,
-              saturday: 16,
-              sunday: 17
-            },
-            {
-              monday: 21,
-              tuesday: 22,
-              wednesday: 23,
-              thursday: 24,
-              friday: 25,
-              saturday: 26,
-              sunday: 27
-            },
-            {
-              monday: 31,
-              tuesday: 32,
-              wednesday: 33,
-              thursday: 34,
-              friday: 35,
-              saturday: 36,
-              sunday: 37
-            }
+            [1231, 2, 3, 2134, 5, 6, 7, 1231, 2, 3, 2134, 5, 6, 7, 1231, 2, 3, 2134, 5, 6, 7, 1231, 2, 3, 2134, 5, 6, 7, 5, 6, 7],
+            [122, 2, 3, 2134, 1235, 6, 7, 122, 2, 3, 2134, 1235, 6, 7, 122, 2, 3, 2134, 1235, 6, 7, 122, 2, 3, 2134, 1235, 6, 7, 5, 6, 7],
+            [131, 2, 1233, 4, 745, 13, 7, 131, 2, 1233, 4, 745, 13, 7, 131, 2, 1233, 4, 745, 13, 7, 131, 2, 1233, 4, 745, 13, 7, 5, 6, 7],
+            [1231, 1232, 3, 4, 3, 6, 7, 1231, 1232, 3, 4, 3, 6, 7, 1231, 1232, 3, 4, 3, 6, 7, 1231, 1232, 3, 4, 3, 6, 7, 5, 6, 7]
           ],
           tableData: []
         }
