@@ -1,0 +1,328 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- <link href="http://121.36.18.123/808gps/open/css/video.css" type="text/css" rel="stylesheet"> -->
+    <script type="text/javascript"
+            src="http://121.36.18.123/808gps/open/player/js/cmsv6player.min.js"></script>
+    <script>
+        var isInitFinished = false;//视频插件是否加载完成
+        var swfobject;
+        var swfobject1;
+        var swfobject2;
+        var swfobject3;
+
+        var lang = new langZhCn();
+
+        function langZhCn() {
+            this.userId = "用户名：";
+            this.password = "密码：";
+            this.login = "登陆";
+            this.jsession = "会话号：";
+            this.devIdno = "设备号：";
+            this.play = "播放";
+            this.playback = "远程回放";
+            this.loginError = "登陆失败";
+            this.singleChannel = '单通道播放'
+            this.multiChannel = '多通道同步回放'
+            this.multiChannelUnSync = '多通道同时回放'
+            this.deviceNoError = '设备号错误'
+        }
+
+        function setText(domId, val) {
+            var domItem = document.getElementById(domId);
+            if (domItem != null) {
+                domItem.innerHTML = val;
+            }
+        }
+
+        function setValue(domId, val) {
+            var domItem = document.getElementById(domId);
+            if (domItem != null) {
+                domItem.value = val;
+            }
+        }
+
+        function getValue(domId) {
+            var domItem = document.getElementById(domId);
+            if (domItem != null) {
+                return domItem.value;
+            } else {
+                return "";
+            }
+        }
+
+        function setFocus(domId) {
+            var domItem = document.getElementById(domId);
+            if (domItem != null) {
+                domItem.focus();
+            }
+        }
+
+        function loadLang() {
+            setText('playbackBtn', lang.playback);
+        }
+
+        function onReady() {
+            var host = '121.36.90.54:'
+            // var ip = host.split(":")[0];
+            loadLang();
+            //初始化视频插件
+            initPlayer();
+        }
+
+        //初始化视频插件
+        function initPlayer() {
+            //赋值初始化为未完成
+            isInitFinished = false;
+            var options = {
+                domId: "cmsv6flash",
+                isVodMode: true,
+                width: 420,
+                height: 420,
+                lang: "en"
+            }
+            var options1 = {
+                domId: "cmsv6flash1",
+                isVodMode: true,
+                width: 420,
+                height: 420,
+                lang: "en"
+            }
+            var options2 = {
+                domId: "cmsv6flash2",
+                isVodMode: true,
+                width: 420,
+                height: 420,
+                lang: "en"
+            }
+            var options3 = {
+                domId: "cmsv6flash3",
+                isVodMode: true,
+                width: 420,
+                height: 420,
+                lang: "en"
+            }
+            swfobject = new Cmsv6Player(options);
+            swfobject1 = new Cmsv6Player(options1);
+            swfobject2 = new Cmsv6Player(options2);
+            swfobject3 = new Cmsv6Player(options3);
+            initFlash();
+        }
+
+        //插件初始化完成后执行
+        function initFlash() {
+            if (typeof swfobject == "undefined" ||
+                typeof swfobject.setWindowNum == "undefined") {
+                setTimeout(initFlash, 50);
+            } else {
+                //初始化插件语言
+                var language = 'cn.xml';
+                swfobject.setLanguage(language);
+                swfobject1.setLanguage(language);
+                swfobject2.setLanguage(language);
+                swfobject3.setLanguage(language);
+                //先将全部窗口创建好
+                swfobject.setWindowNum(36);
+                swfobject1.setWindowNum(36);
+                swfobject2.setWindowNum(36);
+                swfobject3.setWindowNum(36);
+                //再配置当前的窗口数目
+                var windowNum = 1;
+                swfobject.setWindowNum(windowNum);
+                swfobject1.setWindowNum(windowNum);
+                swfobject2.setWindowNum(windowNum);
+                swfobject3.setWindowNum(windowNum);
+                //设置服务器信息
+                var serverIp = '121.36.90.54';
+                var serverPort = '6604';
+                swfobject.setServerInfo(serverIp, serverPort);
+                swfobject1.setServerInfo(serverIp, serverPort);
+                swfobject2.setServerInfo(serverIp, serverPort);
+                swfobject3.setServerInfo(serverIp, serverPort);
+                isInitFinished = true;
+            }
+        }
+
+        // 开始远程回放
+        function startPlayback() {
+            if (!isInitFinished) {
+                return;
+            } else {
+                //回放url
+                var url = `ws://121.36.90.54:6604/3/5?DownType=5&jsession=${jsession}&DevIDNO=040492631754&FILELOC=1&FILESVR=0&FILECHN=0&FILEBEG=32652&FILEEND=32977&PLAYIFRM=0&PLAYFILE=;0;0;21;10;21;32652;32977;0;0_0_1_2&PLAYBEG=0&PLAYEND=0&PLAYCHN=0&YEAR=21&MON=10&DAY=21`;
+                var url1 = `ws://121.36.90.54:6604/3/5?DownType=5&jsession=${jsession}&DevIDNO=040492631754&FILELOC=1&FILESVR=0&FILECHN=0&FILEBEG=32647&FILEEND=32976&PLAYIFRM=0&PLAYFILE=;0;0;21;10;21;32647;32976;0;0_0_0_1&PLAYBEG=0&PLAYEND=0&PLAYCHN=0&YEAR=21&MON=10&DAY=21`;
+                var url2 = `ws://121.36.90.54:6604/3/5?DownType=5&jsession=${jsession}&DevIDNO=014447934932&FILELOC=1&FILESVR=0&FILECHN=0&FILEBEG=20619&FILEEND=22847&PLAYIFRM=0&PLAYFILE=;0;0;21;10;20;20619;22847;0;0_0_0_1&PLAYBEG=0&PLAYEND=0&PLAYCHN=0&YEAR=21&MON=10&DAY=20`;
+                //回放之前先停止
+                swfobject.stopVodM();
+                swfobject1.stopVodM();
+                swfobject2.stopVodM();
+                swfobject3.stopVodM();
+
+                swfobject.startVodM(url, 0);
+                swfobject1.startVodM(url1, 0);
+                // swfobject2.startVodM(url, 0);
+                // swfobject3.startVodM(url, 0);
+            }
+        }
+
+        function getPlaybackLink() {
+            var serverIp = '121.36.90.54';
+            var serverPort = '6604';
+            // var devIdno = getValue('playbackDevIdno');
+            // if (!devIdno) {
+            //     setFocus('playbackDevIdno');
+            //     return;
+            // }
+            var _url = location.protocol + '//' + window.location.host + '/StandardApiAction_getVideoFileInfo.action?DevIDNO=' + devIdno + '&LOC=1&CHN=0&YEAR=2014&MON=12&DAY=10&RECTYPE=-1&FILEATTR=2&BEG=0&END=86399&ARM1=0&ARM2=0&RES=0&STREAM=0&STORE=0&jsession=' + jsession
+
+            ajax({
+                type: 'POST',
+                url: _url,
+                cache: false,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.result == 0) {
+                        var files = data.files
+                        if (files.length > 0) {
+                            var firstFile = files[0]
+                            // if (firstFile.PlaybackUrlWs) {
+                            //     setValue('playbackUrl', firstFile.PlaybackUrlWs)
+                            // } else {
+                            //     setValue('playbackUrl', firstFile.PlaybackUrl)
+                            // }
+
+                            var secondFile = files[1]
+                            if (secondFile && secondFile.PlaybackUrlWs) {
+                                var playbackUrlObj2 = document.getElementById('playbackUrl2')
+                                playbackUrlObj2.value = secondFile.PlaybackUrlWs
+                            }
+
+                            var thirdFile = files[2]
+                            if (thirdFile && thirdFile.PlaybackUrlWs) {
+                                var playbackUrlObj3 = document.getElementById('playbackUrl3')
+                                playbackUrlObj3.value = thirdFile.PlaybackUrlWs
+                            }
+
+                        }
+                    } else if (data.result === 32) {
+                        alert(lang.deviceNoError)
+                        // setFocus('playbackDevIdno');
+                    } else {
+                        alert(lang.loginError);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    try {
+                        if (p.onError) p.onError(XMLHttpRequest, textStatus, errorThrown);
+                    } catch (e) {
+                    }
+                    alert(lang.loginError);
+                }
+            })
+        }
+
+        function ajax() {
+            var ajaxData = {
+                type: arguments[0].type || "GET",
+                url: arguments[0].url || "",
+                async: arguments[0].async || "true",
+                data: arguments[0].data || null,
+                dataType: arguments[0].dataType || "text",
+                contentType: arguments[0].contentType || "application/x-www-form-urlencoded",
+                beforeSend: arguments[0].beforeSend || function () {
+                },
+                success: arguments[0].success || function () {
+                },
+                error: arguments[0].error || function () {
+                }
+            }
+            ajaxData.beforeSend()
+            var xhr = createxmlHttpRequest();
+            xhr.responseType = ajaxData.dataType;
+            xhr.open(ajaxData.type, ajaxData.url, ajaxData.async);
+            xhr.setRequestHeader("Content-Type", ajaxData.contentType);
+            xhr.send(convertData(ajaxData.data));
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        ajaxData.success(xhr.response)
+                    } else {
+                        ajaxData.error()
+                    }
+                }
+            }
+        }
+
+        function createxmlHttpRequest() {
+            if (window.ActiveXObject) {
+                return new ActiveXObject("Microsoft.XMLHTTP");
+            } else if (window.XMLHttpRequest) {
+                return new XMLHttpRequest();
+            }
+        }
+
+        function convertData(data) {
+            if (typeof data === 'object') {
+                var convertResult = "";
+                for (var c in data) {
+                    convertResult += c + "=" + data[c] + "&";
+                }
+                convertResult = convertResult.substring(0, convertResult.length - 1)
+                return convertResult;
+            } else {
+                return data;
+            }
+        }
+
+        var jsession
+        //用户登录
+        function userLogin() {
+            ajax({
+                type: 'GET',
+                url: 'https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123',
+                cache: false,
+                success: function (data) {
+                    if (JSON.parse(data).result == 0) {
+                        jsession = JSON.parse(data).jsession
+                    } else {
+                        alert(lang.loginError);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    try {
+                        if (p.onError) p.onError(XMLHttpRequest, textStatus, errorThrown);
+                    } catch (e) {
+                    }
+                    alert(lang.loginError);
+                }
+            });
+        }
+        userLogin()
+    </script>
+</head>
+<body onload="onReady();">
+
+<div style="display: inline-block;">
+    <div id="cmsv6flash"></div>
+</div>
+<div style="display: inline-block;">
+    <div id="cmsv6flash1"></div>
+</div>
+<div style="display: inline-block;">
+    <div id="cmsv6flash2"></div>
+</div>
+<div style="display: inline-block;">
+    <div id="cmsv6flash3"></div>
+</div>
+       
+<div class="player-param">
+    <button id="playbackBtn" class="button button-primary button-rounded button-small"
+    onclick="startPlayback();">开始回放</button>
+</div>
+
+</body>
+</html>
+</body>
+</html>

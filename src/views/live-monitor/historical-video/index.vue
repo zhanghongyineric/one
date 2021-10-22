@@ -13,40 +13,72 @@
             size="small"
             placeholder="请输入车牌号码"
             clearable
-            style="width:200px;"
+            style="width:220px;"
           />
         </el-form-item>
-        <el-form-item label="起始时间:" prop="startTime">
+        <el-form-item label="查询日期:" prop="startTime">
           <el-date-picker
             v-model="searchFormData.startTime"
-            type="datetime"
-            placeholder="选择开始日期时间"
+            align="right"
+            type="date"
+            placeholder="选择查询日期"
+            :picker-options="pickerOptions"
             size="small"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            style="width:200px;"
+            style="width:220px;"
+            value-format="yyyy-MM-dd"
           />
         </el-form-item>
-        <el-form-item label="结束时间:" prop="endTime">
-          <el-date-picker
+        <el-form-item label="时间范围:" prop="endTime">
+          <el-time-picker
             v-model="searchFormData.endTime"
+            is-range
             size="small"
-            type="datetime"
-            placeholder="选择结束日期时间"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            style="width:200px;"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+            style="width:220px;"
+            value-format="HH-mm-ss"
           />
-        </el-form-item>
-      </el-form>
+        </el-form-item></el-form>
       <div class="btn-box">
         <el-button type="primary" size="small">重置</el-button>
-        <el-button type="primary" size="small">查询</el-button>
+        <el-button type="primary" size="small" @click="getList">查询</el-button>
       </div>
       <el-divider />
-
+      <el-table
+        :data="tableData"
+        stripe
+        style="width: 100%"
+      >
+        <el-table-column
+          label="车牌号"
+          width="180"
+        >
+          {{ searchFormData.plateNum }}
+        </el-table-column>
+        <el-table-column
+          prop="beg"
+          label="开始时间"
+          width="180"
+        />
+        <el-table-column
+          prop="end"
+          label="结束时间"
+        />
+        <el-table-column
+          prop="len"
+          label="文件大小"
+        >
+          <template slot-scope="scope">
+            {{ (scope.row.len / 1000000).toFixed(3) + 'MB' }}
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
     <div class="right-box">
       <div id="cmsv6flash" class="video-box">
-        <iframe src="/test.html" width="100%" height="100%" frameborder="0" />
+        <iframe src="/historyVideo.html" width="100%" height="100%" frameborder="0" />
       </div>
     </div>
   </div>
@@ -54,6 +86,7 @@
 
 <script>
 import axios from 'axios'
+import { getDevId } from '@/api/live-monitor/message'
 
 export default {
   name: 'HistoricalVideo',
@@ -61,93 +94,109 @@ export default {
     return {
       advanced: false,
       searchFormData: {
-        plateNum: '',
+        plateNum: '川Y07065',
         time: '',
         startTime: '',
         endTime: ''
       },
-      pickerOptions: {},
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now()
+        },
+        shortcuts: [{
+          text: '今天',
+          onClick(picker) {
+            picker.$emit('pick', new Date())
+          }
+        }, {
+          text: '昨天',
+          onClick(picker) {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24)
+            picker.$emit('pick', date)
+          }
+        }]
+      },
       rules: {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
         startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
         endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
       },
-      data: [{
-        label: '文件夹 1',
-        children: [{
-          label: '文件夹 1-1',
-          children: [{
-            label: '文件1'
-          }]
-        }]
-      }, {
-        label: '文件夹 2',
-        children: [{
-          label: '文件夹 2-1',
-          children: [{
-            label: '文件2'
-          }]
-        }, {
-          label: '文件夹 2-2',
-          children: [{
-            label: '文件 2-2-1'
-          }]
-        }]
-      }, {
-        label: '文件夹 3',
-        children: [{
-          label: '文件夹 3-1',
-          children: [{
-            label: '文件 3-1-1'
-          }]
-        }, {
-          label: '文件夹 3-2',
-          children: [{
-            label: '文件 3-2-1'
-          }]
-        }]
-      }],
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      }
+      devIdno: '',
+      tableData: []
     }
   },
   created() {
-    this.getList()
+    // this.getList()
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
-    handleNodeClick() {},
-    getList() {
-      axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123')
-        .then(res => {
-          axios.get('https://www.api.gosmooth.com.cn/video/history', {
-            params: {
-              jsession: res.data.jsession,
-              DownType: 2,
-              DevIDNO: '014487901322',
-              YEAR: 2021,
-              MON: 10,
-              DAY: 20,
-              BEG: 0,
-              END: 86399,
+    resetQuery() {
 
-              RECTYPE: -1,
-              FILEATTR: 2,
-              LOC: 1,
-              CHN: 0,
-              ARM1: 0,
-              ARM2: 0,
-              RES: 0,
-              STREAM: 0,
-              STORE: 0
-            },
-            timeout: 20000
-          })
+    },
+    handleSearch() {
+      getDevId({ plateNum: this.searchFormData.plateNum })
+        .then(({ data }) => {
+          this.devIdno = data.data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    getList() {
+      const startTime = this.searchFormData.startTime.split('-')
+      const beginTime = this.searchFormData.endTime[0].split('-')
+      const endTime = this.searchFormData.endTime[1].split('-')
+      const year = startTime[0]; const month = startTime[1]; const day = startTime[2]
+      const begin = beginTime[0] * 3600 + beginTime[1] * 60 + parseInt(beginTime[2])
+      let end = endTime[0] * 3600 + endTime[1] * 60 + parseInt(endTime[2])
+      end === 86400 ? end = 86399 : ''
+
+      getDevId({ plateNum: this.searchFormData.plateNum })
+        .then(({ data }) => {
+          // console.log(data, 'data')
+          // this.devIdno = data
+          // console.log(this.devIdno, '1')
+          axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123')
             .then(res => {
-              console.log(res.data)
+              console.log(this.devIdno)
+              axios.get('https://www.api.gosmooth.com.cn/video/history', {
+                params: {
+                  jsession: res.data.jsession,
+                  DownType: 2,
+                  DevIDNO: data,
+                  YEAR: year,
+                  MON: month,
+                  DAY: day,
+                  BEG: begin,
+                  END: end,
+
+                  RECTYPE: -1,
+                  FILEATTR: 2,
+                  LOC: 1,
+                  CHN: 0,
+                  ARM1: 0,
+                  ARM2: 0,
+                  RES: 0,
+                  STREAM: 0,
+                  STORE: 0
+                },
+                timeout: 20000
+              })
+                .then(res => {
+                  if (res.data.files) {
+                    console.log(res.data.files)
+                    this.tableData = res.data.files
+                  } else {
+                    this.$message({
+                      type: 'warning',
+                      message: '查询时间内无文件信息！'
+                    })
+                  }
+                })
+                .catch(err => {
+                  throw err
+                })
             })
             .catch(err => {
               throw err
