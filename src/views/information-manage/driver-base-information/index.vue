@@ -59,7 +59,7 @@
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-form-item label="所属地区:">
-                  <el-cascader v-model="listQuery.qualificationCity" style="width:100%;" size="small" :options="cityOptions" />
+                  <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择所属地区" style="width:100%;" size="small" :options="cityOptions" />
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
@@ -497,7 +497,7 @@
 </template>
 
 <script>
-import { regionData, CodeToText } from 'element-china-area-data'
+import { regionDataPlus, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import { cultureOptions } from '@/options'
 import {
@@ -569,7 +569,7 @@ export default {
       queryQualificationOptions: [],
       driverVelTyeOptions: [],
       cultureOptions: cultureOptions.list,
-      cityOptions: regionData,
+      cityOptions: regionDataPlus,
       qualificationRangeOption: [],
       driverStatusOption: [],
       advanced: false,
@@ -803,8 +803,22 @@ export default {
     },
     getList() {
       this.listLoading = true
-      if (this.listQuery.qualificationCity) this.listQuery.qualificationCity = parseInt(this.listQuery.qualificationCity[2])
-      selectList({ ...this.listQuery })
+      const { qualificationCity } = this.listQuery
+      const zoneIds = []
+      if (qualificationCity) {
+        if (!qualificationCity[2]) {
+          regionDataPlus[23].children.forEach(item => {
+            if (item.value === qualificationCity[1]) {
+              for (let i = 1; i < item.children.length; i++) {
+                zoneIds.push(item.children[i].value)
+              }
+              zoneIds.push(item.value)
+            }
+          })
+        } else zoneIds.push(qualificationCity[2])
+      }
+      // if (this.listQuery.qualificationCity) this.listQuery.qualificationCity = parseInt(this.listQuery.qualificationCity[2])
+      selectList({ ...this.listQuery, qualificationCity: zoneIds })
         .then(res => {
           const { data } = res
           this.tableData = data.list

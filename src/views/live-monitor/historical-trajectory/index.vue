@@ -144,7 +144,7 @@ export default {
       pickerOptions: {
         disabledDate: time => {
           if (this.searchFormData.startTime) {
-            return time.getTime() > new Date(this.searchFormData.startTime).getTime() + TWENTY_FOUR_HOURS
+            return time.getTime() > new Date(this.searchFormData.startTime).getTime() + TWENTY_FOUR_HOURS || time.getTime() < new Date(this.searchFormData.startTime).getTime()
           }
         }
       }
@@ -160,10 +160,12 @@ export default {
     // 拼接mqtt连接的topic
     this.topic = this.token + '/private/' + Date.parse(new Date())
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.searchFormData.plateNum = vm.$route.query.plateNum
+    })
+  },
   mounted() {
-    if (this.$route.query) {
-      this.searchFormData.plateNum = this.$route.query.plateNum
-    }
     // this.getmap([30.572903, 104.06632])
     this.map = new AMap.Map('container', {
       resizeEnable: true,
@@ -175,17 +177,17 @@ export default {
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
     // 连接mqtt
-    this.connectMqtt()
+    // this.connectMqtt()
     // 刷新页面或者跳转页面时，断开mqtt连接
-    window.onbeforeunload = () => {
-      if (this.client) this.client.end()
-      console.log('断开连接成功!')
-    }
-    this.$router.beforeEach((to, from, next) => {
-      if (this.client.connected) this.client.end()
-      console.log('断开连接成功!')
-      next()
-    })
+    // window.onbeforeunload = () => {
+    //   if (this.client) this.client.end()
+    //   console.log('断开连接成功!')
+    // }
+    // this.$router.beforeEach((to, from, next) => {
+    //   if (this.client.connected) this.client.end()
+    //   console.log('断开连接成功!')
+    //   next()
+    // })
   },
   methods: {
     searchType(queryString, cb) {

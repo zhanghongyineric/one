@@ -8,7 +8,9 @@
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
-              />
+              >
+                <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
+              </div>
             </el-col>
           </el-row>
         </el-form>
@@ -28,7 +30,7 @@
           </template>
         </el-table-column>
         <el-table-column label="更新时间" prop="updateTime" min-width="200px" align="center" show-overflow-tooltip />
-        <el-table-column label="操作" align="center" width="180px" fixed="right">
+        <el-table-column label="操作" align="center" width="220px" fixed="right">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -41,6 +43,12 @@
               type="primary"
               @click="handleDetail(scope.row)"
             >详情
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+            >删除
             </el-button>
           </template>
         </el-table-column>
@@ -190,7 +198,8 @@ export default {
       type: 'update',
       titles: {
         detail: '详情',
-        update: '修改'
+        update: '修改',
+        add: '新增'
       },
       currentRow: {},
       editorOption: {},
@@ -231,6 +240,12 @@ export default {
           this.listLoading = false
           throw err
         })
+    },
+    handleCreate() {
+      this.type = 'add'
+      this.disabled = false
+      this.visible = true
+      this.formData = {}
     },
     getSysPort() {
       sysPort()

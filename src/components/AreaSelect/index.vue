@@ -64,6 +64,7 @@ export default {
     ...mapGetters(['role', 'province', 'city', 'region'])
   },
   created() {
+    console.log(this.options, 'options')
     // 限制可选择区域
     if (this.limitArea) {
       // 管理员账号不限制

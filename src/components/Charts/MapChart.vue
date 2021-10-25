@@ -42,32 +42,34 @@ export default {
         this.timer = null
         if (this.mapData.length) {
           let index = 0
-          const { length } = this.mapData
-          this.timer = setInterval(() => {
-            this.chart.dispatchAction({
-              type: 'highlight',
-              seriesIndex: 0,
-              dataIndex: index
-            })
-            this.chart.dispatchAction({
-              type: 'showTip',
-              seriesIndex: 0,
-              dataIndex: index
-            })
-            setTimeout(() => {
-              for (let i = 0; i < length + 1; i++) {
-                if (i !== index) {
-                  this.chart.dispatchAction({
-                    type: 'downplay',
-                    seriesIndex: 0,
-                    dataIndex: i
-                  })
+          if (this.mapData) {
+            const { length } = this.mapData
+            this.timer = setInterval(() => {
+              this.chart.dispatchAction({
+                type: 'highlight',
+                seriesIndex: 0,
+                dataIndex: index
+              })
+              this.chart.dispatchAction({
+                type: 'showTip',
+                seriesIndex: 0,
+                dataIndex: index
+              })
+              setTimeout(() => {
+                for (let i = 0; i < length + 1; i++) {
+                  if (i !== index) {
+                    this.chart.dispatchAction({
+                      type: 'downplay',
+                      seriesIndex: 0,
+                      dataIndex: i
+                    })
+                  }
                 }
-              }
-            }, 2700)
-            index++
-            if (index > length) index = 0
-          }, 3000)
+              }, 2700)
+              index++
+              if (index > length) index = 0
+            }, 3000)
+          }
         }
       }
     }

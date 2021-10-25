@@ -261,7 +261,8 @@ export default {
         regionId: '',
         time: [],
         alarmType: '',
-        plateNum: ''
+        plateNum: '',
+        provinceId: ''
       },
       tableData: [],
       listLoading: false,
@@ -271,7 +272,7 @@ export default {
         children: 'children',
         value: 'unitId',
         expandTrigger: 'hover',
-        checkStrictly: false
+        checkStrictly: true
       },
       vehicleTypeMap: null,
       vehicleTypeOptions: [],
@@ -484,8 +485,11 @@ export default {
     getList() {
       this.listLoading = true
       let { regionId } = this.listQuery
-      if (regionId.length === 2 || regionId.length === 1) {
-        regionId = regionId[regionId.length - 1]
+      this.listQuery.provinceId = '622'
+      if (regionId.length === 2) {
+        regionId = regionId[1]
+      } else if (regionId.length === 1) {
+        regionId = ''
       }
       activeDefenseAlarm({ ...this.listQuery, regionId })
         .then(({ data }) => {

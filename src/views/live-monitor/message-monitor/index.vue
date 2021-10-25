@@ -190,11 +190,16 @@ export default {
                 style={cameraStyle}
                 on-click={(e) => that.toHistory(e)}
               ></i>
-              <i
-                class='el-icon-refresh-left'
-                style={status === '1' ? 'color:#409EFF;' : ''}
+              <img
+                src={require('../../../assets/history.png')}
+                style={status === '1' ? 'display:none;' : 'position:relative;top:1px;'}
                 on-click={(e) => that.getLocation(node.data, e)}
-              ></i>
+              />
+              <img
+                src={require('../../../assets/history-active.png')}
+                style={status === '1' ? 'position:relative;top:1px;' : 'display:none;'}
+                on-click={(e) => that.getLocation(node.data, e)}
+              />
             </div>
           )
         } else {
@@ -354,7 +359,7 @@ export default {
       this.map = new AMap.Map('container', {
         resizeEnable: true,
         center: [centerLng, centerLat],
-        zoom: 12,
+        zoom: 10,
         mapStyle: 'amap://styles/grey'
       })
       this.markers.forEach(marker => {

@@ -405,7 +405,7 @@ import AreaSelect from '@/components/AreaSelect'
 import { isPhoneNumber } from '@/utils'
 import { companyLevel } from '@/options'
 import getAreaText from '@/utils/AreaCodeToText'
-import { CodeToText } from 'element-china-area-data'
+import { CodeToText, regionDataPlus } from 'element-china-area-data'
 
 let that
 export default {
@@ -627,7 +627,6 @@ export default {
     closeDialog() {
       this.dialogFormVisible = false
       this.createFormData = { ...this.createFormDataTemp }
-      console.log(this.createFormData, '关闭')
     },
     // 运营状态
     getStatusCode() {
@@ -686,7 +685,6 @@ export default {
         .then(res => {
           const { data } = res
           data.forEach(item => {
-            console.log(data)
             if (item.label === '集体') {
               this.optionGroup.economyList[0].value = parseInt(item.value)
             } else if (item.label === '私营') {
@@ -733,11 +731,22 @@ export default {
     getList() {
       this.listLoading = true
       const place = this.listQuery.place
+      const zoneId = []
+      if (!place[2]) {
+        regionDataPlus[23].children.forEach(item => {
+          if (item.value === place[1]) {
+            for (let i = 1; i < item.children.length; i++) {
+              zoneId.push(item.children[i].value)
+            }
+            zoneId.push(item.value)
+          }
+        })
+      } else zoneId.push(place[2])
       fetchList(
         {
           pageNum: this.listQuery.pageNum,
           pageSize: this.listQuery.pageSize,
-          zoneId: place[2] || place[1],
+          zoneId,
           status: this.listQuery.status,
           operationType: this.listQuery.operationType,
           unitName: this.listQuery.unitName
@@ -799,7 +808,6 @@ export default {
     },
     // 点击查看详情
     handleDetail(row) {
-      console.log(this.optionGroup.economyList)
       if (row.economicType) row.economicType = parseInt(row.economicType)
       this.rowId = row.unitId
       this.createFormData = { ...row }

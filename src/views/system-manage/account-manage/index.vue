@@ -32,20 +32,31 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <!-- <el-col :md="6" :sm="24">
-              <el-form-item label="角色:">
-                <el-input v-model="listQuery.keyword" placeholder="请输入角色" @keyup.enter.native="handleSearch" />
+            <el-col :md="6" :sm="24">
+              <el-form-item label="角色名:">
+                <el-input v-model="listQuery.username" clearable placeholder="请输入角色名" @keyup.enter.native="handleSearch" />
               </el-form-item>
-            </el-col> -->
+            </el-col>
+            <template v-if="advanced">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="电话:">
+                  <el-input v-model="listQuery.phone" clearable placeholder="请输入电话号码" @keyup.enter.native="handleSearch" />
+                </el-form-item>
+              </el-col>
+            </template>
             <!--查询操作按钮-->
             <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
-                :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
+                :style="advanced && { float: 'right', overflow: 'hidden' } || {}"
               >
                 <el-button size="small" @click="resetQuery">重置</el-button>
                 <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
                 <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
+                <el-button type="text" @click="advanced=!advanced">
+                  {{ advanced ? '收起' : '展开' }}
+                  <i :class="advanced?'el-icon-arrow-up':'el-icon-arrow-down'" />
+                </el-button>
               </div>
             </el-col>
           </el-row>
