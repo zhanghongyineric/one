@@ -429,11 +429,11 @@ export default {
       trendAnalysis()
         .then(res => {
           const { data } = res
-          // for (let i = 1; i < 13; i++) {
-          //   if (!data[0][i]) data[0][i] = 0
-          // }
-          // this.trendData = Object.values(data[0])
-          this.trendData = Object.values(data)
+          const arr = new Array(12).fill(0)
+          data.forEach(v => {
+            arr[parseInt(v.month)] = v.count
+          })
+          this.trendData = arr
         })
         .catch(err => {
           throw err

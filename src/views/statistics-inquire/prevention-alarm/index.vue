@@ -96,12 +96,6 @@
         >
           <el-table-column label="地区" align="center" prop="zoneName" min-width="110" fixed />
           <el-table-column :label="tableLabel + '总次数（次）'" align="center" :prop="tableProp" min-width="170" />
-          <!-- <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" min-width="160" />
-          <el-table-column label="总入网率" align="center" prop="networkAccessRate">
-            <template v-slot="{row}">
-              <span>{{ row.networkAccessRate | networkAccessRateFilter }}</span>
-            </template>
-          </el-table-column> -->
           <el-table-column
             v-for="item in twoLevelColums"
             :key="item"
