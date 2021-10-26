@@ -42,43 +42,65 @@
           />
         </el-form-item></el-form>
       <div class="btn-box">
-        <el-button type="primary" size="small">重置</el-button>
+        <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
         <el-button type="primary" size="small" @click="getList">查询</el-button>
       </div>
       <el-divider />
       <el-table
+        v-loading="listLoading"
         :data="tableData"
         stripe
         style="width: 100%"
+        border
       >
         <el-table-column
+          type="index"
+          label="序号"
+          width="70"
+          align="center"
+        />
+        <el-table-column
+          align="center"
           label="车牌号"
-          width="180"
+          width="100"
         >
           {{ searchFormData.plateNum }}
         </el-table-column>
         <el-table-column
-          prop="beg"
-          label="开始时间"
-          width="180"
+          align="center"
+          prop="time"
+          label="时间范围"
         />
         <el-table-column
-          prop="end"
-          label="结束时间"
-        />
+          align="center"
+          prop="time"
+          width="70"
+          label="通道"
+        >CH1</el-table-column>
         <el-table-column
+          align="center"
           prop="len"
           label="文件大小"
+          width="100"
         >
           <template slot-scope="scope">
             {{ (scope.row.len / 1000000).toFixed(3) + 'MB' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="操作"
+          width="80"
+        >
+          <template slot-scope="scope">
+            <el-button type="primary" size="small" @click="playVideo(scope.row)">播放</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="right-box">
       <div id="cmsv6flash" class="video-box">
-        <iframe src="/historyVideo.html" width="100%" height="100%" frameborder="0" />
+        <iframe ref="iframe" src="/historyVideo.html" width="100%" height="100%" frameborder="0" />
       </div>
     </div>
   </div>
@@ -94,11 +116,12 @@ export default {
     return {
       advanced: false,
       searchFormData: {
-        plateNum: '川Y07065',
+        plateNum: '',
         time: '',
         startTime: '',
         endTime: ''
       },
+      listLoading: false,
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now()
@@ -123,27 +146,53 @@ export default {
         endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
       },
       devIdno: '',
-      tableData: []
+      tableData: [],
+      iframeWin: null
     }
   },
   created() {
     // this.getList()
   },
-  mounted() {},
+  mounted() {
+    this.changeTime()
+    this.iframeWin = this.$refs.iframe.contentWindow
+  },
   methods: {
-    resetQuery() {
-
+    resetSearch() {
+      this.searchFormData = {
+        plateNum: '',
+        time: '',
+        startTime: '',
+        endTime: ''
+      }
+      this.$nextTick(() => {
+        this.$refs['searchForm'].clearValidate()
+      })
     },
-    handleSearch() {
-      getDevId({ plateNum: this.searchFormData.plateNum })
-        .then(({ data }) => {
-          this.devIdno = data.data
-        })
-        .catch(err => {
-          throw err
-        })
+    changeTime(item) {
+      if (item) {
+        // 开始时间
+        const strHour = Math.floor(item.beg / 3600)
+        const strMinute = Math.floor((item.beg % 3600) / 60)
+        const strSecond = (item.beg % 3600) % 60
+        // 结束时间
+        const endHour = Math.floor(item.end / 3600)
+        const endMinute = Math.floor((item.end % 3600) / 60)
+        const endSecond = (item.end % 3600) % 60
+        item.time = `${this.searchFormData.startTime}  ${strHour}:${strMinute}:${strSecond} - ${endHour}:${endMinute}:${endSecond}`
+      }
+    },
+    playVideo(row) {
+      console.log(row)
+      this.iframeWin.postMessage({
+        cmd: 'getParams',
+        params: {
+          key: row.PlaybackUrlWs
+        }
+      }, '*')
     },
     getList() {
+      this.listLoading = true
       const startTime = this.searchFormData.startTime.split('-')
       const beginTime = this.searchFormData.endTime[0].split('-')
       const endTime = this.searchFormData.endTime[1].split('-')
@@ -154,12 +203,8 @@ export default {
 
       getDevId({ plateNum: this.searchFormData.plateNum })
         .then(({ data }) => {
-          // console.log(data, 'data')
-          // this.devIdno = data
-          // console.log(this.devIdno, '1')
           axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123')
             .then(res => {
-              console.log(this.devIdno)
               axios.get('https://www.api.gosmooth.com.cn/video/history', {
                 params: {
                   jsession: res.data.jsession,
@@ -181,28 +226,43 @@ export default {
                   STREAM: 0,
                   STORE: 0
                 },
-                timeout: 20000
+                timeout: 10000
               })
                 .then(res => {
                   if (res.data.files) {
                     console.log(res.data.files)
                     this.tableData = res.data.files
+                    this.tableData.forEach(item => {
+                      this.changeTime(item)
+                    })
                   } else {
                     this.$message({
                       type: 'warning',
                       message: '查询时间内无文件信息！'
                     })
                   }
+                  this.listLoading = false
                 })
                 .catch(err => {
+                  this.$message({
+                    type: 'error',
+                    message: '查询错误！'
+                  })
+                  this.listLoading = false
                   throw err
                 })
             })
             .catch(err => {
+              this.$message({
+                type: 'error',
+                message: '登录失败！'
+              })
+              this.listLoading = false
               throw err
             })
         })
         .catch(err => {
+          this.listLoading = false
           throw err
         })
     }

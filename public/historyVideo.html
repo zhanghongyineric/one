@@ -16,17 +16,8 @@
         var lang = new langZhCn();
 
         function langZhCn() {
-            this.userId = "用户名：";
-            this.password = "密码：";
-            this.login = "登陆";
-            this.jsession = "会话号：";
-            this.devIdno = "设备号：";
             this.play = "播放";
-            this.playback = "远程回放";
             this.loginError = "登陆失败";
-            this.singleChannel = '单通道播放'
-            this.multiChannel = '多通道同步回放'
-            this.multiChannelUnSync = '多通道同时回放'
             this.deviceNoError = '设备号错误'
         }
 
@@ -145,27 +136,60 @@
             }
         }
 
-        // 开始远程回放
-        function startPlayback() {
-            if (!isInitFinished) {
-                return;
-            } else {
-                //回放url
-                var url = `ws://121.36.90.54:6604/3/5?DownType=5&jsession=${jsession}&DevIDNO=040492631754&FILELOC=1&FILESVR=0&FILECHN=0&FILEBEG=32652&FILEEND=32977&PLAYIFRM=0&PLAYFILE=;0;0;21;10;21;32652;32977;0;0_0_1_2&PLAYBEG=0&PLAYEND=0&PLAYCHN=0&YEAR=21&MON=10&DAY=21`;
-                var url1 = `ws://121.36.90.54:6604/3/5?DownType=5&jsession=${jsession}&DevIDNO=040492631754&FILELOC=1&FILESVR=0&FILECHN=0&FILEBEG=32647&FILEEND=32976&PLAYIFRM=0&PLAYFILE=;0;0;21;10;21;32647;32976;0;0_0_0_1&PLAYBEG=0&PLAYEND=0&PLAYCHN=0&YEAR=21&MON=10&DAY=21`;
-                var url2 = `ws://121.36.90.54:6604/3/5?DownType=5&jsession=${jsession}&DevIDNO=014447934932&FILELOC=1&FILESVR=0&FILECHN=0&FILEBEG=20619&FILEEND=22847&PLAYIFRM=0&PLAYFILE=;0;0;21;10;20;20619;22847;0;0_0_0_1&PLAYBEG=0&PLAYEND=0&PLAYCHN=0&YEAR=21&MON=10&DAY=20`;
-                //回放之前先停止
-                swfobject.stopVodM();
-                swfobject1.stopVodM();
-                swfobject2.stopVodM();
-                swfobject3.stopVodM();
-
-                swfobject.startVodM(url, 0);
-                swfobject1.startVodM(url1, 0);
-                // swfobject2.startVodM(url, 0);
-                // swfobject3.startVodM(url, 0);
+        var url = ``;
+        var url1 = ``;
+        var url2 = ``;
+        var url3 = ``;
+        var current = 0
+        window.addEventListener('message', (e) => {
+            console.log(e);
+            let data = e.data
+            switch(data.cmd) {
+                case 'getParams':
+                    const arr = data.params.key.split('jsession=')
+                    if (current === 0) {
+                        url = arr[0] + 'jsession=' + `${jsession}` + arr[1]
+                        swfobject.stopVodM();
+                        swfobject.startVodM(url, 0)
+                        current++
+                    } else if (current === 1) {
+                        url1 = arr[0] + 'jsession=' + `${jsession}` + arr[1]
+                        swfobject1.stopVodM();
+                        swfobject1.startVodM(url1, 0)
+                        current++
+                    } else if (current === 2) {
+                        url2 = arr[0] + 'jsession=' + `${jsession}` + arr[1]
+                        swfobject2.stopVodM();
+                        swfobject2.startVodM(url2, 0)
+                        current++
+                    } else if (current === 3) {
+                        url3 = arr[0] + 'jsession=' + `${jsession}` + arr[1]
+                        swfobject3.stopVodM();
+                        swfobject3.startVodM(url3, 0)
+                        current = 0
+                    }
+                    break;
+                default: break;
             }
-        }
+        })
+
+        // // 开始远程回放
+        // function startPlayback() {
+        //     if (!isInitFinished) {
+        //         return;
+        //     } else {
+        //         //回放之前先停止
+        //         swfobject.stopVodM();
+        //         swfobject1.stopVodM();
+        //         swfobject2.stopVodM();
+        //         swfobject3.stopVodM();
+
+        //         // swfobject.startVodM(url, 0);
+        //         swfobject1.startVodM(url1, 0);
+        //         // swfobject2.startVodM(url, 0);
+        //         // swfobject3.startVodM(url, 0);
+        //     }
+        // }
 
         function getPlaybackLink() {
             var serverIp = '121.36.90.54';
@@ -301,27 +325,27 @@
         }
         userLogin()
     </script>
+    <style>
+        .player-box {
+            display: inline-block;
+            margin-left: 5%;
+        }
+    </style>
 </head>
-<body onload="onReady();">
+<body onload="onReady();" style="min-width:950px">
 
-<div style="display: inline-block;">
+<div class="player-box">
     <div id="cmsv6flash"></div>
 </div>
-<div style="display: inline-block;">
+<div class="player-box">
     <div id="cmsv6flash1"></div>
 </div>
-<div style="display: inline-block;">
+<div class="player-box" style="margin-top:2%;">
     <div id="cmsv6flash2"></div>
 </div>
-<div style="display: inline-block;">
+<div class="player-box">
     <div id="cmsv6flash3"></div>
 </div>
-       
-<div class="player-param">
-    <button id="playbackBtn" class="button button-primary button-rounded button-small"
-    onclick="startPlayback();">开始回放</button>
-</div>
-
 </body>
 </html>
 </body>
