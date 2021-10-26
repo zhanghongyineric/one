@@ -769,7 +769,7 @@
           </el-row>
           <el-row>
             <el-form-item label="设备类型:" prop="functions">
-              <el-select v-model="accessFormData.functions" clearable size="small" multiple placeholder="请选择设备类型">
+              <el-select v-model="accessFormData.functions" clearable size="small" placeholder="请选择设备类型">
                 <el-option
                   v-for="item in functionsOptions"
                   :key="item.value"
@@ -1594,7 +1594,6 @@ export default {
             data.serverIpPort = data.serverIpPort ? data.serverIpPort.toString() : null
             data.communicationMode = data.communicationMode ? data.communicationMode.toString() : null
             data.communicationProtocolVersion = data.communicationProtocolVersion ? data.communicationProtocolVersion.toString() : null
-            data.functions = data.functions ? data.functions.split(',') : null
             this.accessFormData = {
               ...data,
               id: data.id,

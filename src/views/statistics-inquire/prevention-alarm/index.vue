@@ -333,6 +333,7 @@ export default {
           data.forEach(v => { sum += v[this.typeFiled] })
           data.forEach(v => {
             this.pieChartData.push({ value: v[this.typeFiled], name: vehicleTypeMap[v.vehicleType] })
+            console.log(v[this.typeFiled], v[this.typeFiled] / sum * 100, 'v[this.typeFiled] / sum * 100')
             this.funnelChartData.push({
               value: Math.ceil(v[this.typeFiled] === 0 ? '' : v[this.typeFiled] / sum * 100),
               name: vehicleTypeMap[v.vehicleType]

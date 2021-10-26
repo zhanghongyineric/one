@@ -70,7 +70,7 @@
       </div>
     </div>
     <div class="content-box">
-      <div class="left-box">
+      <div class="left-box" :style="tableWidth">
         <el-table
           :data="tableData"
           stripe
@@ -177,7 +177,8 @@ export default {
 
       twoLevelColums: [],
       allVehicleTypeNames: new Map(),
-      trendYear: '2021'
+      trendYear: '2021',
+      tableWidth: 'width:55%;'
     }
   },
   created() {
@@ -189,6 +190,15 @@ export default {
   mounted() {
     const currentDate = new Date()
     this.trendYear = currentDate.getFullYear().toString()
+  },
+  tableData: {
+    deep: true,
+    handler(nval, oval) {
+      this.tableWidth = 'width:55.5%;'
+      setTimeout(() => {
+        this.tableWidth = 'width:55%'
+      })
+    }
   },
   methods: {
     getTableData(data, allVehicle, vehicle, netRate) {
@@ -236,7 +246,10 @@ export default {
       this.getSectorStatistics()
       this.getVehicleData()
       this.getVehicleTrends()
-      // this.barChartData = []
+      this.tableWidth = 'width:55.5%;'
+      setTimeout(() => {
+        this.tableWidth = 'width:55%'
+      }, 500)
     },
     getSectorStatistics() {
       this.pieChartData = []
