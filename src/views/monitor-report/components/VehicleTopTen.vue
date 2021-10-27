@@ -1,16 +1,7 @@
 <template>
   <el-card class="box-card">
-    <div slot="header" class="f">
+    <div slot="header" class="f jc-sb ai-c">
       <span class="title">车辆违章报警排名前十</span>
-    </div>
-
-    <nav class="f jc-sb ai-c">
-      <el-radio-group v-model="violationType" size="medium">
-        <el-radio-button label="1">超速报警</el-radio-button>
-        <el-radio-button label="2">疲劳驾驶</el-radio-button>
-        <el-radio-button label="3">凌晨运营</el-radio-button>
-        <el-radio-button label="4">离线位移</el-radio-button>
-      </el-radio-group>
       <el-button
         type="primary"
         plain
@@ -20,6 +11,15 @@
         @click="handleDownload"
       >导出表格
       </el-button>
+    </div>
+
+    <nav class="f jc-sb ai-c">
+      <el-radio-group v-model="violationType" size="medium">
+        <el-radio-button label="1">超速报警</el-radio-button>
+        <el-radio-button label="2">疲劳驾驶</el-radio-button>
+        <el-radio-button label="3">凌晨运营</el-radio-button>
+        <el-radio-button label="4">离线位移</el-radio-button>
+      </el-radio-group>
     </nav>
     <el-table
       v-loading="loading"

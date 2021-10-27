@@ -26,6 +26,11 @@ export default {
     value: {
       type: Number,
       default: null
+    },
+    // 是否默认选中第一个
+    defaultFirstOption: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -52,6 +57,11 @@ export default {
     getDeptList() {
       netGetDept().then(res => {
         this.deptList = res.data
+        if (this.defaultFirstOption) {
+          const platForm = this.deptList.length ? res.data[0].deptId : null
+
+          this.$emit('initFinished', platForm)
+        }
       })
     }
   }

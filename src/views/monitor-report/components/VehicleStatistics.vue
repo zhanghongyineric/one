@@ -3,21 +3,6 @@
     <div slot="header" class="f jc-sb ai-c">
       <span class="title">车辆基本情况统计</span>
       <div class="buttons">
-        <el-popover trigger="hover">
-          <div>
-            <el-checkbox
-              v-for="item in rows"
-              v-model="item.visible"
-              style="display:block;"
-              @change="rowChange"
-            >
-              {{ item.label }}
-            </el-checkbox>
-          </div>
-          <el-button slot="reference" type="primary" plain size="mini" icon="el-icon-setting" class="header-setting">
-            行设置
-          </el-button>
-        </el-popover>
         <el-button
           type="primary"
           plain
@@ -42,33 +27,48 @@
         show
       />
       <el-table-column
-        prop="vehicleNum"
+        prop="vehicleCount"
         label="车辆数"
       />
       <el-table-column
-        prop="OnlineVehicleNum"
+        prop="vehicleOnlineCount"
         label="在线车辆数"
       />
       <el-table-column
-        prop="OnlineRadio"
+        v-slot="{row}"
+        prop="onlineRate"
         label="在线率"
-      />
+      >
+        {{ row.onlineRate === null?'-':`${row.onlineRate}%` }}
+      </el-table-column>
       <el-table-column
+        v-slot="{row}"
         prop="mileage"
         label="累计行驶总里程"
-      />
+      >
+        {{ row.mileage === null?'-':row.mileage }}
+      </el-table-column>
       <el-table-column
-        prop="averageMileage"
+        v-slot="{row}"
+        prop="mileageAvg"
         label="车辆平均行驶里程"
-      />
+      >
+        {{ row.mileageAvg === null?'-':row.mileageAvg }}
+      </el-table-column>
       <el-table-column
-        prop="dayAverageMileage"
+        v-slot="{row}"
+        prop="mileageDayAvg"
         label="车辆日均行驶里程"
-      />
+      >
+        {{ row.mileageDayAvg === null?'-':row.mileageDayAvg }}
+      </el-table-column>
       <el-table-column
-        prop="alarmAverageHundred"
+        v-slot="{row}"
+        prop="alarmCountByMileage"
         label="百公里车辆平均报警数"
-      />
+      >
+        {{ row.alarmCountByMileage === null?'-':row.alarmCountByMileage }}
+      </el-table-column>
 
     </el-table>
   </el-card>
@@ -80,7 +80,13 @@ let sumRow = []// 记录统计行的数据
 export default {
   name: 'VehicleStatistics',
   props: {
+    // 表格数据
     data: {
+      type: Array,
+      required: true
+    },
+    // 需要显示的车辆类型
+    vehicleType: {
       type: Array,
       required: true
     },
@@ -93,33 +99,26 @@ export default {
     return {
       downloadLoading: false, // 表格下载加载状态
       editing: false, // 编辑中
-      tableData: [], // 表格数据
-      rows: [], // 所有的行
-      visibleRows: [], // 展示的行
+      allTableData: [], // 所有的表格数据
       sumRow: []
     }
   },
-  watch: {
-    data: {
-      deep: true,
-      handler(data) {
-        this.tableData = data
-        this.rows = data.map((item, index) => ({ label: item.vehicleType, index, visible: true }))
-      }
+  computed: {
+    // 筛选后的表格数据
+    tableData() {
+      return this.data.filter(item => this.vehicleType.includes(item.vehicleType))
     }
   },
+  // watch: {
+  //   data: {
+  //     deep: true,
+  //     handler(data) {
+  //       this.tableData = data
+  //       this.allTableData = data.map(item => ({ ...item, visible: true }))
+  //     }
+  //   }
+  // },
   methods: {
-    // 行选中发生改变
-    rowChange() {
-      const tableData = []
-
-      this.rows.forEach(row => {
-        if (row.visible) {
-          tableData.push(this.data[row.index])
-        }
-      })
-      this.tableData = tableData
-    },
     // 自定义表格列统计方法
     getSummaries(param) {
       const { columns, data } = param
@@ -144,21 +143,21 @@ export default {
         totalAlarmHundred += item[columns[1].property] * item[columns[7].property]
       })
 
-      totalOnlineRadio = (totalOnLineCar / totalCar * 100).toFixed(2) // 计算总在线率
-      totalAverageMileage = (totalMileage / totalCar).toFixed(2)// 计算总平均行驶里程
-      totalDayAverageMileage = (totalDayMileage / totalCar).toFixed(2)// 计算总日均行驶里程
-      totalAlarmAverageHundred = (totalAlarmHundred / totalCar).toFixed(2)// 计算总百公里平均报警
+      totalOnlineRadio = totalCar === 0 ? '-' : (totalOnLineCar / totalCar * 100).toFixed(2) // 计算总在线率
+      totalAverageMileage = totalCar === 0 ? '-' : (totalMileage / totalCar).toFixed(2)// 计算总平均行驶里程
+      totalDayAverageMileage = totalCar === 0 ? '-' : (totalDayMileage / totalCar).toFixed(2)// 计算总日均行驶里程
+      totalAlarmAverageHundred = totalCar === 0 ? '-' : (totalAlarmHundred / totalCar).toFixed(2)// 计算总百公里平均报警
 
       // 在导出表格时，将sumRow追加到表格数据里面
       sumRow = {
         'vehicleType': `合计`,
-        'vehicleNum': `${totalCar}辆`,
-        'OnlineVehicleNum': `${totalOnLineCar}辆`,
-        'OnlineRadio': `${totalOnlineRadio}%`,
+        'vehicleCount': `${totalCar}辆`,
+        'vehicleOnlineCount': `${totalOnLineCar}辆`,
+        'onlineRate': `${totalOnlineRadio}%`,
         'mileage': `${totalMileage}km`,
-        'averageMileage': `${totalAverageMileage}km`,
-        'dayAverageMileage': `${totalDayAverageMileage}km`,
-        'alarmAverageHundred': `${totalAlarmAverageHundred}次`
+        'mileageAvg': `${totalAverageMileage}km`,
+        'mileageDayAvg': `${totalDayAverageMileage}km`,
+        'alarmCountByMileage': `${totalAlarmAverageHundred}次`
       }
 
       return [
@@ -177,7 +176,7 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['车辆类型', '车辆数', '在线车辆数', '在线率', '累计行驶总里程', '车辆平均行驶里程', '车辆日均行驶里程', '百公里车辆平均报警数']// 表头显示文字
-        const filterVal = ['vehicleType', 'vehicleNum', 'OnlineVehicleNum', 'OnlineRadio', 'mileage', 'averageMileage', 'dayAverageMileage', 'alarmAverageHundred']// 表格字段
+        const filterVal = ['vehicleType', 'vehicleCount', 'vehicleOnlineCount', 'onlineRate', 'mileage', 'mileageAvg', 'mileageDayAvg', 'alarmCountByMileage']// 表格字段
         const list = this.tableData.concat([sumRow]) // 表格数据
         const data = this.formatJson(filterVal, list)
 
@@ -192,13 +191,7 @@ export default {
       })
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+      return jsonData.map(v => filterVal.map(j => v[j]))
     }
   }
 }

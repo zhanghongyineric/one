@@ -49,7 +49,13 @@
       >
         <template v-slot="{row}">
           <span v-show="!editing || head.prop === 'name'">{{ row[head.prop] }}</span>
-          <el-input v-show="editing && head.prop !== 'name'" v-model="row[head.prop]" size="small" />
+          <el-input-number
+            v-show="editing && head.prop !== 'name'"
+            v-model="row[head.prop]"
+            style="width: 100%;"
+            :controls="false"
+            size="small"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -88,11 +94,8 @@ export default {
     }
   },
   watch: {
-    data: {
-      deep: true,
-      handler(data) {
-        this.setOption(deepClone(data))
-      }
+    data(data) {
+      this.setOption(deepClone(data))
     }
   },
   methods: {

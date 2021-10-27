@@ -59,7 +59,7 @@ export default {
       }
     },
     dialogWidth() {
-      return this.type === 'week' ? '50%' : '100%'
+      return this.type === 'week' ? '50%' : '80%'
     }
   },
   methods: {

@@ -1,14 +1,7 @@
 <template>
   <el-card class="box-card">
-    <div slot="header" class="f">
+    <div slot="header" class="f jc-sb ai-c">
       <span class="title">违章报警排名前十</span>
-    </div>
-
-    <nav class="f jc-sb ai-c">
-      <el-radio-group v-model="unitType" size="medium">
-        <el-radio-button label="1">运输企业</el-radio-button>
-        <el-radio-button label="2">营运企业</el-radio-button>
-      </el-radio-group>
       <el-button
         type="primary"
         plain
@@ -18,6 +11,14 @@
         @click="handleDownload"
       >导出表格
       </el-button>
+    </div>
+
+    <nav class="f jc-sb ai-c">
+      <el-radio-group v-model="unitType" size="medium">
+        <el-radio-button label="1">运输企业</el-radio-button>
+        <el-radio-button label="2">营运企业</el-radio-button>
+      </el-radio-group>
+
     </nav>
     <el-table
       v-loading="loading"

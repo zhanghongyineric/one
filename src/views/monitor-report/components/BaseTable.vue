@@ -1,4 +1,4 @@
-<!--基础表格模块-->
+<!--基础卡片表格模块-->
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">

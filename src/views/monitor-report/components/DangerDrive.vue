@@ -13,41 +13,21 @@
           size="mini"
           icon="el-icon-download"
           :loading="downloadLoading"
-          @click="handleDownload"
+          @click="handleDownload('ADAS')"
         >导出表格
         </el-button>
       </div>
       <el-table
         v-loading="loading"
-        :data="data.ADAS"
+        :data="data.ADAS.tableData"
         border
       >
         <el-table-column
-          prop="a"
-          label="总报警数"
-          show
+          v-for="head in data.ADAS.tableHead"
+          :key="head.prop"
+          :prop="head.prop"
+          :label="head.label"
         />
-        <el-table-column
-          prop="b"
-          label="2级报警"
-        />
-        <el-table-column
-          prop="c"
-          label="车道偏离2级"
-        />
-        <el-table-column
-          prop="d"
-          label="前向碰撞2级"
-        />
-        <el-table-column
-          prop="f"
-          label="车距过近2级"
-        />
-        <el-table-column
-          prop="g"
-          label="驾驶辅助功能失效2级"
-        />
-
       </el-table>
     </section>
     <section>
@@ -59,56 +39,27 @@
           size="mini"
           icon="el-icon-download"
           :loading="downloadLoading"
-          @click="handleDownload"
+          @click="handleDownload('DSM')"
         >导出表格
         </el-button>
       </div>
       <el-table
         v-loading="loading"
-        :data="data.DSM"
+        :data="data.DSM.tableData"
         border
       >
         <el-table-column
-          prop="a"
-          label="总报警数"
-          show
+          v-for="head in data.DSM.tableHead"
+          :key="head.prop"
+          :prop="head.prop"
+          :label="head.label"
         />
-        <el-table-column
-          prop="b"
-          label="2级报警"
-        />
-        <el-table-column
-          prop="c"
-          label="接打电话"
-        />
-        <el-table-column
-          prop="d"
-          label="抽烟"
-        />
-        <el-table-column
-          prop="f"
-          label="生理疲劳"
-        />
-        <el-table-column
-          prop="g"
-          label="分神驾驶"
-        />
-        <el-table-column
-          prop="h"
-          label="长时间不目视前方"
-        />
-        <el-table-column
-          prop="i"
-          label="未监测到驾驶员"
-        />
-
       </el-table>
     </section>
   </el-card>
 </template>
 
 <script>
-const sumRow = []// 记录统计行的数据
 
 export default {
   name: 'DangerDrive',
@@ -124,27 +75,23 @@ export default {
   },
   data() {
     return {
-      downloadLoading: false, // 表格下载加载状态
-      editing: false, // 编辑中
-      rows: [], // 所有的行
-      visibleRows: [], // 展示的行
-      sumRow: []
+      downloadLoading: false // 表格下载加载状态
     }
   },
   methods: {
     // 下载表格
-    handleDownload() {
+    handleDownload(type) {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['车辆类型', '车辆数', '在线车辆数', '在线率', '累计行驶总里程', '车辆平均行驶里程', '车辆日均行驶里程', '百公里车辆平均报警数']// 表头显示文字
-        const filterVal = ['vehicleType', 'vehicleNum', 'OnlineVehicleNum', 'OnlineRadio', 'mileage', 'averageMileage', 'dayAverageMileage', 'alarmAverageHundred']// 表格字段
-        const list = this.tableData.concat([sumRow]) // 表格数据
+        const tHeader = this.data[type].tableHead.map(item => item.label)// 表头显示文字
+        const filterVal = this.data[type].tableHead.map(item => item.prop)// 表格字段
+        const list = this.data[type].tableData // 表格数据
         const data = this.formatJson(filterVal, list)
 
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: '车辆基本情况统计',
+          filename: `${type}报警数据`,
           autoWidth: true,
           bookType: 'xlsx'// 导出文件类型
         })
@@ -152,13 +99,7 @@ export default {
       })
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+      return jsonData.map(v => filterVal.map(j => v[j]))
     }
   }
 }
