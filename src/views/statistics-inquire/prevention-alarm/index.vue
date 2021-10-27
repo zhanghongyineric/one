@@ -327,11 +327,17 @@ export default {
           data.forEach(v => { sum += v[this.typeFiled] })
           data.forEach(v => {
             this.pieChartData.push({ value: v[this.typeFiled], name: vehicleTypeMap[v.vehicleType] })
-            console.log(v[this.typeFiled], v[this.typeFiled] / sum * 100, 'v[this.typeFiled] / sum * 100')
             this.funnelChartData.push({
-              value: Math.ceil(v[this.typeFiled] === 0 ? '' : v[this.typeFiled] / sum * 100),
+              value: v[this.typeFiled] === 0 ? '' : v[this.typeFiled] / sum * 100,
               name: vehicleTypeMap[v.vehicleType]
             })
+          })
+          this.funnelChartData.forEach(item => {
+            if (item.value) {
+              item.value = item.value.toFixed(2)
+            } else {
+              item.value = 0
+            }
           })
         })
         .catch(err => {
@@ -356,11 +362,15 @@ export default {
       const colorList = ['#91C7AE', '#339999', '#99CCFF', '#66CC99', '#EBAC4A', '#666699', '#FF99CC', '#CC9933', '#FFCC33', '#003333']
       const allVehicleCountMap = new Map()
       data.forEach(v => {
+        let sum = 0
         this.lineMixBarXData.push(v.zoneName)
-        this.accessRateData.push(v[this.typeFiled])
         v.alarmTypes.forEach(item => {
           this.legendData.push(vehicleTypeMap[item.vehicleType])
+          item[this.tableProp] = item[this.tableProp] || 0
+          sum += item[this.tableProp]
         })
+        v[this.tableProp] = sum
+        this.accessRateData.push(sum)
       })
       this.legendData = Array.from(new Set(this.legendData))
       this.legendData.forEach((v, index) => {
@@ -421,13 +431,17 @@ export default {
 
           // 合计行
           const sumObj = { zoneName: '合计' }
-          const sum = this.typeFiled
-          const foo = ([first, ...rest]) => first.toUpperCase() + rest.join('')
-          sumObj[sum] = data['total' + foo(this.typeFiled)]
+          const total = this.tableData.map(row => row[this.typeFiled]).reduce((acc, cur) => (cur + acc), 0)
+          sumObj[this.tableProp] = total
           this.twoLevelColums.forEach(v => {
-            data.alarmTypeDtos.forEach(item => {
-              vehicleTypeMap[item.vehicleType] === v ? sumObj[this.allVehicleTypeNames.get(v)] = item[this.typeFiled] : ''
+            const total1 = this.tableData.map(row => {
+              return row[this.allVehicleTypeNames.get(v)]
             })
+            const t2 = total1.reduce((acc, cur) => {
+              cur = cur || 0
+              return cur + acc
+            }, 0)
+            sumObj[this.allVehicleTypeNames.get(v)] = t2
           })
           this.tableData.push(sumObj)
         })

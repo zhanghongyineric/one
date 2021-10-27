@@ -73,10 +73,14 @@
         />
         <el-table-column
           align="center"
-          prop="time"
+          prop="chn"
           width="70"
           label="通道"
-        >CH1</el-table-column>
+        >
+          <template slot-scope="scope">
+            {{ `CH${scope.row.chn + 1}` }}
+          </template>
+        </el-table-column>
         <el-table-column
           align="center"
           prop="len"

@@ -16,7 +16,7 @@
           <span class="text">在线车辆</span>
         </div>
         <div class="statistics-num">
-          <span class="number">0</span>
+          <span class="number">{{ alarmCount }}</span>
           <span class="text">报警车辆</span>
         </div>
       </div>
@@ -151,6 +151,7 @@ export default {
       realTimeCount: 0, // 在线车辆
       onlineCount: 0, // 上线数
       vehicletotal: 0, // 入网车辆数
+      alarmCount: 0, // 报警车辆数
       checkedCars: 0, // 已选中的车辆数
       checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
@@ -398,10 +399,11 @@ export default {
     getVehicleNumber() {
       vehicleNumber()
         .then(res => {
-          const { data: { realTimeCount, onlineCount, vehicletotal }} = res
+          const { data: { realTimeCount, onlineCount, vehicletotal, alarmCount }} = res
           this.realTimeCount = realTimeCount
           this.onlineCount = onlineCount
           this.vehicletotal = vehicletotal
+          this.alarmCount = alarmCount
         })
         .catch(err => {
           throw err

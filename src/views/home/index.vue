@@ -180,7 +180,7 @@
             </div>
           </el-col>
           <el-col :span="8">
-            <div class="box-monitor">
+            <div class="box-monitor" style="cursor:pointer;" @click="toAlarmDetail">
               <span class="title">报警事件</span>
               <el-table
                 ref="eventTable"
@@ -394,6 +394,9 @@ export default {
         .catch(err => {
           throw err
         })
+    },
+    toAlarmDetail() {
+      this.$router.push('/live-monitor/alarm-detail')
     },
     intervalOnlineCars() {
       let timer = window.setInterval(() => {
