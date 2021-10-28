@@ -148,7 +148,7 @@
             <div class="box-monitor">
               <monitor-bar-chart :x-data="companyChartXData" :y-data="companyChartYData" :height="'120%'" />
             </div>
-            <div class="box-monitor">
+            <div class="box-monitor" style="cursor:pointer" @click="toFocusVehicle">
               <span class="title">重点关注车辆列表</span>
               <el-table
                 ref="carTable"
@@ -164,7 +164,15 @@
                 <el-table-column prop="plateNum" label="车牌号码" width="100px" align="center" show-overflow-tooltip />
                 <el-table-column prop="plateColor" label="车牌颜色" width="100px" align="center" show-overflow-tooltip />
                 <el-table-column prop="vehicleType" label="车辆类型" show-overflow-tooltip align="center" />
-                <el-table-column prop="vehicleSumFactor" label="安全系数" align="center" show-overflow-tooltip />
+                <el-table-column prop="safecodeScore" label="安全码得分" align="center" show-overflow-tooltip />
+                <el-table-column prop="safecodeColor" label="安全码颜色" align="center" show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <svg-icon v-if="scope.row.safecodeColor == 1" icon-class="safecode" style="width:16px;height: 16px;background-color:green;margin-top:5px;" />
+                    <svg-icon v-else-if="scope.row.safecodeColor == 2" icon-class="safecode" style="width:16px;height: 16px;background-color:blue;margin-top:5px;" />
+                    <svg-icon v-else-if="scope.row.safecodeColor == 3" icon-class="safecode" style="width:16px;height: 16px;background-color:#FFA500;margin-top:5px;" />
+                    <svg-icon v-else icon-class="safecode" style="width:16px;height: 16px;background-color:red;margin-top:5px;" />
+                  </template>
+                </el-table-column>
               </el-table>
             </div>
           </el-col>
@@ -263,7 +271,6 @@ import {
 import {
   enterpriseRanking,
   vehicleProportion,
-  keyVehicle,
   facilitatorAssessmentAnalysis,
   mechanismAssessmentAnalysis,
   unitAssessmentAnalysis,
@@ -271,6 +278,7 @@ import {
   trendAnalysis,
   alarmEvent
 } from '@/api/home'
+import { focusVehicles } from '@/api/business-manage/focus-on-vehicles'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
 import MonitorPieChart from '@/components/Charts/PieChart.vue'
@@ -551,18 +559,19 @@ export default {
         })
     },
     getKeyVehicle() {
-      keyVehicle({
+      focusVehicles({
         pageNum: 1,
         pageSize: 50
       }).then(res => {
         const { data } = res
-        this.carList = data
         const colorMap = onlineOption['车牌颜色编码'].map
-        const vehicleMap = onlineOption['vehicle_type_code'].map
-        this.carList.forEach(item => {
+        const vehicleMap = onlineOption['vehicle_type'].map
+        data.list.forEach(item => {
+          console.log(item)
           item.plateColor = colorMap[item.plateColor]
           item.vehicleType = vehicleMap[item.vehicleType]
         })
+        this.carList = data.list
       })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -693,6 +702,9 @@ export default {
     },
     gotoPage(path) {
       this.$router.push(path)
+    },
+    toFocusVehicle() {
+      this.$router.push('/business-management/focus-on-vehicles')
     }
   }
 }

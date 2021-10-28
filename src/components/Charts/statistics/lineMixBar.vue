@@ -80,6 +80,7 @@ export default {
     barChartData: {
       deep: true,
       handler() {
+        console.log(this.barChartData)
         this.setOptions()
       }
     },
