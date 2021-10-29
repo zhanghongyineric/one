@@ -5,11 +5,11 @@
     fullscreen
   >
     <el-image v-if="fileType ==='image'" :src="fileUrl" fit="contain" style="max-width: 100%;max-height: 100%" />
-    <iframe v-else-if="fileType ==='pdf'" :src="fileUrl" frameborder="0" style="width: 100%;height: 100%;" />
+    <iframe v-else-if="fileType ==='pdf'" ref="iframe" :src="fileUrl" frameborder="0" style="width: 100%;height: 100%;">加载中，请稍后...</iframe>
     <video v-else-if="fileType ==='video'" controls style="width: 100%;height: 100%">
       <source :src="fileUrl" type="video/mp4">
       <p>Your browser doesn't support HTML5 video. Here is
-        a <a href="myVideo.mp4">link to the video</a> instead.
+        a <a :href="fileUrl">link to the video</a> instead.
       </p>
     </video>
     <p v-else class="f ai-c">

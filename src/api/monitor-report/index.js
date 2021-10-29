@@ -3,7 +3,7 @@ import createRequest from '@/utils/createRequest'
 const request = createRequest('')
 
 // 获取周
-export function fetchWeek() {
+export function netGetWeek() {
   return request({
     url: '/admin/safereport/week',
     method: 'get'
@@ -11,7 +11,7 @@ export function fetchWeek() {
 }
 
 // 获取周报数据
-export function fetchWeekData(params) {
+export function netGetWeekData(params) {
   return request({
     url: '/admin/safereport/monitor/weekly',
     method: 'get',

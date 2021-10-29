@@ -46,11 +46,27 @@ export default {
       type: Object,
       required: true
     },
+    // 是否多表格
+    multi: {
+      type: Boolean,
+      default: false
+    },
+    // 多个表格时所有的表格数据
+    allData: {
+      type: Object,
+      default: _ => ({})
+    },
+    // 多表格时的配置文件
+    config: {
+      type: Object,
+      default: _ => ({})
+    },
     // 加载状态
     loading: {
       type: Boolean,
       required: true
     },
+
     // 表格标题
     title: {
       type: String,
@@ -74,16 +90,35 @@ export default {
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = this.data.tableHead.map(item => item.label)// 表头显示文字
         const filterVal = this.data.tableHead.map(item => item.prop)// 表格字段
-        const list = this.data.tableData // 表格数据
-        const data = this.formatJson(filterVal, list)
 
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: this.title,
-          autoWidth: true,
-          bookType: 'xlsx'// 导出文件类型
-        })
+        if (!this.multi) {
+          const list = this.data.tableData // 表格数据
+          const data = this.formatJson(filterVal, list)
+
+          excel.export_json_to_excel({
+            header: tHeader,
+            data,
+            filename: this.title,
+            autoWidth: true,
+            bookType: 'xlsx'// 导出文件类型
+          })
+        } else {
+          const data = Object.keys(this.allData).map(key => ({
+            sheetName: this.config[key].sheetName,
+            multiHeader: this.config[key].multiHeader,
+            header: tHeader,
+            merges: this.config[key].merges,
+            data: this.formatJson(filterVal, this.allData[key]),
+            autoWidth: true
+          }))
+
+          excel.export_json_to_excel_multi({
+            data: data,
+            bookType: 'xlsx', // 导出文件类型
+            filename: this.title
+          })
+        }
+
         this.downloadLoading = false
       })
     },

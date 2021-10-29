@@ -59,7 +59,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <Echarts ref="lineChart" />
+    <Echarts ref="lineChart" resize-when-set-option />
   </el-card>
 </template>
 
@@ -130,7 +130,6 @@ export default {
         })
         return cData
       })
-
       this.$refs['lineChart'].setOption({
         tooltip: {
           trigger: 'axis'
@@ -182,7 +181,7 @@ export default {
             data: chartData[3]
           }
         ]
-      })
+      }, xAxisData.length > 0)
     },
     // 下载表格
     handleDownload() {
@@ -210,11 +209,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
-::v-deep .el-table__row td {
-  padding: 5px 0;
+::v-deep {
+  .el-card__body {
+    width: 100%;
+  }
 
-  span {
-    line-height: 32px;
+  .el-table__row td {
+    padding: 5px 0;
+
+    span {
+      line-height: 32px;
+    }
   }
 }
 

@@ -24,7 +24,6 @@
       <el-table-column
         prop="vehicleType"
         label="车辆类型"
-        show
       />
       <el-table-column
         prop="vehicleCount"
@@ -45,6 +44,7 @@
         v-slot="{row}"
         prop="mileage"
         label="累计行驶总里程"
+        width="130"
       >
         {{ row.mileage === null?'-':row.mileage }}
       </el-table-column>
@@ -76,7 +76,7 @@
 
 <script>
 let sumRow = []// 记录统计行的数据
-
+import { BigNumber } from 'bignumber.js'
 export default {
   name: 'VehicleStatistics',
   props: {
@@ -123,30 +123,30 @@ export default {
     getSummaries(param) {
       const { columns, data } = param
 
-      let totalCar = 0 // 总车辆
-      let totalOnLineCar = 0// 总在线车辆
-      let totalOnlineRadio = 0// 总在线率
-      let totalMileage = 0// 总行驶里程
-      let totalAverageMileage = 0// 总平均行驶里程
-      let totalDayAverageMileage = 0// 总日均行驶里程
-      let totalAlarmAverageHundred = 0// 总百公里平均报警
+      let totalCar = new BigNumber(0) // 总车辆
+      let totalOnLineCar = new BigNumber(0) // 总在线车辆
+      let totalOnlineRadio = new BigNumber(0) // 总在线率
+      let totalMileage = new BigNumber(0) // 总行驶里程
+      let totalAverageMileage = new BigNumber(0) // 总平均行驶里程
+      let totalDayAverageMileage = new BigNumber(0) // 总日均行驶里程
+      let totalAlarmAverageHundred = new BigNumber(0) // 总百公里平均报警
 
-      let totalDayMileage = 0// 总日行驶里程
-      let totalAlarmHundred = 0// 总百公里报警
+      let totalDayMileage = new BigNumber(0) // 总日行驶里程
+      let totalAlarmHundred = new BigNumber(0)// 总百公里报警
 
       data.forEach(item => {
-        totalCar += item[columns[1].property]
-        totalOnLineCar += item[columns[2].property]
-        totalMileage += item[columns[4].property]
+        totalCar = totalCar.plus(item[columns[1].property])
+        totalOnLineCar = totalOnLineCar.plus(item[columns[2].property])
+        totalMileage = totalMileage.plus(item[columns[4].property])
 
-        totalDayMileage += item[columns[1].property] * item[columns[6].property]
-        totalAlarmHundred += item[columns[1].property] * item[columns[7].property]
+        totalDayMileage = totalDayMileage.plus(new BigNumber(item[columns[1].property]).times(item[columns[6].property] || 0))
+        totalAlarmHundred = totalAlarmHundred.plus(new BigNumber(item[columns[1].property]).times(item[columns[7].property] || 0))
       })
 
-      totalOnlineRadio = totalCar === 0 ? '-' : (totalOnLineCar / totalCar * 100).toFixed(2) // 计算总在线率
-      totalAverageMileage = totalCar === 0 ? '-' : (totalMileage / totalCar).toFixed(2)// 计算总平均行驶里程
-      totalDayAverageMileage = totalCar === 0 ? '-' : (totalDayMileage / totalCar).toFixed(2)// 计算总日均行驶里程
-      totalAlarmAverageHundred = totalCar === 0 ? '-' : (totalAlarmHundred / totalCar).toFixed(2)// 计算总百公里平均报警
+      totalOnlineRadio = totalCar.toNumber() === 0 ? '-' : totalOnLineCar.dividedBy(totalCar).times(100).toFixed(2) // 计算总在线率
+      totalAverageMileage = totalCar.toNumber() === 0 ? '-' : totalMileage.dividedBy(totalCar).toFixed(2)// 计算总平均行驶里程
+      totalDayAverageMileage = totalCar.toNumber() === 0 ? '-' : totalDayMileage.dividedBy(totalCar).toFixed(2)// 计算总日均行驶里程
+      totalAlarmAverageHundred = totalCar.toNumber() === 0 ? '-' : totalAlarmHundred.dividedBy(totalCar).toFixed(2)// 计算总百公里平均报警
 
       // 在导出表格时，将sumRow追加到表格数据里面
       sumRow = {

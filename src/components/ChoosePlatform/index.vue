@@ -62,7 +62,7 @@ export default {
 
           this.$emit('initFinished', platForm)
         }
-      })
+      }).catch(_ => {})
     }
   }
 }

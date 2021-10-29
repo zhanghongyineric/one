@@ -30,30 +30,39 @@
     >
       <el-table-column
         label="报警名称"
-        prop="a"
+        prop="violationName"
       />
       <el-table-column
         label="报警数"
-        prop="b"
+        prop="violationCount"
       />
       <el-table-column
         label="轻微"
         prop="c"
-      />
+      >
+        -
+      </el-table-column>
       <el-table-column
         label="一般"
         prop="d"
-      />
+      >
+        -
+      </el-table-column>
       <el-table-column
         label="严重"
         prop="e"
-      />
+      >
+        -
+      </el-table-column>
       <el-table-column
+        v-slot="{row}"
         label="报警环比数"
-        prop="f"
-      />
+        prop="relativeRatio"
+      >
+        {{ row.relativeRatio === null?'-': `${row.relativeRatio}%` }}
+      </el-table-column>
     </el-table>
-    <Echarts ref="lineChart" />
+    <Echarts ref="lineChart" resize-when-set-option />
     <EditChartDialog :visible.sync="dialogVisible" :table-head="tableHead" :table-data="tableData" :type="type" @updateChartData="updateChartData" />
   </el-card>
 </template>
@@ -96,13 +105,13 @@ export default {
         const types = ['疲劳驾驶', '时段禁行', '离线位移', '超速报警']
         const length = this.chartData[0].length
         /*
-          根据图表数据构建周报或者月报的表格表头和数据
+          根据图表数据构建周报或者月报的编辑表格的表头和数据
         */
 
         // 构建表头和图例
         this.chartLegend = []
         this.tableHead = [{ 'label': '报警名称', prop: 'name' }]
-        if (this.type === 'week') {
+        if (this.type === 'week') { // 周报
           const weekMap = ['一', '二', '三', '四', '五', '六', '日']
 
           for (let i = 0; i < 7; i++) {
@@ -111,7 +120,7 @@ export default {
             })
             this.chartLegend.push(`星期${weekMap[i]}`)
           }
-        } else {
+        } else { // 月报
           for (let i = 0; i < length; i++) {
             this.tableHead.push({
               'label': `${i + 1}日`,
@@ -124,7 +133,6 @@ export default {
         this.tableData = chartData.map((item, index) => {
           const obj = { name: types[index] }
 
-          item['name'] = types[0]
           item.forEach((value, index) => {
             obj[index] = value
           })
@@ -143,6 +151,7 @@ export default {
     },
     // 通过表格数据渲染图表
     renderChart() {
+      const hasData = this.chartData.some(item => item.length)// 是否存在有数据的图表
       this.$refs['lineChart'].setOption({
         tooltip: {
           trigger: 'axis'
@@ -192,16 +201,17 @@ export default {
             data: this.chartData[3]
           }
         ]
-      })
+      }, hasData)
     },
     // 下载表格
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = this.tableHead.filter(head => head.visible).map(item => item.label)// 表头显示文字
-        const filterVal = this.tableHead.filter(head => head.visible).map(item => item.prop)// 表格字段
-        const list = this.tableData // 表格数据
+        const tHeader = ['报警名称', '报警数', '轻微', '一般', '严重', '报警环比数']// 表头显示文字
+        const filterVal = ['violationName', 'violationCount', 'a', 'b', 'c', 'relativeRatio']// 表格字段
+        const list = this.data.tableData.map(item => ({ ...item, relativeRatio: item.relativeRatio === null ? '-' : `${item.relativeRatio}%` })) // 表格数据
         const data = this.formatJson(filterVal, list)
+
         excel.export_json_to_excel({
           header: tHeader,
           data,

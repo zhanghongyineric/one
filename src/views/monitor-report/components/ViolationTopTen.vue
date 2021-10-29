@@ -14,22 +14,23 @@
     </div>
 
     <nav class="f jc-sb ai-c">
-      <el-radio-group v-model="unitType" size="medium">
-        <el-radio-button label="1">运输企业</el-radio-button>
-        <el-radio-button label="2">营运企业</el-radio-button>
+      <el-radio-group v-model="queryType" size="medium">
+        <el-radio-button label="company">运输企业</el-radio-button>
+        <el-radio-button label="vehicle">营运车辆</el-radio-button>
       </el-radio-group>
 
     </nav>
+    <!--运输企业-->
     <el-table
+      v-show="queryType === 'company'"
       v-loading="loading"
-      :data="data.DSM"
+      :data="tableData"
       align="center"
       border
     >
       <el-table-column
-        prop="a"
         label="排序"
-        show
+        type="index"
         width="50"
       />
       <el-table-column
@@ -63,19 +64,80 @@
         label="违规报警"
       >
         <el-table-column
-          prop="g"
+          prop="alarm1"
           label="超速"
         />
         <el-table-column
-          prop="g"
+          prop="alarm2"
           label="疲劳驾驶"
         />
         <el-table-column
-          prop="g"
+          prop="alarm3"
           label="时段禁行"
         />
         <el-table-column
-          prop="g"
+          prop="alarm4"
+          label="离线位移"
+        />
+      </el-table-column>
+
+    </el-table>
+    <!--营运车辆-->
+    <el-table
+      v-show="queryType === 'vehicle'"
+      v-loading="loading"
+      :data="tableData"
+      align="center"
+      border
+    >
+      <el-table-column
+        label="排序"
+        type="index"
+        width="50"
+      />
+      <el-table-column
+        prop="plateNum"
+        label="车牌号"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        prop="plateType"
+        label="车辆颜色"
+        width="50"
+      />
+      <el-table-column
+        prop="unitName"
+        label="所属企业"
+        min-width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        prop="vehicleType"
+        label="车辆类型"
+      />
+      <el-table-column
+        prop="violationAlarmCount"
+        label="总报警数"
+        width="50"
+      />
+      <el-table-column
+        align="center"
+        label="违规报警"
+      >
+        <el-table-column
+          prop="alarm1"
+          label="超速"
+        />
+        <el-table-column
+          prop="alarm2"
+          label="疲劳驾驶"
+        />
+        <el-table-column
+          prop="alarm3"
+          label="时段禁行"
+        />
+        <el-table-column
+          prop="alarm4"
           label="离线位移"
         />
       </el-table-column>
@@ -101,7 +163,12 @@ export default {
   data() {
     return {
       downloadLoading: false, // 表格下载加载状态
-      unitType: '1'
+      queryType: 'company'
+    }
+  },
+  computed: {
+    tableData() {
+      return this.data[this.queryType]
     }
   },
   methods: {
@@ -109,28 +176,50 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['车辆类型', '车辆数', '在线车辆数', '在线率', '累计行驶总里程', '车辆平均行驶里程', '车辆日均行驶里程', '百公里车辆平均报警数']// 表头显示文字
-        const filterVal = ['vehicleType', 'vehicleNum', 'OnlineVehicleNum', 'OnlineRadio', 'mileage', 'averageMileage', 'dayAverageMileage', 'alarmAverageHundred']// 表格字段
-        const list = this.tableData.concat([sumRow]) // 表格数据
-        const data = this.formatJson(filterVal, list)
+        const config = {
+          company: {
+            sheetName: '运输企业',
+            multiHeader: [['排序', '企业', '车辆总数', '车辆报警数', '总报警数', '车均报警', '违规报警', '', '', '']],
+            header: ['', '', '', '', '', '', '超速', '疲劳驾驶', '时段禁行', '离线位移'],
+            merges: ['A1:A2', 'B1:B2', 'C1:C2', 'D1:D2', 'E1:E2', 'F1:F2', 'G1:J1'],
+            filterVal: ['index', 'b', 'c', 'd', 'e', 'f', 'alarm1', 'alarm2', 'alarm3', 'alarm4'],
+            autoWidth: true
+          },
+          vehicle: {
+            sheetName: '营运车辆',
+            multiHeader: [['排序', '车牌号', '车辆颜色', '所属企业', '车辆类型', '总报警数', '违规报警', '', '', '']],
+            header: ['', '', '', '', '', '', '超速', '疲劳驾驶', '时段禁行', '离线位移'],
+            merges: ['A1:A2', 'B1:B2', 'C1:C2', 'D1:D2', 'E1:E2', 'F1:F2', 'G1:J1'],
+            filterVal: ['index', 'plateNum', 'plateType', 'unitName', 'vehicleType', 'violationAlarmCount', 'alarm1', 'alarm2', 'alarm3', 'alarm4'],
+            autoWidth: true
+          }
+        }
+        const data = Object.keys(this.data).map(key => ({
+          sheetName: config[key].sheetName,
+          multiHeader: config[key].multiHeader,
+          header: config[key].header,
+          merges: config[key].merges,
+          data: this.formatJson(config[key].filterVal, this.formatTableData(this.data[key])),
+          autoWidth: true
+        }))
 
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: '车辆基本情况统计',
-          autoWidth: true,
-          bookType: 'xlsx'// 导出文件类型
+        excel.export_json_to_excel_multi({
+          data: data,
+          bookType: 'xlsx', // 导出文件类型
+          filename: '违章报警排名前十'
         })
         this.downloadLoading = false
       })
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
+      return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    // 格式化表格数据
+    formatTableData(tableData) {
+      return tableData.map((item, index) => ({
+        ...item,
+        index: index + 1,
+        relativeRatio: item.relativeRatio === null ? '-' : `${item.relativeRatio}%`
       }))
     }
   }
