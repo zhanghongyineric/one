@@ -28,7 +28,7 @@ export default {
         { 'name': 'spring-admin', url: 'http://139.9.139.113:8899/login' },
         { 'name': 'minio', url: 'http://www.image.gosmooth.com.cn/minio/login' },
         { 'name': 'xxl-job-admin', url: 'http://www.gosmooth.com.cn:8866/xxl-job-admin/' },
-        { 'name': 'kubernetes', url: 'http://www.gosmooth.com.cn:8811/sso/auth/default?req=gvjmnkb7n72c3hzyxa6h6so7n' },
+        { 'name': 'kubernetes', url: 'http://www.gosmooth.com.cn:8811' },
         // { 'name': 'grafana', url: 'http://www.gosmooth.com.cn:8822/login' },
         { 'name': 'emq', url: 'http://www.gosmooth.com.cn:8833/#/' },
         // { 'name': 'flink', url: 'http://www.gosmooth.com.cn:8800/#/overview' },
@@ -42,7 +42,8 @@ export default {
         { 'name': '华为云', url: 'https://www.huaweicloud.com/' },
         { 'name': '百度云', url: 'https://login.bce.baidu.com/' },
         { 'name': '阿里云', url: 'https://account.aliyun.com/login/login.htm' },
-        { 'name': '墨刀  ', url: 'https://org.modao.cc/' }
+        { 'name': '墨刀', url: 'https://org.modao.cc/' },
+        { 'name': '蓝湖', url: 'https://lanhuapp.com/web/#/item?fid=6d4951ea-d238-4173-8339-edae654b9e35&commonly=all' }
       ]
     }
   }
