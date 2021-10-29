@@ -189,7 +189,7 @@ export default {
               <i
                 class='el-icon-video-camera-solid'
                 style={cameraStyle}
-                on-click={(e) => that.toHistory(e)}
+                on-click={(e) => that.toHistory(node.data, e)}
               ></i>
               <img
                 src={require('../../../assets/history.png')}
@@ -269,8 +269,10 @@ export default {
         e.cancelBubble = true
       }
     },
-    toHistory(e) {
-      this.$router.push('/live-monitor/historical-video')
+    toHistory(data, e) {
+      this.$router.push({ path: '/live-monitor/historical-video', query: {
+        plateNum: data.unitName
+      }})
       this.stopPropagation(e)
     },
     startInterval() {

@@ -141,20 +141,19 @@
             <span>{{ scope.row.status | statusFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+        <el-table-column fixed="right" label="操作" width="260" align="center">
           <template slot-scope="scope">
             <el-button
-              class="btn"
               type="primary"
               size="small"
               @click="showDetails(scope.row)"
             >查看详情</el-button>
             <el-button
-              class="btn"
               type="warning"
               size="small"
               @click="modifyData(scope.row)"
             >更新信息</el-button>
+            <el-button size="small" type="danger" @click="delData(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -488,7 +487,6 @@
           <el-button v-show="stepIndex !== 1" type="primary" @click="lastStep()">上一步</el-button>
           <el-button v-show="stepIndex !== 3" type="primary" @click="nextStep()">下一步</el-button>
           <el-button v-show="stepIndex === 3 && !detail" type="primary" @click="submit()">保存</el-button>
-          <el-button v-show="stepIndex === 3 && detail" type="danger" @click="delData()">删除</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
       </el-dialog>
@@ -757,11 +755,11 @@ export default {
         this.$refs['threeForm'].clearValidate()
       })
     },
-    delData() {
+    delData(row) {
       this.$confirm('确定删除该条数据？删除后不可恢复')
         .then(() => {
-          deleteDriver({ personId: this.currentRow.personId })
-            .then(res => {
+          deleteDriver({ personId: row.personId })
+            .then(_ => {
               this.$message({
                 type: 'success',
                 message: '删除成功！'

@@ -157,6 +157,11 @@ export default {
   created() {
     // this.getList()
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.searchFormData.plateNum = vm.$route.query.plateNum
+    })
+  },
   mounted() {
     this.changeTime()
     this.iframeWin = this.$refs.iframe.contentWindow

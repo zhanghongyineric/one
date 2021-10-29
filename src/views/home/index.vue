@@ -276,9 +276,9 @@ import {
   unitAssessmentAnalysis,
   onlineVehicle,
   trendAnalysis,
-  alarmEvent
+  alarmEvent,
+  keyVehicle
 } from '@/api/home'
-import { focusVehicles } from '@/api/business-manage/focus-on-vehicles'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
 import MonitorPieChart from '@/components/Charts/PieChart.vue'
@@ -559,19 +559,18 @@ export default {
         })
     },
     getKeyVehicle() {
-      focusVehicles({
+      keyVehicle({
         pageNum: 1,
         pageSize: 50
       }).then(res => {
         const { data } = res
         const colorMap = onlineOption['车牌颜色编码'].map
-        const vehicleMap = onlineOption['vehicle_type'].map
-        data.list.forEach(item => {
-          console.log(item)
+        const vehicleMap = onlineOption['vehicle_type_code'].map
+        data.forEach(item => {
           item.plateColor = colorMap[item.plateColor]
           item.vehicleType = vehicleMap[item.vehicleType]
         })
-        this.carList = data.list
+        this.carList = data
       })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {

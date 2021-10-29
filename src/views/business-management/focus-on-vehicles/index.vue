@@ -1,14 +1,57 @@
 <template>
   <div class="layout-content">
     <el-card>
-      <div class="table-page-search-wrapper">
-        <el-button
-          type="primary"
-          size="small"
-          style="margin-bottom: 10px"
-          @click="addVehicle"
-        >新增车辆</el-button>
-      </div>
+      <el-form
+        :model="listQuery"
+        label-width="80px"
+        size="small"
+      >
+        <el-row :gutter="48">
+          <el-col :md="8" :sm="24">
+            <el-form-item label="车辆类型">
+              <el-select
+                v-model="listQuery.vehicleType"
+                size="small"
+                placeholder="请选择车辆类型"
+                style="width:100%"
+              >
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :md="8" :sm="24">
+            <div class="table-page-search-submitButtons">
+              <el-button
+                type="warning"
+                size="small"
+                style="margin-bottom: 10px"
+                @click="reset"
+              >重置
+              </el-button>
+              <el-button
+                type="primary"
+                size="small"
+                style="margin-bottom: 10px"
+                @click="addVehicle"
+              >新增车辆
+              </el-button>
+              <el-button
+                type="primary"
+                size="small"
+                style="margin-bottom: 10px"
+                @click="search"
+              >查询
+              </el-button>
+
+            </div>
+          </el-col>
+        </el-row>
+      </el-form>
 
       <el-table
         v-loading="listLoading"
@@ -171,7 +214,8 @@ export default {
       listLoading: false,
       listQuery: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        vehicleType: ''
       },
       total: 0,
       type: 'add',
@@ -203,8 +247,8 @@ export default {
     this.getList()
     this.colorOptions = onlineOption['车牌颜色编码'].list
     this.colorMap = onlineOption['车牌颜色编码'].map
-    this.typeOptions = onlineOption['vehicle_type'].list
-    this.typeMap = onlineOption['vehicle_type'].map
+    this.typeOptions = onlineOption['vehicle_type_code'].list
+    this.typeMap = onlineOption['vehicle_type_code'].map
     this.codeMap = onlineOption['safe_code'].map
     this.codeOptions = onlineOption['safe_code'].list
   },
@@ -268,6 +312,18 @@ export default {
       this.currentRow = row
       this.formData = { ...row }
       this.clearForm()
+    },
+    search() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
+    reset() {
+      this.listQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        vehicleType: ''
+      }
+      this.getList()
     },
     searchType(queryString, cb) {
       if (queryString) {
