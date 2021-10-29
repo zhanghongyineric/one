@@ -39,6 +39,7 @@ export default {
         { 'name': 'Jenkins', url: 'http://www.srelocal.gosmooth.com.cn:9977/login' },
         { 'name': 'SonarQube', url: 'http://www.srelocal.gosmooth.com.cn:9944' },
         { 'name': 'zentao ', url: 'http://www.srelocal.gosmooth.com.cn:9955/zentao/user-login-L3plbnRhby8=.html' },
+        { 'name': 'Nexus ', url: 'http://www.srelocal.gosmooth.com.cn:9933' },
         { 'name': '华为云', url: 'https://www.huaweicloud.com/' },
         { 'name': '百度云', url: 'https://login.bce.baidu.com/' },
         { 'name': '阿里云', url: 'https://account.aliyun.com/login/login.htm' },
