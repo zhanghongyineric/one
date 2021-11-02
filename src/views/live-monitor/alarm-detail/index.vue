@@ -179,7 +179,7 @@
           <span><span class="info-title">车牌号：</span>{{ currentRow.plateNum }}</span>
           <span><span class="info-title">车牌颜色：</span>{{ currentRow.plateColor }}</span>
           <span><span class="info-title">车辆类型：</span>{{ currentRow.vehicleType }}</span>
-          <span><span class="info-title">报警类型：</span>{{ currentRow.alarmType }}</span>
+          <span><span class="info-title">报警类型：</span>{{ currentRow.cbArmName }}</span>
         </div>
         <div class="alarm-info" style="margin-top:10px;">
           <span><span class="info-title">所属企业：</span>{{ currentRow.unitName }}</span>
@@ -276,7 +276,7 @@ export default {
       },
       vehicleTypeMap: null,
       vehicleTypeOptions: [],
-      alarmTypeMap: null,
+      alarmTypeMap: {},
       alarmTypeOptions: [],
       plateColorOptions: [],
 
@@ -327,7 +327,6 @@ export default {
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
     this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
-    this.alarmTypeMap = onlineOption['报警类型编码'].map
     this.plateColorOptions = onlineOption['车牌颜色编码'].map
     this.getDate()
   },
@@ -339,6 +338,9 @@ export default {
       alarmType()
         .then(res => {
           const { data } = res
+          data.forEach(item => {
+            this.alarmTypeMap[item.cbArmType] = item.cbArmName
+          })
           this.alarmTypeOptions = data
         })
         .catch(err => {
@@ -420,21 +422,39 @@ export default {
     showDetails(row) {
       Object.assign(this.currentRow, row)
       this.currentRow.plateColor = that.plateColorOptions[parseInt(row.plateColor)]
-      this.currentRow.alarmType = that.alarmTypeMap[parseInt(row.alarmType)] || '无'
       this.currentRow.vehicleType = that.vehicleTypeMap[parseInt(row.vehicleType)]
       this.currentRow.endtime = row.endtime || '无'
       this.visible = true
-      axios.get('https://www.api.gosmooth.com.cn/attach', {
-        params: {
-          jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
-          toMap: 2,
-          guid: row.guid,
-          devIdno: row.devIdno,
-          alarmType: row.alarmType,
-          begintime: row.startTime
-        },
-        timeout: 10000
-      })
+      axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123')
+        .then(res => {
+          axios.get('https://www.api.gosmooth.com.cn/attach', {
+            params: {
+              jsession: res.data.jsession,
+              toMap: 2,
+              guid: row.guid,
+              devIdno: row.devIdno,
+              alarmType: row.armType,
+              begintime: row.startTime
+            },
+            timeout: 10000
+          })
+            .then(({ data }) => {
+              this.alarmPhotos = data.images
+              this.alarmVideos = data.vedios
+              this.initVideo()
+            })
+            .catch(err => {
+              throw err
+            })
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: '登录失败！'
+          })
+          throw err
+        })
+
       // axios.get('http://192.168.0.80:9123', {
       //   params: {
       //     jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
@@ -446,14 +466,6 @@ export default {
       //   },
       //   timeout: 10000
       // })
-        .then(({ data }) => {
-          this.alarmPhotos = data.images
-          this.alarmVideos = data.vedios
-          this.initVideo()
-        })
-        .catch(err => {
-          throw err
-        })
     },
     // 初始化视频方法
     initVideo() {
