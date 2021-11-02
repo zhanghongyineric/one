@@ -6,6 +6,8 @@
 
     <div v-if="role" class="right-menu">
       <img v-if="showLink" src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
+      <a v-if="showLink" target="_blank" class="to-gu" @click="toMySystem">明亚系统</a>
+      <img v-if="showLink" src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
       <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">政府·企业端</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
@@ -71,6 +73,9 @@ export default {
         // window.open('http://localhost:9529/#/home')
         window.open('http://www.fk.myzx.sc.cn/#/home')
       })
+    },
+    toMySystem() {
+      window.open('http://scjt3rd.com/808gps/login.html')
     },
     initMqtt() {
       this.client = connect()
