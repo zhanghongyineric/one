@@ -366,7 +366,6 @@ export default {
           const { data } = res
           this.deleteEmptyChilren(data[0])
           this.areaOptions = data
-          // this.listQuery.regionId = data[0].children[0].unitId
           this.listQuery.regionId = '800'
           this.getList()
         })
@@ -454,18 +453,6 @@ export default {
           })
           throw err
         })
-
-      // axios.get('http://192.168.0.80:9123', {
-      //   params: {
-      //     jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
-      //     toMap: 2,
-      //     guid: '00040492631921210928003058000700',
-      //     devIdno: '040492631921',
-      //     alarmType: 603,
-      //     begintime: '2021-09-28 00:30:58'
-      //   },
-      //   timeout: 10000
-      // })
     },
     // 初始化视频方法
     initVideo() {

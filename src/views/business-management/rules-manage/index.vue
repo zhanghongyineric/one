@@ -398,6 +398,14 @@ export default {
         this.$refs['formData'].clearValidate()
       })
     },
+    spliceUnit(str) {
+      let unit = ''
+      for (let i = str.length - 1; i >= 0; i--) {
+        if (!isNaN(str[i])) break
+        unit = str[i] + unit
+      }
+      return unit
+    },
     updateDegree(row) {
       this.degreeVisible = true
       this.currentRow = row
@@ -412,12 +420,11 @@ export default {
           const { data } = res
           if (data.length) {
             this.update = true
-            console.log(data[0].expresion, 'expresion update')
             const unitArr = data[0].expresion.split('\xa0').join('').split('且')
-            console.log(unitArr, 'unitArr update')
-            this.currentUnit = unitArr[0] ? unitArr[0][unitArr[0].length - 1] : ''
-            this.currentUnit2 = unitArr[1] ? unitArr[1][unitArr[1].length - 1] : ''
-            this.currentUnit3 = unitArr[2] ? unitArr[2][unitArr[2].length - 1] : ''
+            this.currentUnit = unitArr[0] ? this.spliceUnit(unitArr[0]) : ''
+            this.currentUnit2 = unitArr[1] ? this.spliceUnit(unitArr[1]) : ''
+            this.currentUnit3 = unitArr[2] ? this.spliceUnit(unitArr[2]) : ''
+
             this.currentId = data[0].id.toString()
             this.formData.lessNo = data[0].violationDegreeValues[0].lessNo
             this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
@@ -492,12 +499,10 @@ export default {
           const { data } = res
           if (data.length) {
             this.update = true
-            console.log(data[0].expresion, 'expresion change')
             const unitArr = data[0].expresion.split('\xa0').join('').split('且')
-            console.log(unitArr, 'unitArr change')
-            this.currentUnit = unitArr[0] ? unitArr[0][unitArr[0].length - 1] : ''
-            this.currentUnit2 = unitArr[1] ? unitArr[1][unitArr[1].length - 1] : ''
-            this.currentUnit3 = unitArr[2] ? unitArr[2][unitArr[2].length - 1] : ''
+            this.currentUnit = unitArr[0] ? this.spliceUnit(unitArr[0]) : ''
+            this.currentUnit2 = unitArr[1] ? this.spliceUnit(unitArr[1]) : ''
+            this.currentUnit3 = unitArr[2] ? this.spliceUnit(unitArr[2]) : ''
             this.currentId = data[0].id.toString()
             this.formData.lessNo = data[0].violationDegreeValues[0].lessNo
             this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
