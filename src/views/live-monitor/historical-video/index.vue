@@ -1,106 +1,109 @@
 <template>
   <div class="container">
     <div class="left-box">
-      <el-form
-        ref="searchForm"
-        :model="searchFormData"
-        label-width="100px"
-        :rules="rules"
-      >
-        <el-form-item label="车牌号码:" prop="plateNum">
-          <el-input
-            v-model="searchFormData.plateNum"
-            size="small"
-            placeholder="请输入车牌号码"
-            clearable
-            style="width:220px;"
-          />
-        </el-form-item>
-        <el-form-item label="查询日期:" prop="startTime">
-          <el-date-picker
-            v-model="searchFormData.startTime"
-            align="right"
-            type="date"
-            placeholder="选择查询日期"
-            :picker-options="pickerOptions"
-            size="small"
-            style="width:220px;"
-            value-format="yyyy-MM-dd"
-          />
-        </el-form-item>
-        <el-form-item label="时间范围:" prop="endTime">
-          <el-time-picker
-            v-model="searchFormData.endTime"
-            is-range
-            size="small"
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            placeholder="选择时间范围"
-            style="width:220px;"
-            value-format="HH-mm-ss"
-          />
-        </el-form-item></el-form>
-      <div class="btn-box">
-        <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
-        <el-button type="primary" size="small" @click="getList">查询</el-button>
+      <div class="search-box box-style">
+        <el-form
+          ref="searchForm"
+          :model="searchFormData"
+          label-width="100px"
+          :rules="rules"
+        >
+          <el-form-item label="车牌号码:" prop="plateNum">
+            <el-input
+              v-model="searchFormData.plateNum"
+              size="small"
+              placeholder="请输入车牌号码"
+              clearable
+              style="width:220px;"
+            />
+          </el-form-item>
+          <el-form-item label="查询日期:" prop="startTime">
+            <el-date-picker
+              v-model="searchFormData.startTime"
+              align="right"
+              type="date"
+              placeholder="选择查询日期"
+              :picker-options="pickerOptions"
+              size="small"
+              style="width:220px;"
+              value-format="yyyy-MM-dd"
+            />
+          </el-form-item>
+          <el-form-item label="时间范围:" prop="endTime">
+            <el-time-picker
+              v-model="searchFormData.endTime"
+              is-range
+              size="small"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              placeholder="选择时间范围"
+              style="width:220px;"
+              value-format="HH-mm-ss"
+            />
+          </el-form-item></el-form>
+        <div class="btn-box">
+          <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
+          <el-button type="primary" size="small" @click="getList">查询</el-button>
+        </div>
       </div>
-      <el-divider />
-      <el-table
-        v-loading="listLoading"
-        :data="tableData"
-        stripe
-        style="width: 100%"
-        border
-      >
-        <el-table-column
-          type="index"
-          label="序号"
-          width="70"
-          align="center"
-        />
-        <el-table-column
-          align="center"
-          label="车牌号"
-          width="100"
+      <div class="table box-style">
+        <el-table
+          v-loading="listLoading"
+          :data="tableData"
+          stripe
+          style="width: 100%"
+          border
         >
-          {{ searchFormData.plateNum }}
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="time"
-          label="时间范围"
-        />
-        <el-table-column
-          align="center"
-          prop="chn"
-          width="70"
-          label="通道"
-        >
-          <template slot-scope="scope">
-            {{ `CH${scope.row.chn + 1}` }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="len"
-          label="文件大小"
-          width="100"
-        >
-          <template slot-scope="scope">
-            {{ (scope.row.len / 1000000).toFixed(3) + 'MB' }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          align="center"
-          label="操作"
-          width="80"
-        >
-          <template slot-scope="scope">
-            <el-button type="primary" size="small" @click="playVideo(scope.row)">播放</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column
+            type="index"
+            label="序号"
+            width="70"
+            align="center"
+          />
+          <el-table-column
+            align="center"
+            label="车牌号"
+            width="100"
+          >
+            {{ searchFormData.plateNum }}
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="time"
+            label="时间范围"
+          />
+          <el-table-column
+            align="center"
+            prop="chn"
+            width="70"
+            label="通道"
+          >
+            <template slot-scope="scope">
+              {{ `CH${scope.row.chn + 1}` }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="len"
+            label="文件大小"
+            width="100"
+          >
+            <template slot-scope="scope">
+              {{ (scope.row.len / 1000000).toFixed(3) + 'MB' }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="center"
+            label="操作"
+            width="80"
+          >
+            <template slot-scope="scope">
+              <el-button type="primary" size="small" @click="playVideo(scope.row)">播放</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </div>
     <div class="right-box">
       <div id="cmsv6flash" class="video-box">
@@ -192,7 +195,6 @@ export default {
       }
     },
     playVideo(row) {
-      console.log(row)
       this.iframeWin.postMessage({
         cmd: 'getParams',
         params: {
@@ -239,7 +241,6 @@ export default {
               })
                 .then(res => {
                   if (res.data.files) {
-                    console.log(res.data.files)
                     this.tableData = res.data.files
                     this.tableData.forEach(item => {
                       this.changeTime(item)
@@ -283,17 +284,34 @@ export default {
   width: 100%;
   height: calc(100vh - 84px);
   position: relative;
+  min-height: 800px;
 }
 
 .left-box {
   width: 700px;
   height: 100%;
-  background-color: #1C2F41;
+  background-color: #0E1521;
   position: absolute;
   left: 0;
   top: 0;
   padding: 10px;
-  overflow-y: auto;
+}
+
+.search-box {
+  padding-left: 150px;
+  margin-bottom: 30px;
+}
+
+.table {
+  min-height: 490px;
+  height: 66%;
+}
+
+.box-style {
+  box-sizing: border-box;
+  padding: 20px;
+  background-color:#1C2F41;
+  border-radius: 10px;
 }
 
 .right-box {
@@ -308,16 +326,14 @@ export default {
 .video-box {
   width: 100%;
   height: 100%;
-  /* background-color:#000; */
-  /* border: 3px solid #fff; */
   box-sizing: border-box;
-  /* display: inline-block; */
 }
 
 .btn-box {
   width: 350px;
   display: flex;
   justify-content: space-around;
+  padding-left: 60px;
 }
 
 ::v-deep .el-form-item__label {

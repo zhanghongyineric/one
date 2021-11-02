@@ -70,8 +70,8 @@
             var options = {
                 domId: "cmsv6flash",
                 isVodMode: true,
-                width: 1000,
-                height: 850,
+                width: 800,
+                height: 650,
                 lang: "en"
             }
             // var options1 = {
@@ -329,10 +329,31 @@
         }
         userLogin()
     </script>
+    <style>
+        #cmsv6flash {
+            margin: 0 auto;
+            margin-top:50px;
+        }
+        .video-container {
+            height:100%;
+            min-width: 820px;
+            min-height: 670px;
+            border-radius: 10px;
+            padding: 10px;
+            background-color:#1C2F41;
+        }
+        #body {
+            min-width:900px;
+            /* min-height: 700px; */
+            height: calc(100vh - 40px);
+            background-color: #0E1521;
+            overflow-y: hidden;
+        }
+    </style>
 </head>
-<body onload="onReady();" style="min-width:1000px">
+<body onload="onReady();" id="body">
 
-<div>
+<div class="video-container">
     <div id="cmsv6flash"></div>
 </div>
 <!-- <div class="player-box">
