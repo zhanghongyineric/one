@@ -149,7 +149,7 @@
 
         <el-table-column prop="startTime" label="开始时间" width="220" align="center" show-overflow-tooltip />
         <el-table-column prop="endtime" label="结束时间" width="220" align="center" show-overflow-tooltip />
-        <el-table-column prop="Protime" label="持续时长" width="120" align="center" show-overflow-tooltip />
+        <!-- <el-table-column prop="Protime" label="持续时长" width="120" align="center" show-overflow-tooltip /> -->
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button

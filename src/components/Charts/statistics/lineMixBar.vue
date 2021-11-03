@@ -131,14 +131,21 @@ export default {
     setOptions() {
       this.chart.setOption({
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          appendToBody: true
         },
         legend: {
           data: this.legendData,
           textStyle: {
-            color: '#fff'
+            color: '#fff',
+            fontSize: 10
           },
-          bottom: 10
+          bottom: 5,
+          itemHeight: 10,
+          itemWidth: 10
+        },
+        grid: {
+          y2: 60
         },
         xAxis: [
           {
