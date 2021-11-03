@@ -11,8 +11,8 @@
       <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">政府·企业端</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
-          <span style="font-weight: bold;margin-right: 15px">当前身份:{{ roleName }}</span>
-          <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px" />
+          <span style="font-weight: bold;margin-right: 15px;color:#fff">当前身份:{{ roleName }}</span>
+          <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px;color:#fff" />
           <span class="username">{{ name || '-' }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -142,7 +142,7 @@ export default {
   //height: 50px;
   //overflow: hidden;
   position: relative;
-  background: #fff;
+  background: #0E1521;
   box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
 
   .hamburger-container {
@@ -218,6 +218,7 @@ export default {
       .username {
         display: flex;
         font-weight: bold;
+        color:#fff;
       }
 
       .avatar-wrapper {

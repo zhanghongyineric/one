@@ -65,15 +65,66 @@ div:focus {
   }
 }
 
-// main-container global css
-.app-container {
-  //padding: 20px;
-}
-
 //定制内容布局
 .layout-content {
   margin: 24px;
 }
+
+.el-card {
+  background-color: #151D2C;
+  border: 0;
+}
+
+.el-table {
+  background-color: #0E1521;
+}
+
+.el-table--border,
+.el-table--group {
+  border: 0;
+}
+
+.el-table--border td,
+.el-table--border th,
+.el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+  border: 0;
+}
+
+.el-table th,
+.el-table tr {
+  background-color: #0E1521;
+  color: #C0C0C0;
+}
+
+.el-table th.is-leaf {
+  border: 0;
+}
+
+.el-table__fixed-right::before,
+.el-table__fixed::before,
+.el-table::before {
+  width: 0;
+}
+
+.el-table__row--striped td {
+  background-color: #222C3C !important;
+}
+
+// .el-table--enable-row-hover .el-table__body tr:hover > td{
+//   background-color: #0E1521 !important;
+// }
+
+// .table__body tr.hover-row.current-row>td,
+// .el-table__body tr.hover-row.el-table__row--striped.current-row>td,
+// .el-table__body tr.hover-row.el-row--striped>td,
+.el-table__body tr.hover-row>td  {
+  background-color: #0E1521 !important;
+}
+
+// .el-table__body tr.hover-row.el-row--striped>td,
+// .el-table__body tr.hover-row>td {
+//   background-color: #222C3C !important;
+// }
 
 //定制搜索栏和弹窗的样式
 .table-page-search-wrapper, .base-dialog {
@@ -99,6 +150,7 @@ div:focus {
   }
 }
 
+// 报警详情弹框
 .customClass {
   width: 50%;
   min-width: 780px;
@@ -208,12 +260,4 @@ div:focus {
 }
 .ai-fe{
   align-items: flex-end;
-}
-
-
-//超出省略
-.ellipsis{
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
 }

@@ -58,8 +58,9 @@
         :data="list"
         fit
         border
-        highlight-current-row
         style="width: 100%"
+        :stripe="true"
+        :header-cell-style="{background:'#1C2733',color:'#ccc'}"
       >
         <el-table-column type="index" label="编号" width="100" align="center" />
         <el-table-column prop="plateNum" label="车牌号码" min-width="150px" align="center" />
