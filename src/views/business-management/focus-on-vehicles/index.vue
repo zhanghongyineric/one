@@ -7,8 +7,8 @@
         size="small"
       >
         <el-row :gutter="48">
-          <el-col :md="8" :sm="24">
-            <el-form-item label="车辆类型">
+          <el-col :md="6" :sm="24">
+            <el-form-item label="车辆类型:">
               <el-select
                 v-model="listQuery.vehicleType"
                 size="small"

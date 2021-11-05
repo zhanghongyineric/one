@@ -638,21 +638,16 @@
           label-width="150px"
         >
           <el-row>
-            <el-form-item label="入网方式:" prop="accessWay">
-              <el-select v-model="accessFormData.accessWay" size="small" placeholder="请选择入网方式">
-                <el-option
-                  v-for="item in accessWayOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-row>
-          <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="车载终端号:" prop="terminalName">
-                <el-input v-model="accessFormData.terminalName" clearable size="small" placeholder="请输入" />
+              <el-form-item label="入网方式:" prop="accessWay">
+                <el-select v-model="accessFormData.accessWay" size="small" placeholder="请选择入网方式">
+                  <el-option
+                    v-for="item in accessWayOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -671,15 +666,8 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="服务器域名及端口:" prop="serverIpPort">
-                <el-select v-model="accessFormData.serverIpPort" clearable size="small" placeholder="请选择服务器域名及端口">
-                  <el-option
-                    v-for="item in portOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
+              <el-form-item label="车载终端号:" prop="terminalName">
+                <el-input v-model="accessFormData.terminalName" clearable size="small" placeholder="请输入" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -698,10 +686,10 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="通讯协议版本:" prop="communicationProtocolVersion">
-                <el-select v-model="accessFormData.communicationProtocolVersion" clearable size="small" placeholder="请选择通讯协议版本">
+              <el-form-item label="服务器域名及端口:" prop="serverIpPort">
+                <el-select v-model="accessFormData.serverIpPort" clearable size="small" placeholder="请选择服务器域名及端口">
                   <el-option
-                    v-for="item in protocolOptions"
+                    v-for="item in portOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -724,10 +712,10 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="通讯模式:" prop="communicationMode">
-                <el-select v-model="accessFormData.communicationMode" clearable size="small" placeholder="请选择通讯模式">
+              <el-form-item label="通讯协议版本:" prop="communicationProtocolVersion">
+                <el-select v-model="accessFormData.communicationProtocolVersion" clearable size="small" placeholder="请选择通讯协议版本">
                   <el-option
-                    v-for="item in modeOptions"
+                    v-for="item in protocolOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -743,13 +731,39 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="主机型号:" prop="hostType">
-                <el-input v-model="accessFormData.hostType" clearable size="small" placeholder="请输入主机型号" />
+              <el-form-item label="通讯模式:" prop="communicationMode">
+                <el-select v-model="accessFormData.communicationMode" clearable size="small" placeholder="请选择通讯模式">
+                  <el-option
+                    v-for="item in modeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="物联网卡号:" prop="internetCard">
                 <el-input v-model="accessFormData.internetCard" clearable size="small" placeholder="请输入物联网卡号" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="主机型号:" prop="hostType">
+                <el-input v-model="accessFormData.hostType" clearable size="small" placeholder="请输入主机型号" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="设备类型:" prop="functions">
+                <el-select v-model="accessFormData.functions" clearable size="small" placeholder="请选择设备类型">
+                  <el-option
+                    v-for="item in functionsOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -766,18 +780,6 @@
                 />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
-            <el-form-item label="设备类型:" prop="functions">
-              <el-select v-model="accessFormData.functions" clearable size="small" placeholder="请选择设备类型">
-                <el-option
-                  v-for="item in functionsOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">

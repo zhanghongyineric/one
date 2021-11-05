@@ -102,7 +102,8 @@ div:focus {
 
 .el-table__fixed-right::before,
 .el-table__fixed::before,
-.el-table::before {
+.el-table::before,
+.el-table--border::after {
   width: 0;
 }
 
@@ -110,21 +111,108 @@ div:focus {
   background-color: #222C3C !important;
 }
 
-// .el-table--enable-row-hover .el-table__body tr:hover > td{
-//   background-color: #0E1521 !important;
-// }
-
-// .table__body tr.hover-row.current-row>td,
-// .el-table__body tr.hover-row.el-table__row--striped.current-row>td,
-// .el-table__body tr.hover-row.el-row--striped>td,
 .el-table__body tr.hover-row>td  {
   background-color: #0E1521 !important;
 }
 
-// .el-table__body tr.hover-row.el-row--striped>td,
-// .el-table__body tr.hover-row>td {
-//   background-color: #222C3C !important;
-// }
+.el-table__body tr.current-row > td,
+.el-table__body tr.hover-row > td {
+  background-color: #222C3C !important;
+}
+
+.el-form-item__label {
+  color: #fff;
+}
+
+.el-input__inner,
+.el-select:hover .el-input__inner,
+.el-select .el-input__inner:focus,
+.el-select .el-input.is-focus .el-input__inner,
+.el-input__inner:hover, 
+.el-input__inner:focus,
+.el-autocomplete-suggestion,
+.el-input.is-disabled .el-input__inner,
+.el-cascader .el-input.is-focus .el-input__inner,
+.el-cascader:hover .el-input__inner,
+.el-cascader__dropdown {
+  background-color: #121D28;
+  border-color: #1C303B;
+  color: #fff;
+}
+
+.el-select-dropdown__item {
+  background-color: #1C2638;
+  color:#ccc;
+}
+
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item:hover,
+.el-cascader-node:not(.is-disabled):focus,
+.el-cascader-node:not(.is-disabled):hover,
+.el-autocomplete-suggestion__wrap {
+  background-color: #212F40;
+}
+
+.el-cascader-node__label,
+.el-icon-arrow-right:before,
+.el-icon-arrow-left:before {
+  color: #fff;
+}
+
+.el-select-dropdown__list {
+  background-color: #1C2638;
+}
+
+.el-select-dropdown,
+.el-cascader__dropdown {
+  border: 1px solid #1C303B;
+}
+
+.el-popper[x-placement^=bottom] .popper__arrow::after,
+.el-popper[x-placement^=bottom] .popper__arrow {
+  border-bottom-color: #1C303B;
+}
+
+.el-pagination__total,
+.el-pagination__jump {
+  color: #fff;
+}
+
+.el-pagination .btn-prev,
+.el-pagination.is-background .btn-prev:disabled,
+.el-pagination.is-background .btn-next:disabled,
+.el-pagination.is-background .el-pager li,
+.el-pagination.is-background .btn-next,
+.el-pagination.is-background .btn-prev,
+.el-range-editor--small .el-range-input {
+  background-color: #121D28;
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: #1C303B;
+}
+
+.el-dialog__body,
+.el-dialog__header,
+.el-dialog__footer,
+.el-loading-mask {
+  background-color: #1C2638;
+}
+
+.el-dialog__title,
+.el-range-editor--small .el-range-separator {
+  color: #fff;
+}
+
+.el-step__title.is-process,
+.el-step__title.is-wait {
+  color: #fff;
+  font-weight: 500;
+}
+
+.el-step__icon.is-text {
+  color: #303133;
+}
 
 //定制搜索栏和弹窗的样式
 .table-page-search-wrapper, .base-dialog {
