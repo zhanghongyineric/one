@@ -98,7 +98,8 @@ div:focus {
   color: #C0C0C0;
 }
 
-.el-table th.is-leaf {
+.el-table th.is-leaf,
+.el-table td, .el-table th.is-leaf {
   border: 0;
 }
 
