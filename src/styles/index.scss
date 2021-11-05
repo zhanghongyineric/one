@@ -136,7 +136,8 @@ div:focus {
 .el-input.is-disabled .el-input__inner,
 .el-cascader .el-input.is-focus .el-input__inner,
 .el-cascader:hover .el-input__inner,
-.el-cascader__dropdown {
+.el-cascader__dropdown,
+.el-table__footer-wrapper tbody td, .el-table__header-wrapper tbody td {
   background-color: #121D28;
   border-color: #1C303B;
   color: #fff;
@@ -186,7 +187,8 @@ div:focus {
 .el-pagination.is-background .el-pager li,
 .el-pagination.is-background .btn-next,
 .el-pagination.is-background .btn-prev,
-.el-range-editor--small .el-range-input {
+.el-range-editor--small .el-range-input,
+.el-table thead.is-group th {
   background-color: #121D28;
 }
 
@@ -324,7 +326,10 @@ div:focus {
 .f-i{
   display: inline-flex;
 }
-
+//换行
+.fw-w{
+  flex-wrap: wrap;
+}
 //排列方向
 .fd-c{
   flex-direction: column;
@@ -350,4 +355,16 @@ div:focus {
 }
 .ai-fe{
   align-items: flex-end;
+}
+
+
+//超出省略
+.ellipsis{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.f-r{
+  float: right;
 }
