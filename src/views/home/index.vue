@@ -111,7 +111,7 @@
                 <div class="bottom-chart-box-left bottom-box-position">
                   <bar-chart
                     :x-data="['正常', '注销']"
-                    :chart-data="[serviceData.normal,serviceData.pause]"
+                    :chart-data="[serviceData.normal,serviceData.logout]"
                     :color-list="['#009966', '#FF7070']"
                   />
                 </div>
@@ -261,6 +261,7 @@
 
 <script>
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+const statusMap = onlineOption['operate_status'].map
 import {
   companyNumber,
   serviceNumber,
@@ -615,9 +616,20 @@ export default {
       companyNumber()
         .then(res => {
           const { data } = res
-          this.companyData.all = data['全部']
-          this.companyData.normal = data['运营']
-          this.companyData.pause = data['歇业']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '营运':
+                this.companyData.normal = item.statusCount
+                break
+              case '歇业':
+                this.companyData.pause = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.companyData.all = all
           this.companyPieData = [
             { value: this.companyData.normal, name: '营运', itemStyle: { color: '#009966' }},
             { value: this.companyData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
@@ -631,12 +643,23 @@ export default {
       serviceNumber()
         .then(res => {
           const { data } = res
-          this.serviceData.all = data['全部']
-          this.serviceData.normal = data['正常']
-          this.serviceData.pause = data['注销']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '正常':
+                this.serviceData.normal = item.statusCount
+                break
+              case '注销':
+                this.serviceData.logout = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.serviceData.all = all
           this.servicePieData = [
             { value: this.serviceData.normal, name: '正常', itemStyle: { color: '#009966' }},
-            { value: this.serviceData.pause, name: '注销', itemStyle: { color: '#FF7070' }}
+            { value: this.serviceData.logout, name: '注销', itemStyle: { color: '#FF7070' }}
           ]
         })
         .catch(err => {
@@ -647,9 +670,20 @@ export default {
       platformNumber()
         .then(res => {
           const { data } = res
-          this.platformData.all = data['全部']
-          this.platformData.normal = data['正常']
-          this.platformData.pause = data['歇业']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '正常':
+                this.platformData.normal = item.statusCount
+                break
+              case '歇业':
+                this.platformData.pause = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.platformData.all = all
           this.platformPieData = [
             { value: this.platformData.normal, name: '正常', itemStyle: { color: '#009966' }},
             { value: this.platformData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
@@ -663,12 +697,29 @@ export default {
       carNumber()
         .then(res => {
           const { data } = res
-          this.carData.stop = data['停运']
-          this.carData.all = data['全部']
-          this.carData.pause = data['暂停服务']
-          this.carData.normal = data['正常']
-          this.carData.logout = data['注销']
-          this.carData.out = data['转出']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '停运':
+                this.carData.stop = item.statusCount
+                break
+              case '暂停服务':
+                this.carData.pause = item.statusCount
+                break
+              case '正常':
+                this.carData.normal = item.statusCount
+                break
+              case '注销':
+                this.carData.logout = item.statusCount
+                break
+              case '转出':
+                this.carData.out = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.carData.all = all
           this.carPieData = [
             { value: this.carData.stop, name: '停运', itemStyle: { color: '#FF7070' }},
             { value: this.carData.logout, name: '注销', itemStyle: { color: '#5C7BD9' }},
@@ -685,14 +736,27 @@ export default {
       driverNumber()
         .then(res => {
           const { data } = res
-          this.driverData.all = data['全部']
-          this.driverData.work = data['从业']
-          this.driverData.unwork = data['待业']
-          this.driverData.logout = data['注销']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '从业':
+                this.driverData.work = item.statusCount
+                break
+              case '待业':
+                this.driverData.unwork = item.statusCount
+                break
+              case '注销':
+                this.driverData.logout = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.driverData.all = all
           this.driverPieData = [
-            { value: data['从业'], name: '从业', itemStyle: { color: '#009966' }},
-            { value: data['待业'], name: '待业', itemStyle: { color: '#FAC858' }},
-            { value: data['注销'], name: '注销', itemStyle: { color: '#FF7070' }}
+            { value: this.driverData.work, name: '从业', itemStyle: { color: '#009966' }},
+            { value: this.driverData.unwork, name: '待业', itemStyle: { color: '#FAC858' }},
+            { value: this.driverData.logout, name: '注销', itemStyle: { color: '#FF7070' }}
           ]
         })
         .catch(err => {
