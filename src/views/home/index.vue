@@ -142,7 +142,7 @@
               <monitor-pie-chart
                 :chart-data="carChartData"
                 :showlegend="true"
-                :position="['50%','60%']"
+                :position="['50%','65%']"
               />
             </div>
             <div class="box-monitor">

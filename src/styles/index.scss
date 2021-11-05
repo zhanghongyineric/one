@@ -91,7 +91,9 @@ div:focus {
 }
 
 .el-table th,
-.el-table tr {
+.el-table tr,
+.el-table--enable-row-hover .el-table__body tr:hover>td,
+.el-table--enable-row-transition .el-table__body td {
   background-color: #0E1521;
   color: #C0C0C0;
 }
