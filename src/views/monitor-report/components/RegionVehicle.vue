@@ -135,7 +135,10 @@ export default {
           trigger: 'axis'
         },
         legend: {
-          data: legend
+          data: legend,
+          textStyle: {
+            color: '#fff'
+          }
         },
         color: ['#D97559', '#E4C477', '#5087EC', '#68BBC4'],
         toolbox: {

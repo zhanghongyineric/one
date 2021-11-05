@@ -157,7 +157,10 @@ export default {
           trigger: 'axis'
         },
         legend: {
-          data: ['疲劳驾驶', '时段禁行', '离线位移', '超速报警']
+          data: ['疲劳驾驶', '时段禁行', '离线位移', '超速报警'],
+          textStyle: {
+            color: '#fff'
+          }
         },
         color: ['#D97559', '#E4C477', '#5087EC', '#68BBC4'],
         toolbox: {
