@@ -76,7 +76,7 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              type="primary"
+              type="warning"
               @click="handleUpdate(scope.row)"
             >修改
             </el-button>
