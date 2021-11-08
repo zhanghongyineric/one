@@ -66,7 +66,6 @@ export default {
       type: Boolean,
       required: true
     },
-
     // 表格标题
     title: {
       type: String,

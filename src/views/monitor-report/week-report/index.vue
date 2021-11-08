@@ -10,7 +10,12 @@
             <!--基本搜索条件-->
             <div class="search-query f fw-w">
               <el-form-item label="选择平台:">
-                <ChoosePlatform v-model="listQuery.platform" default-first-option @initFinished="initFinished" />
+                <ChoosePlatform
+                  v-model="listQuery.platform"
+                  default-first-option
+                  @change="getWeekList()"
+                  @initFinished="initFinished"
+                />
               </el-form-item>
               <el-form-item label="统计周期:">
                 <el-date-picker
@@ -20,10 +25,18 @@
                   format="yyyy年"
                   value-format="yyyy"
                   style="width: 120px;margin-right: 10px;"
+                  :picker-options="{disabledDate:disabledDate}"
+                  :clearable="false"
+                  @change="getWeekList"
                 />
-                <el-select v-model="listQuery.week" placeholder="选择周" style="width: 100px;">
+                <el-select
+                  v-model="listQuery.week"
+                  placeholder="选择周"
+                  style="width: 100px;"
+                  @change="getList"
+                >
                   <el-option
-                    v-for="num in 54"
+                    v-for="num in weekList"
                     :key="num"
                     :label="`第${num}周`"
                     :value="num"
@@ -79,7 +92,7 @@
             <!--危险驾驶事件-->
             <DangerDrive ref="dangerDrive" :data="dangerDriveData" :loading="listLoading" style="margin-bottom: 10px;" />
             <!--违章报警排名前十-->
-            <ViolationTopTen :data="violationTopTenData" :loading="listLoading" />
+            <ViolationTopTen :data="violationTopTenData" :loading="listLoading" style="margin-bottom: 10px;" />
             <!--主动安全报警排名-->
             <BaseTable
               title="主动安全报警排名"
@@ -151,10 +164,14 @@ export default {
     ChoosePlatform
   },
   data() {
+    const currentYear = new Date().getFullYear().toString()
+
     return {
       hasWeek: false, // 是否有周的数据
       hasPlatform: false, // 是否有平台数据
-      week: '', // 周
+      currentWeek: '', // 当前最新数据的周
+      currentYear, // 当前年份
+      weekList: [], // 当前年中有数据的周列表
       listLoading: true, // 加载状态
       buttonLoading: false, // 弹窗按钮加载状态
       options: {
@@ -162,14 +179,14 @@ export default {
       },
       listQuery: { // 查询条件
         platform: null, // 平台
-        year: new Date().getFullYear().toString(), // 年份
-        week: 1,
+        year: currentYear, // 年份
+        week: null,
         vehicleType: []// 车辆类型
       },
       listQueryTemp: { // 用于重置查询条件
         platform: null, // 平台
-        year: new Date().getFullYear().toString(), // 年份
-        week: 1, // 周
+        year: currentYear, // 年份
+        week: null, // 周
         vehicleType: []// 车辆类型
       },
       regionVehicleData: {
@@ -220,18 +237,12 @@ export default {
     activeSafetyTableData() {
       return {
         tableHead: [
-          {
-            prop: 'index',
-            label: '序号'
-          },
-          {
-            prop: '1',
-            label: '企业'
-          },
-          {
-            prop: '2',
-            label: '累计进入报警名单次数'
-          }
+          { label: '排序', prop: 'index' },
+          { label: '企业名称', prop: 'unitName' },
+          { label: '报警总数', prop: 'alarmCount' },
+          { label: 'adas报警数', prop: 'adasAlarmCount' },
+          { label: 'dsm报警数', prop: 'dsmAlarmCount' },
+          { label: '环比（%）', prop: 'relativeRatio' }
         ],
         tableData: this.activeSafetyData[this.activeSafetyType]
       }
@@ -242,19 +253,63 @@ export default {
 
     // 车辆类型默认全部选中
     this.listQuery.vehicleType = this.listQueryTemp.vehicleType = vehicleType.list.map(item => item.value)
-    // 获取周
-    netGetWeek().then(res => {
-      this.listQuery.week = res.data
-      this.hasWeek = true
-      if (this.hasPlatform) this.getList()
-    })
   },
   methods: {
+    // 重置表格数据
+    resetTableData() {
+      this.regionVehicleData = {
+        tableHead: [],
+        tableData: []
+      } // 区县车辆统计情况数据
+      this.vehicleStatisticsData = [] // 车辆基本情况统计数据
+      this.dangerDriveData = {
+        ADAS: {
+          tableHead: [],
+          tableData: []
+        },
+        DSM: {
+          tableHead: [],
+          tableData: []
+        }
+      } // 危险驾驶事件数据
+      this.vehicleTendencyData = {
+        chartData: [],
+        tableData: []
+      } // 车辆违章类型报警趋势数据
+      this.violationTopTenData = {
+        company: [],
+        vehicle: []
+      }// 违章报警前十
+      this.vehicleTopTenData = [[], [], [], []], // 车辆违章报警前十
+      this.activeSafetyData = {
+        company: [],
+        vehicle: []
+      } // 主动安全报警
+      this.activeSafetyType = 'company'
+    },
+    // 获取周
+    getWeekList(type) {
+      netGetWeek({ year: this.listQuery.year, plateId: this.listQuery.platform }).then(res => {
+        const week = res.data.length ? res.data[0] : null
+
+        this.listQuery.week = week
+        if (type === 'init') this.currentWeek = week
+        else this.resetTableData()
+        this.weekList = res.data
+        this.hasWeek = true
+
+        if (this.hasPlatform && this.listQuery.week) this.getList()
+      })
+    },
+    // 禁用日期
+    disabledDate(date) {
+      return +date.getFullYear() > +this.currentYear
+    },
     // 平台加载完成回调
     initFinished(platForm) {
       this.hasPlatform = true
       this.listQuery.platform = this.listQueryTemp.platform = platForm
-      if (this.hasWeek && platForm) this.getList()
+      if (platForm) this.getWeekList('init')
     },
     // 点击搜索
     handleSearch() {
@@ -263,7 +318,7 @@ export default {
     // 获取周报数据
     getList() {
       if (!this.listQuery.platform) return this.$message.warning('请先选择平台')
-
+      if (this.weekList.length === 0) return this.$message.warning('所选年份中没有数据')
       const params = {
         plateId: this.listQuery.platform,
         vehicleTypes: this.listQuery.vehicleType.join(','),
@@ -297,49 +352,15 @@ export default {
         }
         // 违章报警前十
         this.violationTopTenData = {
-          company: [],
+          company: data.unitRank,
           vehicle: data.vehicleRank
         }
         // 车辆违章报警前十
         this.vehicleTopTenData = data.vehicleViolationAlarmRank
         // 主动安全报警
         this.activeSafetyData = {
-          company: [
-            {
-              index: 1,
-              1: 445,
-              2: 4234,
-              3: 45621,
-              4: 4324,
-              5: 456
-            },
-            {
-              index: 2,
-              1: 445,
-              2: 4234,
-              3: 45621,
-              4: 4324,
-              5: 456
-            }
-          ],
-          vehicle: [
-            {
-              index: 1,
-              1: 45,
-              2: 234,
-              3: 5621,
-              4: 324,
-              5: 56
-            },
-            {
-              index: 2,
-              1: 45,
-              2: 234,
-              3: 5621,
-              4: 324,
-              5: 56
-            }
-          ]
+          company: data.unitTopAlarmRank.map((item, index) => ({ ...item, index: index + 1 })),
+          vehicle: data.vehicleTopAlarmRank.map((item, index) => ({ ...item, index: index + 1 }))
         }
         this.listLoading = false
       }).catch(_ => {
@@ -349,7 +370,7 @@ export default {
     // 重置搜索条件
     resetQuery() {
       this.listQuery = { ...this.listQueryTemp }
-      this.getList()
+      this.getWeekList()
     }
   }
 }

@@ -3,10 +3,11 @@ import createRequest from '@/utils/createRequest'
 const request = createRequest('')
 
 // 获取周
-export function netGetWeek() {
+export function netGetWeek(params) {
   return request({
     url: '/admin/safereport/week',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 

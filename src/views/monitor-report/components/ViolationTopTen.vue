@@ -34,30 +34,30 @@
         width="50"
       />
       <el-table-column
-        prop="b"
+        prop="unitName"
         label="企业"
-        min-width="150"
+        min-width="100"
         show-overflow-tooltip
       />
       <el-table-column
-        prop="c"
+        prop="vehicleCount"
         label="车辆总数"
-        width="50"
+        width="70"
       />
       <el-table-column
-        prop="d"
+        prop="alarmVehicleCount"
         label="车辆报警数"
         width="70"
       />
       <el-table-column
-        prop="f"
+        prop="violationAlarmCount"
         label="总报警数"
-        width="50"
+        width="70"
       />
       <el-table-column
-        prop="g"
+        prop="vehicleAvgAlarmCount"
         label="车均报警"
-        width="50"
+        width="70"
       />
       <el-table-column
         align="center"
@@ -182,7 +182,7 @@ export default {
             multiHeader: [['排序', '企业', '车辆总数', '车辆报警数', '总报警数', '车均报警', '违规报警', '', '', '']],
             header: ['', '', '', '', '', '', '超速', '疲劳驾驶', '时段禁行', '离线位移'],
             merges: ['A1:A2', 'B1:B2', 'C1:C2', 'D1:D2', 'E1:E2', 'F1:F2', 'G1:J1'],
-            filterVal: ['index', 'b', 'c', 'd', 'e', 'f', 'alarm1', 'alarm2', 'alarm3', 'alarm4'],
+            filterVal: ['index', 'unitName', 'vehicleCount', 'alarmVehicleCount', 'violationAlarmCount', 'vehicleAvgAlarmCount', 'alarm1', 'alarm2', 'alarm3', 'alarm4'],
             autoWidth: true
           },
           vehicle: {
