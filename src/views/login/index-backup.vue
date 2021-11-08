@@ -18,7 +18,7 @@
             size="20%"
           />
           <span v-if="drawer" class="history-version-text">历史版本信息</span>
-          <h3>监测·管理端</h3>
+          <h3>数据中台</h3>
         </div>
       </div>
       <div class="right">

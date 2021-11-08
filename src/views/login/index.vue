@@ -77,7 +77,7 @@
               </el-button>
             </div>
           </el-form>
-          <h3 class="welcome system-text">监测·管理端</h3>
+          <h3 class="welcome system-text">数据中台</h3>
           <h2>
             <span style="cursor: pointer" @click="drawer = true">v{{ version }}</span>
           </h2>
