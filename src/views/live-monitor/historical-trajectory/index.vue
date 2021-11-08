@@ -134,9 +134,7 @@ export default {
       passedPath: 0, // 存放（播放时点击倍数）抓取到的位置
       curreGDPath: null, // 存放（播放时点击倍数）抓取到的经纬度
       polyline: null, // 轨迹线路
-      lineArrCopy: [],
       tableData: [],
-      topic: '',
       showTable: true,
       alreadyPercent: 0,
       rules: {
@@ -213,9 +211,6 @@ export default {
         this.$refs['searchForm'].clearValidate()
       })
     },
-    switchPlay() {
-      this.showPause = !this.showPause
-    },
     getHeight() {
       this.styleSize.height = window.innerHeight - 84 + 'px'
       this.styleSize.width = window.innerWidth + 'px'
@@ -237,7 +232,6 @@ export default {
             )
           }
         }
-        this.lineArrCopy = this.lineArrlast
         this.initPolyline()
         // 计算轨迹播放时间
         TIME_VARIABLE = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
