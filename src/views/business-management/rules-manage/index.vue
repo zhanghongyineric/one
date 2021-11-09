@@ -70,6 +70,7 @@
               size="small"
               placeholder="请输入规则描述"
               type="textarea"
+              :rows="5"
             />
           </el-form-item>
         </el-form>
