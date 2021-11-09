@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'hidden':hidden}" class="pagination-container">
+  <div :class="['pagination-container',theme?'':'light',hidden?'hidden':'']">
     <el-pagination
       :background="background"
       :current-page.sync="currentPage"
@@ -71,6 +71,9 @@ export default {
       set(val) {
         this.$emit('update:limit', val)
       }
+    },
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   methods: {
@@ -91,6 +94,9 @@ export default {
 </script>
 
 <style scoped>
+.light {
+  background-color: #fff !important;
+}
 .pagination-container {
   display: flex;
   justify-content: flex-end;

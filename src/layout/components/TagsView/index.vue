@@ -1,5 +1,5 @@
 <template>
-  <div id="tags-view-container" class="tags-view-container">
+  <div id="tags-view-container" :class="['tags-view-container',theme?'':'light']" style="">
     <scroll-pane ref="scrollPane" class="tags-view-wrapper" @scroll="handleScroll">
       <router-link
         v-for="tag in visitedViews"
@@ -46,6 +46,9 @@ export default {
     },
     routes() {
       return this.$store.state.permission.routes
+    },
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   watch: {
@@ -231,12 +234,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.light {
+  background-color: #fff !important;
+  border-bottom: 1px solid #d8dce5 !important;
+}
+
 .tags-view-container {
   height: 34px;
   width: 100%;
   background-color: #0E1521;
-  // background-color: #fff;
-  // border-bottom: 1px solid #d8dce5;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
   .tags-view-wrapper {
     .tags-view-item {

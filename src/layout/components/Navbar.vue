@@ -1,6 +1,6 @@
 <template>
-  <div class="navbar clearfix">
-    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+  <div :class="['navbar', 'clearfix',theme?'':'light']">
+    <hamburger :is-active="sidebar.opened" :dark-theme="theme" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
 
@@ -11,9 +11,9 @@
       <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">政府·企业端</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
-          <span style="font-weight: bold;margin-right: 15px;color:#ccc">当前身份:{{ roleName }}</span>
-          <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px;color:#ccc" />
-          <span class="username">{{ name || '-' }}</span>
+          <span style="font-weight: bold;margin-right: 15px;" :style="theme ? 'color:#ccc' : ''">当前身份:{{ roleName }}</span>
+          <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px;" :style="theme ? 'color:#ccc' : ''" />
+          <span class="username" :style="theme ? 'color:#ccc;' : 'color:#606266;'">{{ name || '-' }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <el-dropdown-item @click.native="handleUpdate">
@@ -29,7 +29,6 @@
         :visible.sync="dialogFormVisible"
       />
     </div>
-
   </div>
 </template>
 
@@ -61,7 +60,10 @@ export default {
       'roleName',
       'unitName',
       'area'
-    ])
+    ]),
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
+    }
   },
   mounted() {
     this.showLink = this.role === 'admin'
@@ -138,6 +140,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.light {
+  background-color: #fff !important;
+}
+
 .navbar {
   //height: 50px;
   //overflow: hidden;

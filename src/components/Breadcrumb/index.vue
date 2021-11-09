@@ -1,8 +1,8 @@
 <template>
-  <el-breadcrumb class="app-breadcrumb" separator="/">
+  <el-breadcrumb :class="['app-breadcrumb',theme?'':'light']" separator="/">
     <transition-group name="breadcrumb">
       <el-breadcrumb-item v-for="(item,index) in levelList" :key="index">
-        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{ item.meta.title }}</span>
+        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" :class="['no-redirect',theme?'':'light']">{{ item.meta.title }}</span>
         <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
       </el-breadcrumb-item>
     </transition-group>
@@ -16,6 +16,11 @@ export default {
   data() {
     return {
       levelList: null
+    }
+  },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   watch: {
@@ -63,6 +68,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.light {
+  color: #606266 !important;
+
+  a {
+    color: #606266 !important;
+  }
+}
 .app-breadcrumb.el-breadcrumb {
   display: inline-block;
   font-size: 14px;
