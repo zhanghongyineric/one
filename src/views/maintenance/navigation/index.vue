@@ -23,14 +23,14 @@ export default {
   data() {
     return {
       navigationList: [
-        { 'name': 'nacos', url: 'http://www.gosmooth.com.cn:8888/nacos' },
-        { 'name': 'sentinel', url: 'http://www.gosmooth.com.cn:8877/#/login' },
+        { 'name': 'nacos', url: 'http://www.sreyun.gosmooth.com.cn:8888/nacos' },
+        { 'name': 'sentinel', url: 'http://www.sreyun.gosmooth.com.cn:8877/#/login' },
         { 'name': 'spring-admin', url: 'http://139.9.139.113:8899/login' },
         { 'name': 'minio', url: 'http://www.image.gosmooth.com.cn/minio/login' },
-        { 'name': 'xxl-job-admin', url: 'http://www.gosmooth.com.cn:8866/xxl-job-admin/' },
-        { 'name': 'kubernetes', url: 'http://www.gosmooth.com.cn:8811' },
+        { 'name': 'xxl-job-admin', url: 'http://www.sreyun.gosmooth.com.cn:8866/xxl-job-admin/' },
+        { 'name': 'kubernetes', url: 'http://www.sreyun.gosmooth.com.cn:8811' },
         // { 'name': 'grafana', url: 'http://www.gosmooth.com.cn:8822/login' },
-        { 'name': 'emq', url: 'http://www.gosmooth.com.cn:8833/#/' },
+        { 'name': 'emq', url: 'http://www.sreyun.gosmooth.com.cn:8833/#/' },
         // { 'name': 'flink', url: 'http://www.gosmooth.com.cn:8800/#/overview' },
         // { 'name': 'hadoop-yarn', url: 'http://www.gosmooth.com.cn:8855/cluster/nodes' },
         // { 'name': 'hadoop-hdfs ', url: 'http://www.gosmooth.com.cn:8844/dfshealth.html#tab-overview' },
