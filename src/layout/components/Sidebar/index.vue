@@ -149,6 +149,7 @@ export default {
   padding-bottom: 20px;
   font-size: 16px;
   color:white;
+  margin-bottom: 40px;
 
   .toggle-theme {
     height: 44px;
