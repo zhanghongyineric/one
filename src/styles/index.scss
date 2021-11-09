@@ -93,13 +93,18 @@ div:focus {
 .el-table th,
 .el-table tr,
 .el-table--enable-row-hover .el-table__body tr:hover>td,
-.el-table--enable-row-transition .el-table__body td {
+.el-table--enable-row-transition .el-table__body td,
+.el-table td.el-table__cell,
+.el-table th.el-table__cell.is-leaf {
   background-color: #0E1521;
   color: #C0C0C0;
 }
 
 .el-table th.is-leaf,
-.el-table td, .el-table th.is-leaf {
+.el-table td,
+.el-table th.is-leaf,
+.el-table td.el-table__cell,
+.el-table th.el-table__cell.is-leaf {
   border: 0;
 }
 
