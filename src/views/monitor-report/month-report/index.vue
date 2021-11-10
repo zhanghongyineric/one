@@ -4,49 +4,75 @@
     <el-card class="box-card">
       <!--搜索栏-->
       <header class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="80px" size="small">
-          <el-row :gutter="48">
+        <el-form :inline="true" :model="listQuery" label-width="80px" size="small">
+          <div class="f jc-sb">
 
             <!--基本搜索条件-->
-            <el-col :xs="24" :sm="12" :md="6">
+            <div class="search-query f fw-w">
               <el-form-item label="选择平台:">
-                <ChoosePlatform v-model="listQuery.platform" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6">
-              <el-form-item label="统计周期:">
-                <el-date-picker
-                  v-model="listQuery.period"
-                  type="week"
-                  format="yyyy 第 WW 周"
-                  placeholder="选择周"
-                  :picker-options="{firstDayOfWeek:1}"
+                <ChoosePlatform
+                  v-model="listQuery.platform"
+                  default-first-option
+                  @initFinished="platformInitFinished"
+                  @change="getMonthList"
                 />
               </el-form-item>
-            </el-col>
-
-            <!--查询操作按钮-->
-            <el-col :xs="12" :sm="12" :md="6">
+              <el-form-item label="统计周期:">
+                <el-date-picker
+                  v-model="listQuery.year"
+                  type="year"
+                  placeholder="选择年"
+                  format="yyyy年"
+                  value-format="yyyy"
+                  style="width: 120px;margin-right: 10px;"
+                  :picker-options="{disabledDate:disabledDate}"
+                  :clearable="false"
+                  @change="getMonthList"
+                />
+                <el-select
+                  v-model="listQuery.month"
+                  placeholder="无数据"
+                  style="width: 100px;"
+                  @change="getList"
+                >
+                  <el-option
+                    v-for="num in monthList"
+                    :key="num"
+                    :label="`第${num}月`"
+                    :value="num"
+                  />
+                </el-select>
+              </el-form-item>
+              <!--查询操作按钮-->
               <div
                 class="table-page-search-submitButtons"
               >
                 <el-button size="small" @click="resetQuery">重置</el-button>
                 <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
-
               </div>
-            </el-col>
-            <el-col :xs="12" :sm="12" :md="6">
-              <el-button
-                type="primary"
-                size="small"
-                plain
-                class="to-report-manage"
-                @click="$router.push({name:'ReportManage',params:{type:'month'}})"
-              >
-                月报管理
-              </el-button>
-            </el-col>
-          </el-row>
+            </div>
+            <el-button
+              type="primary"
+              size="small"
+              plain
+              class="to-report-manage"
+              @click="$router.push({name:'ReportManage',params:{type:'month'}})"
+            >
+              月报管理
+            </el-button>
+          </div>
+          <div class="vehicle-type-query f ai-c">
+            <label for="vehicleType" class="vehicle-type-label el-form-item__label">车辆统计范围:</label>
+            <el-checkbox-group id="vehicleType" v-model="listQuery.vehicleType" @change="getList">
+              <el-checkbox
+                v-for="item in options.vehicleTypeList"
+                :key="item.value"
+                :label="item.value"
+              >{{ item.label }}
+              </el-checkbox>
+            </el-checkbox-group>
+          </div>
+
         </el-form>
       </header>
 
@@ -65,7 +91,7 @@
             <!--危险驾驶事件-->
             <DangerDrive ref="dangerDrive" :data="dangerDriveData" :loading="listLoading" style="margin-bottom: 10px;" />
             <!--运输企业考核后十名-->
-            <BaseTable title="运输企业考核后十名" :data="endTenData" :loading="listLoading" style="margin-bottom: 10px;" />
+            <!--<BaseTable title="运输企业考核后十名" :data="endTenData" :loading="listLoading" style="margin-bottom: 10px;" />-->
             <!--主动安全报警类型环比-->
             <BaseTable title="主动安全报警类型环比" :data="activeSafetyData" :loading="listLoading" style="margin-bottom: 10px;" />
           </el-col>
@@ -75,6 +101,7 @@
               ref="vehicleStatistics"
               :data="vehicleStatisticsData"
               :loading="listLoading"
+              :vehicle-type="selectedVehicle"
               style="margin-bottom: 10px;"
             />
             <!--车辆违章类型报警趋势-->
@@ -86,25 +113,37 @@
               style="margin-bottom: 10px;"
             />
             <!--服务商考核-->
-            <BaseTable title="服务商考核" :data="facilitatorData" :loading="listLoading" style="margin-bottom: 10px;" />
+            <!--<BaseTable title="服务商考核" :data="facilitatorData" :loading="listLoading" style="margin-bottom: 10px;" />-->
             <!--高风险名单分析-->
             <BaseTable
               title="高风险名单分析"
               :data="dangerListData"
+              :all-data="dangerListData.tableDataAll"
               :loading="listLoading"
+              :config="{
+                title:'高风险报警名单分析',
+                company:{
+                  sheetName:'运输企业',
+                  header:['序号','企业','累计进入报警名单次数']
+                },
+                vehicle:{
+                  sheetName:'营运车辆',
+                  header:['序号','车牌号','累计进入报警名单次数']
+                },
+              }"
               show-filter
+              multi
               style="margin-bottom: 10px;"
             >
               <template>
                 <el-radio-group v-model="dangerListType" size="medium" @change="filterActiveSafetyData">
-                  <el-radio-button label="1">运输企业</el-radio-button>
-                  <el-radio-button label="2">营运车辆</el-radio-button>
+                  <el-radio-button label="company">运输企业</el-radio-button>
+                  <el-radio-button label="vehicle">营运车辆</el-radio-button>
                 </el-radio-group>
-                <el-checkbox-group v-model="dangerListCheckList">
+                <el-checkbox-group v-model="dangerListCheckList" @change="filterActiveSafetyData">
                   <el-checkbox :label="2">累计2次</el-checkbox>
                   <el-checkbox :label="3">累计3次</el-checkbox>
-                  <el-checkbox :label="4">累计4次</el-checkbox>
-                  <el-checkbox :label="5">累计5次</el-checkbox>
+                  <el-checkbox :label="4">累计4次及以上</el-checkbox>
                 </el-checkbox-group>
               </template>
             </BaseTable>
@@ -123,6 +162,9 @@ import VehicleStatistics from '@/views/monitor-report/components/VehicleStatisti
 import DangerDrive from '@/views/monitor-report/components/DangerDrive'
 import VehicleTendency from '@/views/monitor-report/components/VehicleTendency'
 import BaseTable from '@/views/monitor-report/components/BaseTable'
+import { netGetMonthData, netGetMonth } from '@/api/monitor-report'
+
+const onlineOptions = JSON.parse(localStorage.getItem('onlineOption'))
 
 export default {
   name: 'MonthReport',
@@ -134,30 +176,35 @@ export default {
     RegionVehicle,
     ChoosePlatform
   },
-  // provide() {
-  //   return {
-  //     'demo': 'fuck'
-  //   }
-  // },
-  provide: {
-    test: '213'
-  },
   data() {
+    const currentYear = new Date().getFullYear().toString()
+
     return {
-      demo: 1,
       list: [], // 表格数据
+      monthList: [], // 有数据的月份列表
       listLoading: true, // 加载状态
       buttonLoading: false, // 弹窗按钮加载状态
+      options: {
+        vehicleTypeList: onlineOptions.monitor_report_vehicle_type.list
+      },
+      currentYear, // 当前年份
       listQuery: { // 查询条件
-        platform: -999, // 平台
-        period: new Date() // 统计周期
+        platform: null, // 平台
+        year: currentYear, // 统计周期
+        month: null,
+        vehicleType: []// 车辆类型
       },
       listQueryTemp: { // 用于重置查询条件
         platform: null, // 平台
-        period: new Date() // 统计周期
+        year: currentYear, // 统计周期
+        month: null,
+        vehicleType: []// 车辆类型
       },
 
-      regionVehicleData: {}, // 区县车辆统计情况数据
+      regionVehicleData: {
+        tableHead: [],
+        tableData: []
+      }, // 区县车辆统计情况数据
       vehicleStatisticsData: [], // 车辆基本情况统计数据
       dangerDriveData: {
         ADAS: [],
@@ -170,144 +217,12 @@ export default {
       violationTopTenData: {}, // 违章报警前十数据
       vehicleTopTenData: {}, // 车辆违章报警前十数据
       facilitatorData: {
-        tableHead: [
-          {
-            prop: 'index',
-            label: '序号'
-          },
-          {
-            prop: '1',
-            label: '服务商'
-          },
-          {
-            prop: '2',
-            label: '平台连通率'
-          },
-          {
-            prop: '3',
-            label: '车辆上线率'
-          },
-          {
-            prop: '4',
-            label: '轨迹完整率'
-          },
-          {
-            prop: '5',
-            label: '数据合格率'
-          },
-          {
-            prop: '6',
-            label: '卫星定位漂移率'
-          },
-          {
-            prop: '7',
-            label: '得分'
-          },
-          {
-            prop: '8',
-            label: '得分环比'
-          }
-        ],
-        tableData: [
-          {
-            index: 1,
-            1: 45,
-            2: 234,
-            3: 5621,
-            4: 324,
-            5: 56,
-            6: 1234,
-            7: 768,
-            8: 234
-          },
-          {
-            index: 2,
-            1: 45,
-            2: 234,
-            3: 5621,
-            4: 324,
-            5: 56,
-            6: 1234,
-            7: 768,
-            8: 234
-          }
-        ]
+        tableHead: [],
+        tableData: []
       }, // 服务商考核数据
       endTenData: {
-        tableHead: [
-          {
-            prop: 'index',
-            label: '序号'
-          },
-          {
-            prop: '1',
-            label: '企业'
-          },
-          {
-            prop: '2',
-            label: '车辆入网率'
-          },
-          {
-            prop: '3',
-            label: '车辆上线率'
-          },
-          {
-            prop: '4',
-            label: '轨迹完整率'
-          },
-          {
-            prop: '5',
-            label: '数据合格率'
-          },
-          {
-            prop: '6',
-            label: '卫星定位漂移率'
-          },
-          {
-            prop: '66',
-            label: '平均车辆超速次数'
-          },
-          {
-            prop: '666',
-            label: '平均疲劳驾驶时长'
-          },
-          {
-            prop: '7',
-            label: '得分'
-          },
-          {
-            prop: '8',
-            label: '得分环比'
-          }
-        ],
-        tableData: [
-          {
-            index: 1,
-            1: 45,
-            2: 234,
-            3: 5621,
-            4: 324,
-            5: 56,
-            6: 1234,
-            66: 2234,
-            666: 2234,
-            7: 768,
-            8: 234
-          },
-          {
-            index: 2,
-            1: 45,
-            2: 234,
-            3: 5621,
-            4: 324,
-            5: 56,
-            6: 1234,
-            66: 2234,
-            666: 2234,
-            7: 768,
-            8: 234
-          }
-        ]
+        tableHead: [],
+        tableData: []
       }, // 运输考核后十名数据
       activeSafetyData: {
         tableHead: [
@@ -316,44 +231,27 @@ export default {
             label: '序号'
           },
           {
-            prop: '1',
+            prop: 'unitName',
             label: '企业'
           },
           {
-            prop: '2',
+            prop: 'alarmCount',
             label: '报警总数'
           },
           {
-            prop: '3',
+            prop: 'adasAlarmCount',
             label: 'ADAS报警数'
           },
           {
-            prop: '4',
+            prop: 'dsmAlarmCount',
             label: 'DSM报警数'
           },
           {
-            prop: '5',
+            prop: 'relativeRatio',
             label: '危险驾驶环比'
           }
         ],
-        tableData: [
-          {
-            index: 1,
-            1: 45,
-            2: 234,
-            3: 5621,
-            4: 324,
-            5: 56
-          },
-          {
-            index: 2,
-            1: 45,
-            2: 234,
-            3: 5621,
-            4: 324,
-            5: 56
-          }
-        ]
+        tableData: []
       }, // 主动安全报警类型环比数据
       dangerListData: {
         tableHead: [
@@ -362,48 +260,205 @@ export default {
             label: '序号'
           },
           {
-            prop: '1',
+            prop: 'name',
             label: '企业'
           },
           {
-            prop: '2',
-            label: '累计进入报警名单次数'
+            prop: 'count',
+            label: '报警总数'
           }
         ],
-        tableData: [
-          {
-            index: 1,
-            1: '大英通达',
-            2: 2
-          },
-          {
-            index: 2,
-            1: '宜宾港',
-            2: 3
-          }
-        ], // 存放过滤后表格数据
-        tableDataAll: [
-          {
-            index: 1,
-            1: '大英通达',
-            2: 2
-          },
-          {
-            index: 2,
-            1: '宜宾港',
-            2: 3
-          }
-        ]// 存放全部表格数据
+        tableData: [], // 存放过滤后表格数据
+        tableDataAll: {
+          company: [],
+          vehicle: []
+        }, // 存放全部表格数据
+        tableHeadAll: {
+          company: [
+            {
+              prop: 'index',
+              label: '序号'
+            },
+            {
+              prop: 'name',
+              label: '企业'
+            },
+            {
+              prop: 'count',
+              label: '报警总数'
+            }
+          ],
+          vehicle: [
+            {
+              prop: 'index',
+              label: '序号'
+            },
+            {
+              prop: 'name',
+              label: '车牌号'
+            },
+            {
+              prop: 'count',
+              label: '报警总数'
+            }
+          ]
+        }// 存放全部表格数据
       }, // 高风险名单分析数据
-      dangerListType: '1', // 高风险名单分析类型筛选
-      dangerListCheckList: [2, 3, 4, 5]// 高风险名单分析数据次数筛选
+      dangerListType: 'company', // 高风险名单分析类型筛选
+      dangerListCheckList: [2, 3, 4]// 高风险名单分析数据次数筛选
     }
   },
+  computed: {
+    // 选中的车辆类型
+    selectedVehicle() {
+      return this.listQuery.vehicleType.map(type => onlineOptions.monitor_report_vehicle_type.map[type])
+    }
+
+  },
   created() {
-    this.getList()
+    const vehicleType = onlineOptions.monitor_report_vehicle_type
+
+    // 车辆类型默认全部选中
+    this.listQuery.vehicleType = this.listQueryTemp.vehicleType = vehicleType.list.map(item => item.value)
   },
 
   methods: {
+    // 重置数据
+    resetData() {
+      this.regionVehicleData = {
+        tableHead: [],
+        tableData: []
+      } // 区县车辆统计情况数据
+      this.vehicleStatisticsData = [] // 车辆基本情况统计数据
+      this.dangerDriveData = {
+        ADAS: [],
+        DSM: []
+      } // 危险驾驶事件数据
+      this.vehicleTendencyData = {
+        chartData: [],
+        tableData: []
+      } // 车辆违章类型报警趋势数据
+      this.violationTopTenData = {} // 违章报警前十数据
+      this.vehicleTopTenData = {} // 车辆违章报警前十数据
+      this.facilitatorData = {
+        tableHead: [],
+        tableData: []
+      } // 服务商考核数据
+      this.endTenData = {
+        tableHead: [],
+        tableData: []
+      } // 运输考核后十名数据
+      this.activeSafetyData = {
+        tableHead: [
+          {
+            prop: 'index',
+            label: '序号'
+          },
+          {
+            prop: 'unitName',
+            label: '企业'
+          },
+          {
+            prop: 'alarmCount',
+            label: '报警总数'
+          },
+          {
+            prop: 'adasAlarmCount',
+            label: 'ADAS报警数'
+          },
+          {
+            prop: 'dsmAlarmCount',
+            label: 'DSM报警数'
+          },
+          {
+            prop: 'relativeRatio',
+            label: '危险驾驶环比'
+          }
+        ],
+        tableData: []
+      }// 主动安全报警类型环比数据
+      this.dangerListData = {
+        tableHead: [
+          {
+            prop: 'index',
+            label: '序号'
+          },
+          {
+            prop: 'name',
+            label: '企业'
+          },
+          {
+            prop: 'count',
+            label: '报警总数'
+          }
+        ],
+        tableData: [], // 存放过滤后表格数据
+        tableDataAll: {
+          company: [],
+          vehicle: []
+        }, // 存放全部表格数据
+        tableHeadAll: {
+          company: [
+            {
+              prop: 'index',
+              label: '序号'
+            },
+            {
+              prop: 'name',
+              label: '企业'
+            },
+            {
+              prop: 'count',
+              label: '报警总数'
+            }
+          ],
+          vehicle: [
+            {
+              prop: 'index',
+              label: '序号'
+            },
+            {
+              prop: 'name',
+              label: '车牌号'
+            },
+            {
+              prop: 'count',
+              label: '报警总数'
+            }
+          ]
+        }// 存放全部表格数据
+      }// 高风险名单分析数据
+      this.dangerListType = 'company' // 高风险名单分析类型筛选
+      this.dangerListCheckList = [2, 3, 4]// 高风险名单分析数据次数筛选
+    },
+    // 禁用日期
+    disabledDate(date) {
+      return +date.getFullYear() > +this.currentYear
+    },
+    // 平台加载完成回调
+    platformInitFinished(platForm) {
+      this.listQuery.platform = this.listQueryTemp.platform = platForm
+
+      if (platForm) this.getMonthList('init')
+      else this.listLoading = false
+    },
+    // 获取平台有数据的月
+    getMonthList(type) {
+      const { year, platform } = this.listQuery
+      netGetMonth({ year, plateId: platform })
+        .then(res => {
+          this.monthList = res.data
+
+          if (this.monthList.length) {
+            this.listQuery.month = this.monthList[0]
+            this.getList()
+            if (type === 'init') this.listQueryTemp.month = this.monthList[0]
+          } else {
+            this.listQuery.month = null
+            if (type !== 'init') this.resetData()
+          }
+        })
+    },
     // 点击搜索
     handleSearch() {
       // console.log(this.listQuery.period.getW)
@@ -411,123 +466,51 @@ export default {
     },
     // 获取列表
     getList() {
+      const { platform, year, month } = this.listQuery
+
+      if (this.monthList.length === 0) return this.$message.warning('所选年份中没有数据')
+      if (!platform) return this.$message.warning('请先选择平台')
       this.listLoading = true
-      setTimeout(_ => {
-        this.listLoading = false
-        this.regionVehicleData = {
-          // 表头 prop表头对应表格数据字段，；label中文标签
-          tableHead: [
-            {
-              prop: 'name',
-              label: '地区'
-            },
-            {
-              prop: 'region1',
-              label: '巴州区'
-            },
-            {
-              prop: 'region2',
-              label: '恩阳区'
-            },
-            {
-              prop: 'region3',
-              label: '南江区'
-            },
-            {
-              prop: 'region4',
-              label: '平昌区'
-            },
-            {
-              prop: 'region5',
-              label: '通江区'
-            }
-          ],
-          // 表格数据
-          tableData: [
-            {
-              name: '上月上线数',
-              region1: 435,
-              region2: 235,
-              region3: 335,
-              region4: 535,
-              region5: 135
-            },
-            {
-              name: '本月上线数',
-              region1: 535,
-              region2: 235,
-              region3: 835,
-              region4: 235,
-              region5: 735
-            },
-            {
-              name: '上月车辆报警数',
-              region1: 435,
-              region2: 235,
-              region3: 335,
-              region4: 535,
-              region5: 135
-            },
-            {
-              name: '本月车辆报警数',
-              region1: 935,
-              region2: 535,
-              region3: 235,
-              region4: 935,
-              region5: 535
-            }
-          ]
+
+      netGetMonthData({
+        plateId: platform,
+        circle: `${year}-${month}`,
+        vehicleTypes: this.listQuery.vehicleType.join(',')
+      }).then(({ data }) => {
+        // 区县车辆统计情况数据
+        this.regionVehicleData = data.regionVehicleInfo
+        // 危险驾驶事件数据
+        this.dangerDriveData = {
+          ADAS: data.adas || [],
+          DSM: data.dsm || []
         }
-        this.vehicleStatisticsData = [
-          {
-            vehicleType: '农村客运车辆1',
-            vehicleNum: 12312,
-            OnlineVehicleNum: 2412,
-            OnlineRadio: 17,
-            mileage: 435423,
-            averageMileage: 1234,
-            dayAverageMileage: 34,
-            alarmAverageHundred: 1
-          },
-          {
-            vehicleType: '农村客运车辆2',
-            vehicleNum: 22312,
-            OnlineVehicleNum: 1412,
-            OnlineRadio: 7,
-            mileage: 235423,
-            averageMileage: 2234,
-            dayAverageMileage: 24,
-            alarmAverageHundred: 2
-          },
-          {
-            vehicleType: '农村客运车辆3',
-            vehicleNum: 32312,
-            OnlineVehicleNum: 3412,
-            OnlineRadio: 9,
-            mileage: 335423,
-            averageMileage: 3234,
-            dayAverageMileage: 54,
-            alarmAverageHundred: 5
-          }
-        ]
+        // 车辆违章类型报警趋势表格和图表
         this.vehicleTendencyData = {
-          chartData: [
-            [1231, 2, 3, 2134, 5, 6, 7, 1231, 2, 3, 2134, 5, 6, 7, 1231, 2, 3, 2134, 5, 6, 7, 1231, 2, 3, 2134, 5, 6, 7, 5, 6, 7],
-            [122, 2, 3, 2134, 1235, 6, 7, 122, 2, 3, 2134, 1235, 6, 7, 122, 2, 3, 2134, 1235, 6, 7, 122, 2, 3, 2134, 1235, 6, 7, 5, 6, 7],
-            [131, 2, 1233, 4, 745, 13, 7, 131, 2, 1233, 4, 745, 13, 7, 131, 2, 1233, 4, 745, 13, 7, 131, 2, 1233, 4, 745, 13, 7, 5, 6, 7],
-            [1231, 1232, 3, 4, 3, 6, 7, 1231, 1232, 3, 4, 3, 6, 7, 1231, 1232, 3, 4, 3, 6, 7, 1231, 1232, 3, 4, 3, 6, 7, 5, 6, 7]
-          ],
-          tableData: []
+          tableData: data.violation,
+          chartData: data.violationTrend
         }
-      }, 100)
+        // 主动安全报警类型环比数据
+        this.activeSafetyData.tableData = data.unitTopAlarmRank.map((item, index) => ({ index: index + 1, ...item }))
+        // 车辆基本情况统计数据
+        this.vehicleStatisticsData = data.vehicleBaseInfo
+        // 高风险名单分析数据
+        this.dangerListData.tableDataAll.company = this.dangerListData.tableData = data.unitRankByMonth.map((item, index) => ({ index: index + 1, ...item }))
+        this.dangerListData.tableDataAll.vehicle = data.vehicleRankByMonth.map((item, index) => ({ index: index + 1, ...item }))
+
+        this.listLoading = false
+      }).catch(_ => {
+        this.listLoading = false
+      })
+    },
+    // 根据筛选条件过滤数据并设置表头
+    filterActiveSafetyData() {
+      this.dangerListData.tableHead = this.dangerListData.tableHeadAll[this.dangerListType]
+      this.dangerListData.tableData = this.dangerListData.tableDataAll[this.dangerListType].filter(item => this.dangerListCheckList.includes(item.count))
     },
     // 重置搜索条件
     resetQuery() {
       this.listQuery = { ...this.listQueryTemp }
-      this.getList()
-    },
-    filterActiveSafetyData() {
-
+      this.getMonthList()
     }
   }
 }
@@ -537,7 +520,7 @@ export default {
 <style lang="scss" scoped>
 
 .to-report-manage {
-  float: right;
+  height: 32px;
 }
 
 .main {
@@ -550,4 +533,10 @@ export default {
     padding: 10px;
   }
 }
+
+.vehicle-type-label {
+  width: 108px;
+  flex-shrink: 0;
+}
+
 </style>

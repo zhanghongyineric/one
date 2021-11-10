@@ -109,15 +109,6 @@ export default {
       return this.data.filter(item => this.vehicleType.includes(item.vehicleType))
     }
   },
-  // watch: {
-  //   data: {
-  //     deep: true,
-  //     handler(data) {
-  //       this.tableData = data
-  //       this.allTableData = data.map(item => ({ ...item, visible: true }))
-  //     }
-  //   }
-  // },
   methods: {
     // 自定义表格列统计方法
     getSummaries(param) {

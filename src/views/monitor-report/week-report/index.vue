@@ -13,7 +13,7 @@
                 <ChoosePlatform
                   v-model="listQuery.platform"
                   default-first-option
-                  @change="getWeekList()"
+                  @change="getWeekList"
                   @initFinished="initFinished"
                 />
               </el-form-item>
@@ -31,7 +31,7 @@
                 />
                 <el-select
                   v-model="listQuery.week"
-                  placeholder="选择周"
+                  placeholder="无数据"
                   style="width: 100px;"
                   @change="getList"
                 >
@@ -280,7 +280,7 @@ export default {
         company: [],
         vehicle: []
       }// 违章报警前十
-      this.vehicleTopTenData = [[], [], [], []], // 车辆违章报警前十
+      this.vehicleTopTenData = [[], [], [], []] // 车辆违章报警前十
       this.activeSafetyData = {
         company: [],
         vehicle: []
@@ -310,6 +310,7 @@ export default {
       this.hasPlatform = true
       this.listQuery.platform = this.listQueryTemp.platform = platForm
       if (platForm) this.getWeekList('init')
+      else this.listLoading = false
     },
     // 点击搜索
     handleSearch() {

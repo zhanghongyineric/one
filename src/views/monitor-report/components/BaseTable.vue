@@ -105,7 +105,7 @@ export default {
           const data = Object.keys(this.allData).map(key => ({
             sheetName: this.config[key].sheetName,
             multiHeader: this.config[key].multiHeader,
-            header: tHeader,
+            header: this.config[key].header || tHeader,
             merges: this.config[key].merges,
             data: this.formatJson(filterVal, this.allData[key]),
             autoWidth: true

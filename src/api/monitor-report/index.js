@@ -19,6 +19,23 @@ export function netGetWeekData(params) {
     params
   })
 }
+// 获取月
+export function netGetMonth(params) {
+  return request({
+    url: '/admin/safereport/month',
+    method: 'get',
+    params
+  })
+}
+
+// 获取周报数据
+export function netGetMonthData(params) {
+  return request({
+    url: '/admin/safereport/monitor/month',
+    method: 'get',
+    params
+  })
+}
 
 /* // 获取违章报警排名统计
 export function fetchViolationTopTen(params) {

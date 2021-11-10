@@ -5,7 +5,6 @@
     placeholder="请选择平台"
     filterable
     class="select-platform"
-    @change="$emit('change')"
   >
     <el-option
       v-for="item in deptList"
@@ -46,6 +45,7 @@ export default {
       },
       set(val) {
         this.$emit('input', val)
+        this.$emit('change')
       }
     }
   },
