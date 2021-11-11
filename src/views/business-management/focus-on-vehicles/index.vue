@@ -68,7 +68,7 @@
             {{ scope.row.plateColor | plateColorFilter }}
           </template>
         </el-table-column>
-        <el-table-column prop="vehicleType" label="车辆类型" min-width="200px" align="center">
+        <el-table-column prop="vehicleType" label="车辆类型" min-width="200px" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row.vehicleType | vehicleTypeFilter }}
           </template>
@@ -82,6 +82,8 @@
             <span v-else style="color:red">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="unitName" label="企业名称" min-width="180px" align="center" show-overflow-tooltip />
+        <el-table-column prop="creator" label="平台名称" min-width="180px" align="center" show-overflow-tooltip />
         <el-table-column prop="updateTime" label="更新日期" min-width="200px" align="center" />
         <el-table-column label="操作" align="center" width="200px" fixed="right">
           <template v-slot="{row}">
@@ -168,6 +170,11 @@
                 </el-select>
               </el-form-item>
             </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="平台名称:" prop="creator">
+                <el-input v-model="formData.creator" clearable size="small" placeholder="请输入平台名称" />
+              </el-form-item>
+            </el-col>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -230,7 +237,8 @@ export default {
         safecodeScore: [{ required: true, trigger: 'blur', message: '请输入安全码得分' }],
         vehicleType: [{ required: true, trigger: 'change', message: '请选择车辆类型' }],
         plateColor: [{ required: true, trigger: 'change', message: '请选择车牌颜色' }],
-        plateNum: [{ required: true, trigger: 'blur', message: '请输入车牌号' }]
+        plateNum: [{ required: true, trigger: 'blur', message: '请输入车牌号' }],
+        creator: [{ required: true, trigger: 'blur', message: '请输入平台名称' }]
       },
       colorOptions: [],
       colorMap: {},
