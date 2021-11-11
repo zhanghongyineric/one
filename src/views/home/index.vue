@@ -503,8 +503,18 @@ export default {
           city.forEach(item => {
             // const city = CodeToText[getAreaText(item.zoneId)[1]]
             const { realTimeCount, onlineCount, deptName } = item
-            if (deptName.includes('中心')) {
-              console.log(deptName.split('中心'))
+            if (deptName.includes('分中心')) {
+              this.mapData.push({
+                value: realTimeCount,
+                name: deptName.split('分中心')[0] + '市',
+                count: onlineCount
+              })
+            } else if (deptName.includes('中心')) {
+              this.mapData.push({
+                value: realTimeCount,
+                name: deptName.split('中心')[0] + '市',
+                count: onlineCount
+              })
             }
             this.mapData.push({
               value: realTimeCount,
