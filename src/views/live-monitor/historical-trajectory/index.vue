@@ -267,19 +267,28 @@ export default {
 
       // this.marker.moveAlong(this.lineArrlast, markerSpeed)
     },
+    clearMap() {
+      this.map.clearMap()
+      this.lineArr = [[30.572903, 104.06632]]
+      this.lineArrlast = []
+      this.marker = null
+      this.showPause = false
+      this.begin = true
+      this.perValue = 0
+      this.speedCount = 1 // 目前选择的倍数
+      this.markerSpeed = 100 // 初始化速度
+      this.passedPolyline = null
+      this.passedPath = 0 // 存放（播放时点击倍数）抓取到的位置
+      this.curreGDPath = null // 存放（播放时点击倍数）抓取到的经纬度
+      this.polyline = null // 轨迹线路
+      this.alreadyPercent = 0
+      this.tableData = []
+    },
     search() {
       this.$refs['searchForm'].validate(valid => {
         if (valid) {
           this.loading = true
-          this.perValue = 0
-          this.alreadyPercent = 0
-          this.speedCount = 1
-          this.markerSpeed = 100
-          this.showPause = false
-          this.tableData = []
-          this.lineArr = [[]]
-          this.lineArrlast = []
-          this.begin = true
+          this.clearMap()
           position({
             topic: this.topic,
             ...this.searchFormData
@@ -298,8 +307,10 @@ export default {
                   positionDes: lng + ',' + lat
                 })
               })
-              this.getmap([data[0].longitude, data[0].latitude])
-              this.setLine()
+              if (data.length > 0) {
+                this.getmap([data[0].longitude, data[0].latitude])
+                this.setLine()
+              }
               this.loading = false
             })
             .catch(err => {
