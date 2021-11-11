@@ -179,7 +179,7 @@
           <el-col :span="8">
             <div class="center">
               <span class="center-text" style="margin-right:35px;">入网车辆：
-                <span class="center-num">{{ aCars }}</span> 辆</span>
+                <span class="center-num">{{ allCars }}</span> 辆</span>
               <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
               <map-chart :map-data="mapData" />
@@ -351,7 +351,7 @@ export default {
       eventList: [],
       carList: [],
       totalOnlineCars: 0,
-      aCars: 0,
+      allCars: 0,
       mapData: [],
       mapChartData: [
         ['city', '当前在线', '累计在线']
@@ -408,7 +408,6 @@ export default {
     },
     intervalOnlineCars() {
       let timer = window.setInterval(() => {
-        console.log('in')
         this.getOnlineVehicle()
         this.getAlarmEvent()
       }, 150000)
@@ -493,69 +492,72 @@ export default {
     getOnlineVehicle() {
       onlineVehicle()
         .then(res => {
-          const { data: { realTimetotal, onlineVehicles, a }} = res
+          const { data: { realTimetotal, city, onlineVehicletotal }} = res
           this.totalOnlineCars = realTimetotal
-          this.aCars = a
+          this.allCars = onlineVehicletotal
           this.mapData = []
           this.mapDataMap = new Map()
           this.mapChartData = [
             ['city', '当前在线', '累计在线']
           ]
-          onlineVehicles.forEach(item => {
-            const city = CodeToText[getAreaText(item.zoneId)[1]]
-            const { realTimeCount, onlineCount } = item
+          city.forEach(item => {
+            // const city = CodeToText[getAreaText(item.zoneId)[1]]
+            const { realTimeCount, onlineCount, deptName } = item
+            if (deptName.includes('中心')) {
+              console.log(deptName.split('中心'))
+            }
             this.mapData.push({
               value: realTimeCount,
-              name: city,
+              name: deptName,
               count: onlineCount
             })
-            this.mapChartData.push([city, realTimeCount, onlineCount])
+            this.mapChartData.push([deptName, realTimeCount, onlineCount])
           })
 
-          this.mapData.forEach(v => {
-            if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
-            else {
-              const val = this.mapDataMap.get(v.name)[0]
-              const count = this.mapDataMap.get(v.name)[1]
-              this.mapDataMap.set(v.name, [v.value + val, v.count + count])
-            }
-          })
+          // this.mapData.forEach(v => {
+          //   if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
+          //   else {
+          //     const val = this.mapDataMap.get(v.name)[0]
+          //     const count = this.mapDataMap.get(v.name)[1]
+          //     this.mapDataMap.set(v.name, [v.value + val, v.count + count])
+          //   }
+          // })
 
-          this.mapData = []
-          for (const item of this.mapDataMap) {
-            this.mapData.push({
-              name: item[0],
-              value: item[1][0],
-              count: item[1][1]
-            })
-          }
+          // this.mapData = []
+          // for (const item of this.mapDataMap) {
+          //   this.mapData.push({
+          //     name: item[0],
+          //     value: item[1][0],
+          //     count: item[1][1]
+          //   })
+          // }
 
           // 同一个市可能有很多数据，应将同一个市的所有数据相加
-          if (this.mapChartData[1]) {
-            const { length } = this.mapChartData
-            for (let i = 1; i < length; i++) {
-              for (let j = i + 1; j < length; j++) {
-                if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
-                  this.mapChartData[i][1] += this.mapChartData[j][1]
-                  this.mapChartData[i][2] += this.mapChartData[j][2]
-                }
-              }
-            }
-            const cityMap = new Map()
-            for (let i = 1; i < this.mapChartData.length; i++) {
-              const city = this.mapChartData[i][0]
-              const online = this.mapChartData[i][1]
-              const total = this.mapChartData[i][2]
-              if (!cityMap.has(city)) {
-                cityMap.set(city, `${city},${online},${total}`)
-              }
-            }
-            const dataArr = [['city', '当前在线', '累计在线']]
-            for (const value of cityMap.values()) {
-              dataArr.push(value.split(','))
-            }
-            this.mapChartData = dataArr
-          }
+          // if (this.mapChartData[1]) {
+          //   const { length } = this.mapChartData
+          //   for (let i = 1; i < length; i++) {
+          //     for (let j = i + 1; j < length; j++) {
+          //       if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
+          //         this.mapChartData[i][1] += this.mapChartData[j][1]
+          //         this.mapChartData[i][2] += this.mapChartData[j][2]
+          //       }
+          //     }
+          //   }
+          //   const cityMap = new Map()
+          //   for (let i = 1; i < this.mapChartData.length; i++) {
+          //     const city = this.mapChartData[i][0]
+          //     const online = this.mapChartData[i][1]
+          //     const total = this.mapChartData[i][2]
+          //     if (!cityMap.has(city)) {
+          //       cityMap.set(city, `${city},${online},${total}`)
+          //     }
+          //   }
+          //   const dataArr = [['city', '当前在线', '累计在线']]
+          //   for (const value of cityMap.values()) {
+          //     dataArr.push(value.split(','))
+          //   }
+          //   this.mapChartData = dataArr
+          // }
         })
     },
     getKeyVehicle() {
@@ -885,19 +887,23 @@ p {
   top: 0;
   right: 0;
   left: 0;
-  padding-left: 20px;
-  background-color: #0E1521;
+  // padding-left: 20px;
+  // background-color: #304156;
   padding-top: 10px;
+  margin-left: 10px;
+  margin-right: 20px;
+  border-radius: 10px;
 }
 
 .closed-box-inner {
-  width: 100%;
+  width: 98.8%;
   height: 100%;
   padding: 10px;
-  background-color: #0E1521;
+  background-color: #304156;
+  border-radius: 10px;
 
   .content-box {
-    background-color: #0E1521;
+    // background-color: #304156;
     width: 99%;
     height: 70px;
     text-align: center;

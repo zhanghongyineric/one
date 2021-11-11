@@ -36,7 +36,7 @@ export default {
         clearInterval(this.timer)
         this.timer = null
         let index = 0
-        if (this.chartData) {
+        if (this.chartData && this.chart) {
           const { length } = this.chartData
           this.timer = setInterval(() => {
             this.chart.dispatchAction({

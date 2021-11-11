@@ -33,7 +33,7 @@ export default {
       handler(val) {
         this.setOptions(val)
         let index = 0
-        if (this.chartData) {
+        if (this.chartData && this.chart) {
           const { length } = this.chartData
           setInterval(() => {
             this.chart.dispatchAction({

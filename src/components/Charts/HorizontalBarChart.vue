@@ -53,7 +53,7 @@ export default {
         this.setOptions()
         let index = 0
         const { length } = this.yData
-        if (this.yData) {
+        if (this.yData && this.chart) {
           setInterval(() => {
             this.chart.dispatchAction({
               type: 'highlight',

@@ -40,7 +40,7 @@ export default {
         this.setOptions(val)
         clearInterval(this.timer)
         this.timer = null
-        if (this.mapData.length) {
+        if (this.mapData.length && this.chart) {
           let index = 0
           if (this.mapData) {
             const { length } = this.mapData
