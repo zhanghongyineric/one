@@ -116,7 +116,12 @@ export default {
       newScript.src = 'https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0'
       script.parentNode.insertBefore(newScript, script)
     })(document)
-    window.document.body.className = 'dark-theme'
+    const theme = localStorage.getItem('theme')
+    if (theme === 'dark' || !theme) {
+      window.document.body.className = 'dark-theme'
+    } else {
+      window.document.body.className = ''
+    }
   },
   methods: {
 
@@ -131,9 +136,11 @@ export default {
       if (bodyClass) {
         window.document.body.className = ''
         this.$store.commit('settings/CHANGE_THEME', 'light')
+        localStorage.setItem('theme', 'light')
       } else {
         window.document.body.className = 'dark-theme'
         this.$store.commit('settings/CHANGE_THEME', 'dark')
+        localStorage.setItem('theme', 'dark')
       }
     }
   }

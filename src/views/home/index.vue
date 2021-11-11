@@ -178,7 +178,6 @@
           </el-col>
           <el-col :span="8">
             <div class="center">
-              <!-- <span class="center-text">实时在线车辆： -->
               <span class="center-text" style="margin-right:35px;">入网车辆：
                 <span class="center-num">{{ aCars }}</span> 辆</span>
               <span class="center-text">在线车辆：
@@ -412,7 +411,7 @@ export default {
         console.log('in')
         this.getOnlineVehicle()
         this.getAlarmEvent()
-      }, 30000)
+      }, 150000)
       this.$once('hook:deactivated', () => {
         clearInterval(timer)
         timer = null

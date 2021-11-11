@@ -19,7 +19,12 @@ export default {
       return this.$route.path
     },
     theme() {
-      return this.$store.state.settings.theme === 'dark'
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
     }
   }
 }
