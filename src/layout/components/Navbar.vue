@@ -77,7 +77,6 @@ export default {
     setCookie() {
       Cookies.set('pc_safe_code', Cookies.get('monitor'), { domain: 'myzx.sc.cn' })
       setTimeout(() => {
-        // window.open('http://localhost:9529/#/home')
         window.open('http://www.fk.myzx.sc.cn/#/home')
       })
     },

@@ -178,7 +178,7 @@
           </el-col>
           <el-col :span="8">
             <div class="center">
-              <span class="center-text" style="margin-right:35px;">入网车辆：
+              <span class="center-text" style="margin-right:35px;">上线车辆：
                 <span class="center-num">{{ allCars }}</span> 辆</span>
               <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
