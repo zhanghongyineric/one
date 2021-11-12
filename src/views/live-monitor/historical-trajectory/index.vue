@@ -17,28 +17,30 @@
               clearable
               :fetch-suggestions="searchType"
               :debounce="500"
+              style="width:220px;"
               @select="selectPlateNum"
             />
           </el-form-item>
-          <el-form-item label="起始时间:" prop="startTime">
+          <el-form-item label="查询日期:" prop="date">
             <el-date-picker
-              v-model="searchFormData.startTime"
-              type="datetime"
-              placeholder="选择开始日期时间"
+              v-model="searchFormData.date"
+              type="date"
+              placeholder="请选择查询日期"
               size="small"
-              value-format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd"
             />
           </el-form-item>
-          <el-form-item label="结束时间:" prop="endTime">
-            <el-date-picker
-              v-model="searchFormData.endTime"
+          <el-form-item label="时间范围:" prop="time">
+            <el-time-picker
+              v-model="searchFormData.time"
+              is-range
               size="small"
-              type="datetime"
-              placeholder="选择结束日期时间"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :picker-options="pickerOptions"
-              :editable="false"
-              :disabled="!searchFormData.startTime"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              placeholder="请选择时间范围"
+              style="width:220px;"
+              value-format=" HH:mm:ss"
             />
           </el-form-item>
 
@@ -104,7 +106,6 @@
 import { position, findPlateNum } from '@/api/live-monitor/history'
 
 let TIME_VARIABLE
-const TWENTY_FOUR_HOURS = 1000 * 3600 * 24
 
 export default {
   name: 'HistoricalTrajectory',
@@ -117,7 +118,9 @@ export default {
       searchFormData: {
         plateNum: '',
         startTime: '',
-        endTime: ''
+        endTime: '',
+        date: '',
+        time: ''
       },
       loading: false,
       map: null,
@@ -139,15 +142,8 @@ export default {
       alreadyPercent: 0,
       rules: {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
-        startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
-        endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
-      },
-      pickerOptions: {
-        disabledDate: time => {
-          if (this.searchFormData.startTime) {
-            return time.getTime() > new Date(this.searchFormData.startTime).getTime() + TWENTY_FOUR_HOURS || time.getTime() < new Date(this.searchFormData.startTime).getTime()
-          }
-        }
+        date: [{ required: true, message: '请选择查询日期', trigger: 'change' }],
+        time: [{ required: true, message: '请选择时间范围', trigger: 'change' }]
       }
     }
   },
@@ -161,7 +157,9 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.searchFormData.plateNum = vm.$route.query.plateNum
+      if (!vm.searchFormData.plateNum) {
+        vm.searchFormData.plateNum = vm.$route.query.plateNum
+      }
     })
   },
   mounted() {
@@ -289,6 +287,9 @@ export default {
         if (valid) {
           this.loading = true
           this.clearMap()
+          const { date, time } = this.searchFormData
+          this.searchFormData.startTime = date + time[0]
+          this.searchFormData.endTime = date + time[1]
           position({
             topic: this.topic,
             ...this.searchFormData

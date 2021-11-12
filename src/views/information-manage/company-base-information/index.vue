@@ -272,12 +272,12 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item
-                label="企业运营类型:"
+                label="企业所属行业:"
                 prop="operationType"
               >
                 <el-select
                   v-model="createFormData.operationType"
-                  placeholder="请选择企业类型"
+                  placeholder="请选择所属行业"
                   size="small"
                   clearable
                 >
@@ -315,9 +315,9 @@
                 >
                   <el-option
                     v-for="item in optionGroup.accountTypeList"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -393,8 +393,6 @@
 import {
   fetchList,
   companyStatus,
-  companyRoleStatus,
-  companyEconomyStatus,
   updateCount,
   deleteCount,
   addCount,
@@ -408,6 +406,9 @@ import getAreaText from '@/utils/AreaCodeToText'
 import { CodeToText, regionDataPlus } from 'element-china-area-data'
 
 let that
+// 字典
+const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+
 export default {
   name: 'CompanyBaseInformation',
   components: { Pagination, AreaSelect },
@@ -480,64 +481,7 @@ export default {
       advanced: false, // 是否展开高级搜索条件
       optionGroup: {
         roleList: companyLevel.list,
-        economyList: [
-          {
-            label: '集体',
-            value: null
-          },
-          {
-            label: '私营',
-            value: null
-          },
-          {
-            label: '个体',
-            value: null
-          },
-          {
-            label: '联营',
-            value: null
-          },
-          {
-            label: '股份制',
-            value: null
-          },
-          {
-            label: '外商独资',
-            value: null
-          },
-          {
-            label: '港,澳,台商投资企业',
-            value: null
-          },
-          {
-            label: '有限责任',
-            value: null
-          },
-          {
-            label: '其他经济',
-            value: null
-          },
-          {
-            label: '有限',
-            value: null
-          },
-          {
-            label: '个人独资',
-            value: null
-          },
-          {
-            label: '普通合伙',
-            value: null
-          },
-          {
-            label: '其他有限责任公司',
-            value: null
-          },
-          {
-            label: '国有',
-            value: null
-          }
-        ],
+        economyList: [],
         accountTypeList: [],
         companyTypes: []
       }, // 存放选项的数据
@@ -620,8 +564,10 @@ export default {
   created() {
     this.handleSearch()
     this.getStatusCode()
-    this.companyRole()
-    this.economyListCode()
+  },
+  mounted() {
+    this.optionGroup.companyTypes = onlineOption['企业所属行业'].list
+    this.optionGroup.economyList = onlineOption['经济类型'].list
   },
   methods: {
     closeDialog() {
@@ -663,64 +609,6 @@ export default {
     },
     selectCompany(val) {
       this.createFormData.upUnitId = val.unitId
-    },
-    // 企业运营类型
-    companyRole() {
-      this.listLoading = true
-      companyRoleStatus()
-        .then(res => {
-          const { data } = res
-          this.optionGroup.companyTypes = data
-          this.listLoading = false
-        })
-        .catch(err => {
-          this.listLoading = false
-          throw err
-        })
-    },
-    // 企业经济类型
-    economyListCode() {
-      this.listLoading = true
-      companyEconomyStatus()
-        .then(res => {
-          const { data } = res
-          data.forEach(item => {
-            if (item.label === '集体') {
-              this.optionGroup.economyList[0].value = parseInt(item.value)
-            } else if (item.label === '私营') {
-              this.optionGroup.economyList[1].value = parseInt(item.value)
-            } else if (item.label === '个体') {
-              this.optionGroup.economyList[2].value = parseInt(item.value)
-            } else if (item.label === '联营') {
-              this.optionGroup.economyList[3].value = parseInt(item.value)
-            } else if (item.label === '股份制') {
-              this.optionGroup.economyList[4].value = parseInt(item.value)
-            } else if (item.label === '外商独资') {
-              this.optionGroup.economyList[5].value = parseInt(item.value)
-            } else if (item.label === '港,澳,台商投资企业') {
-              this.optionGroup.economyList[6].value = parseInt(item.value)
-            } else if (item.label === '有限责任') {
-              this.optionGroup.economyList[7].value = parseInt(item.value)
-            } else if (item.label === '其他经济') {
-              this.optionGroup.economyList[8].value = parseInt(item.value)
-            } else if (item.label === '有限') {
-              this.optionGroup.economyList[9].value = parseInt(item.value)
-            } else if (item.label === '个人独资') {
-              this.optionGroup.economyList[10].value = parseInt(item.value)
-            } else if (item.label === '普通合伙') {
-              this.optionGroup.economyList[11].value = parseInt(item.value)
-            } else if (item.label === '其他有限责任公司') {
-              this.optionGroup.economyList[12].value = parseInt(item.value)
-            } else if (item.label === '国有') {
-              this.optionGroup.economyList[13].value = parseInt(item.value)
-            }
-          })
-          this.listLoading = false
-        })
-        .catch(err => {
-          this.listLoading = false
-          throw err
-        })
     },
     // 点击搜索
     handleSearch() {

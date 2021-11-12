@@ -17,22 +17,6 @@ export function companyStatus(data) {
     data
   })
 }
-// 企业运营类型
-export function companyRoleStatus(data) {
-  return request({
-    url: '/operationType',
-    method: 'post',
-    data
-  })
-}
-// 企业经济类型
-export function companyEconomyStatus(data) {
-  return request({
-    url: '/enconomicType',
-    method: 'post',
-    data
-  })
-}
 // 更新
 export function updateCount(data) {
   return request({

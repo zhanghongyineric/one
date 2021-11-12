@@ -50,7 +50,7 @@
         <el-table-column prop="unitName" label="服务商名称" min-width="130" show-overflow-tooltip align="center" />
         <el-table-column prop="contact" label="联系人" min-width="70" />
         <el-table-column prop="businessLicenseCode" label="社会统一信用代码" min-width="150" show-overflow-tooltip align="center" />
-        <el-table-column prop="mobilePhone" label="手机号" min-width="110" align="center" />
+        <el-table-column prop="mobilePhone" label="手机号" min-width="120" align="center" />
         <el-table-column prop="email" label="邮箱" min-width="120" show-overflow-tooltip align="center" />
         <el-table-column prop="postcode" label="传真" min-width="120" align="center" />
         <el-table-column prop="unitAddress" label="地址" min-width="150" show-overflow-tooltip align="center" />
@@ -288,10 +288,10 @@ export default {
           const { data } = res
           data.forEach(item => {
             console.log(item, 'item')
-            if (item.value === '正常') {
-              this.optionGroup[1].value = parseInt(item.label)
+            if (item.label === '正常') {
+              this.optionGroup[1].value = parseInt(item.value)
             } else {
-              this.optionGroup[2].value = parseInt(item.label)
+              this.optionGroup[2].value = parseInt(item.value)
             }
           })
           this.statusOption.push(this.optionGroup[1])
