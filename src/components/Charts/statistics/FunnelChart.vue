@@ -30,6 +30,10 @@ export default {
       type: String,
       default: '',
       required: true
+    },
+    textColor: {
+      type: String,
+      default: '#fff'
     }
   },
   data() {
@@ -44,6 +48,11 @@ export default {
         this.$nextTick(() => {
           this.setOptions()
         })
+      }
+    },
+    textColor: {
+      handler() {
+        this.initChart()
       }
     }
   },
@@ -82,7 +91,7 @@ export default {
         title: {
           text: this.title,
           textStyle: {
-            color: '#fff'
+            color: this.textColor
           },
           x: 10,
           y: 10
@@ -161,7 +170,7 @@ export default {
                 return params.name
               },
               textStyle: {
-                color: '#fff'
+                color: this.textColor
               }
             },
             labelLine: {

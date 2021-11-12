@@ -289,8 +289,6 @@ import MutilPieChart from '@/components/Charts/MutilPieChart.vue'
 import LineChart from '@/components/Charts/LineChart.vue'
 import MapChart from '@/components/Charts/MapChart.vue'
 import DatasetBarChart from '@/components/Charts/DatasetBarChart.vue'
-import getAreaText from '@/utils/AreaCodeToText'
-import { CodeToText } from 'element-china-area-data'
 
 export default {
   name: 'Home',

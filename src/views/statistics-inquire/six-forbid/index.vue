@@ -1,7 +1,7 @@
 <!-- 六严禁（GPS定位报警） -->
 <template>
-  <div class="container" style="width:100%">
-    <div class="table-page-search-wrapper search-box">
+  <div class="container" style="width:100%" :style="{'background-color':theme?'':'#F0F2F5'}">
+    <div class="table-page-search-wrapper search-box" :style="{'background-color':theme?'':'#fff'}">
       <el-form label-width="100px">
         <el-row :gutter="48">
           <el-col :md="6" :sm="24">
@@ -62,7 +62,7 @@
       </el-form>
     </div>
     <div class="content-box">
-      <div class="left-box" style="background-color: #0E1A2A;">
+      <div class="left-box" :style="{'background-color': theme?'#0E1A2A':'#fff'}">
         <line-mix-bar
           :x-data="lineMixBarXData"
           :line-data="accessRateData"
@@ -74,11 +74,22 @@
           :line-min="0"
           :line-max="ymax"
           :line-formatter="'{value}'"
+          :text-color="theme?'#fff':'#606266'"
         />
       </div>
-      <div class="right-box">
-        <pie-chart :chart-data="pieChartData" :title="pieTitle" style="display:inline-block;" />
-        <funnel-chart :chart-data="funnelChartData" :title="funnelTitle" style="display:inline-block;" />
+      <div class="right-box" :style="{'background-color':theme?'':'#fff'}">
+        <pie-chart
+          :chart-data="pieChartData"
+          :title="pieTitle"
+          style="display:inline-block;"
+          :text-color="theme?'#fff':'#606266'"
+        />
+        <funnel-chart
+          :chart-data="funnelChartData"
+          :title="funnelTitle"
+          style="display:inline-block;"
+          :text-color="theme?'#fff':'#606266'"
+        />
       </div>
     </div>
     <div class="content-box">
@@ -88,7 +99,6 @@
           stripe
           fit
           :border="false"
-          :header-cell-style="tableHeaderColor"
           height="100%"
           style="width:100%"
           :highlight-current-row="false"
@@ -106,8 +116,8 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="right-box">
-        <span class="trend-title">报警趋势</span>
+      <div class="right-box" :style="{'background-color':theme?'':'#fff'}">
+        <span class="trend-title" :style="{color: theme?'':'#606266'}">报警趋势</span>
         <el-date-picker
           v-model="trendYear"
           type="year"
@@ -117,7 +127,7 @@
           value-format="yyyy"
           @change="getVehicleTrends"
         />
-        <line-chart :chart-data="lineChartData" />
+        <line-chart :chart-data="lineChartData" :text-color="theme?'#fff':'#606266'" />
       </div>
     </div>
   </div>
@@ -200,6 +210,16 @@ export default {
       tableLabel: '',
       tableProp: '',
       tableWidth: 'width:55%;'
+    }
+  },
+  computed: {
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
     }
   },
   watch: {
@@ -305,9 +325,6 @@ export default {
         .catch(err => {
           throw err
         })
-    },
-    tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) return 'background-color:#1C2733;font-weight:500;'
     },
     search() {
       this.tableData = []
@@ -527,73 +544,6 @@ export default {
   background-color: #1C2638;
   border-radius: 5px;
   display: inline-block;
-}
-
-::v-deep .el-form-item__label {
-  color: #fff;
-}
-
-::v-deep .el-input__inner,
-::v-deep .el-range-input,
-// ::v-deep .el-table,
-::v-deep .has-gutter {
-  background-color: #212F40 !important;
-  color: #fff;
-}
-
-::v-deep .el-table thead.is-group th {
-  background-color: #212F40 !important;
-  font-weight: 500 !important;
-  color: #fff !important;
-}
-
-::v-deep .el-table__fixed {
-  color: #fff !important;
-}
-
-::v-deep .el-table {
-  overflow: auto !important;
-  background-color: #1C2733 !important;
-  color: #fff !important;
-}
-
-::v-deep .el-table__row--striped td {
-  background-color: #1C2733 !important;
-}
-
-::v-deep .el-table__row {
-  background-color: #222C3C !important;
-}
-
-::v-deep .el-table tbody tr { pointer-events:none !important; }
-
-::v-deep .el-table td {
-  border: 0 !important;
-}
-
-::v-deep .el-table--border {
-  border: 0 !important;
-}
-
-::v-deep .cell {
-  color: #ccc !important;
-  font-weight: 700 !important;
-}
-
-::v-deep .el-range-separator {
-  color: #ccc !important;
-}
-
-::v-deep .el-table__fixed::before {
-  height: 0 !important;
-}
-
-::v-deep .el-table--group::after {
-  width: 0 !important;
-}
-
-::v-deep .el-table::before {
-  height: 0 !important;
 }
 
 .trend-title {

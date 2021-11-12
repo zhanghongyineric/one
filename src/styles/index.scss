@@ -274,6 +274,12 @@ div:focus {
     background-color: #0E1521;
     color: #304156;
   }
+
+  .el-range-input,
+  .el-range-separator {
+    background-color: #121D28 !important;
+    color: #fff;
+  }
   
 }
 

@@ -63,6 +63,10 @@ export default {
     lineFormatter: {
       type: String,
       default: '{value} %'
+    },
+    textColor: {
+      type: String,
+      default: '#fff'
     }
   },
   data() {
@@ -80,7 +84,6 @@ export default {
     barChartData: {
       deep: true,
       handler() {
-        console.log(this.barChartData)
         this.setOptions()
       }
     },
@@ -102,6 +105,11 @@ export default {
       }
     },
     yname: {
+      handler() {
+        this.initChart()
+      }
+    },
+    textColor: {
       handler() {
         this.initChart()
       }
@@ -137,7 +145,7 @@ export default {
         legend: {
           data: this.legendData,
           textStyle: {
-            color: '#fff',
+            color: this.textColor,
             fontSize: 10
           },
           bottom: 5,
@@ -156,7 +164,7 @@ export default {
             },
             axisLabel: {
               textStyle: {
-                color: '#ccc'
+                color: this.textColor
               }
             }
           }
@@ -166,7 +174,7 @@ export default {
             type: 'value',
             name: this.yname,
             nameTextStyle: {
-              color: '#fff'
+              color: this.textColor
             },
             min: 0,
             max: this.ymax,
@@ -174,7 +182,7 @@ export default {
             axisLabel: {
               formatter: '{value}',
               textStyle: {
-                color: '#ccc'
+                color: this.textColor
               }
             }
           },
@@ -182,7 +190,7 @@ export default {
             type: 'value',
             name: this.lineName,
             nameTextStyle: {
-              color: '#fff'
+              color: this.textColor
             },
             min: this.lineMin,
             max: this.lineMax,
@@ -190,7 +198,7 @@ export default {
             axisLabel: {
               formatter: this.lineFormatter,
               textStyle: {
-                color: '#ccc'
+                color: this.textColor
               }
             },
             splitLine: {
