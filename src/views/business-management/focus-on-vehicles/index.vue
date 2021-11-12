@@ -61,7 +61,7 @@
         style="width: 100%"
         :stripe="true"
       >
-        <el-table-column type="index" label="编号" width="100" align="center" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="plateNum" label="车牌号码" min-width="150px" align="center" />
         <el-table-column prop="plateColor" label="车牌颜色" min-width="150px" align="center">
           <template slot-scope="scope">
@@ -77,7 +77,7 @@
         <el-table-column prop="safecodeColor" label="安全码颜色" min-width="120px" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.safecodeColor == 1" style="color:green">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
-            <span v-else-if="scope.row.safecodeColor == 2" style="color:blue">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
+            <span v-else-if="scope.row.safecodeColor == 2" style="color:#4ea1db">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
             <span v-else-if="scope.row.safecodeColor == 3" style="color:#FFA500">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
             <span v-else style="color:red">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
           </template>

@@ -168,7 +168,7 @@
                 <el-table-column prop="safecodeColor" label="安全码颜色" align="center" show-overflow-tooltip>
                   <template slot-scope="scope">
                     <svg-icon v-if="scope.row.safecodeColor == 1" icon-class="safecode" style="width:16px;height: 16px;background-color:green;margin-top:5px;" />
-                    <svg-icon v-else-if="scope.row.safecodeColor == 2" icon-class="safecode" style="width:16px;height: 16px;background-color:blue;margin-top:5px;" />
+                    <svg-icon v-else-if="scope.row.safecodeColor == 2" icon-class="safecode" style="width:16px;height: 16px;background-color:#4ea1db;margin-top:5px;" />
                     <svg-icon v-else-if="scope.row.safecodeColor == 3" icon-class="safecode" style="width:16px;height: 16px;background-color:#FFA500;margin-top:5px;" />
                     <svg-icon v-else icon-class="safecode" style="width:16px;height: 16px;background-color:red;margin-top:5px;" />
                   </template>
@@ -952,7 +952,7 @@ p {
 
       .little-num {
         display: inline-block;
-        color: #19F1FF;
+        color: #4ea1db;
         margin-right: 15px;
         position: relative;
         bottom: 50px;

@@ -576,7 +576,7 @@ export default {
 
     .text {
       font-size: 12px;
-      color: #269DDD;
+      color: #4ea1db;
       font-weight: 700;
       letter-spacing: 1px;
     }

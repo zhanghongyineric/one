@@ -18,7 +18,7 @@
         highlight-current-row
         style="width: 100%"
       >
-        <el-table-column type="index" label="编号" width="100" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="violationName" label="规则名称" min-width="150px" />
         <el-table-column prop="script" label="规则描述" min-width="200px" />
         <!-- <el-table-column prop="degreeScript" label="违章程度描述" min-width="200px" /> -->

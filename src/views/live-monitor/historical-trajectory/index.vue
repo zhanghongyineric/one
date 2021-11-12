@@ -463,7 +463,7 @@ export default {
 
 .play-box{
   padding: 7px 10px;
-  background-color: #409EFF;
+  background-color: #4ea1db;
   box-sizing: border-box;
   height: 30px;
   width: 30px;

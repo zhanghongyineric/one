@@ -30,8 +30,8 @@
         <el-table-column
           label="编号"
           type="index"
-          width="50"
-          align="left"
+          width="60"
+          align="center"
         />
         <el-table-column label="类型" prop="type" width="200" />
         <el-table-column

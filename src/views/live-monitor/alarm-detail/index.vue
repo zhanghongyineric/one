@@ -126,7 +126,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="plateNum" label="车牌号" width="150" show-overflow-tooltip align="center" />
         <el-table-column prop="plateColor" label="车牌颜色" min-width="100" align="center">
           <template slot-scope="scope">

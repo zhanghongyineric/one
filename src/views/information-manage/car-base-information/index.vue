@@ -106,7 +106,7 @@
         <el-table-column
           label="编号"
           type="index"
-          width="50"
+          width="60"
           align="center"
         />
         <el-table-column label="车牌号" prop="plateNum" min-width="100" show-overflow-tooltip align="center" />

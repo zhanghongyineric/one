@@ -105,7 +105,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="personName" label="名字" width="120" show-overflow-tooltip align="center" />
         <el-table-column prop="code" label="性别" width="100" show-overflow-tooltip align="center">
           <template slot-scope="scope">

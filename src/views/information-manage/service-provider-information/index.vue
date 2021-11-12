@@ -46,7 +46,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="unitName" label="服务商名称" min-width="130" show-overflow-tooltip align="center" />
         <el-table-column prop="contact" label="联系人" min-width="70" />
         <el-table-column prop="businessLicenseCode" label="社会统一信用代码" min-width="150" show-overflow-tooltip align="center" />

@@ -124,7 +124,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="platformName" label="平台名称" min-width="150" show-overflow-tooltip align="center" />
         <el-table-column prop="characterCode" label="接入平台性质" min-width="120" show-overflow-tooltip align="center">
           <template slot-scope="scope">

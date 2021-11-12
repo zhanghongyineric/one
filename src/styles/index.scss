@@ -280,6 +280,20 @@ div:focus {
     background-color: #121D28 !important;
     color: #fff;
   }
+
+  .el-button--primary {
+    background-color: #4ea1db;
+  }
+
+  .el-menu-item.is-active,
+  .el-button--text {
+    color: #4ea1db;
+  }
+
+  .el-radio__input.is-checked .el-radio__inner {
+    border-color: #4ea1db;
+    background: #4ea1db;
+  }
   
 }
 
