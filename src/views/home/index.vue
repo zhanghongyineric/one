@@ -220,6 +220,8 @@
           </el-col>
         </el-row>
         <div class="monitor-top-box">
+          <div class="back-color" />
+          <div class="back-triangle" />
           <div class="closed-box-inner">
             <el-row :gutter="20">
               <el-col :md="8" :span="24">
@@ -903,6 +905,28 @@ p {
   margin-left: 10px;
   margin-right: 20px;
   border-radius: 10px;
+  background-color: #0E1521;
+}
+
+.back-color {
+  position: absolute;
+  background-color: #0E1521;
+  height: 100px;
+  width: 10px;
+  left: -10px;
+}
+
+.back-triangle {
+  position: absolute;
+  bottom: 0;
+  background-color: #0E1521;
+  height: 5px;
+  width: 5px;
+  border-width: 4px 4px;
+  border-style: solid;
+  border-color: transparent;
+  border-top-color: #304156;
+  border-right-color: #304156;
 }
 
 .closed-box-inner {
