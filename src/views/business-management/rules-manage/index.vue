@@ -55,12 +55,12 @@
           :rules="oneRule"
         >
           <el-form-item label="规则名称：" prop="violationName">
-            <el-select v-model="formData.violationName" placeholder="请选择规则名称">
+            <el-select v-model="formData.violationCode" placeholder="请选择规则名称">
               <el-option
-                v-for="{label} in ruleOptions"
-                :key="label"
+                v-for="{label,value} in ruleOptions"
+                :key="value"
                 :label="label"
-                :value="label"
+                :value="value"
               />
             </el-select>
           </el-form-item>
@@ -75,7 +75,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer">
-          <el-button @click="closeDialog">取消</el-button>
+          <el-button @click="closeDialog">关闭</el-button>
           <el-button type="primary" @click="saveRule">确定</el-button>
         </div>
       </el-dialog>
@@ -186,7 +186,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer">
-          <el-button @click="closeDialog">取消</el-button>
+          <el-button @click="closeDialog">关闭</el-button>
           <el-button type="primary" @click="saveVio">确定</el-button>
         </div>
       </el-dialog>
@@ -196,6 +196,9 @@
 </template>
 
 <script>
+
+const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+
 import {
   selectList,
   save,
@@ -227,7 +230,9 @@ export default {
         lessValue: '',
         lessNo: '',
         conditionNo: '',
-        degreeLabel: ''
+        degreeLabel: '',
+        violationName: '',
+        violationCode: ''
       },
       formData2: {
         expresion: '',
@@ -266,11 +271,10 @@ export default {
         violationDegrees: []
       },
       oneRule: {
-        violationName: [{ required: true, trigger: 'change', message: '请选择规则名称' }],
+        violationCode: [{ required: true, trigger: 'change', message: '请选择规则名称' }],
         script: [{ required: true, trigger: 'blur', message: '请输入规则描述' }]
       },
       degreeRule: {
-        // degreeLabel: [{ required: true, trigger: 'change', message: '请选择违章程度' }],
         expresion: [{ required: true, trigger: 'blur', message: '请配置违章条件' }]
       },
       update: false,
@@ -280,6 +284,7 @@ export default {
   watch: {
     formData: {
       handler(newVal, oldVal) {
+        this.getUnit(newVal.conditionNo)
         let sym = ''; let conditionNo = ''
         this.symbols.forEach(({ label, value }) => {
           if (value === newVal.lessNo) sym = label
@@ -298,6 +303,7 @@ export default {
     },
     formData2: {
       handler(newVal, ov) {
+        this.getUnit2(newVal.conditionNo)
         let sym = ''; let conditionNo = ''
         this.symbols.forEach(({ label, value }) => {
           if (value === newVal.lessNo) sym = label
@@ -317,6 +323,7 @@ export default {
     },
     formData3: {
       handler(newVal, ov) {
+        this.getUnit3(newVal.conditionNo)
         let sym = ''; let conditionNo = ''
         this.symbols.forEach(({ label, value }) => {
           if (value === newVal.lessNo) sym = label
@@ -353,10 +360,10 @@ export default {
   },
   created() {
     this.getList()
-    this.symbols = JSON.parse(localStorage.getItem('onlineOption'))['计算符号'].list
-    this.ruleOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章类型编码'].list
-    this.degreeOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章严重程度编码'].list
-    this.violationOptions = JSON.parse(localStorage.getItem('onlineOption'))['违章条件'].list
+    this.symbols = onlineOption['计算符号'].list
+    this.ruleOptions = onlineOption['违章类型编码'].list
+    this.degreeOptions = onlineOption['违章严重程度编码'].list
+    this.violationOptions = onlineOption['违章条件'].list
     this.degreeValue = this.degreeOptions[0].label
     this.degreeLabel = this.degreeOptions[0].value
   },
@@ -414,34 +421,29 @@ export default {
       this.showCol3 = true
       this.showCol = true
       selectEdit({
-        violationNo: row.id.toString(),
+        violationId: row.id.toString(),
         degreeNo: this.degreeLabel
       })
         .then(res => {
           const { data } = res
           if (data.length) {
             this.update = true
-            const unitArr = data[0].expresion.split('\xa0').join('').split('且')
-            this.currentUnit = unitArr[0] ? this.spliceUnit(unitArr[0]) : ''
-            this.currentUnit2 = unitArr[1] ? this.spliceUnit(unitArr[1]) : ''
-            this.currentUnit3 = unitArr[2] ? this.spliceUnit(unitArr[2]) : ''
-
             this.currentId = data[0].id.toString()
-            this.formData.lessNo = data[0].violationDegreeValues[0].lessNo
-            this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
-            this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
-            this.formData.id = data[0].violationDegreeValues[0].id.toString()
-            if (data[0].violationDegreeValues.length > 1) {
-              this.formData2.lessNo = data[0].violationDegreeValues[1].lessNo
-              this.formData2.lessValue = data[0].violationDegreeValues[1].lessValue
-              this.formData2.conditionNo = data[0].violationDegreeValues[1].conditionNo
-              this.formData2.id = data[0].violationDegreeValues[1].id.toString()
+            this.formData.lessNo = data[0].lessNo
+            this.formData.lessValue = data[0].lessValue
+            this.formData.conditionNo = data[0].conditionNo
+            this.formData.id = data[0].id.toString()
+            if (data.length > 1) {
+              this.formData2.lessNo = data[1].lessNo
+              this.formData2.lessValue = data[1].lessValue
+              this.formData2.conditionNo = data[1].conditionNo
+              this.formData2.id = data[1].id.toString()
             }
-            if (data[0].violationDegreeValues.length > 2) {
-              this.formData3.lessNo = data[0].violationDegreeValues[2].lessNo
-              this.formData3.lessValue = data[0].violationDegreeValues[2].lessValue
-              this.formData3.conditionNo = data[0].violationDegreeValues[2].conditionNo
-              this.formData3.id = data[0].violationDegreeValues[2].id.toString()
+            if (data.length > 2) {
+              this.formData3.lessNo = data[2].lessNo
+              this.formData3.lessValue = data[2].lessValue
+              this.formData3.conditionNo = data[2].conditionNo
+              this.formData3.id = data[2].id.toString()
             }
           } else {
             this.update = false
@@ -493,33 +495,29 @@ export default {
       this.showCol3 = true
       this.resetFormData()
       selectEdit({
-        violationNo: this.currentRow.id.toString(),
+        violationId: this.currentRow.id.toString(),
         degreeNo: value
       })
         .then(res => {
           const { data } = res
           if (data.length) {
             this.update = true
-            const unitArr = data[0].expresion.split('\xa0').join('').split('且')
-            this.currentUnit = unitArr[0] ? this.spliceUnit(unitArr[0]) : ''
-            this.currentUnit2 = unitArr[1] ? this.spliceUnit(unitArr[1]) : ''
-            this.currentUnit3 = unitArr[2] ? this.spliceUnit(unitArr[2]) : ''
             this.currentId = data[0].id.toString()
-            this.formData.lessNo = data[0].violationDegreeValues[0].lessNo
-            this.formData.lessValue = data[0].violationDegreeValues[0].lessValue
-            this.formData.conditionNo = data[0].violationDegreeValues[0].conditionNo
-            this.formData.id = data[0].violationDegreeValues[0].id.toString()
-            if (data[0].violationDegreeValues.length > 1) {
-              this.formData2.lessNo = data[0].violationDegreeValues[1].lessNo
-              this.formData2.lessValue = data[0].violationDegreeValues[1].lessValue
-              this.formData2.conditionNo = data[0].violationDegreeValues[1].conditionNo
-              this.formData2.id = data[0].violationDegreeValues[1].id.toString()
+            this.formData.lessNo = data[0].lessNo
+            this.formData.lessValue = data[0].lessValue
+            this.formData.conditionNo = data[0].conditionNo
+            this.formData.id = data[0].id.toString()
+            if (data.length > 1) {
+              this.formData2.lessNo = data[1].lessNo
+              this.formData2.lessValue = data[1].lessValue
+              this.formData2.conditionNo = data[1].conditionNo
+              this.formData2.id = data[1].id.toString()
             }
-            if (data[0].violationDegreeValues.length > 2) {
-              this.formData3.lessNo = data[0].violationDegreeValues[2].lessNo
-              this.formData3.lessValue = data[0].violationDegreeValues[2].lessValue
-              this.formData3.conditionNo = data[0].violationDegreeValues[2].conditionNo
-              this.formData3.id = data[0].violationDegreeValues[2].id.toString()
+            if (data.length > 2) {
+              this.formData3.lessNo = data[2].lessNo
+              this.formData3.lessValue = data[2].lessValue
+              this.formData3.conditionNo = data[2].conditionNo
+              this.formData3.id = data[2].id.toString()
             }
           } else {
             this.update = false
@@ -540,6 +538,8 @@ export default {
     saveRule() {
       this.$refs['formData'].validate(valid => {
         if (valid) {
+          const ruleMap = onlineOption['违章类型编码'].map
+          this.formData.violationName = ruleMap[this.formData.violationCode]
           if (this.status === 'update') this.formData.id = this.currentRow.id
           save({ ...this.formData })
             .then(_ => {
@@ -552,10 +552,10 @@ export default {
               this.getList()
             })
             .catch(err => {
-              // this.$message({
-              //   type: 'error',
-              //   message: `${this.type[this.status]}失败！`
-              // })
+              this.$message({
+                type: 'error',
+                message: `${this.type[this.status]}失败！`
+              })
               throw err
             })
         }
@@ -585,30 +585,22 @@ export default {
     saveVio() {
       this.$refs['degreeForm'].validate(valid => {
         if (valid) {
-          const req = {
-            degreeNo: this.degreeLabel,
-            expresion: this.expresion,
-            violationNo: this.currentRow.id.toString(),
-            violationDegreeValues: []
-          }
-          this.formData.violationNo = this.currentRow.id.toString()
-          this.formData2.violationNo = this.currentRow.id.toString()
-          this.formData3.violationNo = this.currentRow.id.toString()
+          const req = { violationDegreeValue: [] }
+          this.formData.violationId = this.currentRow.id.toString()
+          this.formData2.violationId = this.currentRow.id.toString()
+          this.formData3.violationId = this.currentRow.id.toString()
 
           this.formData.degreeNo = this.degreeLabel
           this.formData2.degreeNo = this.degreeLabel
           this.formData3.degreeNo = this.degreeLabel
 
-          if (this.formData.conditionNo) req.violationDegreeValues.push(this.formData)
-          if (this.formData2.conditionNo) req.violationDegreeValues.push(this.formData2)
-          if (this.formData3.conditionNo) req.violationDegreeValues.push(this.formData3)
-          this.degreeReq.violationDegrees.push(req)
+          if (this.formData.conditionNo) req.violationDegreeValue.push(this.formData)
+          if (this.formData2.conditionNo) req.violationDegreeValue.push(this.formData2)
+          if (this.formData3.conditionNo) req.violationDegreeValue.push(this.formData3)
           if (this.update) {
             req.id = this.currentId
-            updateViolationDegree(this.degreeReq)
+            updateViolationDegree(req.violationDegreeValue)
               .then(_ => {
-                // this.degreeVisible = false
-                // this.resetFormData()
                 this.$message({
                   type: 'success',
                   message: '修改成功！'
@@ -623,10 +615,8 @@ export default {
               })
             this.degreeReq.violationDegrees = []
           } else {
-            insertViolationDegree(this.degreeReq)
+            insertViolationDegree(req.violationDegreeValue)
               .then(_ => {
-                // this.degreeVisible = false
-                // this.resetFormData()
                 this.$message({
                   type: 'success',
                   message: '新增成功！'
@@ -645,6 +635,8 @@ export default {
       })
     },
     deleteCol(index) {
+      const arr = this.expresion.split('且').splice(index - 2, 1)
+      arr.length > 1 ? this.expresion = arr.join('且') : this.expresion = arr[0]
       if (index === 1) {
         this.showCol = false
         if (this.formData.id) this.deleteVio(parseInt(this.formData.id))

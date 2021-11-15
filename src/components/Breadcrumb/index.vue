@@ -35,6 +35,7 @@ export default {
   },
   created() {
     this.getBreadcrumb()
+    console.log(JSON.parse(localStorage.getItem('onlineOption')))
   },
   methods: {
     getBreadcrumb() {

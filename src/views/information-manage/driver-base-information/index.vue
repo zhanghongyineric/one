@@ -2,7 +2,7 @@
   <div class="layout-content account-manage">
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="110px" size="small">
+        <el-form :model="listQuery" label-width="120px" size="small">
           <el-row :gutter="48">
             <!--基本搜索条件-->
             <el-col :md="8" :sm="24">
@@ -58,8 +58,8 @@
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
-                <el-form-item label="所属地区:">
-                  <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择所属地区" style="width:100%;" size="small" :options="cityOptions" />
+                <el-form-item label="驾驶员所属地区:">
+                  <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择驾驶员所属地区" style="width:100%;" size="small" :options="cityOptions" />
                 </el-form-item>
               </el-col>
               <el-col :md="8" :sm="24">
@@ -121,7 +121,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="unitName" label="所属运输企业" width="220" align="center" show-overflow-tooltip />
-        <el-table-column prop="qualificationCity" label="所属地区" min-width="110" show-overflow-tooltip align="center">
+        <el-table-column prop="qualificationCity" label="驾驶员所属地区" min-width="110" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             {{ scope.row.qualificationCity | showZoneText }}
           </template>
@@ -183,7 +183,7 @@
           ref="oneForm"
           :rules="oneRules"
           :model="dialogData"
-          label-width="120px"
+          label-width="140px"
           style="margin-top: 20px"
           :disabled="detail"
         >
@@ -270,7 +270,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="所属地区：" prop="qualificationCity">
+            <el-form-item label="驾驶员所属地区:" prop="qualificationCity">
               <el-cascader
                 v-model="dialogData.qualificationCity"
                 size="small"
@@ -595,7 +595,7 @@ export default {
         idCardNum: [{ required: true, message: '请输入身份证号码', trigger: 'blur' }],
         tel: [{ required: true, trigger: 'blur', validator: validateTel }],
         unitName: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
-        qualificationCity: [{ required: true, message: '请选择所属地区', trigger: 'change' }],
+        qualificationCity: [{ required: true, message: '请选择驾驶员所属地区', trigger: 'change' }],
         addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
         addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]
       },
@@ -802,9 +802,19 @@ export default {
     getList() {
       this.listLoading = true
       const { qualificationCity } = this.listQuery
+      console.log(qualificationCity, regionDataPlus[23])
       const zoneIds = []
       if (qualificationCity) {
-        if (!qualificationCity[2]) {
+        if (qualificationCity.length === 2) {
+          regionDataPlus[23].children.forEach(item => {
+            if (item.children) {
+              zoneIds.push(item.value)
+              item.children.forEach(v => {
+                v.value ? zoneIds.push(v.value) : ''
+              })
+            }
+          })
+        } else if (!qualificationCity[2]) {
           regionDataPlus[23].children.forEach(item => {
             if (item.value === qualificationCity[1]) {
               for (let i = 1; i < item.children.length; i++) {
@@ -815,6 +825,7 @@ export default {
           })
         } else zoneIds.push(qualificationCity[2])
       }
+      console.log(zoneIds)
       // if (this.listQuery.qualificationCity) this.listQuery.qualificationCity = parseInt(this.listQuery.qualificationCity[2])
       selectList({ ...this.listQuery, qualificationCity: zoneIds })
         .then(res => {
