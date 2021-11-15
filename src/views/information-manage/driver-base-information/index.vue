@@ -594,7 +594,7 @@ export default {
         physicalStatus: [{ required: true, message: '请选择健康状况', trigger: 'change' }],
         idCardNum: [{ required: true, message: '请输入身份证号码', trigger: 'blur' }],
         tel: [{ required: true, trigger: 'blur', validator: validateTel }],
-        unitName: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
+        // unitName: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
         qualificationCity: [{ required: true, message: '请选择驾驶员所属地区', trigger: 'change' }],
         addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
         addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]

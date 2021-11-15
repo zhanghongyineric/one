@@ -1256,7 +1256,7 @@ export default {
           const { data } = res
           this.insuranceTypeOptions = data
           data.forEach(item => {
-            this.insuranceTypeMap.set(item.label, item.value)
+            this.insuranceTypeMap.set(item.value, item.label)
           })
         })
         .catch(err => {
@@ -1281,7 +1281,7 @@ export default {
           const { data } = res
           this.riskTypeOptions = data
           data.forEach(item => {
-            this.riskTypeMap.set(item.label, item.value)
+            this.riskTypeMap.set(item.value, item.label)
           })
         })
         .catch(err => {
@@ -1664,6 +1664,7 @@ export default {
         .then(res => {
           const { data } = res
           data.forEach(item => {
+            console.log(this.insuranceTypeMap)
             item.typeCode1 = this.insuranceTypeMap.get(item.typeCode.toString())
             item.typeCode = item.typeCode.toString()
             item.riskTypeCode1 = this.riskTypeMap.get(item.riskTypeCode.toString())
@@ -1773,7 +1774,6 @@ export default {
         if (valid) {
           this.accessFormData.vehicleId = this.currentRow.vehicleId
           this.accessFormData.plateNum = this.currentRow.plateNum
-          this.accessFormData.functions = this.accessFormData.functions.join(',')
           AccessInstallationSave({ ...this.accessFormData })
             .then(_ => {
               this.closeAccessDialog()

@@ -294,6 +294,13 @@ div:focus {
     border-color: #4ea1db;
     background: #4ea1db;
   }
+
+  .el-tree,
+  .el-tree-node__content:hover,
+  .el-tree-node:focus>.el-tree-node__content {
+    background: #1C2638;
+    color: #fff;
+  }
   
 }
 
