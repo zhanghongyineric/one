@@ -17,11 +17,17 @@
         border
         highlight-current-row
         style="width: 100%"
+        stripe
       >
         <el-table-column type="index" label="编号" width="60" align="center" />
-        <el-table-column prop="violationName" label="规则名称" min-width="150px" />
-        <el-table-column prop="script" label="规则描述" min-width="200px" />
-        <!-- <el-table-column prop="degreeScript" label="违章程度描述" min-width="200px" /> -->
+        <el-table-column prop="violationName" label="规则名称" min-width="150px" align="center" />
+        <el-table-column prop="script" label="规则描述" min-width="200px" align="center" />
+        <el-table-column prop="violationCode" label="规则编码" min-width="100px" align="center" />
+        <el-table-column prop="typeFlag" label="规则类型" min-width="120px" align="center">
+          <template v-slot="{row}">
+            {{ row.typeFlag | typeFlagFilter }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" width="300px">
           <template v-slot="{row}">
             <el-button type="warning" size="mini" @click="updateData(row)">编辑规则</el-button>
@@ -54,20 +60,25 @@
           label-width="100px"
           :rules="oneRule"
         >
-          <el-form-item label="规则名称：" prop="violationName">
-            <el-select v-model="formData.violationCode" placeholder="请选择规则名称">
+          <el-form-item label="类型：" prop="typeFlag">
+            <el-select v-model="formData.typeFlag" placeholder="请选择规则类型" :disabled="status === 'update'">
               <el-option
-                v-for="{label,value} in ruleOptions"
+                v-for="{label,value} in ruleTypeOptions"
                 :key="value"
                 :label="label"
                 :value="value"
               />
             </el-select>
           </el-form-item>
+          <el-form-item label="规则名称：" prop="violationName">
+            <el-input v-model="formData.violationName" :disabled="status === 'update'" clearable placeholder="请输入规则名称" />
+          </el-form-item>
+          <el-form-item label="规则编码：" prop="violationCode">
+            <el-input v-model="formData.violationCode" :disabled="status === 'update'" clearable placeholder="请输入规则编码" />
+          </el-form-item>
           <el-form-item label="规则描述：" prop="script">
             <el-input
               v-model="formData.script"
-              size="small"
               placeholder="请输入规则描述"
               type="textarea"
               :rows="5"
@@ -210,9 +221,20 @@ import {
 } from '@/api/business-manage/rules-manage'
 import Pagination from '@/components/Pagination'
 
+let that
+
 export default {
   name: 'RulesManage',
   components: { Pagination },
+  filters: {
+    typeFlagFilter(type) {
+      let text = ''
+      that.ruleTypeOptions.forEach(v => {
+        if (v.value === type) text = v.label
+      })
+      return text
+    }
+  },
   data() {
     return {
       list: [],
@@ -232,7 +254,8 @@ export default {
         conditionNo: '',
         degreeLabel: '',
         violationName: '',
-        violationCode: ''
+        violationCode: '',
+        typeFlag: ''
       },
       formData2: {
         expresion: '',
@@ -271,14 +294,17 @@ export default {
         violationDegrees: []
       },
       oneRule: {
-        violationCode: [{ required: true, trigger: 'change', message: '请选择规则名称' }],
-        script: [{ required: true, trigger: 'blur', message: '请输入规则描述' }]
+        violationName: [{ required: true, trigger: 'blur', message: '请输入规则名称' }],
+        script: [{ required: true, trigger: 'blur', message: '请输入规则描述' }],
+        typeFlag: [{ required: true, trigger: 'change', message: '请选择规则类型' }],
+        violationCode: [{ required: true, trigger: 'blur', message: '请输入规则编码' }]
       },
       degreeRule: {
         expresion: [{ required: true, trigger: 'blur', message: '请配置违章条件' }]
       },
       update: false,
-      currentId: ''
+      currentId: '',
+      ruleTypeOptions: []
     }
   },
   watch: {
@@ -359,11 +385,13 @@ export default {
     }
   },
   created() {
+    that = this
     this.getList()
     this.symbols = onlineOption['计算符号'].list
     this.ruleOptions = onlineOption['违章类型编码'].list
     this.degreeOptions = onlineOption['违章严重程度编码'].list
     this.violationOptions = onlineOption['违章条件'].list
+    this.ruleTypeOptions = onlineOption['rule_of_arm_type'].list
     this.degreeValue = this.degreeOptions[0].label
     this.degreeLabel = this.degreeOptions[0].value
   },
@@ -421,7 +449,7 @@ export default {
       this.showCol3 = true
       this.showCol = true
       selectEdit({
-        violationId: row.id.toString(),
+        violationCode: row.violationCode,
         degreeNo: this.degreeLabel
       })
         .then(res => {
@@ -495,7 +523,7 @@ export default {
       this.showCol3 = true
       this.resetFormData()
       selectEdit({
-        violationId: this.currentRow.id.toString(),
+        violationCode: row.violationCode,
         degreeNo: value
       })
         .then(res => {
@@ -538,8 +566,6 @@ export default {
     saveRule() {
       this.$refs['formData'].validate(valid => {
         if (valid) {
-          const ruleMap = onlineOption['违章类型编码'].map
-          this.formData.violationName = ruleMap[this.formData.violationCode]
           if (this.status === 'update') this.formData.id = this.currentRow.id
           save({ ...this.formData })
             .then(_ => {
@@ -586,9 +612,9 @@ export default {
       this.$refs['degreeForm'].validate(valid => {
         if (valid) {
           const req = { violationDegreeValue: [] }
-          this.formData.violationId = this.currentRow.id.toString()
-          this.formData2.violationId = this.currentRow.id.toString()
-          this.formData3.violationId = this.currentRow.id.toString()
+          this.formData.violationCode = this.currentRow.violationCode
+          this.formData2.violationCode = this.currentRow.violationCode
+          this.formData3.violationCode = this.currentRow.violationCode
 
           this.formData.degreeNo = this.degreeLabel
           this.formData2.degreeNo = this.degreeLabel
