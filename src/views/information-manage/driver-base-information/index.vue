@@ -3,36 +3,56 @@
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
         <el-form :model="listQuery" label-width="120px" size="small">
-          <el-row :gutter="48">
+          <el-row :gutter="24">
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
-              <el-form-item label="驾驶员名字:">
-                <el-input v-model="listQuery.personName" placeholder="请输入驾驶员名字" size="small" clearable />
+            <el-col :md="6" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
+                  <el-option
+                    v-for="item in dataSourceOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="身份证号:">
-                <el-input v-model="listQuery.idCardNum" placeholder="请输入驾驶员身份证号" size="small" clearable />
+            <el-col :md="6" :sm="24">
+              <el-form-item label="驾驶员所属地区:">
+                <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择驾驶员所属地区" style="width:100%;" size="small" :options="cityOptions" />
               </el-form-item>
             </el-col>
-
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属运输企业:">
+                <el-autocomplete
+                  v-model="listQuery.unitName"
+                  :fetch-suggestions="searchType"
+                  placeholder="请输入企业名称关键字"
+                  :debounce="500"
+                  size="small"
+                  clearable
+                  style="width:100%;"
+                  @select="searchCompany"
+                />
+              </el-form-item>
+            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属运输企业:">
-                  <el-autocomplete
-                    v-model="listQuery.unitName"
-                    :fetch-suggestions="searchType"
-                    placeholder="请输入企业名称关键字"
-                    :debounce="500"
-                    size="small"
-                    clearable
-                    style="width:100%;"
-                    @select="searchCompany"
-                  />
+              <el-col :md="6" :sm="24">
+                <el-form-item label="驾驶员名字:">
+                  <el-input v-model="listQuery.personName" placeholder="请输入驾驶员名字" size="small" clearable />
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="身份证号:">
+                  <el-input v-model="listQuery.idCardNum" placeholder="请输入驾驶员身份证号" size="small" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="准驾车型:">
                   <el-select v-model="listQuery.driverVelType" size="small" placeholder="请选择准驾车型">
                     <el-option
@@ -45,7 +65,7 @@
                 </el-form-item>
               </el-col>
 
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="从业资格范围:">
                   <el-select v-model="listQuery.qualificationRange" placeholder="请选择从业资格范围">
                     <el-option
@@ -57,12 +77,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="驾驶员所属地区:">
-                  <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择驾驶员所属地区" style="width:100%;" size="small" :options="cityOptions" />
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="营运状态:">
                   <el-select v-model="listQuery.status" placeholder="请选择营运状态">
                     <el-option
@@ -77,7 +92,7 @@
             </template>
 
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -581,10 +596,12 @@ export default {
         status: '',
         qualificationRange: '',
         idCardNum: '',
-        unitId: ''
+        unitId: '',
+        dataSource: ''
       },
       dialogVisible: false,
       tableData: [],
+      dataSourceOptions: [],
       oneRules: {
         personName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
         sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
@@ -641,6 +658,9 @@ export default {
   },
   beforeCreate() { that = this },
   created() {
+    const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getPermitType()
     this.getQueryQualification()
     this.getDriverStatus()

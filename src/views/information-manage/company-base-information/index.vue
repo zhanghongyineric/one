@@ -8,16 +8,15 @@
           <el-row :gutter="48">
 
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
-              <el-form-item label="企业名称:">
-                <el-input v-model="listQuery.unitName" clearable placeholder="请输入企业名称" @keyup.enter.native="handleSearch" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="所属行业:">
-                <el-select v-model="listQuery.operationType" placeholder="请选择所属行业">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
                   <el-option
-                    v-for="item in optionGroup.companyTypes"
+                    v-for="item in dataSourceOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -25,10 +24,31 @@
                 </el-select>
               </el-form-item>
             </el-col>
-
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属地区:">
+                <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="企业名称:">
+                <el-input v-model="listQuery.unitName" clearable placeholder="请输入企业名称" @keyup.enter.native="handleSearch" />
+              </el-form-item>
+            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="所属行业:">
+                  <el-select v-model="listQuery.operationType" placeholder="请选择所属行业">
+                    <el-option
+                      v-for="item in optionGroup.companyTypes"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="运营状态:">
                   <el-select v-model="listQuery.status" placeholder="请选择运营状态">
                     <el-option
@@ -40,15 +60,11 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属地区:">
-                  <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
-                </el-form-item>
-              </el-col>
+
             </template>
 
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -145,26 +161,6 @@
                 <el-input v-model="createFormData.shortName" size="small" clearable placeholder="请输入企业简称" />
               </el-form-item>
             </el-col>
-            <!-- <el-col :md="8" :sm="24">
-              <el-form-item
-                label="企业级别:"
-                prop="aptitudeLevel"
-              >
-                <el-select
-                  v-model="createFormData.aptitudeLevel"
-                  size="small"
-                  clearable
-                  placeholder="请选择企业级别"
-                >
-                  <el-option
-                    v-for="item in optionGroup.roleList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col> -->
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
@@ -465,7 +461,8 @@ export default {
         operationType: '',
         unitName: '',
         place: [],
-        area: ''
+        area: '',
+        dataSource: ''
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -474,7 +471,8 @@ export default {
         operationType: '',
         unitName: '',
         place: [],
-        area: ''
+        area: '',
+        dataSource: ''
       }, // 用于重置查询条件
       area: [],
       total: 0, // 总数据条数
@@ -555,17 +553,20 @@ export default {
       }, // 弹出框标题
       dialogStatus: '',
       poiPicker: null,
-      operatingPermitImage: []
+      operatingPermitImage: [],
+      dataSourceOptions: []
     }
   },
   beforeCreate() {
     that = this
   },
   created() {
-    this.handleSearch()
-    this.getStatusCode()
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
   },
   mounted() {
+    this.handleSearch()
+    this.getStatusCode()
     this.optionGroup.companyTypes = onlineOption['企业所属行业'].list
     this.optionGroup.economyList = onlineOption['经济类型'].list
   },
@@ -630,15 +631,10 @@ export default {
           }
         })
       } else zoneId.push(place[2])
-      fetchList(
-        {
-          pageNum: this.listQuery.pageNum,
-          pageSize: this.listQuery.pageSize,
-          zoneId,
-          status: this.listQuery.status,
-          operationType: this.listQuery.operationType,
-          unitName: this.listQuery.unitName
-        }).then((res) => {
+      fetchList({
+        ...this.listQuery,
+        zoneId
+      }).then((res) => {
         const { data: { list, total }} = res
         this.list = list
         this.total = total

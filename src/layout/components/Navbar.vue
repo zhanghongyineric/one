@@ -8,7 +8,7 @@
       <img v-if="showLink" src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
       <a v-if="showLink" target="_blank" class="to-gu" @click="toMySystem">明亚系统</a>
       <img v-if="showLink" src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
-      <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">政府·企业端</a>
+      <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">业务中台</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
           <span style="font-weight: bold;margin-right: 15px;" :style="theme ? 'color:#ccc' : ''">当前身份:{{ roleName }}</span>

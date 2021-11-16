@@ -6,8 +6,24 @@
         label-width="80px"
         size="small"
       >
-        <el-row :gutter="48">
-          <el-col :md="8" :sm="24">
+        <el-row :gutter="24">
+          <el-col :md="6" :sm="24">
+            <el-form-item label="数据源:">
+              <el-select
+                v-model="listQuery.dataSource"
+                size="small"
+                placeholder="请选择数据源"
+              >
+                <el-option
+                  v-for="item in dataSourceOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :md="6" :sm="24">
             <el-form-item label="名称:">
               <el-autocomplete
                 v-model="listQuery.unitName"
@@ -15,18 +31,19 @@
                 placeholder="请输入服务商名称关键字"
                 :debounce="500"
                 clearable
+                style="width:100%"
                 @select="selectCompany"
               />
             </el-form-item>
           </el-col>
-          <el-col :md="8" :sm="24">
+          <el-col :md="6" :sm="24">
             <el-form-item label="状态:">
               <el-select v-model="listQuery.status" placeholder="请选择申请状态">
                 <el-option v-for="item in optionGroup" :key="item.label" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :md="8" :sm="24">
+          <el-col :md="6" :sm="24">
             <div class="table-page-search-submitButtons">
               <el-button size="small" @click="resetQuery">重置</el-button>
               <el-button type="primary" size="small" @click="getList">查询</el-button>
@@ -201,7 +218,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         unitName: '',
-        status: null
+        status: null,
+        dataSource: ''
       },
       area: [],
       optionGroup: [
@@ -246,13 +264,17 @@ export default {
       detail: false,
       imgsFiles: [],
       currentRow: {},
-      fileList: []
+      fileList: [],
+      dataSourceOptions: []
     }
   },
   beforeCreate() {
     that = this
   },
   created() {
+    const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getStatusCode()
   },
   mounted() {
@@ -287,7 +309,6 @@ export default {
         .then(res => {
           const { data } = res
           data.forEach(item => {
-            console.log(item, 'item')
             if (item.label === '正常') {
               this.optionGroup[1].value = parseInt(item.value)
             } else {

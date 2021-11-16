@@ -4,18 +4,17 @@
       <!--搜索栏-->
       <div class="table-page-search-wrapper">
         <el-form :model="listQuery" label-width="120px" size="small">
-          <el-row :gutter="48">
+          <el-row :gutter="24">
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
-              <el-form-item label="车牌号:">
-                <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" clearable />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="行驶证车辆类型:">
-                <el-select v-model="listQuery.vehicleType" placeholder="请选择行驶证车辆类型">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
                   <el-option
-                    v-for="item in carKindOptions"
+                    v-for="item in dataSourceOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -23,24 +22,51 @@
                 </el-select>
               </el-form-item>
             </el-col>
-
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属地区:">
+                <el-cascader
+                  v-model="listQuery.zoneId"
+                  size="small"
+                  :options="searchCityOptions"
+                  placeholder="请选择所属地区"
+                  style="width:100%;"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属企业:">
+                <el-autocomplete
+                  v-model="listQuery.unitName"
+                  :fetch-suggestions="searchType"
+                  placeholder="请输入企业名称关键字"
+                  :debounce="500"
+                  size="small"
+                  clearable
+                  style="width:100%;"
+                  @select="selectSearchCompany"
+                />
+              </el-form-item>
+            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属企业:">
-                  <el-autocomplete
-                    v-model="listQuery.unitName"
-                    :fetch-suggestions="searchType"
-                    placeholder="请输入企业名称关键字"
-                    :debounce="500"
-                    size="small"
-                    clearable
-                    style="width:100%;"
-                    @select="selectSearchCompany"
-                  />
+              <el-col :md="6" :sm="24">
+                <el-form-item label="车牌号:">
+                  <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" clearable />
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="行驶证车辆类型:">
+                  <el-select v-model="listQuery.vehicleType" placeholder="请选择行驶证车辆类型">
+                    <el-option
+                      v-for="item in carKindOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="运营状态:">
                   <el-select v-model="listQuery.operateStatus" placeholder="请选择运营状态">
                     <el-option
@@ -52,7 +78,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="是否双驾:">
                   <el-select v-model="listQuery.doubleDrivers" placeholder="请选择是否双驾">
                     <el-option key="0" label="是" value="0" />
@@ -60,21 +86,11 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属地区:">
-                  <el-cascader
-                    v-model="listQuery.zoneId"
-                    size="small"
-                    :options="searchCityOptions"
-                    placeholder="请选择所属地区"
-                    style="width:100%;"
-                  />
-                </el-form-item>
-              </el-col>
+
             </template>
 
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -1069,7 +1085,8 @@ export default {
         doubleDrivers: null,
         zoneId: null,
         unitName: '',
-        unitId: ''
+        unitId: '',
+        dataSource: ''
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -1081,11 +1098,13 @@ export default {
         doubleDrivers: null,
         zoneId: null,
         unitName: '',
-        unitId: ''
+        unitId: '',
+        dataSource: ''
       },
       useNatureOptions: [], // 使用性质
       carColorOptions: [], // 车身颜色
       businessOptions: [], // 经营范围
+      dataSourceOptions: [],
       total: 0, // 总数据条数
       advanced: false, // 是否展开高级搜索条件
       operateStatusOptions: [],
@@ -1184,6 +1203,10 @@ export default {
     that = this
   },
   created() {
+    const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.functionsOptions = onlineOption['equipment_terminal_type'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getQueryConditions()
     this.getPlateColor()
     this.getFuelType()
@@ -1199,7 +1222,6 @@ export default {
   },
   mounted() {
     this.getList()
-    this.functionsOptions = JSON.parse(localStorage.getItem('onlineOption'))['equipment_terminal_type'].list
   },
   methods: {
     getList() {

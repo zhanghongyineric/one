@@ -2,10 +2,42 @@
   <div class="layout-content">
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="110px">
-          <el-row :gutter="48">
-            <el-col :md="6" :sm="24">
-              <el-form-item label="地区：">
+        <el-form :model="listQuery" label-width="100px">
+          <el-row :gutter="24">
+            <el-col :md="5" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
+                  <el-option
+                    v-for="item in dataSourceOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="5" :sm="24">
+              <el-form-item label="报警分类:">
+                <el-select
+                  v-model="listQuery.type"
+                  size="small"
+                  placeholder="请选择报警表类型"
+                >
+                  <el-option
+                    v-for="item in dataTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="5" :sm="24">
+              <el-form-item label="地区:">
                 <el-cascader
                   v-model="listQuery.regionId"
                   style="width:100%;"
@@ -16,7 +48,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :md="6" :sm="24">
+            <el-col :md="4" :sm="24">
               <el-form-item label="时间范围:">
                 <el-date-picker
                   v-model="listQuery.time"
@@ -26,22 +58,22 @@
                   end-placeholder="结束日期"
                   size="small"
                   value-format="yyyy-MM-dd HH:mm:ss"
-                  :picker-options="pickerOptions"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :md="6" :sm="24">
-              <el-form-item label="车牌号:">
-                <el-input
-                  v-model="listQuery.plateNum"
-                  placeholder="请输入车牌号"
-                  size="small"
-                  clearable
+                  style="width:135%"
                 />
               </el-form-item>
             </el-col>
             <template v-if="advanced">
-              <el-col :md="6" :sm="24">
+              <el-col :md="5" :sm="24">
+                <el-form-item label="车牌号:">
+                  <el-input
+                    v-model="listQuery.plateNum"
+                    placeholder="请输入车牌号"
+                    size="small"
+                    clearable
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="5" :sm="24">
                 <el-form-item label="驾驶员:">
                   <el-input
                     v-model="listQuery.personName"
@@ -51,7 +83,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :md="6" :sm="24">
+              <el-col :md="5" :sm="24">
                 <el-form-item label="车辆类型:">
                   <el-select
                     v-model="listQuery.vehicleType"
@@ -67,7 +99,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="6" :sm="24">
+              <el-col :md="5" :sm="24">
                 <el-form-item label="所属企业:">
                   <el-autocomplete
                     v-model="listQuery.unitName"
@@ -81,12 +113,12 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :md="6" :sm="24">
-                <el-form-item label="川标报警名称:">
+              <el-col :md="5" :sm="24">
+                <el-form-item label="报警名称:">
                   <el-select
                     v-model="listQuery.alarmType"
                     size="small"
-                    placeholder="请选择川标报警名称"
+                    placeholder="请选报警名称"
                   >
                     <el-option
                       v-for="item in alarmTypeOptions"
@@ -97,40 +129,12 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="6" :sm="24">
-                <el-form-item label="报警表类型:">
-                  <el-select
-                    v-model="listQuery.type"
-                    size="small"
-                    placeholder="请选择报警表类型"
-                  >
-                    <el-option
-                      v-for="item in dataTypeOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :md="6" :sm="24">
-                <el-form-item label="数据源:">
-                  <el-select
-                    v-model="listQuery.dataSource"
-                    size="small"
-                    placeholder="请选择数据源"
-                  >
-                    <el-option
-                      v-for="item in dataSourceOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
             </template>
-            <el-col :md="!advanced && 6 || 24" :sm="24">
+            <el-col
+              :md="!advanced && 4 || 24"
+              :sm="24"
+              :style="{'margin-left': advanced ? '' : '60px'}"
+            >
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -171,7 +175,7 @@
         <el-table-column prop="personName" label="驾驶员" min-width="100" align="center" show-overflow-tooltip />
         <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" show-overflow-tooltip />
 
-        <el-table-column prop="cbArmName" label="川标报警名称" min-width="160" align="center" show-overflow-tooltip>
+        <el-table-column prop="cbArmName" label="报警名称" min-width="160" align="center" show-overflow-tooltip>
           <!-- <template slot-scope="scope">
             {{ scope.row.cbArmType | alarmTypeFilter }}
           </template> -->
@@ -292,7 +296,9 @@ export default {
         time: [],
         alarmType: '',
         plateNum: '',
-        provinceId: ''
+        provinceId: '',
+        dataSource: '',
+        type: ''
       },
       tableData: [],
       listLoading: false,
@@ -315,14 +321,6 @@ export default {
       alarmPhotos: [],
       alarmVideos: [],
       previewPhotos: [],
-
-      pickerOptions: {
-        disabledDate: time => {
-          // if (this.listQuery.startTime) {
-          //   return time.getTime() > new Date(this.listQuery.startTime).getTime() + TWENTY_FOUR_HOURS || time.getTime() < new Date(this.listQuery.startTime).getTime() + TWENTY_FOUR_HOURS
-          // }
-        }
-      },
       currentRow: {}
     }
   },
@@ -361,7 +359,9 @@ export default {
     this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
     this.plateColorOptions = onlineOption['车牌颜色编码'].map
     this.dataTypeOptions = onlineOption['query_alarm_table_type'].list
-    this.dataSourceOptions = onlineOption['dataSource'].list
+    this.listQuery.type = this.dataTypeOptions[0].value
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getDate()
   },
   mounted() {

@@ -6,7 +6,23 @@
           <el-row :gutter="48">
 
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
+                  <el-option
+                    v-for="item in dataSourceOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
               <el-form-item label="平台名称:">
                 <el-autocomplete
                   v-model="listQuery.platformName"
@@ -14,15 +30,16 @@
                   placeholder="请输入平台名称关键字"
                   :debounce="500"
                   clearable
+                  style="width:100%"
                   @select="selectPlatform"
                 />
               </el-form-item>
             </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="服务车辆类型:">
-                <el-select v-model="listQuery.serviceVehicleTypeCode" placeholder="请选择服务车辆类型">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="接入平台类型:">
+                <el-select v-model="listQuery.typeCode" placeholder="请选择接入平台类型">
                   <el-option
-                    v-for="item in serviceCarKinds"
+                    v-for="item in accessPlatformKinds"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -33,31 +50,7 @@
 
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
-                <el-form-item label="平台支持功能:">
-                  <el-select v-model="listQuery.functions" placeholder="请选择平台支持功能">
-                    <el-option
-                      v-for="item in platformSupportFeatures"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="接入平台类型:">
-                  <el-select v-model="listQuery.typeCode" placeholder="请选择接入平台类型">
-                    <el-option
-                      v-for="item in accessPlatformKinds"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="接入平台性质:">
                   <el-select v-model="listQuery.characterCode" placeholder="请选择接入平台性质">
                     <el-option
@@ -69,7 +62,19 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="平台支持功能:">
+                  <el-select v-model="listQuery.functions" placeholder="请选择平台支持功能">
+                    <el-option
+                      v-for="item in platformSupportFeatures"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="平台状态:">
                   <el-select v-model="listQuery.status" size="small" placeholder="请选择平台状态">
                     <el-option
@@ -81,7 +86,19 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="服务车辆类型:">
+                  <el-select v-model="listQuery.serviceVehicleTypeCode" placeholder="请选择服务车辆类型">
+                    <el-option
+                      v-for="item in serviceCarKinds"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="备案状态:">
                   <el-select v-model="listQuery.keepOnRecord" placeholder="请选择备案状态">
                     <el-option
@@ -96,7 +113,7 @@
             </template>
 
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -563,12 +580,14 @@ export default {
         functions: '',
         keepOnRecord: null,
         status: null,
-        serviceArea: ''
+        serviceArea: '',
+        dataSource: ''
       },
       total: 1,
       serviceCarKinds: [],
       accessPlatformBelong: [],
       accessPlatformKinds: [],
+      dataSourceOptions: [],
       platformSupportFeatures: [],
       serviceArea: [],
       platformStatus: [],
@@ -633,6 +652,9 @@ export default {
     that = this
   },
   created() {
+    const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getQueryConditions()
     this.getProtocolVersion()
     this.getAllowConnect()
