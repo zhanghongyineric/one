@@ -117,10 +117,10 @@ export default {
       script.parentNode.insertBefore(newScript, script)
     })(document)
     const theme = localStorage.getItem('theme')
-    if (theme === 'dark' || !theme) {
-      window.document.body.className = 'dark-theme'
-    } else {
+    if (theme !== 'dark') {
       window.document.body.className = ''
+    } else {
+      window.document.body.className = 'dark-theme'
     }
   },
   methods: {

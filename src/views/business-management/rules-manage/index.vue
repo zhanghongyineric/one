@@ -523,7 +523,7 @@ export default {
       this.showCol3 = true
       this.resetFormData()
       selectEdit({
-        violationCode: row.violationCode,
+        violationCode: this.currentRow.violationCode,
         degreeNo: value
       })
         .then(res => {
