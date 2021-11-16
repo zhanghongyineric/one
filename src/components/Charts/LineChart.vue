@@ -33,9 +33,9 @@ export default {
       handler(val) {
         this.setOptions(val)
         let index = 0
-        if (this.chartData && this.chart) {
-          const { length } = this.chartData
-          setInterval(() => {
+        const { length } = this.chartData
+        setInterval(() => {
+          if (this.chart) {
             this.chart.dispatchAction({
               type: 'highlight',
               seriesIndex: 0,
@@ -46,9 +46,11 @@ export default {
               seriesIndex: 0,
               dataIndex: index
             })
-            setTimeout(() => {
-              for (let i = 0; i < length + 1; i++) {
-                if (i !== index) {
+          }
+          setTimeout(() => {
+            for (let i = 0; i < length + 1; i++) {
+              if (i !== index) {
+                if (this.chart) {
                   this.chart.dispatchAction({
                     type: 'downplay',
                     seriesIndex: 0,
@@ -56,11 +58,11 @@ export default {
                   })
                 }
               }
-            }, 2700)
-            index++
-            if (index >= length) index = 0
-          }, 3000)
-        }
+            }
+          }, 2700)
+          index++
+          if (index >= length) index = 0
+        }, 3000)
       }
     }
   },

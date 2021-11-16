@@ -53,8 +53,8 @@ export default {
         this.setOptions()
         let index = 0
         const { length } = this.yData
-        if (this.yData && this.chart) {
-          setInterval(() => {
+        setInterval(() => {
+          if (this.chart) {
             this.chart.dispatchAction({
               type: 'highlight',
               seriesIndex: 0,
@@ -65,9 +65,11 @@ export default {
               seriesIndex: 0,
               dataIndex: index
             })
-            setTimeout(() => {
-              for (let i = 0; i < length + 1; i++) {
-                if (i !== index) {
+          }
+          setTimeout(() => {
+            for (let i = 0; i < length + 1; i++) {
+              if (i !== index) {
+                if (this.chart) {
                   this.chart.dispatchAction({
                     type: 'downplay',
                     seriesIndex: 0,
@@ -75,11 +77,11 @@ export default {
                   })
                 }
               }
-            }, 2700)
-            index++
-            if (index >= length) index = 0
-          }, 3000)
-        }
+            }
+          }, 2700)
+          index++
+          if (index >= length) index = 0
+        }, 3000)
       }
     }
   },
