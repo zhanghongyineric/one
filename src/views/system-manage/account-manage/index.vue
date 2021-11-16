@@ -55,9 +55,16 @@
           {{ row.roleList | rolesFilter }}
         </el-table-column>
         <el-table-column v-slot="{row}" label="状态" prop="status">
-          <span :style="{color:row.status==='0'?'#67C23A':'#F56C6C'}">
+          <!-- <span :style="{color:row.status==='0'?'#67C23A':'#F56C6C'}">
             {{ row.status | statusFilter }}
-          </span>
+          </span> -->
+          <el-switch
+            :value="row.status"
+            active-value="0"
+            inactive-value="9"
+            :disabled="row.type === '0'"
+            @change="statusChange(row)"
+          />
         </el-table-column>
         <el-table-column label="电话" prop="phone" min-width="120px" />
         <el-table-column label="创建日期" prop="createTime" min-width="200px" />
@@ -173,7 +180,7 @@ import {
   fetchRoleList,
   updateCount,
   resetPassword,
-  addCount, deleteCount
+  addCount, deleteCount, changeStatus
 } from '@/api/system-manage/account-manage'
 import Pagination from '@/components/Pagination'
 import { isPhoneNumber } from '@/utils' // 分页
@@ -285,6 +292,23 @@ export default {
         })
       }).catch(_ => {
         console.log('操作取消')
+      })
+    },
+    // 切换账号启用停用
+    statusChange(row) {
+      this.listLoading = true
+      changeStatus({ id: row.userId }).then(res => {
+        this.getList().then(_ => {
+          this.$notify({
+            title: '成功',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      }).catch((e) => {
+        this.listLoading = false
+        console.log(e)
       })
     },
     // 获取角色列表

@@ -81,6 +81,14 @@ export function updatePassword(data) {
     data
   })
 }
+// 修改账号状态
+export function changeStatus(data) {
+  return request({
+    url: '/sys/user/changeStatus',
+    method: 'post',
+    data
+  })
+}
 // 重置某个账号密码
 export function resetPassword(data) {
   return request({

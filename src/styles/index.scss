@@ -297,11 +297,19 @@ div:focus {
 
   .el-tree,
   .el-tree-node__content:hover,
-  .el-tree-node:focus>.el-tree-node__content {
+  .el-tree-node:focus>.el-tree-node__content,
+  .el-autocomplete-suggestion li:hover {
     background: #1C2638;
     color: #fff;
   }
-  
+
+  .el-autocomplete-suggestion li {
+    color: #fff;
+  }
+
+  .el-picker-panel {
+    background: #0E1521;
+  }
 }
 
 //定制搜索栏和弹窗的样式

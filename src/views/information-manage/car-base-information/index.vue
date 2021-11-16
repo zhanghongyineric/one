@@ -1029,6 +1029,7 @@ export default {
   components: { Pagination },
   filters: {
     showVehicleType(type) {
+      console.log(type)
       let typeText
       if (type === 0 || type === '0') {
         return '不确定类型'
@@ -1370,6 +1371,7 @@ export default {
               this.operateStatusMap.set(item.value, item.label)
             })
             this.carKindOptions = data['车辆类型']
+            console.log(this.carKindOptions, 'this.carKindOptions')
             this.accessWayOptions = data['入网方式']
             this.listLoading = false
           })
@@ -1548,6 +1550,7 @@ export default {
       if (row.plateColor) row.plateColor = row.plateColor.toString()
       if (row.vehicleType) row.vehicleType = row.vehicleType.toString()
       if (row.useNature) row.useNature = row.useNature.toString()
+      console.log(row)
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
