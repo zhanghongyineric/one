@@ -2,12 +2,60 @@
   <div class="layout-content">
     <el-card>
       <div class="table-page-search-wrapper">
-        <el-button
-          type="primary"
-          size="small"
-          style="margin-bottom: 10px"
-          @click="addRule"
-        >新增规则</el-button>
+        <el-row :gutter="24">
+          <el-form
+            :model="listQuery"
+            label-width="80px"
+          >
+            <el-col :md="6" :sm="24">
+              <el-form-item label="规则编码">
+                <el-input v-model="listQuery.violationCode" size="small" placeholder="请输入规则编码" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="规则名称">
+                <el-input v-model="listQuery.violationName" size="small" placeholder="请输入规则名称" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="规则名称">
+                <el-select
+                  v-model="listQuery.typeFlag"
+                  size="small"
+                  placeholder="请选择类型"
+                  clearable
+                >
+                  <el-option
+                    v-for="{label,value} in ruleTypeOptions"
+                    :key="value"
+                    :label="label"
+                    :value="value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-button
+                size="small"
+                style="margin-bottom: 10px"
+                @click="resetQuery"
+              >重置</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                style="margin-bottom: 10px"
+                @click="search"
+              >查询</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                style="margin-bottom: 10px"
+                @click="addRule"
+              >新增规则</el-button>
+            </el-col>
+          </el-form>
+        </el-row>
+
       </div>
 
       <el-table
@@ -20,20 +68,20 @@
         stripe
       >
         <el-table-column type="index" label="编号" width="60" align="center" />
-        <el-table-column prop="violationName" label="规则名称" min-width="150px" align="center" />
-        <el-table-column prop="script" label="规则描述" min-width="200px" align="center" />
+        <el-table-column prop="violationName" label="规则名称" min-width="150px" align="center" show-overflow-tooltip />
+        <el-table-column prop="script" label="规则描述" min-width="200px" align="center" show-overflow-tooltip />
         <el-table-column prop="violationCode" label="规则编码" min-width="100px" align="center" />
         <el-table-column prop="typeFlag" label="规则类型" min-width="120px" align="center">
           <template v-slot="{row}">
             {{ row.typeFlag | typeFlagFilter }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="300px">
+        <el-table-column label="操作" align="center" width="330px">
           <template v-slot="{row}">
             <el-button type="warning" size="mini" @click="updateData(row)">编辑规则</el-button>
-            <el-button type="primary" size="mini" @click="updateDegree(row)">违章程度</el-button>
+            <el-button type="primary" size="mini" :disabled="row.typeFlag !== '2'" @click="updateDegree(row)">违章程度</el-button>
+            <el-button type="success" size="mini" @click="ruleDetail(row)">详情</el-button>
             <el-button type="danger" size="mini" @click="delData(row)">删除</el-button>
-            <!-- <el-button type="primary" size="mini" @click="addViolation(row)">新增违章</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -46,6 +94,7 @@
         @pagination="getList"
       />
 
+      <!-- 新增和修改规则弹窗 -->
       <el-dialog
         :title="type[status]"
         :visible.sync="visible"
@@ -91,6 +140,7 @@
         </div>
       </el-dialog>
 
+      <!-- 编辑违章程度弹框 -->
       <el-dialog
         title="违章程度"
         :visible.sync="degreeVisible"
@@ -202,12 +252,54 @@
         </div>
       </el-dialog>
 
+      <!-- 规则详情弹框 -->
+      <el-dialog
+        title="详情"
+        :visible.sync="detailVisible"
+        :close-on-click-modal="false"
+        :before-close="closeDialog"
+        custom-class="base-dialog dialog-col-1"
+        top="100px"
+      >
+        <el-row :gutter="48">
+          <el-col :md="12" class="col-spacing" :style="{color: theme ? '' : '#606266'}">
+            <span class="title">规则编码：</span>
+            <span>{{ detailData.violationCode }}</span>
+          </el-col>
+          <el-col :md="12" class="col-spacing" :style="{color: theme ? '' : '#606266'}">
+            <span class="title">类型：</span>
+            <span>{{ ruleTypeMap[detailData.typeFlag] }}</span>
+          </el-col>
+          <el-col :md="24" class="col-spacing" :style="{color: theme ? '' : '#606266'}">
+            <span class="title">规则名称：</span>
+            <span>{{ detailData.violationName }}</span>
+          </el-col>
+          <el-col :md="24" class="col-spacing" :style="{color: theme ? '' : '#606266'}">
+            <span class="title">规则描述：</span>
+            <span>{{ detailData.script || '无' }}</span>
+          </el-col>
+          <el-col
+            v-for="{value,label} in degreeOptions"
+            :key="value"
+            :md="24"
+            class="col-spacing"
+            :style="{color: theme ? '' : '#606266'}"
+          >
+            <span class="title">{{ label }}：</span>
+            <span>{{ getExpress(value) }}</span>
+          </el-col>
+        </el-row>
+        <div slot="footer">
+          <el-button type="primary" @click="detailVisible = false">关闭</el-button>
+        </div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
 
 <script>
 
+// 获取字典
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 
 import {
@@ -217,7 +309,8 @@ import {
   selectEdit,
   insertViolationDegree,
   updateViolationDegree,
-  deleteViolationDegreeValue
+  deleteViolationDegreeValue,
+  violationDetails
 } from '@/api/business-manage/rules-manage'
 import Pagination from '@/components/Pagination'
 
@@ -240,13 +333,16 @@ export default {
       list: [],
       listQuery: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        violationCode: '',
+        violationName: '',
+        typeFlag: ''
       },
       total: 0,
       listLoading: false,
-      symbols: [],
       visible: false,
       degreeVisible: false,
+      detailVisible: false,
       formData: {
         expresion: '',
         lessValue: '',
@@ -269,10 +365,13 @@ export default {
         lessNo: '',
         conditionNo: ''
       },
-      degreeFormData: {},
-      ruleOptions: [],
       degreeOptions: [],
-      violationOptions: [],
+      violationOptions: [], // 违章条件 list
+      violationMap: {}, // 违章条件 map
+      symbols: [], // 运算符 list
+      symbolsMap: {}, // 运算符 map
+      ruleTypeOptions: [], // 规则类型 list
+      ruleTypeMap: null, // 规则类型 map
       degreeValue: '',
       degreeLabel: '',
       type: {
@@ -280,7 +379,7 @@ export default {
         'add': '新增'
       },
       status: '',
-      currentRow: {},
+      currentRow: {}, // 当前操作的行数据
 
       symbolText: '',
       currentUnit: '',
@@ -290,12 +389,9 @@ export default {
       showCol3: true,
       showCol: true,
       expresion: '',
-      degreeReq: {
-        violationDegrees: []
-      },
       oneRule: {
         violationName: [{ required: true, trigger: 'blur', message: '请输入规则名称' }],
-        script: [{ required: true, trigger: 'blur', message: '请输入规则描述' }],
+        // script: [{ required: true, trigger: 'blur', message: '请输入规则描述' }],
         typeFlag: [{ required: true, trigger: 'change', message: '请选择规则类型' }],
         violationCode: [{ required: true, trigger: 'blur', message: '请输入规则编码' }]
       },
@@ -304,7 +400,21 @@ export default {
       },
       update: false,
       currentId: '',
-      ruleTypeOptions: []
+      detailData: {}, // 规则详情
+      minorViolationExpress: '', // 轻微违章描述
+      generalViolationExpress: '', // 一般违章描述
+      seriousViolationExpress: '' // 严重违章描述
+    }
+  },
+  computed: {
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      console.log(localStorage.getItem('theme') === 'dark')
+      return localStorage.getItem('theme') === 'dark'
     }
   },
   watch: {
@@ -388,10 +498,12 @@ export default {
     that = this
     this.getList()
     this.symbols = onlineOption['计算符号'].list
-    this.ruleOptions = onlineOption['违章类型编码'].list
+    this.symbolsMap = onlineOption['计算符号'].map
     this.degreeOptions = onlineOption['违章严重程度编码'].list
     this.violationOptions = onlineOption['违章条件'].list
+    this.violationMap = onlineOption['违章条件'].map
     this.ruleTypeOptions = onlineOption['rule_of_arm_type'].list
+    this.ruleTypeMap = onlineOption['rule_of_arm_type'].map
     this.degreeValue = this.degreeOptions[0].label
     this.degreeLabel = this.degreeOptions[0].value
   },
@@ -433,14 +545,6 @@ export default {
       this.$nextTick(_ => {
         this.$refs['formData'].clearValidate()
       })
-    },
-    spliceUnit(str) {
-      let unit = ''
-      for (let i = str.length - 1; i >= 0; i--) {
-        if (!isNaN(str[i])) break
-        unit = str[i] + unit
-      }
-      return unit
     },
     updateDegree(row) {
       this.degreeVisible = true
@@ -487,17 +591,22 @@ export default {
         if (value === val) this.symbolText = remark
       })
     },
+    // 删除违章规则
     delData(row) {
       this.$confirm('确定删除该条数据？')
         .then(_ => {
           this.listLoading = true
-          deleteData({ id: parseInt(row.id) })
+          deleteData({ violationCode: row.violationCode })
             .then(_ => {
               this.$message({
                 type: 'success',
                 message: '删除成功！'
               })
               this.getList()
+            })
+            .catch(err => {
+              this.listLoading = false
+              throw err
             })
         })
         .catch(_ => {
@@ -507,14 +616,17 @@ export default {
           })
         })
     },
+    // 关闭弹框
     closeDialog() {
       this.visible = false
       this.degreeVisible = false
+      this.detailVisible = false
       this.showCol = true
       this.showCol2 = true
       this.showCol3 = true
       this.resetFormData()
     },
+    // 切换违章条件
     changeDegree(value, label) {
       this.degreeValue = label
       this.degreeLabel = value
@@ -556,6 +668,7 @@ export default {
           throw err
         })
     },
+    // 打开新增规则弹框
     addRule() {
       this.status = 'add'
       this.visible = true
@@ -563,6 +676,7 @@ export default {
         this.$refs['formData'].clearValidate()
       })
     },
+    // 保存新增或修改规则
     saveRule() {
       this.$refs['formData'].validate(valid => {
         if (valid) {
@@ -587,6 +701,7 @@ export default {
         }
       })
     },
+    // 重置表数据
     resetFormData() {
       this.formData = {
         expresion: '',
@@ -639,7 +754,6 @@ export default {
                 })
                 throw err
               })
-            this.degreeReq.violationDegrees = []
           } else {
             insertViolationDegree(req.violationDegreeValue)
               .then(_ => {
@@ -655,7 +769,6 @@ export default {
                 })
                 throw err
               })
-            this.degreeReq.violationDegrees = []
           }
         }
       })
@@ -689,14 +802,94 @@ export default {
           })
           throw err
         })
+    },
+    // 重置搜索条件
+    resetQuery() {
+      this.listQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        violationCode: '',
+        violationName: '',
+        typeFlag: ''
+      }
+      this.getList()
+    },
+    // 查询
+    search() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
+    // 查看规则详情
+    ruleDetail(row) {
+      violationDetails({ violationCode: row.violationCode })
+        .then(res => {
+          const { data } = res
+          this.detailData = data[0]
+          this.setDegreeExpress(data[0])
+          this.detailVisible = true
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 通过返回的值，拼出详情中各个违章程度的描述
+    setDegreeExpress(data) {
+      this.minorViolationExpress = ''
+      this.generalViolationExpress = ''
+      this.seriousViolationExpress = ''
+      data.violationDegreeValues.forEach(item => {
+        this.getUnit(item.conditionNo)
+        let ans = this.violationMap[item.conditionNo] + ' ' +
+          this.symbolsMap[item.lessNo] + ' ' +
+          item.lessValue +
+          this.currentUnit
+
+        switch (item.degreeNo) {
+          case '621000':
+            if (this.minorViolationExpress) ans = ' 且 ' + ans
+            this.minorViolationExpress += ans
+            break
+          case '622000':
+            if (this.generalViolationExpress) ans = ' 且 ' + ans
+            this.generalViolationExpress += ans
+            break
+          case '623000':
+            if (this.seriousViolationExpress) ans = ' 且 ' + ans
+            this.seriousViolationExpress += ans
+            break
+          default: break
+        }
+      })
+    },
+    // 获取对应的违章描述
+    getExpress(value) {
+      switch (value) {
+        case '621000':
+          return this.minorViolationExpress
+        case '622000':
+          return this.generalViolationExpress
+        case '623000':
+          return this.seriousViolationExpress
+        default: return ''
+      }
     }
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 ::v-deep .el-icon-delete {
   cursor: pointer !important;
   margin-left: 10px !important;
   color: #F56C6C !important;
+}
+
+.col-spacing {
+  margin-bottom: 20px;
+  color: #fff;
+  font-weight: 700;
+
+  .title {
+    font-size: 15px;
+  }
 }
 </style>
