@@ -87,6 +87,7 @@
                   v-model="formData.content"
                   :options="editorOption"
                   @focus="focus($event)"
+                  @change="focus($event)"
                 />
               </el-form-item>
             </el-col>
@@ -97,6 +98,7 @@
                   v-model="formData.historyContent"
                   :options="editorOption"
                   @focus="focus($event)"
+                  @change="focus($event)"
                 />
               </el-form-item>
             </el-col>
@@ -123,7 +125,7 @@
           <el-button size="small" @click="closeDialog">
             取消
           </el-button>
-          <el-button type="primary" size="small" @click="addVersion()">
+          <el-button v-if="type!=='detail'" type="primary" size="small" @click="addVersion()">
             确认
           </el-button>
         </div>
