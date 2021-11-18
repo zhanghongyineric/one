@@ -19,11 +19,11 @@ export function SixStrictlyProhibitTrends(data) {
 }
 
 // 六严禁报警违章类型
-export function sixStrictlyProhibitViolationType(data) {
+export function sixStrictlyProhibitViolationType(params) {
   return request({
     url: '/sixStrictlyProhibitViolationType',
-    method: 'POST',
-    data
+    method: 'GET',
+    params
   })
 }
 

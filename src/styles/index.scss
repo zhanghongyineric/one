@@ -307,8 +307,14 @@ div:focus {
     color: #fff;
   }
 
-  .el-picker-panel {
+  .el-picker-panel,
+  .el-month-table td.in-range div {
     background: #0E1521;
+  }
+
+  .el-month-table td .cell,
+  .el-date-range-picker__header div {
+    color: #fff !important;
   }
 }
 
