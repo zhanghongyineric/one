@@ -455,6 +455,7 @@ export default {
             if (type === 'init') this.listQueryTemp.month = this.monthList[0]
           } else {
             this.listQuery.month = null
+            this.listLoading = false
             if (type !== 'init') this.resetData()
           }
         })
