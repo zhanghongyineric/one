@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title" style="color:#fff;">区县车辆统计情况</span>
+      <span class="title" :style="{color:theme?'#fff':''}">区县车辆统计情况</span>
       <div class="buttons">
         <el-popover trigger="hover">
           <div>
@@ -91,11 +91,17 @@ export default {
   computed: {
     visibleTableHead() {
       return this.tableHead.filter(head => head.visible)
+    },
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   watch: {
     data(data) {
       this.setOption(deepClone(data))
+    },
+    theme() {
+      this.renderChartByTableData()
     }
   },
   methods: {
@@ -137,7 +143,7 @@ export default {
         legend: {
           data: legend,
           textStyle: {
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           }
         },
         color: ['#D97559', '#E4C477', '#5087EC', '#68BBC4'],
@@ -155,10 +161,20 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: xAxisData
+          data: xAxisData,
+          axisLabel: {
+            textStyle: {
+              color: this.theme ? '#fff' : '#606266'
+            }
+          }
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          axisLabel: {
+            textStyle: {
+              color: this.theme ? '#fff' : '#606266'
+            }
+          }
         },
         series: [
           {

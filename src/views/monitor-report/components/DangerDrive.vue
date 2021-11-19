@@ -1,12 +1,12 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title" style="color:#fff">危险驾驶事件</span>
+      <span class="title" :style="{color:theme?'#fff':''}">危险驾驶事件</span>
     </div>
 
     <section>
       <div class="table-title f jc-sb ai-c">
-        <h3 style="margin: 0;color:#fff">ADAS报警</h3>
+        <h3 :style="{margin: '0',color:theme?'#fff':''}">ADAS报警</h3>
         <el-button
           type="primary"
           plain
@@ -32,7 +32,7 @@
     </section>
     <section>
       <div class="table-title f jc-sb ai-c" style="margin-top: 10px;">
-        <h3 style="margin: 0;color:#fff">DSM报警</h3>
+        <h3 :style="{margin: '0',color:theme?'#fff':''}">DSM报警</h3>
         <el-button
           type="primary"
           plain
@@ -76,6 +76,11 @@ export default {
   data() {
     return {
       downloadLoading: false // 表格下载加载状态
+    }
+  },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   methods: {

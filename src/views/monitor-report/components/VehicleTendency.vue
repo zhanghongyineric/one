@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title" style="color:#fff">车辆违章类型报警趋势</span>
+      <span class="title" :style="{color:theme?'#fff':''}">车辆违章类型报警趋势</span>
       <div class="buttons">
         <el-button
           type="primary"
@@ -96,6 +96,11 @@ export default {
       chartLegend: [], // 图表图例
       tableHead: [], // 编辑表格的表头
       tableData: []// 编辑表格的表格数据
+    }
+  },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   watch: {

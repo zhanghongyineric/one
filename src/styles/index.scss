@@ -148,12 +148,17 @@ div:focus {
   .el-cascader .el-input.is-focus .el-input__inner,
   .el-cascader:hover .el-input__inner,
   .el-cascader__dropdown,
-  .el-table__footer-wrapper tbody td,
   .el-table__header-wrapper tbody td,
   .el-textarea__inner,
   .el-textarea__inner:hover {
     background-color: #121D28;
     border-color: #1C303B;
+    color: #fff;
+  }
+
+  .el-table__footer-wrapper tbody td {
+    background-color: #0a1b2e;
+    border-color: #161d25;
     color: #fff;
   }
   
@@ -331,6 +336,28 @@ div:focus {
   .el-button--success {
     background-color: #018E60;
     border-color: #018E60;
+  }
+
+  .el-button--primary.is-plain {
+    color: #fff;
+  }
+
+  .el-checkbox__input.is-checked+.el-checkbox__label {
+    color: #4ea1db;
+  }
+
+  .el-checkbox__input.is-checked .el-checkbox__inner,
+  .el-radio-button__orig-radio:checked+.el-radio-button__inner {
+    background-color: #4ea1db;
+    border-color: #4ea1db;
+  }
+
+  .el-card__header {
+    border-bottom: 1px solid #696969;
+  }
+
+  .el-year-table td.disabled .cell {
+    background-color: inherit;
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title" style="color:#fff">违章报警排名前十</span>
+      <span class="title" :style="{color:theme?'#fff':''}">违章报警排名前十</span>
       <el-button
         type="primary"
         plain
@@ -169,6 +169,9 @@ export default {
   computed: {
     tableData() {
       return this.data[this.queryType]
+    },
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   methods: {

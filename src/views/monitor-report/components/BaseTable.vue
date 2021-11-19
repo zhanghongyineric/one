@@ -2,7 +2,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title" style="color:#fff">{{ title }}</span>
+      <span class="title" :style="{color:theme?'#fff':''}">{{ title }}</span>
       <div class="buttons">
         <el-button
           type="primary"
@@ -80,6 +80,11 @@ export default {
   data() {
     return {
       downloadLoading: false // 表格下载加载状态
+    }
+  },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   methods: {

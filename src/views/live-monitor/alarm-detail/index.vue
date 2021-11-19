@@ -292,13 +292,13 @@ export default {
         pageSize: 10,
         startTime: '',
         endTime: '',
-        regionId: '',
+        regionId: ['622'],
         time: [],
         alarmType: '',
         plateNum: '',
         provinceId: '',
-        dataSource: '',
-        type: ''
+        dataSource: '200100',
+        type: '2'
       },
       tableData: [],
       listLoading: false,
@@ -349,10 +349,6 @@ export default {
       handler: function(newV, oldV) {
         if (newV === '') this.listQuery.unitId = ''
       }
-    },
-    dataSourceOptions() {
-      this.listQuery.type = this.dataTypeOptions[0].value
-      this.listQuery.dataSource = this.dataSourceOptions[0].value
     }
   },
   created() {
@@ -403,7 +399,6 @@ export default {
           const { data } = res
           this.deleteEmptyChilren(data[0])
           this.areaOptions = data
-          this.listQuery.regionId = '800'
           this.getList()
         })
         .catch(err => {
@@ -441,7 +436,7 @@ export default {
         pageSize: 10,
         startTime: '',
         endTime: '',
-        regionId: '800',
+        regionId: ['622'],
         time: [],
         alarmType: '',
         plateNum: ''

@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title" style="color:#fff">车辆基本情况统计</span>
+      <span class="title" :style="{color:theme?'#fff':''}">车辆基本情况统计</span>
       <div class="buttons">
         <el-button
           type="primary"
@@ -107,6 +107,9 @@ export default {
     // 筛选后的表格数据
     tableData() {
       return this.data.filter(item => this.vehicleType.includes(item.vehicleType))
+    },
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   methods: {
