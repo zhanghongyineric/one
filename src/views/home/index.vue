@@ -167,10 +167,10 @@
                 <el-table-column prop="safecodeScore" label="安全码得分" align="center" show-overflow-tooltip />
                 <el-table-column prop="safecodeColor" label="安全码颜色" align="center" show-overflow-tooltip>
                   <template slot-scope="scope">
-                    <svg-icon v-if="scope.row.safecodeColor == 1" icon-class="safecode" style="width:16px;height: 16px;background-color:green;margin-top:5px;" />
+                    <svg-icon v-if="scope.row.safecodeColor == 1" icon-class="safecode" style="width:16px;height: 16px;background-color:#018E60;margin-top:5px;" />
                     <svg-icon v-else-if="scope.row.safecodeColor == 2" icon-class="safecode" style="width:16px;height: 16px;background-color:#4ea1db;margin-top:5px;" />
-                    <svg-icon v-else-if="scope.row.safecodeColor == 3" icon-class="safecode" style="width:16px;height: 16px;background-color:#FFA500;margin-top:5px;" />
-                    <svg-icon v-else icon-class="safecode" style="width:16px;height: 16px;background-color:red;margin-top:5px;" />
+                    <svg-icon v-else-if="scope.row.safecodeColor == 3" icon-class="safecode" style="width:16px;height: 16px;background-color:#E6A23C;margin-top:5px;" />
+                    <svg-icon v-else icon-class="safecode" style="width:16px;height: 16px;background-color:#F56C6C;margin-top:5px;" />
                   </template>
                 </el-table-column>
               </el-table>

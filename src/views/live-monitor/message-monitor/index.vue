@@ -45,7 +45,6 @@
       </div>
       <div style="margin-bottom: 10px">
         <el-checkbox v-model="allCheck" @change="checkedAll">全选</el-checkbox>
-        <!-- <span class="check-text first-span">已选企业：{{ checkedUnits }}家</span> -->
         <span class="check-text second-span">已选车辆：{{ checkedCars }}辆</span>
       </div>
       <div v-loading="treeLoading" class="company-list">
@@ -124,7 +123,7 @@ export default {
   data() {
     return {
       containerLoading: false,
-      treeLoading: false,
+      treeLoading: true,
       styleSize: {
         height: '',
         width: ''
@@ -152,7 +151,6 @@ export default {
       vehicletotal: 0, // 入网车辆数
       alarmCount: 0, // 报警车辆数
       checkedCars: 0, // 已选中的车辆数
-      checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
       searchKeys: [],
       labelArr: [],
@@ -481,8 +479,10 @@ export default {
       })
     },
     async getUnitVehicle() {
-      this.treeLoading = true
       this.treeData = await yuxStorage.getItem('monitorTree')
+      if (this.treeData.length > 0) {
+        this.treeLoading = true
+      }
       this.treeLoading = false
     },
     getHeight() {
