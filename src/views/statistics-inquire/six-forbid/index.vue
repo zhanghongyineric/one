@@ -5,14 +5,19 @@
       <el-form label-width="100px">
         <el-row :gutter="24">
           <el-col :md="5" :sm="24">
-            <el-form-item label="报警分类：">
+            <el-form-item label="报警名称：">
               <el-select
-                v-model="alarmSource"
-                placeholder="请选择报警分类"
+                v-model="alarmType"
+                placeholder="请选择报警名称"
                 size="mini"
+                @change="search"
               >
-                <el-option label="dms报警" value="0" />
-                <el-option label="adas报警" value="1" />
+                <el-option
+                  v-for="{cbArmType,cbArmName} in alarmsType"
+                  :key="cbArmType"
+                  :value="cbArmType"
+                  :label="cbArmName"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -27,23 +32,6 @@
                 style="width:100%"
                 @change="search"
               />
-            </el-form-item>
-          </el-col>
-          <el-col :md="5" :sm="24">
-            <el-form-item label="报警类型：">
-              <el-select
-                v-model="alarmType"
-                placeholder="请选择报警类型"
-                size="mini"
-                @change="search"
-              >
-                <el-option
-                  v-for="{cbArmType,cbArmName} in alarmsType"
-                  :key="cbArmType"
-                  :value="cbArmType"
-                  :label="cbArmName"
-                />
-              </el-select>
             </el-form-item>
           </el-col>
           <el-col :md="5" :sm="24">
@@ -179,7 +167,7 @@ export default {
         pageSize: 10
       },
       searchQuery: {
-        unitId: '800',
+        unitId: ['622', '800'],
         startTime: 202101,
         endTime: 202111
       },
@@ -209,8 +197,7 @@ export default {
       alarmsTypeMap: new Map(),
       alarmsTypeToNameMap: new Map(),
       tableLabel: '',
-      tableWidth: 'width:55%;',
-      alarmSource: '1' // 报警分类 0 dms报警 1 adas报警
+      tableWidth: 'width:55%;'
     }
   },
   computed: {
@@ -261,15 +248,17 @@ export default {
       this.searchQuery.startTime = this.time[0]
       this.searchQuery.endTime = this.time[1]
     },
-    // 通过报警分类获取报警类型
+    // 通过报警分类获取报警名称
     getAlaramTypeBySource() {
       sixStrictlyProhibitViolationType()
         .then(({ data }) => {
+          this.alarmsType = []
           data.forEach(v => {
             this.alarmsTypeMap.set(v.cbArmType, v.cbArmName)
             this.alarmsTypeToNameMap.set(v.cbArmType, v.fieldName)
           })
-          this.alarmsType = data
+          // this.alarmsType = data
+          this.$set(this, 'alarmsType', data)
           const { cbArmType, cbArmName } = data[0]
           this.alarmType = cbArmType
           this.yname = cbArmName + '次数'
@@ -287,7 +276,7 @@ export default {
       this.lineChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
       SixStrictlyProhibitTrends({
-        year: parseInt(this.trendYear),
+        year: this.trendYear,
         unitId: parseInt(this.searchQuery.unitId),
         alarmTypeCode: this.alarmType
       })
@@ -322,8 +311,8 @@ export default {
       this.funnelChartData = []
       this.searchQuery.alarmTypeCode = this.alarmType
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
-      this.searchQuery.startTime = parseInt(this.searchQuery.startTime)
-      this.searchQuery.endTime = parseInt(this.searchQuery.endTime)
+      // this.searchQuery.startTime = parseInt(this.searchQuery.startTime)
+      // this.searchQuery.endTime = parseInt(this.searchQuery.endTime)
       this.searchQuery.unitId = parseInt(this.searchQuery.unitId)
       sectorStatistics({ ...this.searchQuery })
         .then(res => {
@@ -354,7 +343,9 @@ export default {
       areaCode()
         .then(res => {
           const { data } = res
-          this.deleteEmptyChilren(data[0])
+          for (let i = 0; i < data.length; i++) {
+            this.deleteEmptyChilren(data[i])
+          }
           this.areaOptions = data
         })
         .catch(err => {

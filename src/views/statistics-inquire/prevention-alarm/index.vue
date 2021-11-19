@@ -17,23 +17,10 @@
             </el-form-item>
           </el-col>
           <el-col :md="5" :sm="24">
-            <el-form-item label="地区：">
-              <el-cascader
-                v-model="searchQuery.unitId"
-                placeholder="请选择地区"
-                size="mini"
-                :options="areaOptions"
-                :props="areaProps"
-                style="width:100%"
-                @change="search"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :md="5" :sm="24">
-            <el-form-item label="报警类型：">
+            <el-form-item label="报警名称：">
               <el-select
                 v-model="alarmType"
-                placeholder="请选择报警类型"
+                placeholder="请选择报警名称"
                 size="mini"
                 @change="search"
               >
@@ -44,6 +31,19 @@
                   :label="cbArmName"
                 />
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :md="5" :sm="24">
+            <el-form-item label="地区：">
+              <el-cascader
+                v-model="searchQuery.unitId"
+                placeholder="请选择地区"
+                size="mini"
+                :options="areaOptions"
+                :props="areaProps"
+                style="width:100%"
+                @change="search"
+              />
             </el-form-item>
           </el-col>
           <el-col :md="5" :sm="24">
@@ -200,7 +200,7 @@ export default {
       twoLevelColums: [], // 表格双层行的数据，主要包括所有车辆类型
       trendYear: '2021',
 
-      alarmsTypeMap: new Map(), // 报警类型编码与名称对应关系
+      alarmsTypeMap: new Map(), // 报警名称编码与名称对应关系
 
       tableLabel: '', // 报警名称
       tableWidth: 'width:55%;', // 表格宽度
@@ -248,8 +248,8 @@ export default {
       let month = currentDate.getMonth() + 1
       month = month < 10 ? `0${month}` : `${month}`
       this.$set(this, 'time', [this.trendYear + (month - 1), this.trendYear + month])
-      this.searchQuery.startTime = parseInt(this.time[0])
-      this.searchQuery.endTime = parseInt(this.time[1])
+      this.searchQuery.startTime = this.time[0]
+      this.searchQuery.endTime = this.time[1]
       setTimeout(() => {
         this.getAreaCode()
       })
@@ -258,14 +258,14 @@ export default {
       this.searchQuery.startTime = this.time[0]
       this.searchQuery.endTime = this.time[1]
     },
-    // 通过报警分类获取报警类型
+    // 通过报警分类获取报警名称
     getAlaramTypeBySource() {
       alarmsVehicleType({ type: this.alarmSource })
         .then(({ data }) => {
           data.forEach(v => {
             this.alarmsTypeMap.set(v.cbArmType, v.cbArmName)
           })
-          this.alarmsType = data
+          this.$set(this, 'alarmsType', data)
           const { cbArmType, cbArmName } = data[0]
           this.alarmType = cbArmType
           this.yname = cbArmName + '次数'
@@ -284,7 +284,7 @@ export default {
       this.lineChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
       alarmsVehicleTrends({
-        year: parseInt(this.trendYear),
+        year: this.trendYear,
         unitId: parseInt(this.searchQuery.unitId),
         alarmTypeCode: this.alarmType
       })
@@ -348,7 +348,9 @@ export default {
       areaCode()
         .then(res => {
           const { data } = res
-          this.deleteEmptyChilren(data[0])
+          for (let i = 0; i < data.length; i++) {
+            this.deleteEmptyChilren(data[i])
+          }
           this.areaOptions = data
         })
         .catch(err => {

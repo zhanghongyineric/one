@@ -303,7 +303,8 @@ div:focus {
     color: #fff;
   }
 
-  .el-autocomplete-suggestion li {
+  .el-autocomplete-suggestion li,
+  .el-year-table td .cell {
     color: #fff;
   }
 
@@ -315,6 +316,10 @@ div:focus {
   .el-month-table td .cell,
   .el-date-range-picker__header div {
     color: #fff !important;
+  }
+
+  .el-date-picker__header--bordered {
+    border: 0;
   }
 }
 
