@@ -17,28 +17,30 @@
               clearable
               :fetch-suggestions="searchType"
               :debounce="500"
+              style="width:220px;"
               @select="selectPlateNum"
             />
           </el-form-item>
-          <el-form-item label="起始时间:" prop="startTime">
+          <el-form-item label="查询日期:" prop="date">
             <el-date-picker
-              v-model="searchFormData.startTime"
-              type="datetime"
-              placeholder="选择开始日期时间"
+              v-model="searchFormData.date"
+              type="date"
+              placeholder="请选择查询日期"
               size="small"
-              value-format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd"
             />
           </el-form-item>
-          <el-form-item label="结束时间:" prop="endTime">
-            <el-date-picker
-              v-model="searchFormData.endTime"
+          <el-form-item label="时间范围:" prop="time">
+            <el-time-picker
+              v-model="searchFormData.time"
+              is-range
               size="small"
-              type="datetime"
-              placeholder="选择结束日期时间"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :picker-options="pickerOptions"
-              :editable="false"
-              :disabled="!searchFormData.startTime"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              placeholder="请选择时间范围"
+              style="width:220px;"
+              value-format=" HH:mm:ss"
             />
           </el-form-item>
 
@@ -77,7 +79,6 @@
       <div :class="[showTable ? 'bottom-arrow' : 'top-arrow']" />
     </div>
     <div v-show="showTable" class="bottom-table">
-
       <el-table
         :data="tableData"
         style="width: 100%;height:100%;"
@@ -85,23 +86,26 @@
         fit
         highlight-current-row
         height="200"
+        @cell-mouse-enter="getLocation"
       >
         <el-table-column type="index" label="序号" width="80" align="center" />
         <el-table-column prop="status" label="ACC状态" min-width="120" align="center" />
         <el-table-column prop="time" label="上报时间" min-width="120" align="center" />
-        <!-- <el-table-column prop="km" label="GPS里程(公里)" min-width="120" align="center" /> -->
         <el-table-column prop="speed" label="速度(km/h)" min-width="120" align="center" />
-        <el-table-column prop="positionDes" label="位置描述" min-width="120" align="center" />
+        <el-table-column
+          prop="positionDes"
+          label="位置描述"
+          min-width="120"
+          align="center"
+        />
       </el-table>
     </div>
   </div>
 </template>
 <script>
 import { position, findPlateNum } from '@/api/live-monitor/history'
-import connect from '@/utils/mqtt'
 
 let TIME_VARIABLE
-const TWENTY_FOUR_HOURS = 1000 * 3600 * 24
 
 export default {
   name: 'HistoricalTrajectory',
@@ -114,7 +118,9 @@ export default {
       searchFormData: {
         plateNum: '',
         startTime: '',
-        endTime: ''
+        endTime: '',
+        date: '',
+        time: ''
       },
       loading: false,
       map: null,
@@ -131,22 +137,13 @@ export default {
       passedPath: 0, // 存放（播放时点击倍数）抓取到的位置
       curreGDPath: null, // 存放（播放时点击倍数）抓取到的经纬度
       polyline: null, // 轨迹线路
-      lineArrCopy: [],
       tableData: [],
-      topic: '',
       showTable: true,
       alreadyPercent: 0,
       rules: {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
-        startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
-        endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
-      },
-      pickerOptions: {
-        disabledDate: time => {
-          if (this.searchFormData.startTime) {
-            return time.getTime() > new Date(this.searchFormData.startTime).getTime() + TWENTY_FOUR_HOURS
-          }
-        }
+        date: [{ required: true, message: '请选择查询日期', trigger: 'change' }],
+        time: [{ required: true, message: '请选择时间范围', trigger: 'change' }]
       }
     }
   },
@@ -157,14 +154,15 @@ export default {
   },
   created() {
     this.getHeight()
-    // 拼接mqtt连接的topic
-    this.topic = this.token + '/private/' + Date.parse(new Date())
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      if (!vm.searchFormData.plateNum) {
+        vm.searchFormData.plateNum = vm.$route.query.plateNum
+      }
+    })
   },
   mounted() {
-    if (this.$route.query) {
-      this.searchFormData.plateNum = this.$route.query.plateNum
-    }
-    // this.getmap([30.572903, 104.06632])
     this.map = new AMap.Map('container', {
       resizeEnable: true,
       center: [104.06632, 30.572903],
@@ -174,18 +172,6 @@ export default {
     this.map.setFitView()
     // 事件监听，实时获取屏幕宽高
     window.addEventListener('resize', this.getHeight)
-    // 连接mqtt
-    this.connectMqtt()
-    // 刷新页面或者跳转页面时，断开mqtt连接
-    window.onbeforeunload = () => {
-      if (this.client) this.client.end()
-      console.log('断开连接成功!')
-    }
-    this.$router.beforeEach((to, from, next) => {
-      if (this.client.connected) this.client.end()
-      console.log('断开连接成功!')
-      next()
-    })
   },
   methods: {
     searchType(queryString, cb) {
@@ -223,52 +209,6 @@ export default {
         this.$refs['searchForm'].clearValidate()
       })
     },
-    switchPlay() {
-      this.showPause = !this.showPause
-    },
-    connectMqtt() {
-      this.client = connect()
-      this.client.on('connect', () => {
-        this.client.subscribe(
-          this.topic,
-          { qos: 2 },
-          (err) => {
-            console.log(err || '订阅成功')
-          }
-        )
-      })
-      // 失败重连
-      // this.client.on('reconnect', (error) => {
-      //   console.log('正在重连:', error)
-      // })
-      // 连接失败
-      this.client.on('error', (error) => {
-        console.log('连接失败:', error)
-      })
-      // 接收消息
-      let geocoder; let lnglat = []
-      AMap.plugin('AMap.Geocoder', function() {
-        geocoder = new AMap.Geocoder({ city: '' })
-      })
-      this.client.on('message', (topic, message) => {
-        message = message.toString()
-        const arr = message.split('+')
-        this.lineArr.push([arr[1], arr[2]])
-        lnglat = [arr[1], arr[2]]
-        let data = {}
-        geocoder.getAddress(lnglat, function(status, result) {
-          if (status === 'complete' && result.info === 'OK') {
-            data = {
-              status: 'ACC:ON',
-              time: arr[4],
-              speed: arr[3],
-              positionDes: result.regeocode.formattedAddress
-            }
-          }
-        })
-        this.tableData.push(data)
-      })
-    },
     getHeight() {
       this.styleSize.height = window.innerHeight - 84 + 'px'
       this.styleSize.width = window.innerWidth + 'px'
@@ -290,7 +230,6 @@ export default {
             )
           }
         }
-        this.lineArrCopy = this.lineArrlast
         this.initPolyline()
         // 计算轨迹播放时间
         TIME_VARIABLE = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
@@ -326,25 +265,31 @@ export default {
 
       // this.marker.moveAlong(this.lineArrlast, markerSpeed)
     },
+    clearMap() {
+      this.map.clearMap()
+      this.lineArr = [[30.572903, 104.06632]]
+      this.lineArrlast = []
+      this.marker = null
+      this.showPause = false
+      this.begin = true
+      this.perValue = 0
+      this.speedCount = 1 // 目前选择的倍数
+      this.markerSpeed = 100 // 初始化速度
+      this.passedPolyline = null
+      this.passedPath = 0 // 存放（播放时点击倍数）抓取到的位置
+      this.curreGDPath = null // 存放（播放时点击倍数）抓取到的经纬度
+      this.polyline = null // 轨迹线路
+      this.alreadyPercent = 0
+      this.tableData = []
+    },
     search() {
       this.$refs['searchForm'].validate(valid => {
         if (valid) {
           this.loading = true
-
-          this.perValue = 0
-          this.alreadyPercent = 0
-          this.speedCount = 1
-          this.markerSpeed = 100
-          this.showPause = false
-          this.tableData = []
-          this.lineArr = [[]]
-          this.lineArrlast = []
-          this.begin = true
-
-          let geocoder; let lnglat = []
-          AMap.plugin('AMap.Geocoder', function() {
-            geocoder = new AMap.Geocoder({ city: '' })
-          })
+          this.clearMap()
+          const { date, time } = this.searchFormData
+          this.searchFormData.startTime = date + time[0]
+          this.searchFormData.endTime = date + time[1]
           position({
             topic: this.topic,
             ...this.searchFormData
@@ -356,22 +301,17 @@ export default {
                 const lat = item.latitude
                 const lng = item.longitude
                 this.lineArr.push([lat, lng])
-                let data = {}
-                lnglat = [lng, lat]
-                geocoder.getAddress(lnglat, (status, result) => {
-                  if (status === 'complete' && result.info === 'OK') {
-                    data = {
-                      status: 'ACC:ON',
-                      time: item.reportTime,
-                      speed: item.speed,
-                      positionDes: result.regeocode.formattedAddress
-                    }
-                    this.tableData.push(data)
-                  }
+                this.tableData.push({
+                  status: item.acc === '0' ? 'ACC关闭' : 'ACC开启',
+                  time: item.reportTime,
+                  speed: item.speed,
+                  positionDes: lng + ',' + lat
                 })
               })
-              this.getmap([data[0].longitude, data[0].latitude])
-              this.setLine()
+              if (data.length > 0) {
+                this.getmap([data[0].longitude, data[0].latitude])
+                this.setLine()
+              }
               this.loading = false
             })
             .catch(err => {
@@ -382,14 +322,7 @@ export default {
       })
     },
     setLine() {
-      // this.map = new AMap.Map('container', {
-      //   resizeEnable: true,
-      //   center: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
-      //   zoom: 12,
-      //   mapStyle: 'amap://styles/grey'
-      // })
       if (this.lineArrlast.length > 0) {
-        console.log(this.map, 'this.map')
         this.marker = new AMap.Marker({
           map: this.map,
           position: [this.lineArrlast[0].lng, this.lineArrlast[0].lat],
@@ -412,7 +345,6 @@ export default {
     },
     // 初始化回放路线
     initPolyline() {
-      console.log(this.map, 'line')
       this.polyline = new AMap.Polyline({
         map: this.map,
         path: this.lineArrlast,
@@ -442,6 +374,21 @@ export default {
         })
         this.marker.moveAlong(this.lineArrlast, markerSpeed)
         this.alreadyPercent = this.perValue
+      }
+    },
+    getLocation(row) {
+      let geocoder
+      AMap.plugin('AMap.Geocoder', function() {
+        geocoder = new AMap.Geocoder({ city: '', radius: 1000 })
+      })
+      const lnglat = row.positionDes.split(',')
+      if (lnglat.length > 1) {
+        geocoder.getAddress(lnglat, (status, result) => {
+          const { regeocode } = result
+          if (status === 'complete' && regeocode) {
+            row.positionDes = regeocode.formattedAddress
+          }
+        })
       }
     }
   }
@@ -516,7 +463,7 @@ export default {
 
 .play-box{
   padding: 7px 10px;
-  background-color: #409EFF;
+  background-color: #4ea1db;
   box-sizing: border-box;
   height: 30px;
   width: 30px;
@@ -599,7 +546,7 @@ export default {
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color:  transparent transparent #fff transparent ;
+  border-color:  transparent transparent #0E1521 transparent;
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -613,7 +560,7 @@ export default {
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: transparent transparent #fff  transparent ;
+  border-color: transparent transparent #0E1521  transparent;
   position: absolute;
   bottom: 200px;
   left: 50%;

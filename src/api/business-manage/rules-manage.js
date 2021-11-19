@@ -85,7 +85,7 @@ export function insertViolationDegree(data) {
 // 删除违章程度
 export function deleteViolationDegreeValue(data) {
   return request({
-    url: '/violation/deleteViolationDegreeValue',
+    url: '/violation/deleteViolationDegree',
     method: 'POST',
     data
   })
@@ -100,3 +100,11 @@ export function updateViolationDegree(data) {
   })
 }
 
+// 规则详情
+export function violationDetails(params) {
+  return request({
+    url: '/violation/violationDetails',
+    method: 'GET',
+    params
+  })
+}

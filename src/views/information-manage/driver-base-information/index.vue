@@ -2,37 +2,57 @@
   <div class="layout-content account-manage">
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="110px" size="small">
-          <el-row :gutter="48">
+        <el-form :model="listQuery" label-width="120px" size="small">
+          <el-row :gutter="24">
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
-              <el-form-item label="驾驶员名字:">
-                <el-input v-model="listQuery.personName" placeholder="请输入驾驶员名字" size="small" clearable />
+            <el-col :md="6" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
+                  <el-option
+                    v-for="item in dataSourceOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="身份证号:">
-                <el-input v-model="listQuery.idCardNum" placeholder="请输入驾驶员身份证号" size="small" clearable />
+            <el-col :md="6" :sm="24">
+              <el-form-item label="驾驶员所属地区:">
+                <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择驾驶员所属地区" style="width:100%;" size="small" :options="cityOptions" />
               </el-form-item>
             </el-col>
-
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属运输企业:">
+                <el-autocomplete
+                  v-model="listQuery.unitName"
+                  :fetch-suggestions="searchType"
+                  placeholder="请输入企业名称关键字"
+                  :debounce="500"
+                  size="small"
+                  clearable
+                  style="width:100%;"
+                  @select="searchCompany"
+                />
+              </el-form-item>
+            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属运输企业:">
-                  <el-autocomplete
-                    v-model="listQuery.unitName"
-                    :fetch-suggestions="searchType"
-                    placeholder="请输入企业名称关键字"
-                    :debounce="500"
-                    size="small"
-                    clearable
-                    style="width:100%;"
-                    @select="searchCompany"
-                  />
+              <el-col :md="6" :sm="24">
+                <el-form-item label="驾驶员名字:">
+                  <el-input v-model="listQuery.personName" placeholder="请输入驾驶员名字" size="small" clearable />
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="身份证号:">
+                  <el-input v-model="listQuery.idCardNum" placeholder="请输入驾驶员身份证号" size="small" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="准驾车型:">
                   <el-select v-model="listQuery.driverVelType" size="small" placeholder="请选择准驾车型">
                     <el-option
@@ -45,7 +65,7 @@
                 </el-form-item>
               </el-col>
 
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="从业资格范围:">
                   <el-select v-model="listQuery.qualificationRange" placeholder="请选择从业资格范围">
                     <el-option
@@ -57,12 +77,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属地区:">
-                  <el-cascader v-model="listQuery.qualificationCity" style="width:100%;" size="small" :options="cityOptions" />
-                </el-form-item>
-              </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="营运状态:">
                   <el-select v-model="listQuery.status" placeholder="请选择营运状态">
                     <el-option
@@ -77,7 +92,7 @@
             </template>
 
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -105,7 +120,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="personName" label="名字" width="120" show-overflow-tooltip align="center" />
         <el-table-column prop="code" label="性别" width="100" show-overflow-tooltip align="center">
           <template slot-scope="scope">
@@ -121,7 +136,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="unitName" label="所属运输企业" width="220" align="center" show-overflow-tooltip />
-        <el-table-column prop="qualificationCity" label="所属地区" min-width="110" show-overflow-tooltip align="center">
+        <el-table-column prop="qualificationCity" label="驾驶员所属地区" min-width="110" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             {{ scope.row.qualificationCity | showZoneText }}
           </template>
@@ -141,20 +156,19 @@
             <span>{{ scope.row.status | statusFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+        <el-table-column fixed="right" label="操作" width="260" align="center">
           <template slot-scope="scope">
             <el-button
-              class="btn"
               type="primary"
               size="small"
               @click="showDetails(scope.row)"
             >查看详情</el-button>
             <el-button
-              class="btn"
               type="warning"
               size="small"
               @click="modifyData(scope.row)"
             >更新信息</el-button>
+            <el-button size="small" type="danger" @click="delData(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -184,7 +198,7 @@
           ref="oneForm"
           :rules="oneRules"
           :model="dialogData"
-          label-width="120px"
+          label-width="140px"
           style="margin-top: 20px"
           :disabled="detail"
         >
@@ -271,7 +285,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="所属地区：" prop="qualificationCity">
+            <el-form-item label="驾驶员所属地区:" prop="qualificationCity">
               <el-cascader
                 v-model="dialogData.qualificationCity"
                 size="small"
@@ -488,7 +502,6 @@
           <el-button v-show="stepIndex !== 1" type="primary" @click="lastStep()">上一步</el-button>
           <el-button v-show="stepIndex !== 3" type="primary" @click="nextStep()">下一步</el-button>
           <el-button v-show="stepIndex === 3 && !detail" type="primary" @click="submit()">保存</el-button>
-          <el-button v-show="stepIndex === 3 && detail" type="danger" @click="delData()">删除</el-button>
           <el-button type="primary" @click="closeDialog()">关闭</el-button>
         </span>
       </el-dialog>
@@ -497,7 +510,7 @@
 </template>
 
 <script>
-import { regionData, CodeToText } from 'element-china-area-data'
+import { regionDataPlus, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import { cultureOptions } from '@/options'
 import {
@@ -569,7 +582,7 @@ export default {
       queryQualificationOptions: [],
       driverVelTyeOptions: [],
       cultureOptions: cultureOptions.list,
-      cityOptions: regionData,
+      cityOptions: regionDataPlus,
       qualificationRangeOption: [],
       driverStatusOption: [],
       advanced: false,
@@ -583,10 +596,12 @@ export default {
         status: '',
         qualificationRange: '',
         idCardNum: '',
-        unitId: ''
+        unitId: '',
+        dataSource: ''
       },
       dialogVisible: false,
       tableData: [],
+      dataSourceOptions: [],
       oneRules: {
         personName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
         sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
@@ -596,8 +611,8 @@ export default {
         physicalStatus: [{ required: true, message: '请选择健康状况', trigger: 'change' }],
         idCardNum: [{ required: true, message: '请输入身份证号码', trigger: 'blur' }],
         tel: [{ required: true, trigger: 'blur', validator: validateTel }],
-        unitName: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
-        qualificationCity: [{ required: true, message: '请选择所属地区', trigger: 'change' }],
+        // unitName: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
+        qualificationCity: [{ required: true, message: '请选择驾驶员所属地区', trigger: 'change' }],
         addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
         addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]
       },
@@ -643,6 +658,9 @@ export default {
   },
   beforeCreate() { that = this },
   created() {
+    const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getPermitType()
     this.getQueryQualification()
     this.getDriverStatus()
@@ -757,11 +775,11 @@ export default {
         this.$refs['threeForm'].clearValidate()
       })
     },
-    delData() {
+    delData(row) {
       this.$confirm('确定删除该条数据？删除后不可恢复')
         .then(() => {
-          deleteDriver({ personId: this.currentRow.personId })
-            .then(res => {
+          deleteDriver({ personId: row.personId })
+            .then(_ => {
               this.$message({
                 type: 'success',
                 message: '删除成功！'
@@ -803,8 +821,33 @@ export default {
     },
     getList() {
       this.listLoading = true
-      if (this.listQuery.qualificationCity) this.listQuery.qualificationCity = parseInt(this.listQuery.qualificationCity[2])
-      selectList({ ...this.listQuery })
+      const { qualificationCity } = this.listQuery
+      console.log(qualificationCity, regionDataPlus[23])
+      const zoneIds = []
+      if (qualificationCity) {
+        if (qualificationCity.length === 2) {
+          regionDataPlus[23].children.forEach(item => {
+            if (item.children) {
+              zoneIds.push(item.value)
+              item.children.forEach(v => {
+                v.value ? zoneIds.push(v.value) : ''
+              })
+            }
+          })
+        } else if (!qualificationCity[2]) {
+          regionDataPlus[23].children.forEach(item => {
+            if (item.value === qualificationCity[1]) {
+              for (let i = 1; i < item.children.length; i++) {
+                zoneIds.push(item.children[i].value)
+              }
+              zoneIds.push(item.value)
+            }
+          })
+        } else zoneIds.push(qualificationCity[2])
+      }
+      console.log(zoneIds)
+      // if (this.listQuery.qualificationCity) this.listQuery.qualificationCity = parseInt(this.listQuery.qualificationCity[2])
+      selectList({ ...this.listQuery, qualificationCity: zoneIds })
         .then(res => {
           const { data } = res
           this.tableData = data.list

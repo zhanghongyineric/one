@@ -1,17 +1,19 @@
 <template>
-  <div class="navbar clearfix">
-    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+  <div :class="['navbar', 'clearfix',theme?'':'light']">
+    <hamburger :is-active="sidebar.opened" :dark-theme="theme" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
 
     <div v-if="role" class="right-menu">
       <img v-if="showLink" src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
-      <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">政府·企业端</a>
+      <a v-if="showLink" target="_blank" class="to-gu" @click="toMySystem">明亚系统</a>
+      <img v-if="showLink" src="../../assets/to-gu.png" class="icon-to-gu" @click="setCookie">
+      <a v-if="showLink" target="_blank" class="to-gu" @click="setCookie">业务中台</a>
       <el-dropdown class="avatar-container" trigger="hover">
         <div class="f-c-c" style="cursor:pointer;height: 100%">
-          <span style="font-weight: bold;margin-right: 15px">当前身份:{{ roleName }}</span>
-          <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px" />
-          <span class="username">{{ name || '-' }}</span>
+          <span style="font-weight: bold;margin-right: 15px;" :style="theme ? 'color:#ccc' : ''">当前身份:{{ roleName }}</span>
+          <i class="el-icon-s-custom" style="font-size: 16px;margin-right: 5px;" :style="theme ? 'color:#ccc' : ''" />
+          <span class="username" :style="theme ? 'color:#ccc;' : 'color:#606266;'">{{ name || '-' }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <el-dropdown-item @click.native="handleUpdate">
@@ -27,7 +29,6 @@
         :visible.sync="dialogFormVisible"
       />
     </div>
-
   </div>
 </template>
 
@@ -59,7 +60,15 @@ export default {
       'roleName',
       'unitName',
       'area'
-    ])
+    ]),
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
+    }
   },
   mounted() {
     this.showLink = this.role === 'admin'
@@ -68,9 +77,11 @@ export default {
     setCookie() {
       Cookies.set('pc_safe_code', Cookies.get('monitor'), { domain: 'myzx.sc.cn' })
       setTimeout(() => {
-        // window.open('http://localhost:9529/#/home')
         window.open('http://www.fk.myzx.sc.cn/#/home')
       })
+    },
+    toMySystem() {
+      window.open('http://scjt3rd.com/808gps/login.html')
     },
     initMqtt() {
       this.client = connect()
@@ -133,11 +144,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.light {
+  background-color: #fff !important;
+}
+
 .navbar {
   //height: 50px;
   //overflow: hidden;
   position: relative;
-  background: #fff;
+  background: #0E1521;
   box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
 
   .hamburger-container {
@@ -213,6 +228,7 @@ export default {
       .username {
         display: flex;
         font-weight: bold;
+        color:#ccc;
       }
 
       .avatar-wrapper {

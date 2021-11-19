@@ -16,7 +16,7 @@
           <span class="text">在线车辆</span>
         </div>
         <div class="statistics-num">
-          <span class="number">0</span>
+          <span class="number">{{ alarmCount }}</span>
           <span class="text">报警车辆</span>
         </div>
       </div>
@@ -109,12 +109,11 @@
 <script>
 import {
   selectPlateNum,
-  unitVehicle,
   vehicleNumber,
   vehicleLocationInformation,
   selectUnitName
 } from '@/api/live-monitor/message'
-// import flvjs from 'flv.js'
+import yuxStorage from 'yux-storage'
 
 let that
 // 车牌颜色map
@@ -151,6 +150,7 @@ export default {
       realTimeCount: 0, // 在线车辆
       onlineCount: 0, // 上线数
       vehicletotal: 0, // 入网车辆数
+      alarmCount: 0, // 报警车辆数
       checkedCars: 0, // 已选中的车辆数
       checkedUnits: 0, // 已选中的企业数
       markers: [], // 所有标记点位置
@@ -188,13 +188,18 @@ export default {
               <i
                 class='el-icon-video-camera-solid'
                 style={cameraStyle}
-                on-click={(e) => that.toHistory(e)}
+                on-click={(e) => that.toHistory(node.data, e)}
               ></i>
-              <i
-                class='el-icon-refresh-left'
-                style={status === '1' ? 'color:#409EFF;' : ''}
+              <img
+                src={require('../../../assets/history.png')}
+                style={status === '1' ? 'display:none;' : 'position:relative;top:1px;'}
                 on-click={(e) => that.getLocation(node.data, e)}
-              ></i>
+              />
+              <img
+                src={require('../../../assets/history-active.png')}
+                style={status === '1' ? 'position:relative;top:1px;' : 'display:none;'}
+                on-click={(e) => that.getLocation(node.data, e)}
+              />
             </div>
           )
         } else {
@@ -207,12 +212,20 @@ export default {
       }
     }
   },
+  computed: {
+    updateTreeCount() {
+      return this.$store.state.settings.monitorTreeData
+    }
+  },
   watch: {
     markers: {
       deep: true,
       handler() {
         this.setMarkers()
       }
+    },
+    updateTreeCount() {
+      this.getUnitVehicle()
     }
   },
   created() {
@@ -229,7 +242,7 @@ export default {
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
   },
   beforeDestroy() {
-    this.pausemix()
+    // this.pausemix()
   },
   methods: {
     openIfram(id, status, e) {
@@ -263,14 +276,16 @@ export default {
         e.cancelBubble = true
       }
     },
-    toHistory(e) {
-      this.$router.push('/live-monitor/historical-video')
+    toHistory(data, e) {
+      this.$router.push({ path: '/live-monitor/historical-video', query: {
+        plateNum: data.unitName
+      }})
       this.stopPropagation(e)
     },
     startInterval() {
       let timer1 = window.setInterval(() => {
         this.getVehicleNumber()
-      }, 30000)
+      }, 150000)
       this.$once('hook:deactivated', () => {
         clearInterval(timer1)
         timer1 = null
@@ -348,13 +363,12 @@ export default {
     },
     setMarkers() {
       this.map.clearMap()
-      console.log(this.markers)
       const centerLng = this.markers[this.markers.length - 1].position[0]
       const centerLat = this.markers[this.markers.length - 1].position[1]
       this.map = new AMap.Map('container', {
         resizeEnable: true,
         center: [centerLng, centerLat],
-        zoom: 12,
+        zoom: 10,
         mapStyle: 'amap://styles/grey'
       })
       this.markers.forEach(marker => {
@@ -393,10 +407,11 @@ export default {
     getVehicleNumber() {
       vehicleNumber()
         .then(res => {
-          const { data: { realTimeCount, onlineCount, vehicletotal }} = res
+          const { data: { realTimeCount, onlineCount, vehicletotal, alarmCount }} = res
           this.realTimeCount = realTimeCount
           this.onlineCount = onlineCount
           this.vehicletotal = vehicletotal
+          this.alarmCount = alarmCount
         })
         .catch(err => {
           throw err
@@ -465,19 +480,10 @@ export default {
         }
       })
     },
-    getUnitVehicle() {
+    async getUnitVehicle() {
       this.treeLoading = true
-      unitVehicle({ unitName: '' })
-        .then(res => {
-          const { data } = res
-          // this.getTreeDeep(data)
-          this.treeData = data
-          this.treeLoading = false
-        })
-        .catch(err => {
-          this.treeLoading = false
-          throw err
-        })
+      this.treeData = await yuxStorage.getItem('monitorTree')
+      this.treeLoading = false
     },
     getHeight() {
       this.styleSize.height = window.innerHeight - 84 + 'px'
@@ -567,7 +573,7 @@ export default {
 
     .text {
       font-size: 12px;
-      color: #269DDD;
+      color: #4ea1db;
       font-weight: 700;
       letter-spacing: 1px;
     }

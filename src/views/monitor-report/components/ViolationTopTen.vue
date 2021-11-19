@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title">违章报警排名前十</span>
+      <span class="title" style="color:#fff">违章报警排名前十</span>
       <el-button
         type="primary"
         plain

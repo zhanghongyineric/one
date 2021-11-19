@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'hidden':hidden}" class="pagination-container">
+  <div :class="['pagination-container',theme?'':'light',hidden?'hidden':'']">
     <el-pagination
       :background="background"
       :current-page.sync="currentPage"
@@ -71,6 +71,14 @@ export default {
       set(val) {
         this.$emit('update:limit', val)
       }
+    },
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
     }
   },
   methods: {
@@ -91,10 +99,13 @@ export default {
 </script>
 
 <style scoped>
+.light {
+  background-color: #fff !important;
+}
 .pagination-container {
   display: flex;
   justify-content: flex-end;
-  background: #fff;
+  background: #0E1521;
   padding: 32px 16px;
 }
 .pagination-container.hidden {

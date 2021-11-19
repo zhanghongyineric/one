@@ -40,28 +40,32 @@ export default {
         this.setOptions(val)
         clearInterval(this.timer)
         this.timer = null
-        if (this.mapData.length) {
-          let index = 0
+        let index = 0
+        if (this.mapData) {
           const { length } = this.mapData
           this.timer = setInterval(() => {
-            this.chart.dispatchAction({
-              type: 'highlight',
-              seriesIndex: 0,
-              dataIndex: index
-            })
-            this.chart.dispatchAction({
-              type: 'showTip',
-              seriesIndex: 0,
-              dataIndex: index
-            })
+            if (this.chart) {
+              this.chart.dispatchAction({
+                type: 'highlight',
+                seriesIndex: 0,
+                dataIndex: index
+              })
+              this.chart.dispatchAction({
+                type: 'showTip',
+                seriesIndex: 0,
+                dataIndex: index
+              })
+            }
             setTimeout(() => {
               for (let i = 0; i < length + 1; i++) {
                 if (i !== index) {
-                  this.chart.dispatchAction({
-                    type: 'downplay',
-                    seriesIndex: 0,
-                    dataIndex: i
-                  })
+                  if (this.chart) {
+                    this.chart.dispatchAction({
+                      type: 'downplay',
+                      seriesIndex: 0,
+                      dataIndex: i
+                    })
+                  }
                 }
               }
             }, 2700)

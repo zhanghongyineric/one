@@ -1,5 +1,5 @@
 <template>
-  <section class="app-main">
+  <section :class="['app-main',theme?'':'light']">
     <transition name="fade-transform" mode="out-in">
       <keep-alive :include="cachedViews">
         <router-view :key="key" />
@@ -17,19 +17,31 @@ export default {
     },
     key() {
       return this.$route.path
+    },
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
     }
   }
 }
 </script>
 
 <style scoped>
+.light {
+  background-color:#f0f2f5 !important;
+}
+
 .app-main {
   /*85 = navbar(50)+tagview(35)  */
   min-height: calc(100vh - 85px);
   width: 100%;
   position: relative;
   overflow: hidden;
-  background: #f0f2f5;
+  background: #0E1521;
 }
 
 .fixed-header + .app-main {

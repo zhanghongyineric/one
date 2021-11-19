@@ -23,15 +23,15 @@ export default {
   data() {
     return {
       navigationList: [
-        { 'name': 'nacos', url: 'http://www.gosmooth.com.cn:8888/nacos' },
-        { 'name': 'sentinel', url: 'http://www.gosmooth.com.cn:8877/#/login' },
+        { 'name': 'nacos', url: 'http://www.sreyun.gosmooth.com.cn:8888/nacos' },
+        { 'name': 'sentinel', url: 'http://www.sreyun.gosmooth.com.cn:8877/#/login' },
         { 'name': 'spring-admin', url: 'http://139.9.139.113:8899/login' },
         { 'name': 'minio', url: 'http://www.image.gosmooth.com.cn/minio/login' },
-        { 'name': 'xxl-job-admin', url: 'http://www.gosmooth.com.cn:8866/xxl-job-admin/' },
-        { 'name': 'kubernetes', url: 'http://www.gosmooth.com.cn:8811/sso/auth/default?req=gvjmnkb7n72c3hzyxa6h6so7n' },
+        { 'name': 'xxl-job-admin', url: 'http://www.sreyun.gosmooth.com.cn:8866/xxl-job-admin/' },
+        { 'name': 'kubernetes', url: 'http://www.sreyun.gosmooth.com.cn:8811' },
         // { 'name': 'grafana', url: 'http://www.gosmooth.com.cn:8822/login' },
-        { 'name': 'emq', url: 'http://www.gosmooth.com.cn:8833/#/' },
-        // { 'name': 'flink', url: 'http://www.gosmooth.com.cn:8800/#/overview' },
+        { 'name': 'emq', url: 'http://www.sreyun.gosmooth.com.cn:8833/#/' },
+        { 'name': 'CMAK', url: 'http://www.sreyun.gosmooth.com.cn:8855' },
         // { 'name': 'hadoop-yarn', url: 'http://www.gosmooth.com.cn:8855/cluster/nodes' },
         // { 'name': 'hadoop-hdfs ', url: 'http://www.gosmooth.com.cn:8844/dfshealth.html#tab-overview' },
         { 'name': 'eolinker', url: 'http://www.srelocal.gosmooth.com.cn:9966/eolinker_os/index.html#/index' },
@@ -39,10 +39,12 @@ export default {
         { 'name': 'Jenkins', url: 'http://www.srelocal.gosmooth.com.cn:9977/login' },
         { 'name': 'SonarQube', url: 'http://www.srelocal.gosmooth.com.cn:9944' },
         { 'name': 'zentao ', url: 'http://www.srelocal.gosmooth.com.cn:9955/zentao/user-login-L3plbnRhby8=.html' },
+        { 'name': 'Nexus ', url: 'http://www.srelocal.gosmooth.com.cn:9933' },
         { 'name': '华为云', url: 'https://www.huaweicloud.com/' },
         { 'name': '百度云', url: 'https://login.bce.baidu.com/' },
         { 'name': '阿里云', url: 'https://account.aliyun.com/login/login.htm' },
-        { 'name': '墨刀  ', url: 'https://org.modao.cc/' }
+        { 'name': '墨刀', url: 'https://org.modao.cc/' },
+        { 'name': '蓝湖', url: 'https://lanhuapp.com/web/#/item?fid=6d4951ea-d238-4173-8339-edae654b9e35&commonly=all' }
       ]
     }
   }

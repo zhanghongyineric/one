@@ -29,7 +29,8 @@
         <el-table-column
           type="index"
           label="编号"
-          width="50"
+          width="60"
+          align="center"
         />
         <el-table-column label="归属" prop="typeDesc" width="200" />
         <el-table-column label="图片链接" prop="imageUrl" show-overflow-tooltip />

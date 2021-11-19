@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title">区县车辆统计情况</span>
+      <span class="title" style="color:#fff;">区县车辆统计情况</span>
       <div class="buttons">
         <el-popover trigger="hover">
           <div>
@@ -135,7 +135,10 @@ export default {
           trigger: 'axis'
         },
         legend: {
-          data: legend
+          data: legend,
+          textStyle: {
+            color: '#fff'
+          }
         },
         color: ['#D97559', '#E4C477', '#5087EC', '#68BBC4'],
         toolbox: {

@@ -1,26 +1,26 @@
 <!-- 主防报警 -->
 <template>
-  <div class="container" style="width:100%">
-    <div class="table-page-search-wrapper search-box">
+  <div class="container" style="width:100%" :style="{'background-color':theme?'':'#F0F2F5'}">
+    <div class="table-page-search-wrapper search-box" :style="{'background-color':theme?'':'#fff'}">
       <el-form label-width="100px">
-        <el-row :gutter="48">
-          <el-col :md="6" :sm="24">
-            <el-form-item label="地区：">
-              <el-cascader
-                v-model="searchQuery.unitId"
-                placeholder="请选择地区"
+        <el-row :gutter="24">
+          <el-col :md="5" :sm="24">
+            <el-form-item label="报警分类：">
+              <el-select
+                v-model="alarmSource"
+                placeholder="请选择报警分类"
                 size="mini"
-                :options="areaOptions"
-                :props="areaProps"
-                @change="search"
-              />
+              >
+                <el-option label="dms报警" value="0" />
+                <el-option label="adas报警" value="1" />
+              </el-select>
             </el-form-item>
           </el-col>
-          <el-col :md="6" :sm="24">
-            <el-form-item label="报警类型：">
+          <el-col :md="5" :sm="24">
+            <el-form-item label="报警名称：">
               <el-select
                 v-model="alarmType"
-                placeholder="请选择报警类型"
+                placeholder="请选择报警名称"
                 size="mini"
                 @change="search"
               >
@@ -33,7 +33,20 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :md="6" :sm="24">
+          <el-col :md="5" :sm="24">
+            <el-form-item label="地区：">
+              <el-cascader
+                v-model="searchQuery.unitId"
+                placeholder="请选择地区"
+                size="mini"
+                :options="areaOptions"
+                :props="areaProps"
+                style="width:100%"
+                @change="search"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :md="5" :sm="24">
             <el-form-item label="时间范围：">
               <el-date-picker
                 v-model="time"
@@ -47,7 +60,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :md="6" :sm="24">
+          <el-col :md="4" :sm="24">
             <div class="table-page-search-submitButtons">
               <el-button
                 size="mini"
@@ -62,7 +75,7 @@
       </el-form>
     </div>
     <div class="content-box">
-      <div class="left-box" style="background-color: #0E1A2A;">
+      <div class="left-box" :style="{'background-color': theme?'#0E1A2A':'#fff'}">
         <line-mix-bar
           :x-data="lineMixBarXData"
           :line-data="accessRateData"
@@ -74,11 +87,22 @@
           :line-min="0"
           :line-max="ymax"
           :line-formatter="'{value}'"
+          :text-color="theme?'#fff':'#606266'"
         />
       </div>
-      <div class="right-box">
-        <pie-chart :chart-data="pieChartData" :title="pieTitle" style="display:inline-block;" />
-        <funnel-chart :chart-data="funnelChartData" :title="funnelTitle" style="display:inline-block;" />
+      <div class="right-box" :style="{'background-color':theme?'':'#fff'}">
+        <pie-chart
+          :chart-data="pieChartData"
+          :title="pieTitle"
+          style="display:inline-block;"
+          :text-color="theme?'#fff':'#606266'"
+        />
+        <funnel-chart
+          :chart-data="funnelChartData"
+          :title="funnelTitle"
+          style="display:inline-block;"
+          :text-color="theme?'#fff':'#606266'"
+        />
       </div>
     </div>
     <div class="content-box">
@@ -88,34 +112,25 @@
           stripe
           fit
           :border="false"
-          :header-cell-style="tableHeaderColor"
           height="100%"
           style="width:100%"
           :highlight-current-row="false"
           size="small"
         >
-          <el-table-column label="地区" align="center" prop="zoneName" min-width="110" fixed />
-          <el-table-column :label="tableLabel + '总次数（次）'" align="center" :prop="tableProp" min-width="170" />
-          <!-- <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" min-width="160" />
-          <el-table-column label="总入网率" align="center" prop="networkAccessRate">
-            <template v-slot="{row}">
-              <span>{{ row.networkAccessRate | networkAccessRateFilter }}</span>
-            </template>
-          </el-table-column> -->
+          <el-table-column label="地区" align="center" prop="region" min-width="110" fixed />
+          <el-table-column :label="tableLabel + '总次数（次）'" align="center" :prop="tableLabel" min-width="170" />
           <el-table-column
             v-for="item in twoLevelColums"
             :key="item"
             :label="item"
             align="center"
           >
-            <el-table-column :label="tableLabel + '次数（次）'" :prop="allVehicleTypeNames.get(item)" min-width="170" align="center" />
-            <!-- <el-table-column label="入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'count'" min-width="160" align="center" />
-            <el-table-column label="总入网率" :prop="allVehicleTypeNames.get(item) + 'rate'" align="center" /> -->
+            <el-table-column :label="tableLabel + '次数（次）'" :prop="item" min-width="170" align="center" />
           </el-table-column>
         </el-table>
       </div>
-      <div class="right-box">
-        <span class="trend-title">报警趋势</span>
+      <div class="right-box" :style="{'background-color':theme?'':'#fff'}">
+        <span class="trend-title" :style="{color: theme?'':'#606266'}">报警趋势</span>
         <el-date-picker
           v-model="trendYear"
           type="year"
@@ -125,7 +140,7 @@
           value-format="yyyy"
           @change="getVehicleTrends"
         />
-        <line-chart :chart-data="lineChartData" />
+        <line-chart :chart-data="lineChartData" :text-color="theme?'#fff':'#606266'" />
       </div>
     </div>
   </div>
@@ -150,23 +165,15 @@ const vehicleTypeMap = JSON.parse(localStorage.getItem('onlineOption'))['vehicle
 export default {
   name: 'PreventionAlarm',
   components: { lineMixBar, FunnelChart, PieChart, LineChart },
-  filters: {
-    networkAccessRateFilter(rate) {
-      return rate * 100 + '%'
-    }
-  },
   data() {
     return {
       alarmType: '',
       tableData: [],
-      listQuery: {
-        pageNum: 1,
-        pageSize: 10
-      },
       searchQuery: {
-        unitId: '800',
-        startTime: '202101',
-        endTime: '202110'
+        unitId: 800,
+        startTime: 202101,
+        endTime: 202111,
+        alarmTypeCode: ''
       },
       time: [],
       alarmsType: [],
@@ -180,13 +187,6 @@ export default {
       pieChartData: [],
       funnelChartData: [],
       lineChartData: [],
-      statisticalPeriod: [
-        {
-          label: '本年度',
-          value: '1'
-        }
-      ],
-
       lineMixBarXData: [],
       accessRateData: [],
       legendData: [],
@@ -195,25 +195,32 @@ export default {
       yname: '',
       yLineName: '',
       pieTitle: '',
-      funnelTitle: '',
+      funnelTitle: '', // 扇形图title
 
-      twoLevelColums: [],
-      allVehicleTypeNames: new Map(),
+      twoLevelColums: [], // 表格双层行的数据，主要包括所有车辆类型
       trendYear: '2021',
 
-      alarmsTypeMap: new Map(), // 报警类型编码与名称对应关系
-      alarmsTypeToNameMap: new Map(), // 报警类型编码与字段对应关系
-      tableLabel: '',
-      tableProp: '',
-      tableWidth: 'width:55%;',
-      typeFiled: ''
+      alarmsTypeMap: new Map(), // 报警名称编码与名称对应关系
+
+      tableLabel: '', // 报警名称
+      tableWidth: 'width:55%;', // 表格宽度
+      alarmSource: '0' // 报警分类 0 dms报警 1 adas报警
+    }
+  },
+  computed: {
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
     }
   },
   watch: {
     alarmType() {
-      this.tableProp = this.alarmsTypeToNameMap.get(this.alarmType)
       this.tableLabel = this.alarmsTypeMap.get(this.alarmType)
-      this.typeFiled = this.alarmsTypeToNameMap.get(this.alarmType)
+      this.getVehicleData()
     },
     tableData: {
       deep: true,
@@ -223,13 +230,16 @@ export default {
           this.tableWidth = 'width:55%'
         })
       }
+    },
+    alarmSource(newV, oldV) {
+      this.getAlaramTypeBySource()
     }
   },
   created() {
-    this.getDate()
+    this.getAlaramTypeBySource()
   },
   mounted() {
-    this.getAlarmsVehicleType()
+    this.getDate()
   },
   methods: {
     getDate() {
@@ -237,45 +247,25 @@ export default {
       this.trendYear = currentDate.getFullYear().toString()
       let month = currentDate.getMonth() + 1
       month = month < 10 ? `0${month}` : `${month}`
-      this.time[0] = this.trendYear + '01'
-      this.time[1] = this.trendYear + month
+      this.$set(this, 'time', [this.trendYear + (month - 1), this.trendYear + month])
       this.searchQuery.startTime = this.time[0]
       this.searchQuery.endTime = this.time[1]
       setTimeout(() => {
         this.getAreaCode()
-        this.getVehicleData()
       })
-    },
-    getTableData(data, allVehicle, vehicle, netRate) {
-      const dataTemp = data
-      const keys = [...allVehicle.keys()]
-      dataTemp.forEach((item, i) => {
-        keys.forEach((key, j) => {
-          let allCount = ''; let count = ''; let rate = ''
-          allCount = this.allVehicleTypeNames.get(key) + 'all'
-          count = this.allVehicleTypeNames.get(key) + 'count'
-          rate = this.allVehicleTypeNames.get(key) + 'rate'
-          item[allCount] = allVehicle.get(key).data[i]
-          item[count] = vehicle.get(key).data[i]
-          item[rate] = netRate.get(key)[i]
-        })
-      })
-      this.tableData = dataTemp
     },
     changeDate() {
       this.searchQuery.startTime = this.time[0]
       this.searchQuery.endTime = this.time[1]
     },
-    getAlarmsVehicleType() {
-      alarmsVehicleType()
-        .then((res) => {
-          const { data } = res
+    // 通过报警分类获取报警名称
+    getAlaramTypeBySource() {
+      alarmsVehicleType({ type: this.alarmSource })
+        .then(({ data }) => {
           data.forEach(v => {
-            v.fieldName = v.fieldName ? v.fieldName.replace(/\_(\w)/g, (_, text) => (text.toUpperCase())) : ''
             this.alarmsTypeMap.set(v.cbArmType, v.cbArmName)
-            this.alarmsTypeToNameMap.set(v.cbArmType, v.fieldName)
           })
-          this.alarmsType = data
+          this.$set(this, 'alarmsType', data)
           const { cbArmType, cbArmName } = data[0]
           this.alarmType = cbArmType
           this.yname = cbArmName + '次数'
@@ -285,32 +275,33 @@ export default {
           this.getSectorStatistics()
           this.getVehicleTrends()
         })
-        .catch((err) => {
+        .catch(err => {
           throw err
         })
     },
+    // 获取趋势图数据
     getVehicleTrends() {
       this.lineChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
-      alarmsVehicleTrends({ year: this.trendYear, unitId: this.searchQuery.unitId })
+      alarmsVehicleTrends({
+        year: this.trendYear,
+        unitId: parseInt(this.searchQuery.unitId),
+        alarmTypeCode: this.alarmType
+      })
         .then(res => {
-          const { data } = res; const trendData = []; const types = {}
-          for (const v of this.alarmsTypeToNameMap.values()) { types[v] = 0 }
-          for (let i = 1; i <= 12; i++) {
-            let index
-            i < 10 ? index = `0${i}` : index = i
-            data.forEach(item => { item.alarmDate === this.trendYear + index ? trendData.push(item) : '' })
-            if (!trendData[i - 1]) trendData.push({ alarmDate: `${this.trendYear}${index}`, ...types })
-          }
-          trendData.forEach(item => { this.lineChartData.push(item[this.typeFiled] || 0) })
+          const { data } = res
+          const trendData = new Array(12).fill(0)
+          data.forEach(item => {
+            item.yearPlusMonth = item.yearPlusMonth.toString().split(`${this.trendYear}`)[1]
+            trendData[item.yearPlusMonth - 1] = item.alarmCount
+          })
+          this.lineChartData = trendData
         })
         .catch(err => {
           throw err
         })
     },
-    tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) return 'background-color:#1C2733;font-weight:500;'
-    },
+    // 搜索数据
     search() {
       this.tableData = []
       this.getSectorStatistics()
@@ -322,52 +313,72 @@ export default {
       this.pieTitle = type + '次数占比：'
       this.funnelTitle = type + '次数占比：'
     },
+    // 获取梯形图及扇形图数据
     getSectorStatistics() {
       this.pieChartData = []
       this.funnelChartData = []
+      this.searchQuery.alarmTypeCode = this.alarmType
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
       sectorStatistics({ ...this.searchQuery })
         .then(res => {
           const { data } = res
           let sum = 0
-          data.forEach(v => { sum += v[this.typeFiled] })
+          data.forEach(v => { sum += v.alarmCount })
           data.forEach(v => {
-            this.pieChartData.push({ value: v[this.typeFiled], name: vehicleTypeMap[v.vehicleType] })
+            this.pieChartData.push({ value: v.alarmCount, name: vehicleTypeMap[v.vehicleTypeCode] })
             this.funnelChartData.push({
-              value: Math.ceil(v[this.typeFiled] === 0 ? '' : v[this.typeFiled] / sum * 100),
-              name: vehicleTypeMap[v.vehicleType]
+              value: v.alarmCount === 0 ? '' : v.alarmCount / sum * 100,
+              name: vehicleTypeMap[v.vehicleTypeCode]
             })
+          })
+          this.funnelChartData.forEach(item => {
+            if (item.value) {
+              item.value = item.value.toFixed(2)
+            } else {
+              item.value = 0
+            }
           })
         })
         .catch(err => {
           throw err
         })
     },
+    // 获取地区选项
     getAreaCode() {
       areaCode()
         .then(res => {
           const { data } = res
-          this.deleteEmptyChilren(data[0])
+          for (let i = 0; i < data.length; i++) {
+            this.deleteEmptyChilren(data[i])
+          }
           this.areaOptions = data
         })
         .catch(err => {
           throw err
         })
     },
+    // 删除最后一层空的 hilren
     deleteEmptyChilren(data) {
       data.children.length === 0 ? data.children = null : data.children.forEach(v => this.deleteEmptyChilren(v))
     },
     getBarChartData(data) {
       const colorList = ['#91C7AE', '#339999', '#99CCFF', '#66CC99', '#EBAC4A', '#666699', '#FF99CC', '#CC9933', '#FFCC33', '#003333']
       const allVehicleCountMap = new Map()
+      const accessRateMap = {}
+      this.tableData = []
       data.forEach(v => {
-        this.lineMixBarXData.push(v.zoneName)
-        this.accessRateData.push(v[this.typeFiled])
-        v.alarmTypes.forEach(item => {
-          this.legendData.push(vehicleTypeMap[item.vehicleType])
-        })
+        const typeName = vehicleTypeMap[v.vehicleTypeCode]
+        this.lineMixBarXData.push(v.region)
+        this.legendData.push(typeName)
+        if (accessRateMap[v.region]) {
+          accessRateMap[v.region] += v.alarmCount
+        } else {
+          accessRateMap[v.region] = v.alarmCount
+        }
       })
+      this.lineMixBarXData = Array.from(new Set(this.lineMixBarXData))
       this.legendData = Array.from(new Set(this.legendData))
+      this.accessRateData = Object.values(accessRateMap)
       this.legendData.forEach((v, index) => {
         allVehicleCountMap.set(v, {
           name: v,
@@ -381,20 +392,48 @@ export default {
           }
         })
       })
-      data.forEach((v, index) => {
-        v.alarmTypes.forEach(item => {
-          allVehicleCountMap.get(vehicleTypeMap[item.vehicleType]).data.push(item[this.typeFiled])
-        })
-        this.legendData.forEach((item, index1) => {
-          allVehicleCountMap.get(item).data.length < index + 1 ? allVehicleCountMap.get(item).data.push(0) : ''
-        })
-      })
+      this.getTableData(data, allVehicleCountMap)
       this.twoLevelColums = [...allVehicleCountMap.keys()]
       this.barChartData = [...allVehicleCountMap.values()]
     },
+    // 获取表格数据
+    getTableData(data, allVehicleCountMap) {
+      const dataMap = {}
+      this.lineMixBarXData.forEach((v) => {
+        dataMap[v] = {}
+      })
+
+      data.forEach((item) => {
+        const name = item.region
+        dataMap[name][vehicleTypeMap[item.vehicleTypeCode]] = item.alarmCount
+      })
+
+      for (const i of Object.values(dataMap)) {
+        this.legendData.forEach((v) => {
+          if (!i[v]) {
+            i[v] = 0
+          }
+        })
+      }
+      for (const i of Object.values(dataMap)) {
+        for (const j in i) {
+          allVehicleCountMap.get(j).data.push(i[j])
+        }
+      }
+
+      for (const i in dataMap) {
+        const data = { region: i }
+        data[this.tableLabel] = 0
+        for (const j in dataMap[i]) {
+          data[j] = dataMap[i][j]
+          data[this.tableLabel] += data[j]
+        }
+        this.tableData.push(data)
+      }
+    },
     getMaxYdata(data) {
       data.forEach(item => {
-        item[this.typeFiled] > this.ymax ? this.ymax = item[this.typeFiled] : ''
+        item.alarmCount > this.ymax ? this.ymax = item.alarmCount : ''
       })
       let num = '1'
       for (let i = 0; i < JSON.stringify(this.ymax).length; i++) { num += '0' }
@@ -407,49 +446,30 @@ export default {
       this.barChartData = []
       this.ymax = 0
       this.twoLevelColums = []
-      this.allVehicleTypeNames = new Map()
-      this.tableData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
+      this.searchQuery.alarmTypeCode = this.alarmType
       alarmsVehicleSystem({ ...this.searchQuery })
         .then(res => {
           const { data } = res
-          this.getAllVehicleType(data.alarmTypeDtos)
-          this.getBarChartData(data.alarmDtos)
-          this.getMaxYdata(data.alarmDtos)
-          data.alarmDtos.forEach(item => {
-            item.alarmTypes.forEach(v => {
-              const filed = this.allVehicleTypeNames.get(vehicleTypeMap[v.vehicleType])
-              item[filed] = v[this.typeFiled]
-            })
-          })
-          this.tableData = data.alarmDtos
+          this.getBarChartData(data)
+          this.getMaxYdata(data)
 
           // 合计行
-          const sumObj = { zoneName: '合计' }
-          const sum = this.typeFiled
-          const foo = ([first, ...rest]) => first.toUpperCase() + rest.join('')
-          sumObj[sum] = data['total' + foo(this.typeFiled)]
+          const sumObj = { region: '合计' }
           this.twoLevelColums.forEach(v => {
-            data.alarmTypeDtos.forEach(item => {
-              vehicleTypeMap[item.vehicleType] === v ? sumObj[this.allVehicleTypeNames.get(v)] = item[this.typeFiled] : ''
+            let sum = 0; let total = 0
+            this.tableData.forEach(item => {
+              sum += item[v]
+              total += item[this.tableLabel]
             })
+            sumObj[this.tableLabel] = total
+            sumObj[v] = sum
           })
           this.tableData.push(sumObj)
         })
         .catch(err => {
           throw err
         })
-    },
-    getAllVehicleType(types) {
-      const chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz'
-      const maxLen = chars.length
-      types.forEach(item => {
-        let typeFiled = ''
-        for (let i = 0; i < 4; i++) {
-          typeFiled += chars.charAt(Math.floor(Math.random() * maxLen))
-        }
-        this.allVehicleTypeNames.set(vehicleTypeMap[item.vehicleType], typeFiled)
-      })
     }
   }
 }
@@ -508,73 +528,6 @@ export default {
   background-color: #1C2638;
   border-radius: 5px;
   display: inline-block;
-}
-
-::v-deep .el-form-item__label {
-  color: #fff;
-}
-
-::v-deep .el-input__inner,
-::v-deep .el-range-input,
-// ::v-deep .el-table,
-::v-deep .has-gutter {
-  background-color: #212F40 !important;
-  color: #fff;
-}
-
-::v-deep .el-table thead.is-group th {
-  background-color: #212F40 !important;
-  font-weight: 500 !important;
-  color: #fff !important;
-}
-
-::v-deep .el-table__fixed {
-  color: #fff !important;
-}
-
-::v-deep .el-table {
-  overflow: auto !important;
-  background-color: #1C2733 !important;
-  color: #fff !important;
-}
-
-::v-deep .el-table__row--striped td {
-  background-color: #1C2733 !important;
-}
-
-::v-deep .el-table__row {
-  background-color: #222C3C !important;
-}
-
-::v-deep .el-table tbody tr { pointer-events:none !important; }
-
-::v-deep .el-table td {
-  border: 0 !important;
-}
-
-::v-deep .el-table--border {
-  border: 0 !important;
-}
-
-::v-deep .cell {
-  color: #ccc !important;
-  font-weight: 700 !important;
-}
-
-::v-deep .el-range-separator {
-  color: #ccc !important;
-}
-
-::v-deep .el-table__fixed::before {
-  height: 0 !important;
-}
-
-::v-deep .el-table--group::after {
-  width: 0 !important;
-}
-
-::v-deep .el-table::before {
-  height: 0 !important;
 }
 
 .trend-title {

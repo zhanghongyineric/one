@@ -10,10 +10,11 @@ export function areaCode() {
 }
 
 // 主防报警车辆类型
-export function alarmsVehicleType() {
+export function alarmsVehicleType(params) {
   return request({
     url: '/alarmsVehicleType',
-    method: 'POST'
+    method: 'GET',
+    params
   })
 }
 

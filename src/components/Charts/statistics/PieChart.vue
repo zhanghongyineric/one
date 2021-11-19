@@ -29,6 +29,10 @@ export default {
       type: String,
       default: '',
       required: true
+    },
+    textColor: {
+      type: String,
+      default: '#fff'
     }
   },
   data() {
@@ -41,6 +45,11 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val)
+      }
+    },
+    textColor: {
+      handler() {
+        this.initChart()
       }
     }
   },
@@ -71,7 +80,7 @@ export default {
           x: 10,
           y: 10,
           textStyle: {
-            color: '#fff'
+            color: this.textColor
           }
         },
         tooltip: {
@@ -88,7 +97,7 @@ export default {
                 textStyle: {
                   fontSize: '14',
                   fontweight: '500',
-                  color: '#fff'
+                  color: this.textColor
                 }
               }
             },

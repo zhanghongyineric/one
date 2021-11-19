@@ -269,15 +269,16 @@ export default {
         })
         data.list.filter(role => role.roleCode.includes('_')).forEach(children => {
           const parent = parentMap[children.parentRoleCode]
-          parent.children || (parent.children = [])
-          parent.children.push(children)
+          if (parent) {
+            parent.children || (parent.children = [])
+            parent.children.push(children)
+          }
         })
-
         this.list = Object.values(parentMap)
         this.listLoading = false
       }).catch((e) => {
-        console.log(e)
         this.listLoading = false
+        throw e
       })
     },
     // 重置搜索条件

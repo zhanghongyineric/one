@@ -1,9 +1,3 @@
-<!--
-  - FileName: 账号管理
-  - @author: ZhouJiaXing
-  - @date: 2021/6/9 上午11:02
-  -->
-
 <template>
   <div class="layout-content demo-page">
     <el-card class="box-card">
@@ -16,7 +10,7 @@
             <!--基本搜索条件-->
             <el-col :md="6" :sm="24">
               <el-form-item label="关键字:">
-                <el-input v-model="listQuery.keyword" placeholder="请输入用户名或别名关键字" @keyup.enter.native="handleSearch" />
+                <el-input v-model="listQuery.keyword" placeholder="请输入用户名或别名或电话关键字" @keyup.enter.native="handleSearch" />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -32,21 +26,15 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <!-- <el-col :md="6" :sm="24">
-              <el-form-item label="角色:">
-                <el-input v-model="listQuery.keyword" placeholder="请输入角色" @keyup.enter.native="handleSearch" />
+            <el-col :md="6" :sm="24">
+              <el-form-item label="角色名:">
+                <el-input v-model="listQuery.roleName" clearable placeholder="请输入角色名" @keyup.enter.native="handleSearch" />
               </el-form-item>
-            </el-col> -->
-            <!--查询操作按钮-->
-            <el-col :md="!advanced && 6 || 24" :sm="24">
-              <div
-                class="table-page-search-submitButtons"
-                :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
-              >
-                <el-button size="small" @click="resetQuery">重置</el-button>
-                <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
-                <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
-              </div>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-button size="small" @click="resetQuery">重置</el-button>
+              <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
+              <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -67,9 +55,16 @@
           {{ row.roleList | rolesFilter }}
         </el-table-column>
         <el-table-column v-slot="{row}" label="状态" prop="status">
-          <span :style="{color:row.status==='9'?'#F56C6C':'#67C23A'}">
+          <!-- <span :style="{color:row.status==='0'?'#67C23A':'#F56C6C'}">
             {{ row.status | statusFilter }}
-          </span>
+          </span> -->
+          <el-switch
+            :value="row.status"
+            active-value="0"
+            inactive-value="9"
+            :disabled="row.type === '0'"
+            @change="statusChange(row)"
+          />
         </el-table-column>
         <el-table-column label="电话" prop="phone" min-width="120px" />
         <el-table-column label="创建日期" prop="createTime" min-width="200px" />
@@ -83,18 +78,6 @@
             <el-button type="warning" size="mini" @click="handleReset(row)">
               重置
             </el-button>
-            <!--<el-button-->
-            <!--  v-if="row.status === '0'"-->
-            <!--  size="mini"-->
-            <!--  type="warning"-->
-            <!--  @click="handleToggle(row, false)"-->
-            <!--&gt;-->
-            <!--  禁用-->
-            <!--</el-button>-->
-            <!--<el-button v-else size="mini" type="success" @click="handleToggle(row, true)">-->
-            <!--  启用-->
-            <!--</el-button>-->
-
             <el-popconfirm
               title="确认删除吗？"
               style="margin-left:10px;"
@@ -197,7 +180,7 @@ import {
   fetchRoleList,
   updateCount,
   resetPassword,
-  addCount, deleteCount
+  addCount, deleteCount, changeStatus
 } from '@/api/system-manage/account-manage'
 import Pagination from '@/components/Pagination'
 import { isPhoneNumber } from '@/utils' // 分页
@@ -309,6 +292,23 @@ export default {
         })
       }).catch(_ => {
         console.log('操作取消')
+      })
+    },
+    // 切换账号启用停用
+    statusChange(row) {
+      this.listLoading = true
+      changeStatus({ id: row.userId }).then(res => {
+        this.getList().then(_ => {
+          this.$notify({
+            title: '成功',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      }).catch((e) => {
+        this.listLoading = false
+        console.log(e)
       })
     },
     // 获取角色列表

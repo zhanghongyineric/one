@@ -3,19 +3,18 @@
     <el-card class="box-card">
       <!--搜索栏-->
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="80px" size="small">
-          <el-row :gutter="48">
+        <el-form :model="listQuery" label-width="120px" size="small">
+          <el-row :gutter="24">
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
-              <el-form-item label="车牌号:">
-                <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" clearable />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="车辆类型:">
-                <el-select v-model="listQuery.vehicleType" placeholder="请选择车辆类型">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
                   <el-option
-                    v-for="item in carKindOptions"
+                    v-for="item in dataSourceOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -23,24 +22,51 @@
                 </el-select>
               </el-form-item>
             </el-col>
-
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属地区:">
+                <el-cascader
+                  v-model="listQuery.zoneId"
+                  size="small"
+                  :options="searchCityOptions"
+                  placeholder="请选择所属地区"
+                  style="width:100%;"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属企业:">
+                <el-autocomplete
+                  v-model="listQuery.unitName"
+                  :fetch-suggestions="searchType"
+                  placeholder="请输入企业名称关键字"
+                  :debounce="500"
+                  size="small"
+                  clearable
+                  style="width:100%;"
+                  @select="selectSearchCompany"
+                />
+              </el-form-item>
+            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属企业:">
-                  <el-autocomplete
-                    v-model="listQuery.unitName"
-                    :fetch-suggestions="searchType"
-                    placeholder="请输入企业名称关键字"
-                    :debounce="500"
-                    size="small"
-                    clearable
-                    style="width:100%;"
-                    @select="selectSearchCompany"
-                  />
+              <el-col :md="6" :sm="24">
+                <el-form-item label="车牌号:">
+                  <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" clearable />
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="行驶证车辆类型:">
+                  <el-select v-model="listQuery.vehicleType" placeholder="请选择行驶证车辆类型">
+                    <el-option
+                      v-for="item in carKindOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="运营状态:">
                   <el-select v-model="listQuery.operateStatus" placeholder="请选择运营状态">
                     <el-option
@@ -52,7 +78,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="是否双驾:">
                   <el-select v-model="listQuery.doubleDrivers" placeholder="请选择是否双驾">
                     <el-option key="0" label="是" value="0" />
@@ -60,21 +86,11 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属地区:">
-                  <el-cascader
-                    v-model="listQuery.zoneId"
-                    size="small"
-                    :options="searchCityOptions"
-                    placeholder="请选择所属地区"
-                    style="width:100%;"
-                  />
-                </el-form-item>
-              </el-col>
+
             </template>
 
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -106,12 +122,12 @@
         <el-table-column
           label="编号"
           type="index"
-          width="50"
+          width="60"
           align="center"
         />
         <el-table-column label="车牌号" prop="plateNum" min-width="100" show-overflow-tooltip align="center" />
         <el-table-column label="所属企业" prop="unitName" min-width="200" show-overflow-tooltip align="center" />
-        <el-table-column label="车辆类型" prop="vehicleType" min-width="120" align="center" show-overflow-tooltip>
+        <el-table-column label="行驶证车辆类型" prop="vehicleType" min-width="120" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span>{{ scope.row.vehicleType | showVehicleType }}</span>
           </template>
@@ -199,7 +215,7 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item size="small" label="车辆营运类型:" prop="operateType">
-                <el-select v-model="createFormData.operateType" clearable placeholder="请选择车辆类型">
+                <el-select v-model="createFormData.operateType" clearable placeholder="请选择行驶证车辆类型">
                   <el-option
                     v-for="item in vehicleTypeOptions"
                     :key="item.value"
@@ -429,8 +445,8 @@
         >
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="机动车车辆类型:" prop="vehicleType">
-                <el-select v-model="createFormData.vehicleType" clearable size="small" placeholder="请选择机动车车辆类型">
+              <el-form-item label="行驶证车辆类型:" prop="vehicleType">
+                <el-select v-model="createFormData.vehicleType" clearable size="small" placeholder="请选择行驶证车辆类型">
                   <el-option
                     v-for="item in carKindOptions"
                     :key="item.value"
@@ -638,21 +654,16 @@
           label-width="150px"
         >
           <el-row>
-            <el-form-item label="入网方式:" prop="accessWay">
-              <el-select v-model="accessFormData.accessWay" size="small" placeholder="请选择入网方式">
-                <el-option
-                  v-for="item in accessWayOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-row>
-          <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="车载终端名称:" prop="terminalName">
-                <el-input v-model="accessFormData.terminalName" clearable size="small" placeholder="请输入" />
+              <el-form-item label="入网方式:" prop="accessWay">
+                <el-select v-model="accessFormData.accessWay" size="small" placeholder="请选择入网方式">
+                  <el-option
+                    v-for="item in accessWayOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -671,15 +682,8 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="服务器域名及端口:" prop="serverIpPort">
-                <el-select v-model="accessFormData.serverIpPort" clearable size="small" placeholder="请选择服务器域名及端口">
-                  <el-option
-                    v-for="item in portOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
+              <el-form-item label="车载终端号:" prop="terminalName">
+                <el-input v-model="accessFormData.terminalName" clearable size="small" placeholder="请输入" />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -698,10 +702,10 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="通讯协议版本:" prop="communicationProtocolVersion">
-                <el-select v-model="accessFormData.communicationProtocolVersion" clearable size="small" placeholder="请选择通讯协议版本">
+              <el-form-item label="服务器域名及端口:" prop="serverIpPort">
+                <el-select v-model="accessFormData.serverIpPort" clearable size="small" placeholder="请选择服务器域名及端口">
                   <el-option
-                    v-for="item in protocolOptions"
+                    v-for="item in portOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -724,10 +728,10 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="通讯模式:" prop="communicationMode">
-                <el-select v-model="accessFormData.communicationMode" clearable size="small" placeholder="请选择通讯模式">
+              <el-form-item label="通讯协议版本:" prop="communicationProtocolVersion">
+                <el-select v-model="accessFormData.communicationProtocolVersion" clearable size="small" placeholder="请选择通讯协议版本">
                   <el-option
-                    v-for="item in modeOptions"
+                    v-for="item in protocolOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -743,13 +747,39 @@
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
-              <el-form-item label="主机型号:" prop="hostType">
-                <el-input v-model="accessFormData.hostType" clearable size="small" placeholder="请输入主机型号" />
+              <el-form-item label="通讯模式:" prop="communicationMode">
+                <el-select v-model="accessFormData.communicationMode" clearable size="small" placeholder="请选择通讯模式">
+                  <el-option
+                    v-for="item in modeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="物联网卡号:" prop="internetCard">
                 <el-input v-model="accessFormData.internetCard" clearable size="small" placeholder="请输入物联网卡号" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="主机型号:" prop="hostType">
+                <el-input v-model="accessFormData.hostType" clearable size="small" placeholder="请输入主机型号" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="设备类型:" prop="functions">
+                <el-select v-model="accessFormData.functions" clearable size="small" placeholder="请选择设备类型">
+                  <el-option
+                    v-for="item in functionsOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -766,18 +796,6 @@
                 />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
-            <el-form-item label="主要功能:" prop="functions">
-              <el-select v-model="accessFormData.functions" clearable size="small" multiple placeholder="请选择主要功能">
-                <el-option
-                  v-for="item in functionsOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -1016,7 +1034,7 @@ import {
   queryUseNature,
   queryCarColor
 } from '@/api/information-manage/car-base-information'
-import { provinceAndCityData, CodeToText, regionData } from 'element-china-area-data'
+import { provinceAndCityData, CodeToText, regionDataPlus } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import getAreaText from '@/utils/AreaCodeToText'
 
@@ -1027,6 +1045,7 @@ export default {
   components: { Pagination },
   filters: {
     showVehicleType(type) {
+      console.log(type)
       let typeText
       if (type === 0 || type === '0') {
         return '不确定类型'
@@ -1055,7 +1074,7 @@ export default {
       dialogFormVisible: false,
       list: [], // 表格数据
       listLoading: true, // 表格加载状态
-      searchCityOptions: regionData,
+      searchCityOptions: regionDataPlus,
       listQuery: {
         pageNum: 1,
         pageSize: 10,
@@ -1066,7 +1085,8 @@ export default {
         doubleDrivers: null,
         zoneId: null,
         unitName: '',
-        unitId: ''
+        unitId: '',
+        dataSource: ''
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -1078,11 +1098,13 @@ export default {
         doubleDrivers: null,
         zoneId: null,
         unitName: '',
-        unitId: ''
+        unitId: '',
+        dataSource: ''
       },
       useNatureOptions: [], // 使用性质
       carColorOptions: [], // 车身颜色
       businessOptions: [], // 经营范围
+      dataSourceOptions: [],
       total: 0, // 总数据条数
       advanced: false, // 是否展开高级搜索条件
       operateStatusOptions: [],
@@ -1097,7 +1119,7 @@ export default {
         plateColor: [{ required: true, message: '请选择车牌颜色', trigger: 'change' }]
       },
       twoRules: {
-        vehicleType: [{ required: true, message: '请选择机动车车辆类型', trigger: 'change' }],
+        vehicleType: [{ required: true, message: '请选择行驶证车辆类型', trigger: 'change' }],
         registerZoneId: [{ required: true, message: '请选择车籍所在地', trigger: 'change' }],
         useNature: [{ required: true, message: '请选择使用性质', trigger: 'change' }],
         factoryType: [{ required: true, message: '请输入品牌型号', trigger: 'blur' }],
@@ -1129,7 +1151,7 @@ export default {
         hostType: [{ required: true, message: '请输入主机型号', trigger: 'blur' }],
         internetCard: [{ required: true, message: '请输入物联网卡号', trigger: 'blur' }],
         cameraNum: [{ required: true, message: '请输入视频通道数', trigger: 'blur' }],
-        functions: [{ required: true, message: '请选择主要功能', trigger: 'change' }]
+        functions: [{ required: true, message: '请选择设备类型', trigger: 'change' }]
       },
       fiveRules: {
         number: [{ required: true, message: '请输入保险单号', trigger: 'blur' }],
@@ -1181,6 +1203,10 @@ export default {
     that = this
   },
   created() {
+    const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.functionsOptions = onlineOption['equipment_terminal_type'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getQueryConditions()
     this.getPlateColor()
     this.getFuelType()
@@ -1199,8 +1225,22 @@ export default {
   },
   methods: {
     getList() {
+      const { zoneId } = this.listQuery
+      const zoneIds = []
+      if (zoneId) {
+        if (!zoneId[2]) {
+          regionDataPlus[23].children.forEach(item => {
+            if (item.value === zoneId[1]) {
+              for (let i = 1; i < item.children.length; i++) {
+                zoneIds.push(item.children[i].value)
+              }
+              zoneIds.push(item.value)
+            }
+          })
+        } else zoneIds.push(zoneId[2])
+      }
       this.listLoading = true
-      selectList({ ...this.listQuery })
+      selectList({ ...this.listQuery, zoneId: zoneIds })
         .then(res => {
           const { data } = res
           this.list = data.list
@@ -1239,7 +1279,7 @@ export default {
           const { data } = res
           this.insuranceTypeOptions = data
           data.forEach(item => {
-            this.insuranceTypeMap.set(item.label, item.value)
+            this.insuranceTypeMap.set(item.value, item.label)
           })
         })
         .catch(err => {
@@ -1264,7 +1304,7 @@ export default {
           const { data } = res
           this.riskTypeOptions = data
           data.forEach(item => {
-            this.riskTypeMap.set(item.label, item.value)
+            this.riskTypeMap.set(item.value, item.label)
           })
         })
         .catch(err => {
@@ -1353,7 +1393,7 @@ export default {
               this.operateStatusMap.set(item.value, item.label)
             })
             this.carKindOptions = data['车辆类型']
-            this.functionsOptions = data['具备功能']
+            console.log(this.carKindOptions, 'this.carKindOptions')
             this.accessWayOptions = data['入网方式']
             this.listLoading = false
           })
@@ -1438,9 +1478,6 @@ export default {
     },
     // 点击搜索
     handleSearch() {
-      if (this.listQuery.zoneId) {
-        this.listQuery.zoneId = this.listQuery.zoneId[2] || this.listQuery.zoneId[1]
-      }
       this.listQuery.pageNum = 1 // 重置pageNum
       this.getList()
     },
@@ -1535,6 +1572,7 @@ export default {
       if (row.plateColor) row.plateColor = row.plateColor.toString()
       if (row.vehicleType) row.vehicleType = row.vehicleType.toString()
       if (row.useNature) row.useNature = row.useNature.toString()
+      console.log(row)
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
@@ -1583,7 +1621,6 @@ export default {
             data.serverIpPort = data.serverIpPort ? data.serverIpPort.toString() : null
             data.communicationMode = data.communicationMode ? data.communicationMode.toString() : null
             data.communicationProtocolVersion = data.communicationProtocolVersion ? data.communicationProtocolVersion.toString() : null
-            data.functions = data.functions ? data.functions.split(',') : null
             this.accessFormData = {
               ...data,
               id: data.id,
@@ -1652,6 +1689,7 @@ export default {
         .then(res => {
           const { data } = res
           data.forEach(item => {
+            console.log(this.insuranceTypeMap)
             item.typeCode1 = this.insuranceTypeMap.get(item.typeCode.toString())
             item.typeCode = item.typeCode.toString()
             item.riskTypeCode1 = this.riskTypeMap.get(item.riskTypeCode.toString())
@@ -1761,7 +1799,6 @@ export default {
         if (valid) {
           this.accessFormData.vehicleId = this.currentRow.vehicleId
           this.accessFormData.plateNum = this.currentRow.plateNum
-          this.accessFormData.functions = this.accessFormData.functions.join(',')
           AccessInstallationSave({ ...this.accessFormData })
             .then(_ => {
               this.closeAccessDialog()

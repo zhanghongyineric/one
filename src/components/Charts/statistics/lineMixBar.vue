@@ -63,6 +63,10 @@ export default {
     lineFormatter: {
       type: String,
       default: '{value} %'
+    },
+    textColor: {
+      type: String,
+      default: '#fff'
     }
   },
   data() {
@@ -104,6 +108,11 @@ export default {
       handler() {
         this.initChart()
       }
+    },
+    textColor: {
+      handler() {
+        this.initChart()
+      }
     }
   },
   mounted() {
@@ -130,14 +139,21 @@ export default {
     setOptions() {
       this.chart.setOption({
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          appendToBody: true
         },
         legend: {
           data: this.legendData,
           textStyle: {
-            color: '#fff'
+            color: this.textColor,
+            fontSize: 10
           },
-          bottom: 10
+          bottom: 5,
+          itemHeight: 10,
+          itemWidth: 10
+        },
+        grid: {
+          y2: 60
         },
         xAxis: [
           {
@@ -148,7 +164,7 @@ export default {
             },
             axisLabel: {
               textStyle: {
-                color: '#ccc'
+                color: this.textColor
               }
             }
           }
@@ -158,7 +174,7 @@ export default {
             type: 'value',
             name: this.yname,
             nameTextStyle: {
-              color: '#fff'
+              color: this.textColor
             },
             min: 0,
             max: this.ymax,
@@ -166,7 +182,7 @@ export default {
             axisLabel: {
               formatter: '{value}',
               textStyle: {
-                color: '#ccc'
+                color: this.textColor
               }
             }
           },
@@ -174,7 +190,7 @@ export default {
             type: 'value',
             name: this.lineName,
             nameTextStyle: {
-              color: '#fff'
+              color: this.textColor
             },
             min: this.lineMin,
             max: this.lineMax,
@@ -182,7 +198,7 @@ export default {
             axisLabel: {
               formatter: this.lineFormatter,
               textStyle: {
-                color: '#ccc'
+                color: this.textColor
               }
             },
             splitLine: {

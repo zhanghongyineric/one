@@ -23,6 +23,10 @@ export default {
     chartData: {
       type: Array,
       required: true
+    },
+    textColor: {
+      default: '#fff',
+      type: String
     }
   },
   data() {
@@ -35,6 +39,11 @@ export default {
       deep: true,
       handler() {
         this.setOptions()
+      }
+    },
+    textColor: {
+      handler() {
+        this.initChart()
       }
     }
   },
@@ -83,7 +92,7 @@ export default {
           },
           axisLabel: {
             textStyle: {
-              color: '#ccc'
+              color: this.textColor
             }
           },
           data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
@@ -91,7 +100,7 @@ export default {
         yAxis: {
           type: 'value',
           nameTextStyle: {
-            color: '#fff'
+            color: this.textColor
           },
           splitLine: {
             lineStyle: {
@@ -102,7 +111,7 @@ export default {
           axisLabel: {
             formatter: '{value}',
             textStyle: {
-              color: '#ccc'
+              color: this.textColor
             }
           }
         },

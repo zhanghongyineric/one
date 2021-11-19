@@ -2,7 +2,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="f jc-sb ai-c">
-      <span class="title">{{ title }}</span>
+      <span class="title" style="color:#fff">{{ title }}</span>
       <div class="buttons">
         <el-button
           type="primary"

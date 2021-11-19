@@ -7,7 +7,9 @@ const state = {
   fixedHeader: fixedHeader,
   sidebarLogo: sidebarLogo,
   tagsView: true,
-  title
+  theme: 'dark',
+  title,
+  monitorTreeData: 0
 }
 
 const mutations = {
@@ -16,6 +18,12 @@ const mutations = {
     if (state.hasOwnProperty(key)) {
       state[key] = value
     }
+  },
+  CHANGE_THEME: (state, theme) => {
+    state.theme = theme
+  },
+  CHANGE_TREE_DATA: (state) => {
+    state.monitorTreeData++
   }
 }
 

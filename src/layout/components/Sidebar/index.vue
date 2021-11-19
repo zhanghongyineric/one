@@ -15,6 +15,10 @@
         <sidebar-item v-for="route in permission_routes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
       <div class="footer " :style="{display:isCollapse?'none':'block' }">
+        <div class="toggle-theme f jc-c ai-c" @click="toggleTheme">
+          <svg-icon :icon-class="iconClass" class="theme-icon" />
+          <span class="model-text">{{ modelText }}</span>
+        </div>
         <div class="box f-col-sb-c">
           <div style="height: 34px;overflow:hidden;" class="f-c">
             <div id="he-plugin-simple" />
@@ -38,13 +42,16 @@ import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 import { parseTime } from '@/utils'
+import { unitVehicle } from '@/api/live-monitor/message'
+import yuxStorage from 'yux-storage'
 
 export default {
   components: { SidebarItem, Logo },
   data() {
     return {
       date: '-',
-      time: '-'
+      time: '-',
+      theme: 'dark'
     }
   },
   computed: {
@@ -69,6 +76,12 @@ export default {
     },
     isCollapse() {
       return !this.sidebar.opened
+    },
+    iconClass() {
+      return this.theme === 'dark' ? 'sun' : 'moon'
+    },
+    modelText() {
+      return this.theme === 'dark' ? '浅色模式' : '深色模式'
     }
   },
   created() {
@@ -76,6 +89,7 @@ export default {
     setInterval((item, index) => {
       this.setTime()
     }, 1000)
+    this.getUnitVehicle()
   },
   mounted() {
     window.WIDGET = {
@@ -105,6 +119,16 @@ export default {
       newScript.src = 'https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0'
       script.parentNode.insertBefore(newScript, script)
     })(document)
+    const theme = localStorage.getItem('theme')
+    if (theme !== 'dark') {
+      window.document.body.className = ''
+    } else {
+      window.document.body.className = 'dark-theme'
+    }
+
+    setInterval(() => {
+      this.getUnitVehicle()
+    }, 180000)
   },
   methods: {
 
@@ -112,6 +136,34 @@ export default {
     setTime() {
       this.date = parseTime(new Date(), '{y}年{m}月{d}日 星期{a}')
       this.time = parseTime(new Date(), '{h}:{i}:{s}')
+    },
+    // 切换主题
+    toggleTheme() {
+      this.theme = this.theme === 'dark' ? 'light' : 'dark'
+      const bodyClass = window.document.body.className
+      if (bodyClass) {
+        window.document.body.className = ''
+        this.$store.commit('settings/CHANGE_THEME', 'light')
+        localStorage.setItem('theme', 'light')
+      } else {
+        window.document.body.className = 'dark-theme'
+        this.$store.commit('settings/CHANGE_THEME', 'dark')
+        localStorage.setItem('theme', 'dark')
+      }
+    },
+    // 获取实时监测树结构数据
+    getUnitVehicle() {
+      unitVehicle({ unitName: '' })
+        .then(({ data }) => {
+          yuxStorage.setItem('monitorTree', data)
+            .then(() => {
+              this.$store.commit('settings/CHANGE_TREE_DATA')
+              console.log('更新实时数据成功')
+            })
+        })
+        .catch(err => {
+          throw err
+        })
     }
   }
 }
@@ -126,6 +178,30 @@ export default {
   padding-bottom: 20px;
   font-size: 16px;
   color:white;
+  margin-bottom: 40px;
+
+  .toggle-theme {
+    height: 44px;
+    cursor: pointer;
+    // position: absolute;
+    // margin-top: -40px;
+    // margin-left: 60px;
+
+    .theme-icon {
+      margin-right: 6px !important;
+      width: 28px;
+      height: 28px;
+      fill:white;
+    }
+
+    .model-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #FFF;
+      line-height: 20px;
+    }
+  }
+
   .box{
     height: 100%;
     >div{

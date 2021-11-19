@@ -8,16 +8,15 @@
           <el-row :gutter="48">
 
             <!--基本搜索条件-->
-            <el-col :md="8" :sm="24">
-              <el-form-item label="企业名称:">
-                <el-input v-model="listQuery.unitName" clearable placeholder="请输入企业名称" @keyup.enter.native="handleSearch" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :sm="24">
-              <el-form-item label="所属行业:">
-                <el-select v-model="listQuery.operationType" placeholder="请选择所属行业">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
                   <el-option
-                    v-for="item in optionGroup.companyTypes"
+                    v-for="item in dataSourceOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -25,10 +24,31 @@
                 </el-select>
               </el-form-item>
             </el-col>
-
+            <el-col :md="6" :sm="24">
+              <el-form-item label="所属地区:">
+                <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="企业名称:">
+                <el-input v-model="listQuery.unitName" clearable placeholder="请输入企业名称" @keyup.enter.native="handleSearch" />
+              </el-form-item>
+            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
-              <el-col :md="8" :sm="24">
+              <el-col :md="6" :sm="24">
+                <el-form-item label="所属行业:">
+                  <el-select v-model="listQuery.operationType" placeholder="请选择所属行业">
+                    <el-option
+                      v-for="item in optionGroup.companyTypes"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="24">
                 <el-form-item label="运营状态:">
                   <el-select v-model="listQuery.status" placeholder="请选择运营状态">
                     <el-option
@@ -40,15 +60,11 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="8" :sm="24">
-                <el-form-item label="所属地区:">
-                  <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
-                </el-form-item>
-              </el-col>
+
             </template>
 
             <!--查询操作按钮-->
-            <el-col :md="!advanced && 8 || 24" :sm="24">
+            <el-col :md="!advanced && 6 || 24" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -80,7 +96,7 @@
         <el-table-column
           label="编号"
           type="index"
-          width="50"
+          width="60"
           align="center"
         />
         <el-table-column v-slot="{row}" label="企业名称" prop="unitName" min-width="400" show-overflow-tooltip align="center">
@@ -145,26 +161,6 @@
                 <el-input v-model="createFormData.shortName" size="small" clearable placeholder="请输入企业简称" />
               </el-form-item>
             </el-col>
-            <!-- <el-col :md="8" :sm="24">
-              <el-form-item
-                label="企业级别:"
-                prop="aptitudeLevel"
-              >
-                <el-select
-                  v-model="createFormData.aptitudeLevel"
-                  size="small"
-                  clearable
-                  placeholder="请选择企业级别"
-                >
-                  <el-option
-                    v-for="item in optionGroup.roleList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col> -->
           </el-row>
           <el-row>
             <el-col :md="12" :sm="24">
@@ -272,12 +268,12 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item
-                label="企业运营类型:"
+                label="企业所属行业:"
                 prop="operationType"
               >
                 <el-select
                   v-model="createFormData.operationType"
-                  placeholder="请选择企业类型"
+                  placeholder="请选择所属行业"
                   size="small"
                   clearable
                 >
@@ -315,9 +311,9 @@
                 >
                   <el-option
                     v-for="item in optionGroup.accountTypeList"
-                    :key="item.label"
-                    :label="item.value"
-                    :value="item.label"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   />
                 </el-select>
               </el-form-item>
@@ -393,8 +389,6 @@
 import {
   fetchList,
   companyStatus,
-  companyRoleStatus,
-  companyEconomyStatus,
   updateCount,
   deleteCount,
   addCount,
@@ -405,9 +399,12 @@ import AreaSelect from '@/components/AreaSelect'
 import { isPhoneNumber } from '@/utils'
 import { companyLevel } from '@/options'
 import getAreaText from '@/utils/AreaCodeToText'
-import { CodeToText } from 'element-china-area-data'
+import { CodeToText, regionDataPlus } from 'element-china-area-data'
 
 let that
+// 字典
+const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+
 export default {
   name: 'CompanyBaseInformation',
   components: { Pagination, AreaSelect },
@@ -464,7 +461,8 @@ export default {
         operationType: '',
         unitName: '',
         place: [],
-        area: ''
+        area: '',
+        dataSource: ''
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -473,71 +471,15 @@ export default {
         operationType: '',
         unitName: '',
         place: [],
-        area: ''
+        area: '',
+        dataSource: ''
       }, // 用于重置查询条件
       area: [],
       total: 0, // 总数据条数
       advanced: false, // 是否展开高级搜索条件
       optionGroup: {
         roleList: companyLevel.list,
-        economyList: [
-          {
-            label: '集体',
-            value: null
-          },
-          {
-            label: '私营',
-            value: null
-          },
-          {
-            label: '个体',
-            value: null
-          },
-          {
-            label: '联营',
-            value: null
-          },
-          {
-            label: '股份制',
-            value: null
-          },
-          {
-            label: '外商独资',
-            value: null
-          },
-          {
-            label: '港,澳,台商投资企业',
-            value: null
-          },
-          {
-            label: '有限责任',
-            value: null
-          },
-          {
-            label: '其他经济',
-            value: null
-          },
-          {
-            label: '有限',
-            value: null
-          },
-          {
-            label: '个人独资',
-            value: null
-          },
-          {
-            label: '普通合伙',
-            value: null
-          },
-          {
-            label: '其他有限责任公司',
-            value: null
-          },
-          {
-            label: '国有',
-            value: null
-          }
-        ],
+        economyList: [],
         accountTypeList: [],
         companyTypes: []
       }, // 存放选项的数据
@@ -611,23 +553,27 @@ export default {
       }, // 弹出框标题
       dialogStatus: '',
       poiPicker: null,
-      operatingPermitImage: []
+      operatingPermitImage: [],
+      dataSourceOptions: []
     }
   },
   beforeCreate() {
     that = this
   },
   created() {
+    this.dataSourceOptions = onlineOption['数据来源'].list
+    this.listQuery.dataSource = this.dataSourceOptions[0].value
+  },
+  mounted() {
     this.handleSearch()
     this.getStatusCode()
-    this.companyRole()
-    this.economyListCode()
+    this.optionGroup.companyTypes = onlineOption['企业所属行业'].list
+    this.optionGroup.economyList = onlineOption['经济类型'].list
   },
   methods: {
     closeDialog() {
       this.dialogFormVisible = false
       this.createFormData = { ...this.createFormDataTemp }
-      console.log(this.createFormData, '关闭')
     },
     // 运营状态
     getStatusCode() {
@@ -665,65 +611,6 @@ export default {
     selectCompany(val) {
       this.createFormData.upUnitId = val.unitId
     },
-    // 企业运营类型
-    companyRole() {
-      this.listLoading = true
-      companyRoleStatus()
-        .then(res => {
-          const { data } = res
-          this.optionGroup.companyTypes = data
-          this.listLoading = false
-        })
-        .catch(err => {
-          this.listLoading = false
-          throw err
-        })
-    },
-    // 企业经济类型
-    economyListCode() {
-      this.listLoading = true
-      companyEconomyStatus()
-        .then(res => {
-          const { data } = res
-          data.forEach(item => {
-            console.log(data)
-            if (item.label === '集体') {
-              this.optionGroup.economyList[0].value = parseInt(item.value)
-            } else if (item.label === '私营') {
-              this.optionGroup.economyList[1].value = parseInt(item.value)
-            } else if (item.label === '个体') {
-              this.optionGroup.economyList[2].value = parseInt(item.value)
-            } else if (item.label === '联营') {
-              this.optionGroup.economyList[3].value = parseInt(item.value)
-            } else if (item.label === '股份制') {
-              this.optionGroup.economyList[4].value = parseInt(item.value)
-            } else if (item.label === '外商独资') {
-              this.optionGroup.economyList[5].value = parseInt(item.value)
-            } else if (item.label === '港,澳,台商投资企业') {
-              this.optionGroup.economyList[6].value = parseInt(item.value)
-            } else if (item.label === '有限责任') {
-              this.optionGroup.economyList[7].value = parseInt(item.value)
-            } else if (item.label === '其他经济') {
-              this.optionGroup.economyList[8].value = parseInt(item.value)
-            } else if (item.label === '有限') {
-              this.optionGroup.economyList[9].value = parseInt(item.value)
-            } else if (item.label === '个人独资') {
-              this.optionGroup.economyList[10].value = parseInt(item.value)
-            } else if (item.label === '普通合伙') {
-              this.optionGroup.economyList[11].value = parseInt(item.value)
-            } else if (item.label === '其他有限责任公司') {
-              this.optionGroup.economyList[12].value = parseInt(item.value)
-            } else if (item.label === '国有') {
-              this.optionGroup.economyList[13].value = parseInt(item.value)
-            }
-          })
-          this.listLoading = false
-        })
-        .catch(err => {
-          this.listLoading = false
-          throw err
-        })
-    },
     // 点击搜索
     handleSearch() {
       this.listQuery.pageNum = 1 // 重置pageNum
@@ -733,15 +620,21 @@ export default {
     getList() {
       this.listLoading = true
       const place = this.listQuery.place
-      fetchList(
-        {
-          pageNum: this.listQuery.pageNum,
-          pageSize: this.listQuery.pageSize,
-          zoneId: place[2] || place[1],
-          status: this.listQuery.status,
-          operationType: this.listQuery.operationType,
-          unitName: this.listQuery.unitName
-        }).then((res) => {
+      const zoneId = []
+      if (!place[2]) {
+        regionDataPlus[23].children.forEach(item => {
+          if (item.value === place[1]) {
+            for (let i = 1; i < item.children.length; i++) {
+              zoneId.push(item.children[i].value)
+            }
+            zoneId.push(item.value)
+          }
+        })
+      } else zoneId.push(place[2])
+      fetchList({
+        ...this.listQuery,
+        zoneId
+      }).then((res) => {
         const { data: { list, total }} = res
         this.list = list
         this.total = total
@@ -799,7 +692,6 @@ export default {
     },
     // 点击查看详情
     handleDetail(row) {
-      console.log(this.optionGroup.economyList)
       if (row.economicType) row.economicType = parseInt(row.economicType)
       this.rowId = row.unitId
       this.createFormData = { ...row }

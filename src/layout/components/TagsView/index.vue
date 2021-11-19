@@ -1,14 +1,18 @@
 <template>
-  <div id="tags-view-container" class="tags-view-container">
+  <div id="tags-view-container" :class="['tags-view-container',theme?'':'light']" style="">
     <scroll-pane ref="scrollPane" class="tags-view-wrapper" @scroll="handleScroll">
       <router-link
         v-for="tag in visitedViews"
         ref="tag"
         :key="tag.path"
-        :class="isActive(tag)?'active':''"
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
         tag="span"
-        class="tags-view-item"
+        :class="[
+          'tags-view-item',
+          theme?'tags-view-item-dark':'',
+          isActive(tag)?'active':'',
+        ]"
+        :style="tagsStyle(tag)"
         @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
         @contextmenu.prevent.native="openMenu(tag,$event)"
       >
@@ -46,6 +50,14 @@ export default {
     },
     routes() {
       return this.$store.state.permission.routes
+    },
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
     }
   },
   watch: {
@@ -68,6 +80,18 @@ export default {
   methods: {
     isActive(route) {
       return route.path === this.$route.path
+    },
+    activeTheme(route) {
+      return route.path === this.$route.path && this.theme
+    },
+    tagsStyle(route) {
+      if (route.path === this.$route.path) {
+        if (this.theme) {
+          return ''
+        } else {
+          return 'background-color:#42b983 !important;color:#fff !important;border-color:#42b983 !important;'
+        }
+      }
     },
     isAffix(tag) {
       return tag.meta && tag.meta.affix
@@ -224,17 +248,34 @@ export default {
     },
     handleScroll() {
       this.closeMenu()
+    },
+    tagsClass() {
+      if (this.theme) {
+        return 'tags-view-item tags-view-item-dark'
+      } else {
+        return 'tags-view-item'
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.light {
+  background-color: #fff !important;
+  border-bottom: 1px solid #d8dce5 !important;
+}
+
+.tags-view-item-dark {
+  border: 1px solid #1f2d3d !important;
+  color: #ccc !important;
+  background-color: #1f2d3d !important;
+}
+
 .tags-view-container {
   height: 34px;
   width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #d8dce5;
+  background-color: #0E1521;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
   .tags-view-wrapper {
     .tags-view-item {
@@ -257,9 +298,9 @@ export default {
         margin-right: 15px;
       }
       &.active {
-        background-color: #42b983;
-        color: #fff;
-        border-color: #42b983;
+        background-color: #304156 !important;
+        color: #fff !important;
+        border-color: #304156 !important;
         &::before {
           content: '';
           background: #fff;
@@ -270,6 +311,11 @@ export default {
           position: relative;
           margin-right: 2px;
         }
+      }
+      &.active-light {
+        background-color: #42b983 !important;
+        color: #fff !important;
+        border-color: #42b983 !important;
       }
     }
   }

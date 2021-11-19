@@ -2,10 +2,42 @@
   <div class="layout-content">
     <el-card class="box-card">
       <div class="table-page-search-wrapper">
-        <el-form :model="listQuery" label-width="110px">
-          <el-row :gutter="48">
-            <el-col :md="6" :sm="24">
-              <el-form-item label="地区：">
+        <el-form :model="listQuery" label-width="100px">
+          <el-row :gutter="24">
+            <el-col :md="5" :sm="24">
+              <el-form-item label="数据源:">
+                <el-select
+                  v-model="listQuery.dataSource"
+                  size="small"
+                  placeholder="请选择数据源"
+                >
+                  <el-option
+                    v-for="item in dataSourceOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="5" :sm="24">
+              <el-form-item label="报警分类:">
+                <el-select
+                  v-model="listQuery.type"
+                  size="small"
+                  placeholder="请选择报警表类型"
+                >
+                  <el-option
+                    v-for="item in dataTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="5" :sm="24">
+              <el-form-item label="地区:">
                 <el-cascader
                   v-model="listQuery.regionId"
                   style="width:100%;"
@@ -16,34 +48,32 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :md="6" :sm="24">
-              <el-form-item label="车牌号:">
-                <el-input
-                  v-model="listQuery.plateNum"
-                  placeholder="请输入车牌号"
+            <el-col :md="4" :sm="24">
+              <el-form-item label="时间范围:">
+                <el-date-picker
+                  v-model="listQuery.time"
+                  type="datetimerange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
                   size="small"
-                  clearable
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  style="width:135%"
                 />
               </el-form-item>
             </el-col>
-            <el-col :md="6" :sm="24">
-              <el-form-item label="车辆类型:">
-                <el-select
-                  v-model="listQuery.vehicleType"
-                  size="small"
-                  placeholder="请选择车辆类型"
-                >
-                  <el-option
-                    v-for="item in vehicleTypeOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
             <template v-if="advanced">
-              <el-col :md="6" :sm="24">
+              <el-col :md="5" :sm="24">
+                <el-form-item label="车牌号:">
+                  <el-input
+                    v-model="listQuery.plateNum"
+                    placeholder="请输入车牌号"
+                    size="small"
+                    clearable
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="5" :sm="24">
                 <el-form-item label="驾驶员:">
                   <el-input
                     v-model="listQuery.personName"
@@ -53,7 +83,23 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :md="6" :sm="24">
+              <el-col :md="5" :sm="24">
+                <el-form-item label="车辆类型:">
+                  <el-select
+                    v-model="listQuery.vehicleType"
+                    size="small"
+                    placeholder="请选择车辆类型"
+                  >
+                    <el-option
+                      v-for="item in vehicleTypeOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :md="5" :sm="24">
                 <el-form-item label="所属企业:">
                   <el-autocomplete
                     v-model="listQuery.unitName"
@@ -67,28 +113,12 @@
                   />
                 </el-form-item>
               </el-col>
-
-              <el-col :md="6" :sm="24">
-                <el-form-item label="时间范围:">
-                  <el-date-picker
-                    v-model="listQuery.time"
-                    type="datetimerange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    size="small"
-                    value-format="yyyy-MM-dd HH:mm:ss"
-                    :picker-options="pickerOptions"
-                  />
-                </el-form-item>
-              </el-col>
-
-              <el-col :md="6" :sm="24">
-                <el-form-item label="川标报警名称:">
+              <el-col :md="5" :sm="24">
+                <el-form-item label="报警名称:">
                   <el-select
                     v-model="listQuery.alarmType"
                     size="small"
-                    placeholder="请选择川标报警名称"
+                    placeholder="请选报警名称"
                   >
                     <el-option
                       v-for="item in alarmTypeOptions"
@@ -100,7 +130,11 @@
                 </el-form-item>
               </el-col>
             </template>
-            <el-col :md="!advanced && 6 || 24" :sm="24">
+            <el-col
+              :md="!advanced && 4 || 24"
+              :sm="24"
+              :style="{'margin-left': advanced ? '' : '60px'}"
+            >
               <div
                 class="table-page-search-submitButtons"
                 style="margin-top: -4px"
@@ -126,7 +160,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column type="index" label="编号" width="50" align="center" />
+        <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="plateNum" label="车牌号" width="150" show-overflow-tooltip align="center" />
         <el-table-column prop="plateColor" label="车牌颜色" min-width="100" align="center">
           <template slot-scope="scope">
@@ -141,7 +175,7 @@
         <el-table-column prop="personName" label="驾驶员" min-width="100" align="center" show-overflow-tooltip />
         <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" show-overflow-tooltip />
 
-        <el-table-column prop="cbArmName" label="川标报警名称" min-width="160" align="center" show-overflow-tooltip>
+        <el-table-column prop="cbArmName" label="报警名称" min-width="160" align="center" show-overflow-tooltip>
           <!-- <template slot-scope="scope">
             {{ scope.row.cbArmType | alarmTypeFilter }}
           </template> -->
@@ -149,7 +183,7 @@
 
         <el-table-column prop="startTime" label="开始时间" width="220" align="center" show-overflow-tooltip />
         <el-table-column prop="endtime" label="结束时间" width="220" align="center" show-overflow-tooltip />
-        <el-table-column prop="Protime" label="持续时长" width="120" align="center" show-overflow-tooltip />
+        <!-- <el-table-column prop="Protime" label="持续时长" width="120" align="center" show-overflow-tooltip /> -->
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -179,7 +213,7 @@
           <span><span class="info-title">车牌号：</span>{{ currentRow.plateNum }}</span>
           <span><span class="info-title">车牌颜色：</span>{{ currentRow.plateColor }}</span>
           <span><span class="info-title">车辆类型：</span>{{ currentRow.vehicleType }}</span>
-          <span><span class="info-title">报警类型：</span>{{ currentRow.alarmType }}</span>
+          <span><span class="info-title">报警类型：</span>{{ currentRow.cbArmName }}</span>
         </div>
         <div class="alarm-info" style="margin-top:10px;">
           <span><span class="info-title">所属企业：</span>{{ currentRow.unitName }}</span>
@@ -261,7 +295,10 @@ export default {
         regionId: '',
         time: [],
         alarmType: '',
-        plateNum: ''
+        plateNum: '',
+        provinceId: '',
+        dataSource: '',
+        type: ''
       },
       tableData: [],
       listLoading: false,
@@ -271,25 +308,19 @@ export default {
         children: 'children',
         value: 'unitId',
         expandTrigger: 'hover',
-        checkStrictly: false
+        checkStrictly: true
       },
       vehicleTypeMap: null,
       vehicleTypeOptions: [],
-      alarmTypeMap: null,
+      alarmTypeMap: {},
       alarmTypeOptions: [],
       plateColorOptions: [],
+      dataTypeOptions: [],
+      dataSourceOptions: [],
 
       alarmPhotos: [],
       alarmVideos: [],
       previewPhotos: [],
-
-      pickerOptions: {
-        disabledDate: time => {
-          // if (this.listQuery.startTime) {
-          //   return time.getTime() > new Date(this.listQuery.startTime).getTime() + TWENTY_FOUR_HOURS || time.getTime() < new Date(this.listQuery.startTime).getTime() + TWENTY_FOUR_HOURS
-          // }
-        }
-      },
       currentRow: {}
     }
   },
@@ -318,19 +349,24 @@ export default {
       handler: function(newV, oldV) {
         if (newV === '') this.listQuery.unitId = ''
       }
+    },
+    dataSourceOptions() {
+      this.listQuery.type = this.dataTypeOptions[0].value
+      this.listQuery.dataSource = this.dataSourceOptions[0].value
     }
   },
   created() {
     that = this
-    this.getAreaCode()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
     this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
-    this.alarmTypeMap = onlineOption['报警类型编码'].map
     this.plateColorOptions = onlineOption['车牌颜色编码'].map
+    this.dataTypeOptions = onlineOption['rule_of_arm_type'].list
+    this.dataSourceOptions = onlineOption['数据来源'].list
     this.getDate()
   },
   mounted() {
+    this.getAreaCode()
     this.getAlarmType()
   },
   methods: {
@@ -338,6 +374,9 @@ export default {
       alarmType()
         .then(res => {
           const { data } = res
+          data.forEach(item => {
+            this.alarmTypeMap[item.cbArmType] = item.cbArmName
+          })
           this.alarmTypeOptions = data
         })
         .catch(err => {
@@ -355,7 +394,8 @@ export default {
       if (endDate >= 0 && endDate <= 9) endDate = '0' + endDate
       this.listQuery.time[0] = date.getFullYear() + seperator + nowMonth + seperator + strDate + ' 00:00:00'
       this.listQuery.time[1] = date.getFullYear() + seperator + nowMonth + seperator + endDate + ' 00:00:00'
-      this.listQuery.startTime = this.listQuery.time[0]
+      this.$set(this.listQuery, 'startTime', this.listQuery.time[0])
+      this.$set(this.listQuery, 'endTime', this.listQuery.time[1])
     },
     getAreaCode() {
       areaCode()
@@ -363,7 +403,6 @@ export default {
           const { data } = res
           this.deleteEmptyChilren(data[0])
           this.areaOptions = data
-          // this.listQuery.regionId = data[0].children[0].unitId
           this.listQuery.regionId = '800'
           this.getList()
         })
@@ -419,38 +458,36 @@ export default {
     showDetails(row) {
       Object.assign(this.currentRow, row)
       this.currentRow.plateColor = that.plateColorOptions[parseInt(row.plateColor)]
-      this.currentRow.alarmType = that.alarmTypeMap[parseInt(row.alarmType)] || '无'
       this.currentRow.vehicleType = that.vehicleTypeMap[parseInt(row.vehicleType)]
       this.currentRow.endtime = row.endtime || '无'
       this.visible = true
-      axios.get('https://www.api.gosmooth.com.cn/attach', {
-        params: {
-          jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
-          toMap: 2,
-          guid: row.guid,
-          devIdno: row.devIdno,
-          alarmType: row.alarmType,
-          begintime: row.startTime
-        },
-        timeout: 10000
-      })
-      // axios.get('http://192.168.0.80:9123', {
-      //   params: {
-      //     jsession: '649b7687-6792-41a2-b9be-7806f2a0d3fa',
-      //     toMap: 2,
-      //     guid: '00040492631921210928003058000700',
-      //     devIdno: '040492631921',
-      //     alarmType: 603,
-      //     begintime: '2021-09-28 00:30:58'
-      //   },
-      //   timeout: 10000
-      // })
-        .then(({ data }) => {
-          this.alarmPhotos = data.images
-          this.alarmVideos = data.vedios
-          this.initVideo()
+      axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123')
+        .then(res => {
+          axios.get('https://www.api.gosmooth.com.cn/attach', {
+            params: {
+              jsession: res.data.jsession,
+              toMap: 2,
+              guid: row.guid,
+              devIdno: row.devIdno,
+              alarmType: row.armType,
+              begintime: row.startTime
+            },
+            timeout: 10000
+          })
+            .then(({ data }) => {
+              this.alarmPhotos = data.images
+              this.alarmVideos = data.vedios
+              this.initVideo()
+            })
+            .catch(err => {
+              throw err
+            })
         })
         .catch(err => {
+          this.$message({
+            type: 'error',
+            message: '登录失败！'
+          })
           throw err
         })
     },
@@ -484,8 +521,11 @@ export default {
     getList() {
       this.listLoading = true
       let { regionId } = this.listQuery
-      if (regionId.length === 2 || regionId.length === 1) {
-        regionId = regionId[regionId.length - 1]
+      this.listQuery.provinceId = '622'
+      if (regionId.length === 2) {
+        regionId = regionId[1]
+      } else if (regionId.length === 1) {
+        regionId = ''
       }
       activeDefenseAlarm({ ...this.listQuery, regionId })
         .then(({ data }) => {

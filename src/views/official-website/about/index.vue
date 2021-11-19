@@ -40,8 +40,8 @@
         <el-table-column
           label="编号"
           type="index"
-          width="50"
-          align="left"
+          width="60"
+          align="center"
         />
         <el-table-column label="所属类别" prop="type" />
         <el-table-column label="展示名" prop="name" />

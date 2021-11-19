@@ -111,7 +111,7 @@
                 <div class="bottom-chart-box-left bottom-box-position">
                   <bar-chart
                     :x-data="['正常', '注销']"
-                    :chart-data="[serviceData.normal,serviceData.pause]"
+                    :chart-data="[serviceData.normal,serviceData.logout]"
                     :color-list="['#009966', '#FF7070']"
                   />
                 </div>
@@ -142,13 +142,13 @@
               <monitor-pie-chart
                 :chart-data="carChartData"
                 :showlegend="true"
-                :position="['50%','60%']"
+                :position="['50%','65%']"
               />
             </div>
             <div class="box-monitor">
               <monitor-bar-chart :x-data="companyChartXData" :y-data="companyChartYData" :height="'120%'" />
             </div>
-            <div class="box-monitor">
+            <div class="box-monitor" style="cursor:pointer" @click="toFocusVehicle">
               <span class="title">重点关注车辆列表</span>
               <el-table
                 ref="carTable"
@@ -164,15 +164,22 @@
                 <el-table-column prop="plateNum" label="车牌号码" width="100px" align="center" show-overflow-tooltip />
                 <el-table-column prop="plateColor" label="车牌颜色" width="100px" align="center" show-overflow-tooltip />
                 <el-table-column prop="vehicleType" label="车辆类型" show-overflow-tooltip align="center" />
-                <el-table-column prop="vehicleSumFactor" label="安全系数" align="center" show-overflow-tooltip />
+                <el-table-column prop="safecodeScore" label="安全码得分" align="center" show-overflow-tooltip />
+                <el-table-column prop="safecodeColor" label="安全码颜色" align="center" show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <svg-icon v-if="scope.row.safecodeColor == 1" icon-class="safecode" style="width:16px;height: 16px;background-color:green;margin-top:5px;" />
+                    <svg-icon v-else-if="scope.row.safecodeColor == 2" icon-class="safecode" style="width:16px;height: 16px;background-color:#4ea1db;margin-top:5px;" />
+                    <svg-icon v-else-if="scope.row.safecodeColor == 3" icon-class="safecode" style="width:16px;height: 16px;background-color:#FFA500;margin-top:5px;" />
+                    <svg-icon v-else icon-class="safecode" style="width:16px;height: 16px;background-color:red;margin-top:5px;" />
+                  </template>
+                </el-table-column>
               </el-table>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="center">
-              <!-- <span class="center-text">实时在线车辆： -->
-              <span class="center-text" style="margin-right:35px;">入网车辆：
-                <span class="center-num">{{ aCars }}</span> 辆</span>
+              <span class="center-text" style="margin-right:35px;">上线车辆：
+                <span class="center-num">{{ allCars }}</span> 辆</span>
               <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
               <map-chart :map-data="mapData" />
@@ -180,7 +187,7 @@
             </div>
           </el-col>
           <el-col :span="8">
-            <div class="box-monitor">
+            <div class="box-monitor" style="cursor:pointer;" @click="toAlarmDetail">
               <span class="title">报警事件</span>
               <el-table
                 ref="eventTable"
@@ -213,6 +220,8 @@
           </el-col>
         </el-row>
         <div class="monitor-top-box">
+          <div class="back-color" />
+          <div class="back-triangle" />
           <div class="closed-box-inner">
             <el-row :gutter="20">
               <el-col :md="8" :span="24">
@@ -253,6 +262,7 @@
 
 <script>
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
+const statusMap = onlineOption['operate_status'].map
 import {
   companyNumber,
   serviceNumber,
@@ -263,13 +273,13 @@ import {
 import {
   enterpriseRanking,
   vehicleProportion,
-  keyVehicle,
   facilitatorAssessmentAnalysis,
   mechanismAssessmentAnalysis,
   unitAssessmentAnalysis,
   onlineVehicle,
   trendAnalysis,
-  alarmEvent
+  alarmEvent,
+  keyVehicle
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
@@ -279,8 +289,6 @@ import MutilPieChart from '@/components/Charts/MutilPieChart.vue'
 import LineChart from '@/components/Charts/LineChart.vue'
 import MapChart from '@/components/Charts/MapChart.vue'
 import DatasetBarChart from '@/components/Charts/DatasetBarChart.vue'
-import getAreaText from '@/utils/AreaCodeToText'
-import { CodeToText } from 'element-china-area-data'
 
 export default {
   name: 'Home',
@@ -343,7 +351,7 @@ export default {
       eventList: [],
       carList: [],
       totalOnlineCars: 0,
-      aCars: 0,
+      allCars: 0,
       mapData: [],
       mapChartData: [
         ['city', '当前在线', '累计在线']
@@ -395,12 +403,14 @@ export default {
           throw err
         })
     },
+    toAlarmDetail() {
+      this.$router.push('/live-monitor/alarm-detail')
+    },
     intervalOnlineCars() {
       let timer = window.setInterval(() => {
-        console.log('in')
         this.getOnlineVehicle()
         this.getAlarmEvent()
-      }, 30000)
+      }, 150000)
       this.$once('hook:deactivated', () => {
         clearInterval(timer)
         timer = null
@@ -429,11 +439,11 @@ export default {
       trendAnalysis()
         .then(res => {
           const { data } = res
-          // for (let i = 1; i < 13; i++) {
-          //   if (!data[0][i]) data[0][i] = 0
-          // }
-          // this.trendData = Object.values(data[0])
-          this.trendData = Object.values(data)
+          const arr = new Array(12).fill(0)
+          data.forEach(v => {
+            arr[parseInt(v.month - 1)] = v.count
+          })
+          this.trendData = arr
         })
         .catch(err => {
           throw err
@@ -482,69 +492,82 @@ export default {
     getOnlineVehicle() {
       onlineVehicle()
         .then(res => {
-          const { data: { realTimetotal, onlineVehicles, a }} = res
+          const { data: { realTimetotal, city, onlineVehicletotal }} = res
           this.totalOnlineCars = realTimetotal
-          this.aCars = a
+          this.allCars = onlineVehicletotal
           this.mapData = []
           this.mapDataMap = new Map()
           this.mapChartData = [
             ['city', '当前在线', '累计在线']
           ]
-          onlineVehicles.forEach(item => {
-            const city = CodeToText[getAreaText(item.zoneId)[1]]
-            const { realTimeCount, onlineCount } = item
+          city.forEach(item => {
+            // const city = CodeToText[getAreaText(item.zoneId)[1]]
+            const { realTimeCount, onlineCount, deptName } = item
+            if (deptName.includes('分中心')) {
+              this.mapData.push({
+                value: realTimeCount,
+                name: deptName.split('分中心')[0] + '市',
+                count: onlineCount
+              })
+            } else if (deptName.includes('中心')) {
+              this.mapData.push({
+                value: realTimeCount,
+                name: deptName.split('中心')[0] + '市',
+                count: onlineCount
+              })
+            }
             this.mapData.push({
               value: realTimeCount,
-              name: city,
+              name: deptName,
               count: onlineCount
             })
-            this.mapChartData.push([city, realTimeCount, onlineCount])
+            this.mapChartData.push([deptName, realTimeCount, onlineCount])
           })
 
-          this.mapData.forEach(v => {
-            if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
-            else {
-              const val = this.mapDataMap.get(v.name)[0]
-              const count = this.mapDataMap.get(v.name)[1]
-              this.mapDataMap.set(v.name, [v.value + val, v.count + count])
-            }
-          })
+          // this.mapData.forEach(v => {
+          //   if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
+          //   else {
+          //     const val = this.mapDataMap.get(v.name)[0]
+          //     const count = this.mapDataMap.get(v.name)[1]
+          //     this.mapDataMap.set(v.name, [v.value + val, v.count + count])
+          //   }
+          // })
 
-          this.mapData = []
-          for (const item of this.mapDataMap) {
-            this.mapData.push({
-              name: item[0],
-              value: item[1][0],
-              count: item[1][1]
-            })
-          }
+          // this.mapData = []
+          // for (const item of this.mapDataMap) {
+          //   this.mapData.push({
+          //     name: item[0],
+          //     value: item[1][0],
+          //     count: item[1][1]
+          //   })
+          // }
 
           // 同一个市可能有很多数据，应将同一个市的所有数据相加
-          if (this.mapChartData[1]) {
-            const { length } = this.mapChartData
-            for (let i = 1; i < length; i++) {
-              for (let j = i + 1; j < length; j++) {
-                if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
-                  this.mapChartData[i][1] += this.mapChartData[j][1]
-                  this.mapChartData[i][2] += this.mapChartData[j][2]
-                }
-              }
-            }
-            const cityMap = new Map()
-            for (let i = 1; i < this.mapChartData.length; i++) {
-              const city = this.mapChartData[i][0]
-              const online = this.mapChartData[i][1]
-              const total = this.mapChartData[i][2]
-              if (!cityMap.has(city)) {
-                cityMap.set(city, `${city},${online},${total}`)
-              }
-            }
-            const dataArr = [['city', '当前在线', '累计在线']]
-            for (const value of cityMap.values()) {
-              dataArr.push(value.split(','))
-            }
-            this.mapChartData = dataArr
-          }
+          // if (this.mapChartData[1]) {
+          //   const { length } = this.mapChartData
+          //   for (let i = 1; i < length; i++) {
+          //     for (let j = i + 1; j < length; j++) {
+          //       if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
+          //         this.mapChartData[i][1] += this.mapChartData[j][1]
+          //         this.mapChartData[i][2] += this.mapChartData[j][2]
+          //       }
+          //     }
+          //   }
+          //   const cityMap = new Map()
+          //   for (let i = 1; i < this.mapChartData.length; i++) {
+          //     const city = this.mapChartData[i][0]
+          //     const online = this.mapChartData[i][1]
+          //     const total = this.mapChartData[i][2]
+          //     if (!cityMap.has(city)) {
+          //       cityMap.set(city, `${city},${online},${total}`)
+          //     }
+          //   }
+          //   const dataArr = [['city', '当前在线', '累计在线']]
+          //   for (const value of cityMap.values()) {
+          //     dataArr.push(value.split(','))
+          //   }
+          //   this.mapChartData = dataArr
+          // }
         })
     },
     getKeyVehicle() {
@@ -553,13 +576,13 @@ export default {
         pageSize: 50
       }).then(res => {
         const { data } = res
-        this.carList = data
         const colorMap = onlineOption['车牌颜色编码'].map
         const vehicleMap = onlineOption['vehicle_type_code'].map
-        this.carList.forEach(item => {
+        data.forEach(item => {
           item.plateColor = colorMap[item.plateColor]
           item.vehicleType = vehicleMap[item.vehicleType]
         })
+        this.carList = data
       })
     },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -604,9 +627,20 @@ export default {
       companyNumber()
         .then(res => {
           const { data } = res
-          this.companyData.all = data['全部']
-          this.companyData.normal = data['运营']
-          this.companyData.pause = data['歇业']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '营运':
+                this.companyData.normal = item.statusCount
+                break
+              case '歇业':
+                this.companyData.pause = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.companyData.all = all
           this.companyPieData = [
             { value: this.companyData.normal, name: '营运', itemStyle: { color: '#009966' }},
             { value: this.companyData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
@@ -620,12 +654,23 @@ export default {
       serviceNumber()
         .then(res => {
           const { data } = res
-          this.serviceData.all = data['全部']
-          this.serviceData.normal = data['正常']
-          this.serviceData.pause = data['注销']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '正常':
+                this.serviceData.normal = item.statusCount
+                break
+              case '注销':
+                this.serviceData.logout = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.serviceData.all = all
           this.servicePieData = [
             { value: this.serviceData.normal, name: '正常', itemStyle: { color: '#009966' }},
-            { value: this.serviceData.pause, name: '注销', itemStyle: { color: '#FF7070' }}
+            { value: this.serviceData.logout, name: '注销', itemStyle: { color: '#FF7070' }}
           ]
         })
         .catch(err => {
@@ -636,9 +681,20 @@ export default {
       platformNumber()
         .then(res => {
           const { data } = res
-          this.platformData.all = data['全部']
-          this.platformData.normal = data['正常']
-          this.platformData.pause = data['歇业']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '正常':
+                this.platformData.normal = item.statusCount
+                break
+              case '歇业':
+                this.platformData.pause = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.platformData.all = all
           this.platformPieData = [
             { value: this.platformData.normal, name: '正常', itemStyle: { color: '#009966' }},
             { value: this.platformData.pause, name: '歇业', itemStyle: { color: '#FF7070' }}
@@ -652,12 +708,29 @@ export default {
       carNumber()
         .then(res => {
           const { data } = res
-          this.carData.stop = data['停运']
-          this.carData.all = data['全部']
-          this.carData.pause = data['暂停服务']
-          this.carData.normal = data['正常']
-          this.carData.logout = data['注销']
-          this.carData.out = data['转出']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '停运':
+                this.carData.stop = item.statusCount
+                break
+              case '暂停服务':
+                this.carData.pause = item.statusCount
+                break
+              case '正常':
+                this.carData.normal = item.statusCount
+                break
+              case '注销':
+                this.carData.logout = item.statusCount
+                break
+              case '转出':
+                this.carData.out = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.carData.all = all
           this.carPieData = [
             { value: this.carData.stop, name: '停运', itemStyle: { color: '#FF7070' }},
             { value: this.carData.logout, name: '注销', itemStyle: { color: '#5C7BD9' }},
@@ -674,14 +747,27 @@ export default {
       driverNumber()
         .then(res => {
           const { data } = res
-          this.driverData.all = data['全部']
-          this.driverData.work = data['从业']
-          this.driverData.unwork = data['待业']
-          this.driverData.logout = data['注销']
+          let all = 0
+          data.forEach(item => {
+            all += parseInt(item.statusCount)
+            switch (statusMap[item.status]) {
+              case '从业':
+                this.driverData.work = item.statusCount
+                break
+              case '待业':
+                this.driverData.unwork = item.statusCount
+                break
+              case '注销':
+                this.driverData.logout = item.statusCount
+                break
+              default: break
+            }
+          })
+          this.driverData.all = all
           this.driverPieData = [
-            { value: data['从业'], name: '从业', itemStyle: { color: '#009966' }},
-            { value: data['待业'], name: '待业', itemStyle: { color: '#FAC858' }},
-            { value: data['注销'], name: '注销', itemStyle: { color: '#FF7070' }}
+            { value: this.driverData.work, name: '从业', itemStyle: { color: '#009966' }},
+            { value: this.driverData.unwork, name: '待业', itemStyle: { color: '#FAC858' }},
+            { value: this.driverData.logout, name: '注销', itemStyle: { color: '#FF7070' }}
           ]
         })
         .catch(err => {
@@ -690,6 +776,9 @@ export default {
     },
     gotoPage(path) {
       this.$router.push(path)
+    },
+    toFocusVehicle() {
+      this.$router.push('/business-management/focus-on-vehicles')
     }
   }
 }
@@ -808,19 +897,45 @@ p {
   top: 0;
   right: 0;
   left: 0;
-  padding-left: 20px;
-  background-color: #0E1521;
+  // padding-left: 20px;
+  // background-color: #304156;
   padding-top: 10px;
+  margin-left: 10px;
+  margin-right: 20px;
+  border-radius: 10px;
+  background-color: #0E1521;
+}
+
+.back-color {
+  position: absolute;
+  background-color: #0E1521;
+  height: 100px;
+  width: 10px;
+  left: -10px;
+}
+
+.back-triangle {
+  position: absolute;
+  bottom: 0;
+  background-color: #0E1521;
+  height: 5px;
+  width: 5px;
+  border-width: 4px 4px;
+  border-style: solid;
+  border-color: transparent;
+  border-top-color: #304156;
+  border-right-color: #304156;
 }
 
 .closed-box-inner {
-  width: 100%;
+  width: 98.8%;
   height: 100%;
   padding: 10px;
-  background-color: #0E1521;
+  background-color: #304156;
+  border-radius: 10px;
 
   .content-box {
-    background-color: #0E1521;
+    // background-color: #304156;
     width: 99%;
     height: 70px;
     text-align: center;
@@ -837,7 +952,7 @@ p {
 
       .little-num {
         display: inline-block;
-        color: #19F1FF;
+        color: #4ea1db;
         margin-right: 15px;
         position: relative;
         bottom: 50px;

@@ -45,3 +45,12 @@ export function selectUnitName(data) {
     data
   })
 }
+
+// 通过车牌号查询设备号
+export function getDevId(data) {
+  return request({
+    url: `/findDeviceNum`,
+    method: 'POST',
+    data
+  })
+}
