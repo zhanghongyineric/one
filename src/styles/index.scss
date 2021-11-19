@@ -182,7 +182,10 @@ div:focus {
 .f-i{
   display: inline-flex;
 }
-
+//换行
+.fw-w{
+  flex-wrap: wrap;
+}
 //排列方向
 .fd-c{
   flex-direction: column;
@@ -216,4 +219,8 @@ div:focus {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.f-r{
+  float: right;
 }
