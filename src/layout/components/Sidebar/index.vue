@@ -88,6 +88,7 @@ export default {
     setInterval((item, index) => {
       this.setTime()
     }, 1000)
+    this.getUnitVehicle()
   },
   mounted() {
     window.WIDGET = {
@@ -155,6 +156,7 @@ export default {
         .then(({ data }) => {
           localStorage.setItem('monitorTree', data)
           this.$store.commit('settings/CHANGE_TREE_DATA')
+          console.log('更新实时数据成功')
         })
         .catch(err => {
           throw err
