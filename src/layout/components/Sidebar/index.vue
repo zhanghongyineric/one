@@ -42,6 +42,7 @@ import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 import { parseTime } from '@/utils'
+import { unitVehicle } from '@/api/live-monitor/message'
 
 export default {
   components: { SidebarItem, Logo },
@@ -122,6 +123,10 @@ export default {
     } else {
       window.document.body.className = 'dark-theme'
     }
+
+    setInterval(() => {
+      this.getUnitVehicle()
+    }, 180000)
   },
   methods: {
 
@@ -130,6 +135,7 @@ export default {
       this.date = parseTime(new Date(), '{y}年{m}月{d}日 星期{a}')
       this.time = parseTime(new Date(), '{h}:{i}:{s}')
     },
+    // 切换主题
     toggleTheme() {
       this.theme = this.theme === 'dark' ? 'light' : 'dark'
       const bodyClass = window.document.body.className
@@ -142,6 +148,17 @@ export default {
         this.$store.commit('settings/CHANGE_THEME', 'dark')
         localStorage.setItem('theme', 'dark')
       }
+    },
+    // 获取实时监测树结构数据
+    getUnitVehicle() {
+      unitVehicle({ unitName: '' })
+        .then(({ data }) => {
+          localStorage.setItem('monitorTree', data)
+          this.$store.commit('settings/CHANGE_TREE_DATA')
+        })
+        .catch(err => {
+          throw err
+        })
     }
   }
 }

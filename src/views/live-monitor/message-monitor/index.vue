@@ -114,7 +114,6 @@ import {
   vehicleLocationInformation,
   selectUnitName
 } from '@/api/live-monitor/message'
-// import flvjs from 'flv.js'
 
 let that
 // 车牌颜色map
@@ -213,12 +212,20 @@ export default {
       }
     }
   },
+  computed: {
+    updateTreeCount() {
+      return this.$store.state.settings.monitorTreeData
+    }
+  },
   watch: {
     markers: {
       deep: true,
       handler() {
         this.setMarkers()
       }
+    },
+    updateTreeCount() {
+      this.getUnitVehicle()
     }
   },
   created() {
@@ -235,7 +242,7 @@ export default {
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
   },
   beforeDestroy() {
-    this.pausemix()
+    // this.pausemix()
   },
   methods: {
     openIfram(id, status, e) {
@@ -356,7 +363,6 @@ export default {
     },
     setMarkers() {
       this.map.clearMap()
-      console.log(this.markers)
       const centerLng = this.markers[this.markers.length - 1].position[0]
       const centerLat = this.markers[this.markers.length - 1].position[1]
       this.map = new AMap.Map('container', {
@@ -476,17 +482,20 @@ export default {
     },
     getUnitVehicle() {
       this.treeLoading = true
-      unitVehicle({ unitName: '' })
-        .then(res => {
-          const { data } = res
-          // this.getTreeDeep(data)
-          this.treeData = data
-          this.treeLoading = false
-        })
-        .catch(err => {
-          this.treeLoading = false
-          throw err
-        })
+      this.treeData = localStorage.getItem('monitorTree')
+      console.log(localStorage.getItem('monitorTree'), 'pure')
+      console.log(JSON.parse(localStorage.getItem('monitorTree')), 'parse')
+      // unitVehicle({ unitName: '' })
+      //   .then(res => {
+      //     const { data } = res
+      //     // this.getTreeDeep(data)
+      //     this.treeData = data
+      this.treeLoading = false
+      //   })
+      //   .catch(err => {
+      //     this.treeLoading = false
+      //     throw err
+      //   })
     },
     getHeight() {
       this.styleSize.height = window.innerHeight - 84 + 'px'
