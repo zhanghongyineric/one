@@ -31,7 +31,7 @@ export default {
         { 'name': 'kubernetes', url: 'http://www.sreyun.gosmooth.com.cn:8811' },
         // { 'name': 'grafana', url: 'http://www.gosmooth.com.cn:8822/login' },
         { 'name': 'emq', url: 'http://www.sreyun.gosmooth.com.cn:8833/#/' },
-        // { 'name': 'flink', url: 'http://www.gosmooth.com.cn:8800/#/overview' },
+        { 'name': 'CMAK', url: 'http://www.sreyun.gosmooth.com.cn:8855' },
         // { 'name': 'hadoop-yarn', url: 'http://www.gosmooth.com.cn:8855/cluster/nodes' },
         // { 'name': 'hadoop-hdfs ', url: 'http://www.gosmooth.com.cn:8844/dfshealth.html#tab-overview' },
         { 'name': 'eolinker', url: 'http://www.srelocal.gosmooth.com.cn:9966/eolinker_os/index.html#/index' },
