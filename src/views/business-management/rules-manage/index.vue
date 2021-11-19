@@ -8,17 +8,12 @@
             label-width="80px"
           >
             <el-col :md="6" :sm="24">
-              <el-form-item label="规则编码">
-                <el-input v-model="listQuery.violationCode" size="small" placeholder="请输入规则编码" clearable />
-              </el-form-item>
-            </el-col>
-            <el-col :md="6" :sm="24">
-              <el-form-item label="规则名称">
+              <el-form-item label="规则名称:">
                 <el-input v-model="listQuery.violationName" size="small" placeholder="请输入规则名称" clearable />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
-              <el-form-item label="规则名称">
+              <el-form-item label="规则类型:">
                 <el-select
                   v-model="listQuery.typeFlag"
                   size="small"
@@ -32,6 +27,11 @@
                     :value="value"
                   />
                 </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="规则编码:">
+                <el-input v-model="listQuery.violationCode" size="small" placeholder="请输入规则编码" clearable />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -69,13 +69,13 @@
       >
         <el-table-column type="index" label="编号" width="60" align="center" />
         <el-table-column prop="violationName" label="规则名称" min-width="150px" align="center" show-overflow-tooltip />
-        <el-table-column prop="script" label="规则描述" min-width="200px" align="center" show-overflow-tooltip />
-        <el-table-column prop="violationCode" label="规则编码" min-width="100px" align="center" />
         <el-table-column prop="typeFlag" label="规则类型" min-width="120px" align="center">
           <template v-slot="{row}">
             {{ row.typeFlag | typeFlagFilter }}
           </template>
         </el-table-column>
+        <el-table-column prop="script" label="规则描述" min-width="200px" align="center" show-overflow-tooltip />
+        <el-table-column prop="violationCode" label="规则编码" min-width="100px" align="center" />
         <el-table-column label="操作" align="center" width="330px">
           <template v-slot="{row}">
             <el-button type="warning" size="mini" @click="updateData(row)">编辑规则</el-button>

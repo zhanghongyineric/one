@@ -43,6 +43,7 @@ import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 import { parseTime } from '@/utils'
 import { unitVehicle } from '@/api/live-monitor/message'
+import yuxStorage from 'yux-storage'
 
 export default {
   components: { SidebarItem, Logo },
@@ -154,10 +155,11 @@ export default {
     getUnitVehicle() {
       unitVehicle({ unitName: '' })
         .then(({ data }) => {
-          console.log(data, 'return data')
-          localStorage.setItem('monitorTree', JSON.stringify(data))
-          this.$store.commit('settings/CHANGE_TREE_DATA')
-          console.log('更新实时数据成功')
+          yuxStorage.setItem('monitorTree', data)
+            .then(() => {
+              this.$store.commit('settings/CHANGE_TREE_DATA')
+              console.log('更新实时数据成功')
+            })
         })
         .catch(err => {
           throw err

@@ -114,6 +114,7 @@ import {
   vehicleLocationInformation,
   selectUnitName
 } from '@/api/live-monitor/message'
+import yuxStorage from 'yux-storage'
 
 let that
 // 车牌颜色map
@@ -480,22 +481,10 @@ export default {
         }
       })
     },
-    getUnitVehicle() {
+    async getUnitVehicle() {
       this.treeLoading = true
-      this.treeData = JSON.parse(localStorage.getItem('monitorTree'))
-      console.log(localStorage.getItem('monitorTree'), 'pure')
-      console.log(JSON.parse(localStorage.getItem('monitorTree')), 'parse')
-      // unitVehicle({ unitName: '' })
-      //   .then(res => {
-      //     const { data } = res
-      //     // this.getTreeDeep(data)
-      //     this.treeData = data
+      this.treeData = await yuxStorage.getItem('monitorTree')
       this.treeLoading = false
-      //   })
-      //   .catch(err => {
-      //     this.treeLoading = false
-      //     throw err
-      //   })
     },
     getHeight() {
       this.styleSize.height = window.innerHeight - 84 + 'px'
