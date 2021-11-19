@@ -482,7 +482,7 @@ export default {
     },
     getUnitVehicle() {
       this.treeLoading = true
-      this.treeData = localStorage.getItem('monitorTree')
+      this.treeData = JSON.parse(localStorage.getItem('monitorTree'))
       console.log(localStorage.getItem('monitorTree'), 'pure')
       console.log(JSON.parse(localStorage.getItem('monitorTree')), 'parse')
       // unitVehicle({ unitName: '' })

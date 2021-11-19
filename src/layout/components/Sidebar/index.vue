@@ -154,7 +154,8 @@ export default {
     getUnitVehicle() {
       unitVehicle({ unitName: '' })
         .then(({ data }) => {
-          localStorage.setItem('monitorTree', data)
+          console.log(data, 'return data')
+          localStorage.setItem('monitorTree', JSON.stringify(data))
           this.$store.commit('settings/CHANGE_TREE_DATA')
           console.log('更新实时数据成功')
         })
