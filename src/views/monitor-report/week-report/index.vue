@@ -299,6 +299,7 @@ export default {
         this.hasWeek = true
 
         if (this.hasPlatform && this.listQuery.week) this.getList()
+        else this.listLoading = false
       })
     },
     // 禁用日期
