@@ -74,12 +74,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="safecodeScore" label="安全码得分" min-width="120px" align="center" />
-        <el-table-column prop="safecodeColor" label="安全码颜色" min-width="120px" align="center">
+        <el-table-column prop="safecodeColor" label="安全码颜色" align="center" min-width="120px" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span v-if="scope.row.safecodeColor == 1" style="color:green">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
-            <span v-else-if="scope.row.safecodeColor == 2" style="color:#4ea1db">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
-            <span v-else-if="scope.row.safecodeColor == 3" style="color:#FFA500">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
-            <span v-else style="color:red">{{ scope.row.safecodeColor | safecodeColorFilter }}</span>
+            <svg-icon v-if="scope.row.safecodeColor == 1" icon-class="safecode" style="width:23px;height: 23px;background-color:#018E60;" />
+            <svg-icon v-else-if="scope.row.safecodeColor == 2" icon-class="safecode" style="width:23px;height: 23px;background-color:#4ea1db;" />
+            <svg-icon v-else-if="scope.row.safecodeColor == 3" icon-class="safecode" style="width:23px;height: 23px;background-color:#E6A23C;" />
+            <svg-icon v-else icon-class="safecode" style="width:23px;height: 23px;background-color:#F56C6C;" />
           </template>
         </el-table-column>
         <el-table-column prop="unitName" label="企业名称" min-width="180px" align="center" show-overflow-tooltip />

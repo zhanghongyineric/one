@@ -327,6 +327,11 @@ div:focus {
   .el-button.is-disabled:hover {
     background-color: #ccc !important;
   }
+
+  .el-button--success {
+    background-color: #018E60;
+    border-color: #018E60;
+  }
 }
 
 //定制搜索栏和弹窗的样式
