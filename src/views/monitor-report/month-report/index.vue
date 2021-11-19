@@ -51,15 +51,15 @@
                 <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
               </div>
             </div>
-            <el-button
-              type="primary"
-              size="small"
-              plain
-              class="to-report-manage"
-              @click="$router.push({name:'ReportManage',params:{type:'month'}})"
-            >
-              月报管理
-            </el-button>
+            <!--<el-button-->
+            <!--  type="primary"-->
+            <!--  size="small"-->
+            <!--  plain-->
+            <!--  class="to-report-manage"-->
+            <!--  @click="$router.push({name:'ReportManage',params:{type:'month'}})"-->
+            <!--&gt;-->
+            <!--  月报管理-->
+            <!--</el-button>-->
           </div>
           <div class="vehicle-type-query f ai-c">
             <label for="vehicleType" class="vehicle-type-label el-form-item__label">车辆统计范围:</label>
@@ -265,7 +265,7 @@ export default {
           },
           {
             prop: 'count',
-            label: '报警总数'
+            label: '累计进入报警名单次数'
           }
         ],
         tableData: [], // 存放过滤后表格数据

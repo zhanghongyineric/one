@@ -53,15 +53,15 @@
               </div>
             </div>
 
-            <el-button
-              type="primary"
-              size="small"
-              plain
-              class="to-report-manage"
-              @click="$router.push({name:'ReportManage',params:{type:'week'}})"
-            >
-              周报管理
-            </el-button>
+            <!--<el-button-->
+            <!--  type="primary"-->
+            <!--  size="small"-->
+            <!--  plain-->
+            <!--  class="to-report-manage"-->
+            <!--  @click="$router.push({name:'ReportManage',params:{type:'week'}})"-->
+            <!--&gt;-->
+            <!--  周报管理-->
+            <!--</el-button>-->
           </div>
 
           <div class="vehicle-type-query f ai-c">
