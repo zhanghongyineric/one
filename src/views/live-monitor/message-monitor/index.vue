@@ -109,7 +109,6 @@
 <script>
 import {
   selectPlateNum,
-  unitVehicle,
   vehicleNumber,
   vehicleLocationInformation,
   selectUnitName

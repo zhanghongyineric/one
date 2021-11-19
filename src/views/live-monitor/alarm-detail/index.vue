@@ -349,22 +349,24 @@ export default {
       handler: function(newV, oldV) {
         if (newV === '') this.listQuery.unitId = ''
       }
+    },
+    dataSourceOptions() {
+      this.listQuery.type = this.dataTypeOptions[0].value
+      this.listQuery.dataSource = this.dataSourceOptions[0].value
     }
   },
   created() {
     that = this
-    this.getAreaCode()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
     this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
     this.plateColorOptions = onlineOption['车牌颜色编码'].map
-    this.dataTypeOptions = onlineOption['query_alarm_table_type'].list
-    this.listQuery.type = this.dataTypeOptions[0].value
+    this.dataTypeOptions = onlineOption['rule_of_arm_type'].list
     this.dataSourceOptions = onlineOption['数据来源'].list
-    this.listQuery.dataSource = this.dataSourceOptions[0].value
     this.getDate()
   },
   mounted() {
+    this.getAreaCode()
     this.getAlarmType()
   },
   methods: {
@@ -392,7 +394,8 @@ export default {
       if (endDate >= 0 && endDate <= 9) endDate = '0' + endDate
       this.listQuery.time[0] = date.getFullYear() + seperator + nowMonth + seperator + strDate + ' 00:00:00'
       this.listQuery.time[1] = date.getFullYear() + seperator + nowMonth + seperator + endDate + ' 00:00:00'
-      this.listQuery.startTime = this.listQuery.time[0]
+      this.$set(this.listQuery, 'startTime', this.listQuery.time[0])
+      this.$set(this.listQuery, 'endTime', this.listQuery.time[1])
     },
     getAreaCode() {
       areaCode()

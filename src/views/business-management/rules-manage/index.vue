@@ -824,8 +824,10 @@ export default {
       violationDetails({ violationCode: row.violationCode })
         .then(res => {
           const { data } = res
-          this.detailData = data[0]
-          this.setDegreeExpress(data[0])
+          if (data.length > 0) {
+            this.detailData = data[0]
+            this.setDegreeExpress(data[0])
+          }
           this.detailVisible = true
         })
         .catch(err => {
