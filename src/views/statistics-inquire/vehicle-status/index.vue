@@ -247,28 +247,18 @@ export default {
         })
         sumObj[title] = sum
       }
-      // 各类车实际入网车辆总数
+      // 各类车实际入网车辆总数及总入网率
       for (const item of vehicle) {
         const title = item[0] + 'count'
+        const all = item[0] + 'all'
+        const rate = item[0] + 'rate'
         let sum = 0
         item[1].data.forEach(val => {
           sum += val
         })
         sumObj[title] = sum
+        sumObj[rate] = (sumObj[title] / sumObj[all] * 100).toFixed() + '%'
       }
-      // 各类车总入网率
-      for (const item of netRate) {
-        const title = item[0] + 'rate'
-        let sum = 0
-        item[1].forEach(val => {
-          val = val.split('%')
-          if (val.length > 1) {
-            sum += parseInt(val[0])
-          }
-        })
-        sumObj[title] = (sum / item[1].length).toFixed() + '%'
-      }
-
       sumObj.networkAccessRate = sumObj.networkAccessRate / data.length / 100
       this.tableData.push(sumObj)
     },

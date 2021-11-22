@@ -81,7 +81,7 @@ export default {
       return this.theme === 'dark' ? 'sun' : 'moon'
     },
     modelText() {
-      return this.theme === 'dark' ? '浅色模式' : '深色模式'
+      return this.theme === 'dark' ? '深色模式' : '浅色模式'
     }
   },
   created() {

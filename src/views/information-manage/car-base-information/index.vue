@@ -1045,7 +1045,6 @@ export default {
   components: { Pagination },
   filters: {
     showVehicleType(type) {
-      console.log(type)
       let typeText
       if (type === 0 || type === '0') {
         return '不确定类型'
@@ -1119,7 +1118,7 @@ export default {
         plateColor: [{ required: true, message: '请选择车牌颜色', trigger: 'change' }]
       },
       twoRules: {
-        vehicleType: [{ required: true, message: '请选择行驶证车辆类型', trigger: 'change' }],
+        // vehicleType: [{ required: true, message: '请选择行驶证车辆类型', trigger: 'change' }],
         registerZoneId: [{ required: true, message: '请选择车籍所在地', trigger: 'change' }],
         useNature: [{ required: true, message: '请选择使用性质', trigger: 'change' }],
         factoryType: [{ required: true, message: '请输入品牌型号', trigger: 'blur' }],
@@ -1393,7 +1392,6 @@ export default {
               this.operateStatusMap.set(item.value, item.label)
             })
             this.carKindOptions = data['车辆类型']
-            console.log(this.carKindOptions, 'this.carKindOptions')
             this.accessWayOptions = data['入网方式']
             this.listLoading = false
           })
@@ -1507,6 +1505,7 @@ export default {
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
+          this.createFormData.doubleDrivers = this.createFormData.doubleDrivers.toString()
           this.translateCode()
           this.$nextTick(() => {
             this.$refs['oneForm'].clearValidate()
@@ -1572,7 +1571,6 @@ export default {
       if (row.plateColor) row.plateColor = row.plateColor.toString()
       if (row.vehicleType) row.vehicleType = row.vehicleType.toString()
       if (row.useNature) row.useNature = row.useNature.toString()
-      console.log(row)
       selectTransport({ vehicleId: row.vehicleId })
         .then(res => {
           this.createFormData = { ...row, ...res.data }
@@ -1689,7 +1687,6 @@ export default {
         .then(res => {
           const { data } = res
           data.forEach(item => {
-            console.log(this.insuranceTypeMap)
             item.typeCode1 = this.insuranceTypeMap.get(item.typeCode.toString())
             item.typeCode = item.typeCode.toString()
             item.riskTypeCode1 = this.riskTypeMap.get(item.riskTypeCode.toString())

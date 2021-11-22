@@ -22,8 +22,8 @@
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
-              <el-form-item label="驾驶员所属地区:">
-                <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择驾驶员所属地区" style="width:100%;" size="small" :options="cityOptions" />
+              <el-form-item label="籍贯:">
+                <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择籍贯地区" style="width:100%;" size="small" :options="cityOptions" />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -136,7 +136,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="unitName" label="所属运输企业" width="220" align="center" show-overflow-tooltip />
-        <el-table-column prop="qualificationCity" label="驾驶员所属地区" min-width="110" show-overflow-tooltip align="center">
+        <el-table-column prop="qualificationCity" label="籍贯" min-width="110" show-overflow-tooltip align="center">
           <template slot-scope="scope">
             {{ scope.row.qualificationCity | showZoneText }}
           </template>
@@ -240,7 +240,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-form-item label="籍贯：" prop="zoneCity">
               <el-cascader
                 v-model="dialogData.zoneCity"
@@ -248,7 +248,7 @@
                 :options="cityOptions"
               />
             </el-form-item>
-          </el-row>
+          </el-row> -->
           <el-row>
             <el-col :md="12" :sm="24">
               <el-form-item label="健康状况：" prop="physicalStatus">
@@ -285,7 +285,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="驾驶员所属地区:" prop="qualificationCity">
+            <el-form-item label="籍贯:" prop="qualificationCity">
               <el-cascader
                 v-model="dialogData.qualificationCity"
                 size="small"
@@ -607,12 +607,12 @@ export default {
         sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
         nation: [{ required: true, message: '请输入民族', trigger: 'blur' }],
         culture: [{ required: true, message: '请选择文化程度', trigger: 'change' }],
-        zoneCity: [{ required: true, message: '请选择籍贯', trigger: 'change' }],
+        // zoneCity: [{ required: true, message: '请选择籍贯', trigger: 'change' }],
         physicalStatus: [{ required: true, message: '请选择健康状况', trigger: 'change' }],
         idCardNum: [{ required: true, message: '请输入身份证号码', trigger: 'blur' }],
         tel: [{ required: true, trigger: 'blur', validator: validateTel }],
         // unitName: [{ required: true, message: '请输入运输企业', trigger: 'blur' }],
-        qualificationCity: [{ required: true, message: '请选择驾驶员所属地区', trigger: 'change' }],
+        qualificationCity: [{ required: true, message: '请选择籍贯地区', trigger: 'change' }],
         addressCity: [{ required: true, message: '请选择居住地址', trigger: 'change' }],
         addressDetail: [{ required: true, message: '请输入详细居住地址', trigger: 'blur' }]
       },
