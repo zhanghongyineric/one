@@ -14,16 +14,6 @@
               />
             </el-form-item>
           </el-col>
-          <!-- <el-col :md="6" :sm="24">
-            <el-form-item label="统计周期：">
-              <span
-                v-for="item in statisticalPeriod"
-                :key="item.value"
-                :class="['time-text',item.value===searchQuery.status?'active':'']"
-                @click="chooseStatus(item.value)"
-              >{{ item.label }}</span>
-            </el-form-item>
-          </el-col> -->
           <el-col :md="6" :sm="24">
             <el-form-item label="时间范围：">
               <el-date-picker
@@ -92,7 +82,7 @@
           :highlight-current-row="false"
           size="small"
         >
-          <el-table-column label="地区" align="center" prop="zoneName" min-width="110" fixed />
+          <el-table-column label="地区" align="center" prop="region" min-width="110" fixed />
           <el-table-column label="应入网车辆总数（辆）" align="center" prop="allVehicleCount" min-width="170" />
           <el-table-column label="入网车辆总数（辆）" align="center" prop="vehicleCount" min-width="160" />
           <el-table-column label="总入网率" align="center" prop="networkAccessRate">
@@ -106,9 +96,9 @@
             :label="item"
             align="center"
           >
-            <el-table-column label="应入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'all'" min-width="170" align="center" />
-            <el-table-column label="入网车辆总数（辆）" :prop="allVehicleTypeNames.get(item) + 'count'" min-width="160" align="center" />
-            <el-table-column label="总入网率" :prop="allVehicleTypeNames.get(item) + 'rate'" align="center" />
+            <el-table-column label="应入网车辆总数（辆）" :prop="item + 'all'" min-width="170" align="center" />
+            <el-table-column label="入网车辆总数（辆）" :prop="item + 'count'" min-width="160" align="center" />
+            <el-table-column label="总入网率" :prop="item + 'rate'" align="center" />
           </el-table-column>
         </el-table>
       </div>
@@ -141,6 +131,8 @@ import {
   vehicleTrends
 } from '@/api/statistics-inquire/vehicle-status'
 
+const vehicleTypeMap = JSON.parse(localStorage.getItem('onlineOption'))['vehicle_type_code'].map
+
 export default {
   name: 'VehicleStatus',
   components: { lineMixBar, FunnelChart, PieChart, LineChart },
@@ -157,11 +149,11 @@ export default {
         pageSize: 10
       },
       searchQuery: {
-        unitId: '634',
-        startTime: '202101',
-        endTime: '202109'
+        unitId: ['622', '800'],
+        startTime: '',
+        endTime: ''
       },
-      time: ['202101', '202109'],
+      time: [],
       areaOptions: [],
       areaProps: {
         label: 'unitName',
@@ -172,13 +164,6 @@ export default {
       pieChartData: [],
       funnelChartData: [],
       lineChartData: [],
-      statisticalPeriod: [
-        {
-          label: '本年度',
-          value: '1'
-        }
-      ],
-
       lineMixBarXData: [],
       accessRateData: [],
       legendData: [],
@@ -186,7 +171,6 @@ export default {
       ymax: 0,
 
       twoLevelColums: [],
-      allVehicleTypeNames: new Map(),
       trendYear: '2021',
       tableWidth: 'width:55%;'
     }
@@ -202,6 +186,7 @@ export default {
     }
   },
   created() {
+    this.getTime()
     this.getVehicleData()
     this.getAreaCode()
     this.getSectorStatistics()
@@ -211,56 +196,106 @@ export default {
     const currentDate = new Date()
     this.trendYear = currentDate.getFullYear().toString()
   },
-  tableData: {
-    deep: true,
-    handler(nval, oval) {
-      this.tableWidth = 'width:55.5%;'
-      setTimeout(() => {
-        this.tableWidth = 'width:55%'
-      })
-    }
-  },
   methods: {
+    // 获取当前月份，并赋值搜索条件中的默认开始和结束时间
+    getTime() {
+      const currentDate = new Date()
+      this.trendYear = currentDate.getFullYear().toString()
+      let month = currentDate.getMonth() + 1
+      month = month < 10 ? `0${month}` : `${month}`
+      this.$set(this, 'time', [this.trendYear + (month - 1), this.trendYear + month])
+      this.searchQuery.startTime = this.time[0]
+      this.searchQuery.endTime = this.time[1]
+    },
+    // 将表格数据与字段对应
     getTableData(data, allVehicle, vehicle, netRate) {
       const dataTemp = data
       const keys = [...allVehicle.keys()]
       dataTemp.forEach((item, i) => {
         keys.forEach((key, j) => {
           let allCount = ''; let count = ''; let rate = ''
-          allCount = this.allVehicleTypeNames.get(key) + 'all'
-          count = this.allVehicleTypeNames.get(key) + 'count'
-          rate = this.allVehicleTypeNames.get(key) + 'rate'
-          item[allCount] = allVehicle.get(key).data[i]
-          item[count] = vehicle.get(key).data[i]
-          item[rate] = netRate.get(key)[i]
+          allCount = key + 'all'
+          count = key + 'count'
+          rate = key + 'rate'
+          item[allCount] = allVehicle.get(key).data[i] || 0
+          item[count] = vehicle.get(key).data[i] || 0
+          item[rate] = netRate.get(key)[i] || '0%'
         })
       })
       this.tableData = dataTemp
+      // 合计
+      const sumObj = {
+        region: '合计',
+        allVehicleCount: 0,
+        vehicleCount: 0,
+        networkAccessRate: 0
+      }
+      data.forEach(item => {
+        sumObj.allVehicleCount += parseInt(item.allVehicleCount)
+        sumObj.vehicleCount += parseInt(item.vehicleCount)
+        if (!isNaN(item.networkAccessRate * 100)) {
+          sumObj.networkAccessRate += item.networkAccessRate * 100
+        }
+      })
+
+      // 各类车应入网车辆总数
+      for (const item of allVehicle) {
+        const title = item[0] + 'all'
+        let sum = 0
+        item[1].data.forEach(val => {
+          sum += val
+        })
+        sumObj[title] = sum
+      }
+      // 各类车实际入网车辆总数
+      for (const item of vehicle) {
+        const title = item[0] + 'count'
+        let sum = 0
+        item[1].data.forEach(val => {
+          sum += val
+        })
+        sumObj[title] = sum
+      }
+      // 各类车总入网率
+      for (const item of netRate) {
+        const title = item[0] + 'rate'
+        let sum = 0
+        item[1].forEach(val => {
+          val = val.split('%')
+          if (val.length > 1) {
+            sum += parseInt(val[0])
+          }
+        })
+        sumObj[title] = (sum / item[1].length).toFixed() + '%'
+      }
+
+      sumObj.networkAccessRate = sumObj.networkAccessRate / data.length / 100
+      this.tableData.push(sumObj)
     },
     changeDate() {
       this.searchQuery.startTime = this.time[0]
       this.searchQuery.endTime = this.time[1]
     },
+    // 获取趋势图数据
     getVehicleTrends() {
       this.lineChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
       vehicleTrends({
         year: this.trendYear,
-        unitId: this.searchQuery.unitId
+        unitId: parseInt(this.searchQuery.unitId)
       })
         .then(res => {
           const { data } = res
-          for (let i = 1; i <= 12; i++) {
-            if (!data[i]) data[i] = 0
-          }
-          this.lineChartData = Object.values(data)
+          const trendData = new Array(12).fill(0)
+          data.forEach(item => {
+            item.yearPlusMonth = item.yearPlusMonth.toString().split(`${this.trendYear}`)[1]
+            trendData[item.yearPlusMonth - 1] = item.vehicleCount
+          })
+          this.lineChartData = trendData
         })
         .catch(err => {
           throw err
         })
-    },
-    tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) return 'background-color:#1C2733;font-weight: 500;'
     },
     search() {
       this.getSectorStatistics()
@@ -271,16 +306,21 @@ export default {
         this.tableWidth = 'width:55%'
       }, 500)
     },
+    // 扇形图和漏斗图数据
     getSectorStatistics() {
       this.pieChartData = []
       this.funnelChartData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
+      this.searchQuery.unitId = parseInt(this.searchQuery.unitId)
       sectorStatistics({ ...this.searchQuery })
         .then(res => {
           const { data } = res
           data.forEach(v => {
-            this.pieChartData.push({ value: v.vehicleCount, name: v.vehicleTypeName })
-            this.funnelChartData.push({ value: (v.networkAccessRate * 100).toFixed(), name: v.vehicleTypeName })
+            this.pieChartData.push({ value: v.vehicleCount, name: vehicleTypeMap[v.vehicleTypeCode] })
+            this.funnelChartData.push({
+              value: (v.networkAccessRate * 100).toFixed(2),
+              name: vehicleTypeMap[v.vehicleTypeCode]
+            })
           })
         })
         .catch(err => {
@@ -291,7 +331,9 @@ export default {
       areaCode()
         .then(res => {
           const { data } = res
-          this.deleteEmptyChilren(data[0])
+          for (let i = 0; i < data.length; i++) {
+            this.deleteEmptyChilren(data[i])
+          }
           this.areaOptions = data
         })
         .catch(err => {
@@ -308,10 +350,15 @@ export default {
       const allVehicleCountMap = new Map()
       const networkAccessRateMap = new Map()
       data.forEach(v => {
-        this.lineMixBarXData.push(v.zoneName)
-        this.accessRateData.push((v.networkAccessRate * 100).toFixed())
-        v.typeAndProbabilitys.forEach(item => {
-          this.legendData.push(item.vehicleTypeName)
+        this.lineMixBarXData.push(v.region)
+        if (!isNaN(v.networkAccessRate)) {
+          this.accessRateData.push((v.networkAccessRate * 100).toFixed())
+        } else {
+          v.networkAccessRate = '0'
+          this.accessRateData.push(0)
+        }
+        v.children.forEach(item => {
+          this.legendData.push(vehicleTypeMap[item.vehicleTypeCode])
         })
       })
       this.legendData = Array.from(new Set(this.legendData))
@@ -341,10 +388,14 @@ export default {
         networkAccessRateMap.set(v, [])
       })
       data.forEach((v, index) => {
-        v.typeAndProbabilitys.forEach(item => {
-          vehicleCountMap.get(item.vehicleTypeName).data.push(item.vehicleCount)
-          allVehicleCountMap.get(item.vehicleTypeName).data.push(item.allVehicleCount)
-          networkAccessRateMap.get(item.vehicleTypeName).push((item.networkAccessRate * 100).toFixed() + '%')
+        v.children.forEach(item => {
+          vehicleCountMap.get(vehicleTypeMap[item.vehicleTypeCode]).data.push(item.vehicleCount)
+          allVehicleCountMap.get(vehicleTypeMap[item.vehicleTypeCode]).data.push(item.allVehicleCount)
+          if (!isNaN(v.networkAccessRate)) {
+            networkAccessRateMap.get(vehicleTypeMap[item.vehicleTypeCode]).push((item.networkAccessRate * 100).toFixed() + '%')
+          } else {
+            networkAccessRateMap.get(vehicleTypeMap[item.vehicleTypeCode]).push('0%')
+          }
         })
         for (const value of vehicleCountMap.values()) {
           if (value.data.length < index + 1) {
@@ -365,7 +416,6 @@ export default {
 
       this.twoLevelColums = [...allVehicleCountMap.keys()]
       this.barChartData = [...allVehicleCountMap.values(), ...vehicleCountMap.values()]
-      console.log(this.barChartData, 'this.barChartData')
       this.getTableData(data, allVehicleCountMap, vehicleCountMap, networkAccessRateMap)
     },
     getMaxYdata(data) {
@@ -387,47 +437,18 @@ export default {
       this.barChartData = []
       this.ymax = 0
       this.twoLevelColums = []
-      this.allVehicleTypeNames = new Map()
       this.tableData = []
       if (this.searchQuery.unitId.length === 2) this.searchQuery.unitId = this.searchQuery.unitId[1]
+      this.searchQuery.unitId = parseInt(this.searchQuery.unitId)
       vehicleSystem({ ...this.searchQuery })
         .then(res => {
           const { data } = res
-          this.getAllVehicleType(data.vehicleTypeDtos)
-          this.getBarChartData(data.vehicleSystemDtos)
-          this.getMaxYdata(data.vehicleSystemDtos)
-          // 合计
-          const sumObj = {
-            zoneName: '合计',
-            allVehicleCount: data.allVehicleCount,
-            vehicleCount: data.vehicleCount,
-            networkAccessRate: data.TotalNetworkAccessRate
-          }
-          this.twoLevelColums.forEach(v => {
-            data.vehicleTypeDtos.forEach(item => {
-              if (item.typeName === v) {
-                sumObj[this.allVehicleTypeNames.get(v) + 'all'] = item.allTypeCount
-                sumObj[this.allVehicleTypeNames.get(v) + 'count'] = item.typeCount
-                sumObj[this.allVehicleTypeNames.get(v) + 'rate'] = (item.networkAccessRate * 100).toFixed() + '%'
-              }
-            })
-          })
-          this.tableData.push(sumObj)
+          this.getBarChartData(data)
+          this.getMaxYdata(data)
         })
         .catch(err => {
           throw err
         })
-    },
-    getAllVehicleType(types) {
-      const chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz'
-      const maxLen = chars.length
-      types.forEach(item => {
-        let typeFiled = ''
-        for (let i = 0; i < 4; i++) {
-          typeFiled += chars.charAt(Math.floor(Math.random() * maxLen))
-        }
-        this.allVehicleTypeNames.set(item.typeName, typeFiled)
-      })
     }
   }
 }

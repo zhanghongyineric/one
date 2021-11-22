@@ -153,7 +153,8 @@ export default {
           itemWidth: 10
         },
         grid: {
-          y2: 60
+          y2: 60,
+          x: 60
         },
         xAxis: [
           {
@@ -165,7 +166,8 @@ export default {
             axisLabel: {
               textStyle: {
                 color: this.textColor
-              }
+              },
+              interval: 0
             }
           }
         ],
@@ -229,7 +231,7 @@ export default {
                 show: true,
                 position: 'top',
                 textStyle: {
-                  color: '#fff'
+                  color: this.textColor
                 }
               }
             }
