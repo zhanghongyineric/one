@@ -1,10 +1,12 @@
 <template>
-  <div :class="className" :style="{height,width}" />
+  <div :class="className" :style="{height,width}" @click.right="mounseRightClick" />
 </template>
 <script>
 import * as echarts from 'echarts'
 import chartResize from './chart-resize'
-import sichuanJson from '@/utils/sichuan.json'
+import sichuan from '@/utils/mapJson/sichuan.json'
+import citysCode from '@/utils/mapJson/citysCode.js'
+import { cityVehicle } from '@/api/home'
 
 export default {
   mixins: [chartResize],
@@ -78,7 +80,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.initChart()
+      this.initChart(sichuan)
     })
   },
   beforeDestroy() {
@@ -89,10 +91,18 @@ export default {
     this.chart = null
   },
   methods: {
-    initChart() {
-      echarts.registerMap('四川', sichuanJson)
+    initChart(dataJson) {
+      echarts.registerMap('四川', dataJson)
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
+      this.chart.off('click')
+      this.chart.on('click', params => {
+        const code = citysCode[params.name]
+        if (code) {
+          this.getCityData(params.data.deptId)
+          this.getMapJson(code)
+        }
+      })
     },
     setOptions() {
       this.chart.setOption({
@@ -150,6 +160,25 @@ export default {
           backgroundColor: '#151D2C'
         }
       })
+    },
+    getMapJson(code) {
+      const cityJson = require(`../../utils/mapJson/${code}.json`)
+      this.initChart(cityJson)
+    },
+    mounseRightClick() {
+      this.initChart(sichuan)
+      document.oncontextmenu = function() {
+        return false
+      }
+    },
+    getCityData(id) {
+      cityVehicle({ cityId: id })
+        .then(({ data }) => {
+          this.$emit('city-data', data)
+        })
+        .catch(err => {
+          throw err
+        })
     }
   }
 }

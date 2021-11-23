@@ -182,7 +182,7 @@
                 <span class="center-num">{{ allCars }}</span> 辆</span>
               <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
-              <map-chart :map-data="mapData" />
+              <map-chart :map-data="mapData" @city-data="updateCityData" />
               <dataset-bar-chart :chart-data="mapChartData" />
             </div>
           </el-col>
@@ -502,7 +502,7 @@ export default {
           ]
           city.forEach(item => {
             // const city = CodeToText[getAreaText(item.zoneId)[1]]
-            const { realTimeCount, onlineCount, deptName } = item
+            const { realTimeCount, onlineCount, deptName, deptId } = item
             if (deptName.includes('分中心')) {
               this.mapData.push({
                 value: realTimeCount,
@@ -519,55 +519,11 @@ export default {
             this.mapData.push({
               value: realTimeCount,
               name: deptName,
-              count: onlineCount
+              count: onlineCount,
+              deptId
             })
             this.mapChartData.push([deptName, realTimeCount, onlineCount])
           })
-
-          // this.mapData.forEach(v => {
-          //   if (!this.mapDataMap.get(v.name)) this.mapDataMap.set(v.name, [v.value, v.count])
-          //   else {
-          //     const val = this.mapDataMap.get(v.name)[0]
-          //     const count = this.mapDataMap.get(v.name)[1]
-          //     this.mapDataMap.set(v.name, [v.value + val, v.count + count])
-          //   }
-          // })
-
-          // this.mapData = []
-          // for (const item of this.mapDataMap) {
-          //   this.mapData.push({
-          //     name: item[0],
-          //     value: item[1][0],
-          //     count: item[1][1]
-          //   })
-          // }
-
-          // 同一个市可能有很多数据，应将同一个市的所有数据相加
-          // if (this.mapChartData[1]) {
-          //   const { length } = this.mapChartData
-          //   for (let i = 1; i < length; i++) {
-          //     for (let j = i + 1; j < length; j++) {
-          //       if (this.mapChartData[j][0] === this.mapChartData[i][0]) {
-          //         this.mapChartData[i][1] += this.mapChartData[j][1]
-          //         this.mapChartData[i][2] += this.mapChartData[j][2]
-          //       }
-          //     }
-          //   }
-          //   const cityMap = new Map()
-          //   for (let i = 1; i < this.mapChartData.length; i++) {
-          //     const city = this.mapChartData[i][0]
-          //     const online = this.mapChartData[i][1]
-          //     const total = this.mapChartData[i][2]
-          //     if (!cityMap.has(city)) {
-          //       cityMap.set(city, `${city},${online},${total}`)
-          //     }
-          //   }
-          //   const dataArr = [['city', '当前在线', '累计在线']]
-          //   for (const value of cityMap.values()) {
-          //     dataArr.push(value.split(','))
-          //   }
-          //   this.mapChartData = dataArr
-          // }
         })
     },
     getKeyVehicle() {
@@ -779,6 +735,18 @@ export default {
     },
     toFocusVehicle() {
       this.$router.push('/business-management/focus-on-vehicles')
+    },
+    // 更新城市数据
+    updateCityData(data) {
+      this.allCars = data.onlineVehicletotal
+      this.totalOnlineCars = data.realTimetotal
+      this.mapChartData = [
+        ['city', '当前在线', '累计在线']
+      ]
+      data.city.forEach(item => {
+        const { realTimeCount, onlineCount, deptName } = item
+        this.mapChartData.push([deptName, realTimeCount, onlineCount])
+      })
     }
   }
 }

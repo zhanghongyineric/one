@@ -419,6 +419,7 @@ export default {
                 message: '新增成功'
               })
               this.getList()
+              this.open = false
             })
           }
         }

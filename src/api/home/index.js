@@ -81,3 +81,12 @@ export function alarmEvent(data) {
     data
   })
 }
+
+// 市级平台展示车辆
+export function cityVehicle(params) {
+  return request({
+    method: 'GET',
+    url: '/cityVehicle',
+    params
+  })
+}
