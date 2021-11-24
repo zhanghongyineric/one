@@ -182,7 +182,7 @@
                 <span class="center-num">{{ allCars }}</span> 辆</span>
               <span class="center-text">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
-              <map-chart :map-data="mapData" @city-data="updateCityData" />
+              <map-chart :map-data="mapData" @city-data="updateCityData" @right-click="getOnlineVehicle" />
               <dataset-bar-chart :chart-data="mapChartData" />
             </div>
           </el-col>
@@ -279,7 +279,8 @@ import {
   onlineVehicle,
   trendAnalysis,
   alarmEvent,
-  keyVehicle
+  keyVehicle,
+  cityVehicle
 } from '@/api/home'
 import BarChart from '@/components/Charts/VerticalBarChart.vue'
 import PieChart from '@/components/Charts/InfomationPie.vue'
@@ -364,6 +365,14 @@ export default {
 
     }
   },
+  computed: {
+    unitId() {
+      return this.$store.state.user.unitId
+    },
+    roleName() {
+      return this.$store.state.user.roleName
+    }
+  },
   created() {
     this.getCompanyNum()
     this.getServiceNum()
@@ -376,7 +385,7 @@ export default {
     this.getFacilitator()
     this.getMechanism()
     this.getUnit()
-    this.getOnlineVehicle()
+    this.getCityData()
     this.getTrendAnalysis()
     this.getAlarmEvent()
     this.intervalOnlineCars()
@@ -501,7 +510,6 @@ export default {
             ['city', '当前在线', '累计在线']
           ]
           city.forEach(item => {
-            // const city = CodeToText[getAreaText(item.zoneId)[1]]
             const { realTimeCount, onlineCount, deptName, deptId } = item
             if (deptName.includes('分中心')) {
               this.mapData.push({
@@ -744,9 +752,39 @@ export default {
         ['city', '当前在线', '累计在线']
       ]
       data.city.forEach(item => {
-        const { realTimeCount, onlineCount, deptName } = item
+        const { realTimeCount, onlineCount, deptName, deptId } = item
+        this.mapData.push({
+          value: realTimeCount,
+          name: deptName,
+          count: onlineCount,
+          deptId
+        })
         this.mapChartData.push([deptName, realTimeCount, onlineCount])
       })
+    },
+    // 角色为市级时，获取该市级数据,为 admin 时获取四川省
+    getCityData() {
+      if (this.roleName !== '平台管理员') {
+        this.getOnlineVehicle()
+      } else {
+        cityVehicle({ cityId: this.unitId })
+          .then(({ data }) => {
+            this.updateCityData(data)
+            data.city.forEach(item => {
+              const { realTimeCount, onlineCount, deptName, deptId } = item
+              this.mapData.push({
+                value: realTimeCount,
+                name: deptName,
+                count: onlineCount,
+                deptId
+              })
+              this.mapChartData.push([deptName, realTimeCount, onlineCount])
+            })
+          })
+          .catch(err => {
+            throw err
+          })
+      }
     }
   }
 }

@@ -7,7 +7,7 @@
             <el-col :md="5" :sm="24">
               <el-form-item label="数据源:">
                 <el-select
-                  v-model="listQuery.dataSource"
+                  v-model="listQuery.sourceCode"
                   size="small"
                   placeholder="请选择数据源"
                 >
@@ -297,7 +297,7 @@ export default {
         alarmType: '',
         plateNum: '',
         provinceId: '',
-        dataSource: '200100',
+        sourceCode: '200100',
         type: '2'
       },
       tableData: [],

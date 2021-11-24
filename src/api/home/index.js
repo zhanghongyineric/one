@@ -90,3 +90,13 @@ export function cityVehicle(params) {
     params
   })
 }
+
+// 根据平台id，返回平台名称
+export function platformName(params) {
+  return request({
+    url: '/platformName',
+    method: 'GET',
+    params
+  })
+}
+

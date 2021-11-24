@@ -9,7 +9,7 @@
             <el-col :md="6" :sm="24">
               <el-form-item label="数据源:">
                 <el-select
-                  v-model="listQuery.dataSource"
+                  v-model="listQuery.sourceCode"
                   size="small"
                   placeholder="请选择数据源"
                 >
@@ -1085,7 +1085,7 @@ export default {
         zoneId: null,
         unitName: '',
         unitId: '',
-        dataSource: ''
+        sourceCode: '200100'
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -1098,7 +1098,7 @@ export default {
         zoneId: null,
         unitName: '',
         unitId: '',
-        dataSource: ''
+        sourceCode: '200100'
       },
       useNatureOptions: [], // 使用性质
       carColorOptions: [], // 车身颜色
@@ -1205,7 +1205,7 @@ export default {
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.dataSourceOptions = onlineOption['数据来源'].list
     this.functionsOptions = onlineOption['equipment_terminal_type'].list
-    this.listQuery.dataSource = this.dataSourceOptions[0].value
+    // this.listQuery.sourceCode = this.dataSourceOptions[0].value
     this.getQueryConditions()
     this.getPlateColor()
     this.getFuelType()

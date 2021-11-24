@@ -11,7 +11,7 @@
             <el-col :md="6" :sm="24">
               <el-form-item label="数据源:">
                 <el-select
-                  v-model="listQuery.dataSource"
+                  v-model="listQuery.sourceCode"
                   size="small"
                   placeholder="请选择数据源"
                 >
@@ -462,7 +462,7 @@ export default {
         unitName: '',
         place: [],
         area: '',
-        dataSource: ''
+        sourceCode: '200100'
       }, // 查询条件
       listQueryTemp: {
         pageNum: 1,
@@ -472,7 +472,7 @@ export default {
         unitName: '',
         place: [],
         area: '',
-        dataSource: ''
+        sourceCode: ''
       }, // 用于重置查询条件
       area: [],
       total: 0, // 总数据条数
@@ -562,7 +562,7 @@ export default {
   },
   created() {
     this.dataSourceOptions = onlineOption['数据来源'].list
-    this.listQuery.dataSource = this.dataSourceOptions[0].value
+    // this.listQuery.sourceCode = this.dataSourceOptions[0].value
   },
   mounted() {
     this.handleSearch()

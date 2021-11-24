@@ -8,7 +8,7 @@
             <el-col :md="6" :sm="24">
               <el-form-item label="数据源:">
                 <el-select
-                  v-model="listQuery.dataSource"
+                  v-model="listQuery.sourceCode"
                   size="small"
                   placeholder="请选择数据源"
                 >
@@ -597,7 +597,7 @@ export default {
         qualificationRange: '',
         idCardNum: '',
         unitId: '',
-        dataSource: ''
+        sourceCode: '200100'
       },
       dialogVisible: false,
       tableData: [],
@@ -660,7 +660,7 @@ export default {
   created() {
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.dataSourceOptions = onlineOption['数据来源'].list
-    this.listQuery.dataSource = this.dataSourceOptions[0].value
+    // this.listQuery.sourceCode = this.dataSourceOptions[0].value
     this.getPermitType()
     this.getQueryQualification()
     this.getDriverStatus()

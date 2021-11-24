@@ -93,6 +93,7 @@ const actions = {
 
         const { sysUser, roles } = data
         const { alias, deptId, deptName, id } = sysUser
+        console.log(sysUser, 'sysUser')
 
         if (roles.length === 0) {
           return Promise.reject('未获取到账号角色,请联系管理员进行分配')

@@ -6,7 +6,7 @@ import * as echarts from 'echarts'
 import chartResize from './chart-resize'
 import sichuan from '@/utils/mapJson/sichuan.json'
 import citysCode from '@/utils/mapJson/citysCode.js'
-import { cityVehicle } from '@/api/home'
+import { cityVehicle, platformName } from '@/api/home'
 
 export default {
   mixins: [chartResize],
@@ -33,6 +33,16 @@ export default {
       chart: null,
       mapDataMap: new Map(),
       timer: null
+    }
+  },
+  computed: {
+    // 账号所属地区 id
+    unitId() {
+      return this.$store.state.user.unitId
+    },
+    // 账号角色
+    roleName() {
+      return this.$store.state.user.roleName
     }
   },
   watch: {
@@ -80,7 +90,8 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.initChart(sichuan)
+      if (this.roleName !== '平台管理员') this.initChart(sichuan)
+      else this.getCityName()
     })
   },
   beforeDestroy() {
@@ -95,11 +106,20 @@ export default {
       echarts.registerMap('四川', dataJson)
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
+      // 移除点击事件
       this.chart.off('click')
+      // 添加点击事件
       this.chart.on('click', params => {
         const code = citysCode[params.name]
         if (code) {
-          this.getCityData(params.data.deptId)
+          if (params.data) {
+            this.getCityData(params.data.deptId)
+          } else {
+            this.$message({
+              type: 'warning',
+              message: '该地区暂无数据'
+            })
+          }
           this.getMapJson(code)
         }
       })
@@ -166,7 +186,10 @@ export default {
       this.initChart(cityJson)
     },
     mounseRightClick() {
-      this.initChart(sichuan)
+      if (this.roleName !== '平台管理员') {
+        this.initChart(sichuan)
+        this.$emit('right-click')
+      }
       document.oncontextmenu = function() {
         return false
       }
@@ -175,6 +198,16 @@ export default {
       cityVehicle({ cityId: id })
         .then(({ data }) => {
           this.$emit('city-data', data)
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    getCityName() {
+      platformName({ plarformId: this.unitId })
+        .then(({ data }) => {
+          // 展示账号所在地区地图
+          this.getMapJson(citysCode[data])
         })
         .catch(err => {
           throw err
