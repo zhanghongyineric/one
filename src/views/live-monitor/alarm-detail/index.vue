@@ -122,9 +122,9 @@
                   >
                     <el-option
                       v-for="item in alarmTypeOptions"
-                      :key="item.cbArmType"
-                      :label="item.cbArmName"
-                      :value="item.cbArmType"
+                      :key="item.violationCode"
+                      :label="item.violationName"
+                      :value="item.violationCode"
                     />
                   </el-select>
                 </el-form-item>
@@ -175,9 +175,9 @@
         <el-table-column prop="personName" label="驾驶员" min-width="100" align="center" show-overflow-tooltip />
         <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" show-overflow-tooltip />
 
-        <el-table-column prop="cbArmName" label="报警名称" min-width="160" align="center" show-overflow-tooltip>
+        <el-table-column prop="violationName" label="报警名称" min-width="160" align="center" show-overflow-tooltip>
           <!-- <template slot-scope="scope">
-            {{ scope.row.cbArmType | alarmTypeFilter }}
+            {{ scope.row.violationCode | alarmTypeFilter }}
           </template> -->
         </el-table-column>
 
@@ -213,7 +213,7 @@
           <span><span class="info-title">车牌号：</span>{{ currentRow.plateNum }}</span>
           <span><span class="info-title">车牌颜色：</span>{{ currentRow.plateColor }}</span>
           <span><span class="info-title">车辆类型：</span>{{ currentRow.vehicleType }}</span>
-          <span><span class="info-title">报警类型：</span>{{ currentRow.cbArmName }}</span>
+          <span><span class="info-title">报警类型：</span>{{ currentRow.violationName }}</span>
         </div>
         <div class="alarm-info" style="margin-top:10px;">
           <span><span class="info-title">所属企业：</span>{{ currentRow.unitName }}</span>
@@ -367,11 +367,11 @@ export default {
   },
   methods: {
     getAlarmType() {
-      alarmType()
+      alarmType({ type: this.listQuery.type })
         .then(res => {
           const { data } = res
           data.forEach(item => {
-            this.alarmTypeMap[item.cbArmType] = item.cbArmName
+            this.alarmTypeMap[item.violationCode] = item.violationName
           })
           this.alarmTypeOptions = data
         })

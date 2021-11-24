@@ -13,10 +13,10 @@
                 @change="search"
               >
                 <el-option
-                  v-for="{cbArmType,cbArmName} in alarmsType"
-                  :key="cbArmType"
-                  :value="cbArmType"
-                  :label="cbArmName"
+                  v-for="{violationCode,violationName} in alarmsType"
+                  :key="violationCode"
+                  :value="violationCode"
+                  :label="violationName"
                 />
               </el-select>
             </el-form-item>
@@ -254,17 +254,17 @@ export default {
         .then(({ data }) => {
           this.alarmsType = []
           data.forEach(v => {
-            this.alarmsTypeMap.set(v.cbArmType, v.cbArmName)
-            this.alarmsTypeToNameMap.set(v.cbArmType, v.fieldName)
+            this.alarmsTypeMap.set(v.violationCode, v.violationName)
+            this.alarmsTypeToNameMap.set(v.violationCode, v.fieldName)
           })
           // this.alarmsType = data
           this.$set(this, 'alarmsType', data)
-          const { cbArmType, cbArmName } = data[0]
-          this.alarmType = cbArmType
-          this.yname = cbArmName + '次数'
-          this.yLineName = cbArmName + '总次数'
-          this.pieTitle = cbArmName + '次数占比：'
-          this.funnelTitle = cbArmName + '次数占比：'
+          const { violationCode, violationName } = data[0]
+          this.alarmType = violationCode
+          this.yname = violationName + '次数'
+          this.yLineName = violationName + '总次数'
+          this.pieTitle = violationName + '次数占比：'
+          this.funnelTitle = violationName + '次数占比：'
           this.getSectorStatistics()
           this.getVehicleTrends()
         })
