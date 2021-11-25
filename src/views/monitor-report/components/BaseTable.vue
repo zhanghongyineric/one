@@ -112,7 +112,7 @@ export default {
             multiHeader: this.config[key].multiHeader,
             header: this.config[key].header || tHeader,
             merges: this.config[key].merges,
-            data: this.formatJson(filterVal, this.allData[key]),
+            data: this.formatJson(this.config[key].filterVal || filterVal, this.allData[key]),
             autoWidth: true
           }))
 

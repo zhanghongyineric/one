@@ -102,7 +102,7 @@
       />
       <el-table-column
         prop="plateType"
-        label="车辆颜色"
+        label="车牌颜色"
         width="50"
       />
       <el-table-column

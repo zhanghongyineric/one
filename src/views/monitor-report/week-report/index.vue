@@ -95,7 +95,7 @@
             <ViolationTopTen :data="violationTopTenData" :loading="listLoading" style="margin-bottom: 10px;" />
             <!--主动安全报警排名-->
             <BaseTable
-              title="主动安全报警排名"
+              title="主动安全报警排名前十"
               :data="activeSafetyTableData"
               :all-data="activeSafetyData"
               multi
@@ -213,6 +213,25 @@ export default {
         vehicle: []
       }, // 违章报警前十
       vehicleTopTenData: [[], [], [], []], // 车辆违章报警前十
+      activeSafetyTableHead: {
+        company: [
+          { label: '排序', prop: 'index' },
+          { label: '企业名称', prop: 'unitName' },
+          { label: '报警总数', prop: 'alarmCount' },
+          { label: 'adas报警数', prop: 'adasAlarmCount' },
+          { label: 'dsm报警数', prop: 'dsmAlarmCount' },
+          { label: '环比（%）', prop: 'relativeRatio' }
+        ],
+        vehicle: [
+          { label: '排序', prop: 'index' },
+          { label: '车牌号', prop: 'plateNum' },
+          { label: '企业名称', prop: 'unitName' },
+          { label: '报警总数', prop: 'alarmCount' },
+          { label: 'adas报警数', prop: 'adasAlarmCount' },
+          { label: 'dsm报警数', prop: 'dsmAlarmCount' },
+          { label: '环比（%）', prop: 'relativeRatio' }
+        ]
+      },
       activeSafetyData: {
         company: [],
         vehicle: []
@@ -223,7 +242,9 @@ export default {
           sheetName: '运输企业'
         },
         vehicle: {
-          sheetName: '营运车辆'
+          sheetName: '营运车辆',
+          header: ['排序', '车牌号', '企业名称', '报警总数', 'adas报警数', 'dsm报警数', '环比（%）'],
+          filterVal: ['index', 'plateNum', 'unitName', 'alarmCount', 'adasAlarmCount', 'dsmAlarmCount', 'relativeRatio']
         }
       }
     }
@@ -236,14 +257,7 @@ export default {
     // 主动安全表格数据
     activeSafetyTableData() {
       return {
-        tableHead: [
-          { label: '排序', prop: 'index' },
-          { label: '企业名称', prop: 'unitName' },
-          { label: '报警总数', prop: 'alarmCount' },
-          { label: 'adas报警数', prop: 'adasAlarmCount' },
-          { label: 'dsm报警数', prop: 'dsmAlarmCount' },
-          { label: '环比（%）', prop: 'relativeRatio' }
-        ],
+        tableHead: this.activeSafetyTableHead[this.activeSafetyType],
         tableData: this.activeSafetyData[this.activeSafetyType]
       }
     }
