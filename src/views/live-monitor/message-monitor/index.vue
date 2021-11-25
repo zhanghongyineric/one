@@ -342,6 +342,7 @@ export default {
         this.markers = []
         this.tableData = []
         this.containerLoading = false
+        this.checkedCars = 0
       } else {
         this.containerLoading = true
         setTimeout(() => {

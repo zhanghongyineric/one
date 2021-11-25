@@ -457,8 +457,12 @@ export default {
         regionId: ['622'],
         time: [],
         alarmType: '',
-        plateNum: ''
+        plateNum: '',
+        provinceId: '',
+        sourceCode: '200100',
+        type: '2'
       }
+      this.judgeRole()
       this.getDate()
       this.getList()
     },
