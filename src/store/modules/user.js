@@ -2,6 +2,8 @@ import { getInfo, fetchAllDictionary } from '@/api/system-manage/account-manage'
 import { login, logout } from '@/api/user/oauth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import CityTextToCode from '@/utils/AreaTextToCode'
+import { platformName } from '@/api/home'
 
 const getDefaultState = () => {
   return {
@@ -15,7 +17,8 @@ const getDefaultState = () => {
     region: '',
     area: '',
     unitId: '',
-    userId: ''
+    userId: '',
+    cityCode: ''
   }
 }
 
@@ -49,6 +52,9 @@ const mutations = {
   },
   SET_USER_ID: (state, userId) => {
     state.userId = userId
+  },
+  SET_CITY_CODE: (state, cityCode) => {
+    state.cityCode = cityCode
   }
 }
 
@@ -76,6 +82,17 @@ const actions = {
     })
   },
 
+  // 获取城市编码
+  getCityCode({ commit, state }) {
+    platformName({ plarformId: state.unitId })
+      .then(({ data }) => {
+        commit('SET_CITY_CODE', CityTextToCode.get(data))
+      })
+      .catch(err => {
+        throw err
+      })
+  },
+
   // 获取用户信息和字典
   getInfo({ commit, state }) {
     return Promise.allSettled([getInfo(state.token), fetchAllDictionary()]).then(([userRes, dictRes]) => {
@@ -93,7 +110,6 @@ const actions = {
 
         const { sysUser, roles } = data
         const { alias, deptId, deptName, id } = sysUser
-        console.log(sysUser, 'sysUser')
 
         if (roles.length === 0) {
           return Promise.reject('未获取到账号角色,请联系管理员进行分配')

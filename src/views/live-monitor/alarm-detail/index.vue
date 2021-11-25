@@ -45,6 +45,7 @@
                   size="small"
                   :options="areaOptions"
                   :props="areaProps"
+                  :disabled="disabled"
                 />
               </el-form-item>
             </el-col>
@@ -321,7 +322,17 @@ export default {
       alarmPhotos: [],
       alarmVideos: [],
       previewPhotos: [],
-      currentRow: {}
+      currentRow: {}, // 当前操作行
+
+      disabled: false // 地区是否可以选择
+    }
+  },
+  computed: {
+    roleName() {
+      return this.$store.state.user.roleName
+    },
+    unitId() {
+      return this.$store.state.user.unitId
     }
   },
   watch: {
@@ -353,6 +364,7 @@ export default {
   },
   created() {
     that = this
+    this.judgeRole()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
     this.vehicleTypeOptions = onlineOption['vehicle_type_code'].list
@@ -366,6 +378,12 @@ export default {
     this.getAlarmType()
   },
   methods: {
+    // 判断角色赋值地区
+    judgeRole() {
+      this.roleName === '平台管理员'
+        ? (this.listQuery.regionId = ['622', this.unitId.toString()]) && (this.disabled = true)
+        : ''
+    },
     getAlarmType() {
       alarmType({ type: this.listQuery.type })
         .then(res => {

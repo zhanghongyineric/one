@@ -33,6 +33,8 @@ router.beforeEach(async(to, from, next) => {
           // get user info
           const { sysUser } = await store.dispatch('user/getInfo')
 
+          await store.dispatch('user/getCityCode')
+
           if (!sysUser.username) {
             Promise.reject('没有获取到用户信息')
           }

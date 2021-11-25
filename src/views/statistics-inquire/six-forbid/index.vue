@@ -30,6 +30,7 @@
                 :options="areaOptions"
                 :props="areaProps"
                 style="width:100%"
+                :disabled="disabled"
                 @change="search"
               />
             </el-form-item>
@@ -197,7 +198,8 @@ export default {
       alarmsTypeMap: new Map(),
       alarmsTypeToNameMap: new Map(),
       tableLabel: '',
-      tableWidth: 'width:55%;'
+      tableWidth: 'width:55%;',
+      disabled: false // 地区是否可选择
     }
   },
   computed: {
@@ -208,6 +210,12 @@ export default {
         this.$store.commit('settings/CHANGE_THEME', localTheme)
       }
       return localStorage.getItem('theme') === 'dark'
+    },
+    roleName() {
+      return this.$store.state.user.roleName
+    },
+    unitId() {
+      return this.$store.state.user.unitId
     }
   },
   watch: {
@@ -226,12 +234,19 @@ export default {
     }
   },
   created() {
+    this.judgeRole()
     this.getAlaramTypeBySource()
   },
   mounted() {
     this.getDate()
   },
   methods: {
+    // 判断角色赋值地区
+    judgeRole() {
+      this.roleName === '平台管理员'
+        ? (this.listQuery.regionId = ['622', this.unitId.toString()]) && (this.disabled = true)
+        : ''
+    },
     getDate() {
       const currentDate = new Date()
       this.trendYear = currentDate.getFullYear().toString()

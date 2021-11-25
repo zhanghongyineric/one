@@ -30,6 +30,7 @@
                   :options="searchCityOptions"
                   placeholder="请选择所属地区"
                   style="width:100%;"
+                  :disabled="disabled"
                 />
               </el-form-item>
             </el-col>
@@ -1190,7 +1191,16 @@ export default {
       accessWayOptions: [], // 接入方式
       insuranceDetail: false, // 是否查看保险详情
       carKindOptions: [], // 车辆类型
-      plateColorOptions: [] // 车牌颜色
+      plateColorOptions: [], // 车牌颜色
+      disabled: false
+    }
+  },
+  computed: {
+    roleName() {
+      return this.$store.state.user.roleName
+    },
+    cityCode() {
+      return this.$store.state.user.cityCode
     }
   },
   watch: {
@@ -1202,6 +1212,7 @@ export default {
     that = this
   },
   created() {
+    this.judgeRole()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.dataSourceOptions = onlineOption['数据来源'].list
     this.functionsOptions = onlineOption['equipment_terminal_type'].list
@@ -1223,6 +1234,12 @@ export default {
     this.getList()
   },
   methods: {
+    // 判断角色赋值地区
+    judgeRole() {
+      this.roleName === '平台管理员'
+        ? (this.listQuery.zoneId = ['510000', this.cityCode, '']) && (this.disabled = true)
+        : ''
+    },
     getList() {
       const { zoneId } = this.listQuery
       const zoneIds = []

@@ -26,7 +26,7 @@
             </el-col>
             <el-col :md="6" :sm="24">
               <el-form-item label="所属地区:">
-                <AreaSelect v-model="listQuery.place" size="small" limit-area :area-text.sync="listQuery.area" />
+                <AreaSelect v-model="listQuery.place" :disabled="true" size="small" limit-area :area-text.sync="listQuery.area" />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -554,13 +554,23 @@ export default {
       dialogStatus: '',
       poiPicker: null,
       operatingPermitImage: [],
-      dataSourceOptions: []
+      dataSourceOptions: [],
+      disabled: false
+    }
+  },
+  computed: {
+    roleName() {
+      return this.$store.state.user.roleName
+    },
+    cityCode() {
+      return this.$store.state.user.cityCode
     }
   },
   beforeCreate() {
     that = this
   },
   created() {
+    this.judgeRole()
     this.dataSourceOptions = onlineOption['数据来源'].list
     // this.listQuery.sourceCode = this.dataSourceOptions[0].value
   },
@@ -571,6 +581,12 @@ export default {
     this.optionGroup.economyList = onlineOption['经济类型'].list
   },
   methods: {
+    // 判断角色赋值地区
+    judgeRole() {
+      this.roleName === '平台管理员'
+        ? (this.listQuery.place = ['510000', this.cityCode, '']) && (this.disabled = true)
+        : ''
+    },
     closeDialog() {
       this.dialogFormVisible = false
       this.createFormData = { ...this.createFormDataTemp }

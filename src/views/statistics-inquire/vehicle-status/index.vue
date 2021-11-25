@@ -11,6 +11,7 @@
                 size="mini"
                 :options="areaOptions"
                 :props="areaProps"
+                :disabled="disabled"
               />
             </el-form-item>
           </el-col>
@@ -172,7 +173,8 @@ export default {
 
       twoLevelColums: [],
       trendYear: '2021',
-      tableWidth: 'width:55%;'
+      tableWidth: 'width:55%;',
+      disabled: false // 地区是否可选择
     }
   },
   computed: {
@@ -183,9 +185,16 @@ export default {
         this.$store.commit('settings/CHANGE_THEME', localTheme)
       }
       return localStorage.getItem('theme') === 'dark'
+    },
+    roleName() {
+      return this.$store.state.user.roleName
+    },
+    unitId() {
+      return this.$store.state.user.unitId
     }
   },
   created() {
+    this.judgeRole()
     this.getTime()
     this.getVehicleData()
     this.getAreaCode()
@@ -197,6 +206,12 @@ export default {
     this.trendYear = currentDate.getFullYear().toString()
   },
   methods: {
+    // 判断角色赋值地区
+    judgeRole() {
+      this.roleName === '平台管理员'
+        ? (this.listQuery.regionId = ['622', this.unitId.toString()]) && (this.disabled = true)
+        : ''
+    },
     // 获取当前月份，并赋值搜索条件中的默认开始和结束时间
     getTime() {
       const currentDate = new Date()

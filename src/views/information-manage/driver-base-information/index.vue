@@ -23,7 +23,7 @@
             </el-col>
             <el-col :md="6" :sm="24">
               <el-form-item label="籍贯:">
-                <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择籍贯地区" style="width:100%;" size="small" :options="cityOptions" />
+                <el-cascader v-model="listQuery.qualificationCity" :disabled="disabled" placeholder="请选择籍贯地区" style="width:100%;" size="small" :options="cityOptions" />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -653,11 +653,21 @@ export default {
       stepIndex: 1,
       detail: false,
       modify: false,
-      currentRow: {}
+      currentRow: {},
+      disabled: false
+    }
+  },
+  computed: {
+    roleName() {
+      return this.$store.state.user.roleName
+    },
+    cityCode() {
+      return this.$store.state.user.cityCode
     }
   },
   beforeCreate() { that = this },
   created() {
+    this.judgeRole()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.dataSourceOptions = onlineOption['数据来源'].list
     // this.listQuery.sourceCode = this.dataSourceOptions[0].value
@@ -670,6 +680,12 @@ export default {
     this.getList()
   },
   methods: {
+    // 判断角色赋值地区
+    judgeRole() {
+      this.roleName === '平台管理员'
+        ? (this.listQuery.qualificationCity = ['510000', this.cityCode, '']) && (this.disabled = true)
+        : ''
+    },
     search() {
       this.listQuery.pageNum = 1
       this.getList()
