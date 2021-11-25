@@ -23,7 +23,7 @@
             </el-col>
             <el-col :md="6" :sm="24">
               <el-form-item label="籍贯:">
-                <el-cascader v-model="listQuery.qualificationCity" :disabled="disabled" placeholder="请选择籍贯地区" style="width:100%;" size="small" :options="cityOptions" />
+                <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择籍贯地区" style="width:100%;" size="small" :options="cityOptions" />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -667,7 +667,7 @@ export default {
   },
   beforeCreate() { that = this },
   created() {
-    this.judgeRole()
+    // this.judgeRole()
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.dataSourceOptions = onlineOption['数据来源'].list
     // this.listQuery.sourceCode = this.dataSourceOptions[0].value

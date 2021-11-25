@@ -128,7 +128,7 @@ export default {
 
     setInterval(() => {
       this.getUnitVehicle()
-    }, 180000)
+    }, 300000)
   },
   methods: {
 
