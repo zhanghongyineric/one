@@ -99,8 +99,16 @@
       <div :class="[drawer ? 'left-arrow' : 'right-arrow']" />
     </div>
     <div class="footer">
-      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 20px;">蜀ICP备20014004号</a>
-      <a target="_blank" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" style="margin-right: 80px;">蜀ICP备20014004号-2</a>
+      <a
+        target="_blank"
+        href="https://beian.miit.gov.cn/#/Integrated/recordQuery"
+        style="margin-right: 20px;"
+      >蜀ICP备20014004号</a>
+      <a
+        target="_blank"
+        href="https://beian.miit.gov.cn/#/Integrated/recordQuery"
+        style="margin-right: 80px;"
+      >蜀ICP备20014004号-2</a>
       <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51010702002449">
         <img src="@/assets/login_images/police.png" style="width: 20px;height: 20px">
         川公网安备 51010702002449 号
@@ -258,44 +266,44 @@ export default {
               d.css({ 'margin-left': i.margin_left + 1.2 * p + 'px', 'margin-top': i.margin_top + 1.2 * q + 'px' })
             })
           } else {
-            $(document).bind('touchmove', function(a) { a.preventDefault() })
-            $('img').bind('touchend', function(a) { a.preventDefault() })
+            $(document).bind('touchmove', function(a) {
+              a.preventDefault()
+            })
+            $('img').bind('touchend', function(a) {
+              a.preventDefault()
+            })
           }
           $('img').each(function() {
             const a = $(this).attr('data-src')
             a != null && $(this).attr('src', a).removeAttr('data-src').addClass('png')
           })
         },
-        getWinW: function() { return $(window).width() },
-        getWinH: function() { return $(window).height() },
+        getWinW: function() {
+          return $(window).width()
+        },
+        getWinH: function() {
+          return $(window).height()
+        },
         is_pc: function() {
           for (let a = ['Android', 'iPhone', 'Windows Phone', 'iPod', 'iPad', 'BlackBerry', 'MeeGo', 'SymbianOS'],
             b = navigator.userAgent, c = a.length, d = 0; c > d;
-            d++) { if (b.indexOf(a[d]) > 0) return !1 } return !0
+            d++) {
+            if (b.indexOf(a[d]) > 0) return !1
+          }
+          return !0
         }
       }
       mainObj.init()
     },
     getSysPort() {
-      sysPort()
+      historicVersion({ port: '000001' })
         .then(res => {
-          res.data.forEach(item => {
-            if (item.label === '管理端·检测端') {
-              this.systemCode = item.value
-            }
-          })
-          historicVersion({ port: this.systemCode })
-            .then(res => {
-              if (res.data) {
-                const { data: { number, content, historyContent }} = res
-                this.version = number
-                const eleItem = document.getElementsByClassName('version-drawer')[0]
-                historyContent ? eleItem.innerHTML = content + historyContent : eleItem.innerHTML = content
-              }
-            })
-            .catch(err => {
-              throw err
-            })
+          if (res.data) {
+            const { data: { number, content, historyContent }} = res
+            this.version = number
+            const eleItem = document.getElementsByClassName('version-drawer')[0]
+            historyContent ? eleItem.innerHTML = content + historyContent : eleItem.innerHTML = content
+          }
         })
         .catch(err => {
           throw err
@@ -410,145 +418,145 @@ $light_gray: #eee;
 //   min-width: 1300px;
 // }
 
-    .right {
-      flex: 1;
-      height: 500px;
-      width: 440px;
-      // background: white;
-      border: 2px solid;
-      padding-top: 30px;
-      // position: absolute;
-      // right: 17%;
-      // top: 20%;
-      border-radius: 10px;
-      z-index: 999;
+.right {
+  flex: 1;
+  height: 500px;
+  width: 440px;
+  // background: white;
+  border: 2px solid;
+  padding-top: 30px;
+  // position: absolute;
+  // right: 17%;
+  // top: 20%;
+  border-radius: 10px;
+  z-index: 999;
 
-      .welcome {
-        letter-spacing: 2px;
-        margin: 0 0 20px;
-        display: block;
-        text-align: center;
-        color: #2ec0f6;
-        font-size: 30px;
-        font-weight: normal;
-      }
+  .welcome {
+    letter-spacing: 2px;
+    margin: 0 0 20px;
+    display: block;
+    text-align: center;
+    color: #2ec0f6;
+    font-size: 30px;
+    font-weight: normal;
+  }
 
-      .tips {
-        font-size: 14px;
-        color: #fff;
-        margin-bottom: 10px;
+  .tips {
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 10px;
 
-        span {
-          &:first-of-type {
-            margin-right: 16px;
-          }
-        }
-      }
-
-      .svg-container {
-        padding: 6px 5px 6px 15px;
-        color: #2ec0f6;
-        vertical-align: middle;
-        width: 30px;
-        display: inline-block;
-      }
-
-      .login-form {
-        position: relative;
-        height: 329px;
-        padding: 0 60px 25px;
-
-        ::v-deep.el-form-item__content {
-          background: white;
-          border-radius: 4px;
-        }
-
-        .login-button {
-          width: 100%;
-          height: 50px;
-          padding: 0;
-          line-height: 50px;
-          border: none;
-          border-radius: 60px;
-          background: #14a7ff;
-          color: #fff;
-          font-size: 18px;
-          letter-spacing: 2px;
-          cursor: pointer;
-        }
-
-      }
-
-      .show-pwd {
-        position: absolute;
-        right: 10px;
-        top: 3px;
-        font-size: 16px;
-        color: $dark_gray;
-        cursor: pointer;
-        user-select: none;
-      }
-
-      .slider-placeholder {
-        position: relative;
-        margin-bottom: 34px;
-        height: 38px;
-        text-align: center;
-        line-height: 38px;
-        margin-top: 40px;
-        background: #f7f9fa;
-        color: #45494c;
-        border: 1px solid transparent;
-
-        .finishSlider {
-          position: absolute;
-          left: 0;
-          bottom: -32px;
-          color: #F56C6C;
-          font-size: 12px;
-        }
-      }
-
-      #captcha {
-        position: absolute !important;
-        z-index: 1;
-        bottom: 110px;
-        left: 60px;
-
-        ::v-deep .sliderContainer {
-          border: none !important;
-        }
-      }
-
-      //显示图片时
-      #captcha.showSliderImage {
-        bottom: 110px;
-        height: 232px;
-      }
-
-      #captcha.hideSliderImage {
-        height: 50px;
-
-        > :not(.sliderContainer) {
-          display: none !important;
-        }
-      }
-
-      h2 {
-        font-size: 16px;
-        line-height: 50px;
-        letter-spacing: 3px;
-        text-align: center;
-        color: #2ec0f6;
-        font-weight: normal;
-        margin-top: -10px;
+    span {
+      &:first-of-type {
+        margin-right: 16px;
       }
     }
+  }
+
+  .svg-container {
+    padding: 6px 5px 6px 15px;
+    color: #2ec0f6;
+    vertical-align: middle;
+    width: 30px;
+    display: inline-block;
+  }
+
+  .login-form {
+    position: relative;
+    height: 329px;
+    padding: 0 60px 25px;
+
+    ::v-deep.el-form-item__content {
+      background: white;
+      border-radius: 4px;
+    }
+
+    .login-button {
+      width: 100%;
+      height: 50px;
+      padding: 0;
+      line-height: 50px;
+      border: none;
+      border-radius: 60px;
+      background: #14a7ff;
+      color: #fff;
+      font-size: 18px;
+      letter-spacing: 2px;
+      cursor: pointer;
+    }
+
+  }
+
+  .show-pwd {
+    position: absolute;
+    right: 10px;
+    top: 3px;
+    font-size: 16px;
+    color: $dark_gray;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .slider-placeholder {
+    position: relative;
+    margin-bottom: 34px;
+    height: 38px;
+    text-align: center;
+    line-height: 38px;
+    margin-top: 40px;
+    background: #f7f9fa;
+    color: #45494c;
+    border: 1px solid transparent;
+
+    .finishSlider {
+      position: absolute;
+      left: 0;
+      bottom: -32px;
+      color: #F56C6C;
+      font-size: 12px;
+    }
+  }
+
+  #captcha {
+    position: absolute !important;
+    z-index: 1;
+    bottom: 110px;
+    left: 60px;
+
+    ::v-deep .sliderContainer {
+      border: none !important;
+    }
+  }
+
+  //显示图片时
+  #captcha.showSliderImage {
+    bottom: 110px;
+    height: 232px;
+  }
+
+  #captcha.hideSliderImage {
+    height: 50px;
+
+    > :not(.sliderContainer) {
+      display: none !important;
+    }
+  }
+
+  h2 {
+    font-size: 16px;
+    line-height: 50px;
+    letter-spacing: 3px;
+    text-align: center;
+    color: #2ec0f6;
+    font-weight: normal;
+    margin-top: -10px;
+  }
+}
 
 ::v-deep .version-drawer {
   padding: 70px 20px 20px !important;
   min-width: 250px !important;
-  background-color:transparent !important;
+  background-color: transparent !important;
   overflow-y: auto !important;
 }
 
@@ -562,13 +570,14 @@ $light_gray: #eee;
   font-weight: 700;
   color: #2ec0f6;
 }
+
 .expand-symbol {
   width: 60px;
   height: 60px;
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: transparent  transparent  transparent #2ec0f6;
+  border-color: transparent transparent transparent #2ec0f6;
   position: fixed;
   top: 48%;
   left: 0;
@@ -582,7 +591,7 @@ $light_gray: #eee;
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: transparent  transparent  transparent #2ec0f6;
+  border-color: transparent transparent transparent #2ec0f6;
   position: fixed;
   top: 48%;
   left: 20%;
@@ -611,6 +620,7 @@ $light_gray: #eee;
   top: 10px;
   right: 10px;
 }
+
 .system-text {
   text-align: center;
   color: #2ec0f6;
@@ -618,13 +628,14 @@ $light_gray: #eee;
   margin-top: -20px !important;
   font-size: 25px !important;
 }
+
 .footer {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 50px;
-  position:fixed;
+  position: fixed;
   bottom: 0;
 
   a {
@@ -640,7 +651,7 @@ $light_gray: #eee;
   }
 }
 
-::v-deep .el-drawer__container ::-webkit-scrollbar{
-    display: none !important;
+::v-deep .el-drawer__container ::-webkit-scrollbar {
+  display: none !important;
 }
 </style>
