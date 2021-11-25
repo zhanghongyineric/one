@@ -120,7 +120,7 @@
 import $ from 'jquery'
 import './libs/jigsaw'
 import './libs/jigsaw.css'
-import { historicVersion, sysPort } from '@/api/system-manage/version-manage'
+import { historicVersion } from '@/api/system-manage/version-manage'
 
 export default {
   name: 'Login',
