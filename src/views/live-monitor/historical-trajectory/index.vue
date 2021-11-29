@@ -6,7 +6,7 @@
         <el-form
           ref="searchForm"
           :model="searchFormData"
-          label-width="90px"
+          label-width="100px"
           :rules="rules"
         >
           <el-form-item label="车牌号码:" prop="plateNum">

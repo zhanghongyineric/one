@@ -176,11 +176,7 @@
         <el-table-column prop="personName" label="驾驶员" min-width="100" align="center" show-overflow-tooltip />
         <el-table-column prop="unitName" label="所属企业" min-width="300" align="center" show-overflow-tooltip />
 
-        <el-table-column prop="violationName" label="报警名称" min-width="160" align="center" show-overflow-tooltip>
-          <!-- <template slot-scope="scope">
-            {{ scope.row.violationCode | alarmTypeFilter }}
-          </template> -->
-        </el-table-column>
+        <el-table-column prop="cbArmName" label="报警名称" min-width="160" align="center" show-overflow-tooltip />
 
         <el-table-column prop="startTime" label="开始时间" width="220" align="center" show-overflow-tooltip />
         <el-table-column prop="endtime" label="结束时间" width="220" align="center" show-overflow-tooltip />
@@ -359,6 +355,13 @@ export default {
       deep: true,
       handler: function(newV, oldV) {
         if (newV === '') this.listQuery.unitId = ''
+      }
+    },
+    'listQuery.type': {
+      deep: true,
+      handler: function() {
+        this.listQuery.alarmType = ''
+        this.getAlarmType()
       }
     }
   },

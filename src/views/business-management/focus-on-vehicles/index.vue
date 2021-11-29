@@ -170,11 +170,11 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :md="12" :sm="24">
+            <!-- <el-col :md="12" :sm="24">
               <el-form-item label="平台名称:" prop="creator">
                 <el-input v-model="formData.creator" clearable size="small" placeholder="请输入平台名称" />
               </el-form-item>
-            </el-col>
+            </el-col> -->
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -237,8 +237,8 @@ export default {
         safecodeScore: [{ required: true, trigger: 'blur', message: '请输入安全码得分' }],
         vehicleType: [{ required: true, trigger: 'change', message: '请选择车辆类型' }],
         plateColor: [{ required: true, trigger: 'change', message: '请选择车牌颜色' }],
-        plateNum: [{ required: true, trigger: 'blur', message: '请输入车牌号' }],
-        creator: [{ required: true, trigger: 'blur', message: '请输入平台名称' }]
+        plateNum: [{ required: true, trigger: 'blur', message: '请输入车牌号' }]
+        // creator: [{ required: true, trigger: 'blur', message: '请输入平台名称' }]
       },
       colorOptions: [],
       colorMap: {},
@@ -248,6 +248,11 @@ export default {
       codeMap: {},
       currentRow: {},
       codeColorStyle: ''
+    }
+  },
+  computed: {
+    plateName() {
+      return this.$store.state.user.name
     }
   },
   mounted() {
@@ -365,6 +370,7 @@ export default {
         if (valid) {
           this.listLoading = true
           if (this.type === 'update') this.formData.id = this.currentRow.id
+          this.formData.creator = this.plateName
           save({ ...this.formData })
             .then(_ => {
               this.$message({

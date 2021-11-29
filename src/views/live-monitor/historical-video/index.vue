@@ -157,9 +157,6 @@ export default {
       iframeWin: null
     }
   },
-  created() {
-    // this.getList()
-  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.searchFormData.plateNum = vm.$route.query.plateNum
@@ -226,7 +223,6 @@ export default {
                   DAY: day,
                   BEG: begin,
                   END: end,
-
                   RECTYPE: -1,
                   FILEATTR: 2,
                   LOC: 1,
@@ -244,6 +240,11 @@ export default {
                     this.tableData = res.data.files
                     this.tableData.forEach(item => {
                       this.changeTime(item)
+                    })
+                  } else if (res.data.message === 'Device is not online!') {
+                    this.$message({
+                      type: 'warning',
+                      message: '当前设备不在线！'
                     })
                   } else {
                     this.$message({
@@ -284,7 +285,7 @@ export default {
   width: 100%;
   height: calc(100vh - 84px);
   position: relative;
-  min-height: 800px;
+  min-height: 880px;
 }
 
 .left-box {
