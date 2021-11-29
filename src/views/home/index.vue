@@ -515,13 +515,15 @@ export default {
               this.mapData.push({
                 value: realTimeCount,
                 name: deptName.split('分中心')[0] + '市',
-                count: onlineCount
+                count: onlineCount,
+                deptId
               })
             } else if (deptName.includes('中心')) {
               this.mapData.push({
                 value: realTimeCount,
                 name: deptName.split('中心')[0] + '市',
-                count: onlineCount
+                count: onlineCount,
+                deptId
               })
             }
             this.mapData.push({

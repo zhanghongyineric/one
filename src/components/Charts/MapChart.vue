@@ -1,5 +1,9 @@
 <template>
-  <div :class="className" :style="{height,width}" @click.right="mounseRightClick" />
+  <div :style="{height,width}">
+    <div ref="map" :class="className" style="width:100%;height:100%;" @click.right="mounseRightClick" />
+    <img v-show="showReturn" src="../../assets/return.png" class="return" @click="mounseRightClick">
+  </div>
+
 </template>
 <script>
 import * as echarts from 'echarts'
@@ -32,7 +36,8 @@ export default {
     return {
       chart: null,
       mapDataMap: new Map(),
-      timer: null
+      timer: null,
+      showReturn: false
     }
   },
   computed: {
@@ -104,25 +109,30 @@ export default {
   methods: {
     initChart(dataJson) {
       echarts.registerMap('四川', dataJson)
-      this.chart = echarts.init(this.$el)
+      this.chart = echarts.init(this.$refs.map)
       this.setOptions(this.chartData)
       // 移除点击事件
       this.chart.off('click')
       // 添加点击事件
       this.chart.on('click', params => {
+        console.log(params)
         const code = citysCode[params.name]
         if (code) {
           if (params.data) {
             this.getCityData(params.data.deptId)
+            this.getMapJson(code)
+            this.showReturn = true
           } else {
             this.$message({
               type: 'warning',
               message: '该地区暂无数据'
             })
           }
-          this.getMapJson(code)
         }
       })
+    },
+    returnUpper() {
+
     },
     setOptions() {
       this.chart.setOption({
@@ -187,6 +197,7 @@ export default {
     },
     mounseRightClick() {
       if (this.roleName !== '平台管理员') {
+        this.showReturn = false
         this.initChart(sichuan)
         this.$emit('right-click')
       }
@@ -216,3 +227,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.return {
+  position:absolute;
+  top: 20px;
+  left: 50px;
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
+}
+</style>
