@@ -1,5 +1,6 @@
 import createRequest from '@/utils/createRequest'
 const request = createRequest('/baseInfo/vehicle')
+const downloadRequest = createRequest('/baseInfo')
 
 // 车辆信息分页列表展示（可根据条件查询）
 export function selectList(data) {
@@ -201,15 +202,6 @@ export function queryInsurance(data) {
   })
 }
 
-// 文件上传
-// export function upload(data) {
-//   return request({
-//     url: '/file/upload',
-//     method: 'POST',
-//     data
-//   })
-// }
-
 // 机动车的使用性质
 export function queryUseNature(data) {
   return request({
@@ -225,5 +217,15 @@ export function queryCarColor(data) {
     url: '/queryCarColor',
     method: 'POST',
     data
+  })
+}
+
+// 下载车辆 excel
+export function downloadVehicleExecl(params) {
+  return downloadRequest({
+    url: '/execl/downloadVehicleExecl',
+    method: 'GET',
+    params,
+    responseType: 'blob'
   })
 }

@@ -100,6 +100,9 @@
                 <el-button size="small" @click="resetQuery">重置</el-button>
                 <el-button type="primary" size="small" @click="handleSearch">查询</el-button>
                 <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
+                <el-button type="primary" size="small" @click="handleDownload">
+                  下载Excel
+                </el-button>
                 <el-button type="text" @click="advanced=!advanced">
                   {{ advanced ? '收起' : '展开' }}
                   <i :class="advanced?'el-icon-arrow-up':'el-icon-arrow-down'" />
@@ -1033,7 +1036,8 @@ import {
   queryInsurance,
   vehicleSave,
   queryUseNature,
-  queryCarColor
+  queryCarColor,
+  downloadVehicleExecl
 } from '@/api/information-manage/car-base-information'
 import { provinceAndCityData, CodeToText, regionDataPlus } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
@@ -1119,7 +1123,6 @@ export default {
         plateColor: [{ required: true, message: '请选择车牌颜色', trigger: 'change' }]
       },
       twoRules: {
-        // vehicleType: [{ required: true, message: '请选择行驶证车辆类型', trigger: 'change' }],
         registerZoneId: [{ required: true, message: '请选择车籍所在地', trigger: 'change' }],
         useNature: [{ required: true, message: '请选择使用性质', trigger: 'change' }],
         factoryType: [{ required: true, message: '请输入品牌型号', trigger: 'blur' }],
@@ -1216,7 +1219,6 @@ export default {
     const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
     this.dataSourceOptions = onlineOption['数据来源'].list
     this.functionsOptions = onlineOption['equipment_terminal_type'].list
-    // this.listQuery.sourceCode = this.dataSourceOptions[0].value
     this.getQueryConditions()
     this.getPlateColor()
     this.getFuelType()
@@ -1889,6 +1891,32 @@ export default {
             })
         }
       })
+    },
+    // 下载文件
+    handleDownload() {
+      this.listLoading = true
+      const { zoneId } = this.listQuery
+      const zoneIds = []
+      if (zoneId) {
+        if (!zoneId[2]) {
+          regionDataPlus[23].children.forEach(item => {
+            if (item.value === zoneId[1]) {
+              for (let i = 1; i < item.children.length; i++) {
+                zoneIds.push(item.children[i].value)
+              }
+              zoneIds.push(item.value)
+            }
+          })
+        } else zoneIds.push(zoneId[2])
+      }
+      Promise.resolve(downloadVehicleExecl({ ...this.listQuery, zoneId: zoneIds }))
+        .then(_ => {
+          this.listLoading = false
+        })
+        .catch(err => {
+          this.listLoading = false
+          throw err
+        })
     }
   }
 }

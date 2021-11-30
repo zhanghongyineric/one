@@ -41,18 +41,23 @@ export default function createRequest(baseUrl, wait_time) {
   service.interceptors.response.use(
     response => {
       const res = response.data
+      // 捕获文件流，直接下载
       if (res instanceof Blob) {
         if (response.headers['content-file'] === 'no') {
           Message({
-            type: 'error',
+            type: 'warning',
             message: '没有相关文件'
           })
           return
         }
         try {
           const contentDisposition = response.headers['content-disposition']
-          const fileName = decodeURI(contentDisposition.slice(contentDisposition.indexOf('filename=') + 9)) // 获取文件名
-          fileDownload(res, fileName) // 下载
+          if (contentDisposition) {
+            const fileName = decodeURI(contentDisposition.slice(contentDisposition.indexOf('filename=') + 9)) // 获取文件名
+            fileDownload(res, fileName) // 下载
+          } else {
+            fileDownload(res, '数据文件.xlsx')
+          }
           return res
         } catch (e) {
           Message({
@@ -65,7 +70,7 @@ export default function createRequest(baseUrl, wait_time) {
       // 捕获账号登录状态异常
       if (res.code === 401 || res.code === 403) {
         // 重新刷新页面（无用户信息）异常会被permission.js捕获，直接跳转到登陆页，此时无需弹窗
-        if (store.getters.name) {
+        if (store.getters.role) {
           // 没有弹窗实例再弹窗
           if (!messageBox) {
             messageBox = MessageBox.confirm('你已经被登出, 你可以点击取消留在这个界面, 或者重新登录', '确认登出?', {
