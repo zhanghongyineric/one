@@ -53,7 +53,6 @@
         <div class="replay-box">
           <span>回放进度：</span>
           <el-progress :text-inside="true" :stroke-width="15" :percentage="perValue" />
-
         </div>
         <div class="check-box">
           <el-radio
@@ -105,8 +104,6 @@
 <script>
 import { position, findPlateNum } from '@/api/live-monitor/history'
 
-let TIME_VARIABLE
-
 export default {
   name: 'HistoricalTrajectory',
   data() {
@@ -116,12 +113,15 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: '',
-        startTime: '',
-        endTime: '',
-        date: '',
-        time: ''
+        plateNum: '川Y59R08',
+        startTime: '2021-11-30 13:32:37',
+        endTime: '2021-11-30 13:41:37',
+        date: '2021-11-30',
+        time: [' 13:32:37', ' 13:41:37']
       },
+      passedTime: 0,
+      passedTimeTemp: 0,
+      passedPolylineLength: 0,
       loading: false,
       map: null,
       lineArr: [[30.572903, 104.06632]],
@@ -144,7 +144,8 @@ export default {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
         date: [{ required: true, message: '请选择查询日期', trigger: 'change' }],
         time: [{ required: true, message: '请选择时间范围', trigger: 'change' }]
-      }
+      },
+      time_variable: 0
     }
   },
   computed: {
@@ -232,7 +233,7 @@ export default {
         }
         this.initPolyline()
         // 计算轨迹播放时间
-        TIME_VARIABLE = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
+        this.time_variable = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
       }
     },
     // 开始播放
@@ -281,6 +282,8 @@ export default {
       this.polyline = null // 轨迹线路
       this.alreadyPercent = 0
       this.tableData = []
+      this.passedTimeTemp = 0
+      this.passedTime = 0
     },
     search() {
       this.$refs['searchForm'].validate(valid => {
@@ -334,8 +337,9 @@ export default {
       }
       this.marker.on('moving', (e) => {
         this.passedPolyline.setPath(e.passedPath)
-        const passedTime = (this.passedPolyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
-        this.perValue = (((passedTime / TIME_VARIABLE) * 100) + this.alreadyPercent).toFixed(2) * 1
+        this.passedTime = ((this.passedPolyline.getLength()) / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
+        if ((((this.passedTime / this.time_variable) * 100) + this.alreadyPercent).toFixed(2) * 1 > 100) this.perValue = 100
+        else this.perValue = (((this.passedTime / this.time_variable) * 100) + this.alreadyPercent).toFixed(2) * 1
         this.curreGDPath = new AMap.LngLat(
           e.passedPath[e.passedPath.length - 1].lng,
           e.passedPath[e.passedPath.length - 1].lat
@@ -360,7 +364,8 @@ export default {
     },
     changeCount() {
       const markerSpeed = this.speedCount * this.markerSpeed
-      TIME_VARIABLE = (this.polyline.getLength() / 1000 / (this.markerSpeed * this.speedCount)) * 60 * 60
+      this.time_variable = (this.polyline.getLength() / 1000 / markerSpeed) * 60 * 60
+      this.passedPolylineLength = this.passedPolyline.getLength()
       if (this.perValue && this.perValue <= 100) {
         this.marker.pauseMove()
         this.lineArrlast = this.lineArrlast.slice(this.passedPath)

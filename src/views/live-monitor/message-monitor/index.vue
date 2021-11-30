@@ -88,8 +88,8 @@
         <el-table-column type="index" label="序号" width="60" align="center" />
         <el-table-column prop="acc" label="ACC状态" width="100" align="center">
           <template v-slot="{row}">
-            <span v-if="row.acc === '0'">关闭</span>
-            <span v-else>开启</span>
+            <span v-if="row.acc === '1'">开启</span>
+            <span v-else>关闭</span>
           </template>
         </el-table-column>
         <el-table-column prop="vehiIdNo" label="车牌号" align="center" width="120" />
@@ -216,12 +216,12 @@ export default {
     }
   },
   watch: {
-    markers: {
-      deep: true,
-      handler() {
-        this.setMarkers()
-      }
-    },
+    // markers: {
+    //   deep: true,
+    //   handler() {
+    //     this.setMarkers()
+    //   }
+    // },
     updateTreeCount() {
       this.getUnitVehicle()
     }
@@ -316,17 +316,21 @@ export default {
             geocoder = new AMap.Geocoder({ city: '' })
           })
           data.forEach(item => {
-            lnglat = [item.longitude, item.latitude]
-            this.markers.push({
-              icon: 'https://webapi.amap.com/images/car.png',
-              position: lnglat
-            })
-            geocoder.getAddress(lnglat, function(status, result) {
-              if (status === 'complete' && result.info === 'OK') {
-                item.position = result.regeocode.formattedAddress
-              }
-            })
+            if (item.longitude && item.latitude) {
+              lnglat = [item.longitude, item.latitude]
+              this.markers.push({
+                icon: 'https://webapi.amap.com/images/car.png',
+                position: lnglat
+              })
+              console.log(this.markers)
+              geocoder.getAddress(lnglat, function(status, result) {
+                if (status === 'complete' && result.info === 'OK') {
+                  item.position = result.regeocode.formattedAddress
+                }
+              })
+            }
           })
+          this.setMarkers()
           setTimeout(() => {
             this.tableData = data
           }, 500)
