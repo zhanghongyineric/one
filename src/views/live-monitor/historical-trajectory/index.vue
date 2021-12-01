@@ -113,11 +113,11 @@ export default {
         width: ''
       },
       searchFormData: {
-        plateNum: '川Y59R08',
-        startTime: '2021-11-30 13:32:37',
-        endTime: '2021-11-30 13:41:37',
-        date: '2021-11-30',
-        time: [' 13:32:37', ' 13:41:37']
+        plateNum: '',
+        startTime: '',
+        endTime: '',
+        date: '',
+        time: []
       },
       passedTime: 0,
       passedTimeTemp: 0,
