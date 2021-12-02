@@ -40,12 +40,25 @@ export default {
       chart: null
     }
   },
+  computed: {
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
+    }
+  },
   watch: {
     xData: {
       deep: true,
       handler(val) {
         this.setOptions()
       }
+    },
+    theme() {
+      this.setOptions()
     },
     yData: {
       deep: true,
@@ -119,7 +132,7 @@ export default {
           text: '安全隐患企业排行',
           left: 'left',
           textStyle: {
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           }
         },
         xAxis: {

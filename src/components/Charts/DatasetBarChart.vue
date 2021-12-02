@@ -28,7 +28,15 @@ export default {
       timer: null
     }
   },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
+    }
+  },
   watch: {
+    theme() {
+      this.setOptions()
+    },
     chartData: {
       deep: true,
       handler(val) {
@@ -86,7 +94,7 @@ export default {
       this.chart.setOption({
         legend: {
           textStyle: {
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           }
         },
         tooltip: {
@@ -98,9 +106,9 @@ export default {
           },
           textStyle: {
             align: 'left',
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           },
-          backgroundColor: '#151D2C'
+          backgroundColor: this.theme ? '#151D2C' : '#fff'
         },
         dataset: {
           source: this.chartData
@@ -110,7 +118,7 @@ export default {
           axisLabel: {
             show: true,
             textStyle: {
-              color: '#ccc'
+              color: this.theme ? '#ccc' : '#606266'
             }
           }
         },
@@ -118,7 +126,7 @@ export default {
           axisLabel: {
             show: true,
             textStyle: {
-              color: '#ccc'
+              color: this.theme ? '#ccc' : '#606266'
             }
           }
         },

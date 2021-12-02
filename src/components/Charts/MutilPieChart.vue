@@ -31,7 +31,15 @@ export default {
       chart: null
     }
   },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
+    }
+  },
   watch: {
+    theme() {
+      this.setOptions()
+    },
     chartData: {
       deep: true,
       handler(val) {
@@ -123,7 +131,7 @@ export default {
       })
 
       const option = {
-        backgroundColor: '#151D2C',
+        backgroundColor: this.theme ? '#151D2C' : '#fff',
         color: color,
         title: {
           subtext: this.title,

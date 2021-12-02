@@ -1,11 +1,15 @@
 <template>
-  <div class="container">
+  <div class="container" :style="{'background-color': theme?'#0E1521':'#F0F2F5'}">
     <transition name="fade">
       <div v-show="showInfo" class="infomation">
         <el-row :gutter="20">
           <el-col :md="12" :sm="24">
-            <div class="box" @click="gotoPage('/information-manage/driver-base-information')">
-              <p>驾驶员信息</p>
+            <div
+              :style="{'background-color': theme?'#151d2c':'#fff'}"
+              class="box"
+              @click="gotoPage('/information-manage/driver-base-information')"
+            >
+              <p :style="{'color': theme?'#fff':'#606266'}">驾驶员信息</p>
               <div class="top-box">
                 <div class="chart-box-left">
                   <bar-chart
@@ -15,8 +19,8 @@
                   />
                 </div>
                 <div class="text-box">
-                  <span class="num">{{ driverData.all }}</span>
-                  <span class="total-num">
+                  <span class="num" :style="{'color': theme?'#fff':'#606266'}">{{ driverData.all }}</span>
+                  <span :style="{'color': theme?'#fff':'#606266'}">
                     <svg-icon :icon-class="'driver'" style="width:25px;height:25px;position:relative;top:5px;" />
                     驾驶员总数
                   </span>
@@ -28,8 +32,12 @@
             </div>
           </el-col>
           <el-col :md="12" :sm="24">
-            <div class="box" @click="gotoPage('/information-manage/car-base-information')">
-              <p>车辆信息</p>
+            <div
+              class="box"
+              :style="{'background-color': theme?'#151d2c':'#fff'}"
+              @click="gotoPage('/information-manage/car-base-information')"
+            >
+              <p :style="{'color': theme?'#fff':'#606266'}">车辆信息</p>
               <div class="top-box">
                 <div class="chart-box-left">
                   <bar-chart
@@ -39,8 +47,8 @@
                   />
                 </div>
                 <div class="text-box">
-                  <span class="num">{{ carData.all }}</span>
-                  <span class="total-num">
+                  <span class="num" :style="{'color': theme?'#fff':'#606266'}">{{ carData.all }}</span>
+                  <span :style="{'color': theme?'#fff':'#606266'}">
                     <svg-icon :icon-class="'car'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
                     车辆总数
                   </span>
@@ -56,9 +64,10 @@
           <el-col :md="8" :sm="24">
             <div
               class="box"
+              :style="{'background-color': theme?'#151d2c':'#fff'}"
               @click="gotoPage('/information-manage/company-base-information')"
             >
-              <p>企业信息</p>
+              <p :style="{'color': theme?'#fff':'#606266'}">企业信息</p>
               <div class="top-box">
                 <div class="bottom-chart-box-left bottom-box-position">
                   <bar-chart
@@ -68,8 +77,8 @@
                   />
                 </div>
                 <div class="text-box bottom-box">
-                  <span class="num">{{ companyData.all }}</span>
-                  <span class="total-num">
+                  <span class="num" :style="{'color': theme?'#fff':'#606266'}">{{ companyData.all }}</span>
+                  <span :style="{'color': theme?'#fff':'#606266'}">
                     <svg-icon :icon-class="'company'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
                     企业总数
                   </span>
@@ -81,8 +90,12 @@
             </div>
           </el-col>
           <el-col :md="8" :sm="24">
-            <div class="box" @click="gotoPage('/information-manage/access-platform-information')">
-              <p>接入平台信息</p>
+            <div
+              class="box"
+              :style="{'background-color': theme?'#151d2c':'#fff'}"
+              @click="gotoPage('/information-manage/access-platform-information')"
+            >
+              <p :style="{'color': theme?'#fff':'#606266'}">接入平台信息</p>
               <div class="top-box">
                 <div class="bottom-chart-box-left bottom-box-position">
                   <bar-chart
@@ -92,8 +105,8 @@
                   />
                 </div>
                 <div class="text-box bottom-box">
-                  <span class="num">{{ platformData.all }}</span>
-                  <span class="total-num">
+                  <span class="num" :style="{'color': theme?'#fff':'#606266'}">{{ platformData.all }}</span>
+                  <span :style="{'color': theme?'#fff':'#606266'}">
                     <svg-icon :icon-class="'platform'" style="width: 20px;height: 20px;position:relative;top: 3px;" />
                     平台总数
                   </span>
@@ -105,8 +118,12 @@
             </div>
           </el-col>
           <el-col :md="8" :sm="24">
-            <div class="box" @click="gotoPage('/information-manage/service-provider-information')">
-              <p>服务商信息</p>
+            <div
+              class="box"
+              :style="{'background-color': theme?'#151d2c':'#fff'}"
+              @click="gotoPage('/information-manage/service-provider-information')"
+            >
+              <p :style="{'color': theme?'#fff':'#606266'}">服务商信息</p>
               <div class="top-box">
                 <div class="bottom-chart-box-left bottom-box-position">
                   <bar-chart
@@ -116,8 +133,8 @@
                   />
                 </div>
                 <div class="text-box bottom-box">
-                  <span class="num">{{ serviceData.all }}</span>
-                  <span class="total-num">
+                  <span class="num" :style="{'color': theme?'#fff':'#606266'}">{{ serviceData.all }}</span>
+                  <span :style="{'color': theme?'#fff':'#606266'}">
                     <svg-icon :icon-class="'service'" style="width: 15px;height: 15px;" />
                     服务商总数
                   </span>
@@ -129,34 +146,36 @@
             </div>
           </el-col>
         </el-row>
-        <div class="expand-symbol" @click="showInfo = false">
+        <div
+          class="expand-symbol"
+          :style="{'border-bottom-color': theme?'#0E1521':'#F0F2F5'}"
+          @click="showInfo = false"
+        >
           <div class="top-arrow" />
         </div>
       </div>
     </transition>
     <transition name="fade1">
       <div v-show="!showInfo" class="monitor">
-        <el-row :gutter="20" class="left">
+        <el-row :gutter="20" class="left" :style="{'background-color': theme?'#0E1521':'#F0F2F5'}">
           <el-col :span="8">
-            <div class="box-monitor">
+            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff'}">
               <monitor-pie-chart
                 :chart-data="carChartData"
                 :showlegend="true"
                 :position="['50%','65%']"
               />
             </div>
-            <div class="box-monitor">
+            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff'}">
               <monitor-bar-chart :x-data="companyChartXData" :y-data="companyChartYData" :height="'120%'" />
             </div>
-            <div class="box-monitor" style="cursor:pointer" @click="toFocusVehicle">
-              <span class="title">重点关注车辆列表</span>
+            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff',cursor:'pointer'}" @click="toFocusVehicle">
+              <span class="title" :style="{'color': theme?'#fff':'#606266'}">重点关注车辆列表</span>
               <el-table
                 ref="carTable"
                 :data="carList"
                 fit
                 style="width:100%;margin-top: 20px;"
-                :header-cell-style="tableHeaderColor"
-                :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
                 height="80%"
                 :stripe="true"
@@ -177,26 +196,28 @@
             </div>
           </el-col>
           <el-col :span="8">
-            <div class="center">
-              <span class="center-text" style="margin-right:35px;">上线车辆：
+            <div class="center" :style="{'background-color': theme?'#151d2c':'#fff'}">
+              <span
+                class="center-text"
+                style="margin-right:35px;"
+                :style="{'color': theme?'#fff':'#606266'}"
+              >上线车辆：
                 <span class="center-num">{{ allCars }}</span> 辆</span>
-              <span class="center-text">在线车辆：
+              <span class="center-text" :style="{'color': theme?'#fff':'#606266'}">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
               <map-chart :map-data="mapData" @city-data="updateCityData" @right-click="getOnlineVehicle" />
               <dataset-bar-chart :chart-data="mapChartData" />
             </div>
           </el-col>
           <el-col :span="8">
-            <div class="box-monitor" style="cursor:pointer;" @click="toAlarmDetail">
-              <span class="title">报警事件</span>
+            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff',cursor:'pointer'}" @click="toAlarmDetail">
+              <span class="title" :style="{'color': theme?'#fff':'#606266'}">报警事件</span>
               <el-table
                 ref="eventTable"
                 :data="eventList"
                 fit
                 highlight-current-row
                 style="width:100%;margin-top:20px;"
-                :header-cell-style="tableHeaderColor"
-                :row-style="tableRowStyle"
                 :cell-style="{padding:'0px'}"
                 height="80%"
                 :stripe="true"
@@ -207,26 +228,26 @@
                 <el-table-column prop="cbArmName" label="报警类型" align="center" show-overflow-tooltip />
               </el-table>
             </div>
-            <div class="box-monitor">
-              <span class="title" style="display: block;">考核分析</span>
+            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff'}">
+              <span class="title" style="display:block;" :style="{'color': theme?'#fff':'#606266'}">考核分析</span>
               <mutil-pie-chart :chart-data="facilitatorChartData" :title="'服务商'" />
               <mutil-pie-chart :chart-data="mechanismChartData" :title="'运管机构'" />
               <mutil-pie-chart :chart-data="unitAssessChartData" :title="'运输企业'" />
             </div>
-            <div class="box-monitor">
-              <span class="title">报警趋势分析</span>
+            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff'}">
+              <span class="title" :style="{'color': theme?'#fff':'#606266'}">报警趋势分析</span>
               <line-chart :chart-data="trendData" />
             </div>
           </el-col>
         </el-row>
-        <div class="monitor-top-box">
-          <div class="back-color" />
-          <div class="back-triangle" />
-          <div class="closed-box-inner">
+        <div class="monitor-top-box" :style="{'background-color': theme?'#0E1521':'#F0F2F5'}">
+          <div class="back-color" :style="{'background-color': theme?'#0E1521':'#F0F2F5'}" />
+          <div class="back-triangle" :style="{'border-top-color': theme?'#304156':'#fff'}" />
+          <div class="closed-box-inner" :style="{'background-color': theme?'#304156':'#fff'}">
             <el-row :gutter="20">
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span class="title-text">驾驶员信息</span>
+                  <span class="title-text" :style="{'color': theme?'#fff':'#606266'}">驾驶员信息</span>
                   <span class="little-num">从业：{{ driverData.work }}</span>
                   <span class="little-num">待业：{{ driverData.unwork }}</span>
                   <span class="little-num">注销：{{ driverData.logout }}</span>
@@ -234,7 +255,7 @@
               </el-col>
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span class="title-text">车辆信息</span>
+                  <span class="title-text" :style="{'color': theme?'#fff':'#606266'}">车辆信息</span>
                   <span class="little-num">正常：{{ carData.normal }}</span>
                   <span class="little-num">停运：{{ carData.stop }}</span>
                   <span class="little-num">注销：{{ carData.logout }}</span>
@@ -244,7 +265,7 @@
               </el-col>
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span class="title-text">企业信息</span>
+                  <span class="title-text" :style="{'color': theme?'#fff':'#606266'}">企业信息</span>
                   <span class="little-num">营运：{{ companyData.normal }}</span>
                   <span class="little-num">歇业：{{ companyData.pause }}</span>
                 </div>
@@ -252,7 +273,11 @@
             </el-row>
           </div>
         </div>
-        <div class="close-symbol" @click="showInfo = true">
+        <div
+          class="close-symbol"
+          :style="{'border-top-color':theme?'#0E1521':'#F0F2F5'}"
+          @click="showInfo = true"
+        >
           <div class="bottom-arrow" />
         </div>
       </div>
@@ -362,7 +387,6 @@ export default {
       unitAssessChartData: [],
       trendData: [],
       mapDataMap: new Map()
-
     }
   },
   computed: {
@@ -371,6 +395,9 @@ export default {
     },
     roleName() {
       return this.$store.state.user.roleName
+    },
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   created() {
@@ -551,14 +578,14 @@ export default {
         this.carList = data
       })
     },
-    tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) {
-        return 'background-color: #202B3A;color: #fff;font-weight: 500;'
-      }
-    },
-    tableRowStyle() {
-      return { 'background-color': '#122230', 'color': '#fff', 'height': 0 }
-    },
+    // tableHeaderColor({ row, column, rowIndex, columnIndex }) {
+    //   if (rowIndex === 0) {
+    //     return 'background-color: #202B3A;color: #fff;font-weight: 500;'
+    //   }
+    // },
+    // tableRowStyle() {
+    //   return { 'background-color': '#122230', 'color': '#fff', 'height': 0 }
+    // },
     getEnterpriseRanking() {
       enterpriseRanking({
         pageNum: 1,
@@ -795,14 +822,14 @@ export default {
 <style lang="scss" scoped>
 .container {
   padding: 20px;
-  background-color: #0E1521;
+  // background-color: #0E1521;
   position: relative;
 }
 
 .box {
   width: 100%;
   height: 407px;
-  background-color: #151D2C;
+  // background-color: #151D2C;
   position: relative;
   box-sizing: border-box;
   cursor: pointer;
@@ -822,7 +849,6 @@ export default {
 .num {
   font-size: 40px;
   margin-bottom: 5px;
-  color: #fff;
 }
 
 .text-box {
@@ -842,7 +868,7 @@ p {
   padding-top: 15px;
   font-size: 20px;
   font-weight: 700;
-  color: #fff;
+
 }
 
 .chart-box-left {
@@ -882,10 +908,6 @@ p {
   height: 100%;
 }
 
-.total-num {
-  color: #fff;
-}
-
 .closed-box {
   width: 99%;
   height: 50px;
@@ -894,7 +916,7 @@ p {
   right: 0;
   left: 0;
   padding-left: 20px;
-  background-color: #0E1521;
+  // background-color: #0E1521;
   padding-top: 10px;
 }
 
@@ -911,12 +933,11 @@ p {
   margin-left: 10px;
   margin-right: 20px;
   border-radius: 10px;
-  background-color: #0E1521;
+  // background-color: #0E1521;
 }
 
 .back-color {
   position: absolute;
-  background-color: #0E1521;
   height: 100px;
   width: 10px;
   left: -10px;
@@ -925,21 +946,21 @@ p {
 .back-triangle {
   position: absolute;
   bottom: 0;
-  background-color: #0E1521;
+  // background-color: #0E1521;
   height: 5px;
   width: 5px;
   border-width: 4px 4px;
   border-style: solid;
   border-color: transparent;
-  border-top-color: #304156;
-  border-right-color: #304156;
+  // border-top-color: #304156;
+  // border-right-color: #304156;
 }
 
 .closed-box-inner {
   width: 98.8%;
   height: 100%;
   padding: 10px;
-  background-color: #304156;
+  // background-color: #304156;
   border-radius: 10px;
 
   .content-box {
@@ -950,7 +971,7 @@ p {
     line-height: 70px;
 
       .title-text {
-        color: #fff;
+        // color: #fff;
         font-size: 18px;
         font-weight: 700;
         display:block;
@@ -974,7 +995,7 @@ p {
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: transparent transparent #0E1521 transparent;
+  border-color: transparent;
   position: absolute;
   bottom: 50px;
   left: 48%;
@@ -998,7 +1019,8 @@ p {
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: #0E1521 transparent  transparent  transparent;
+  border-color: transparent;
+  // border-top-color: #0E1521;
   position: absolute;
   top: 100px;
   left: 48%;
@@ -1021,7 +1043,7 @@ p {
   height: calc(29vh - 30px);
   margin-bottom: 10px;
   border-radius: 10px;
-  background-color: #151D2C;
+  // background-color: #151D2C;
   padding: 10px;
   box-sizing: border-box;
 }
@@ -1033,12 +1055,11 @@ p {
   top: 100px;
   left: 0;
   right: 0;
-  background-color: #0E1521;
 }
 
 .title {
   font-size: 18px;
-  color: #fff;
+  // color: #fff;
   font-weight: 700;
 }
 
@@ -1051,7 +1072,6 @@ p {
 
 .center-text {
   font-size: 14px;
-  color: #fff;
   font-weight: 700;
   display: inline-block;
   margin-top: 20px;
@@ -1077,22 +1097,22 @@ p {
     opacity: 0.5
 }
 
-::v-deep .el-table {
-  background-color: #151D2C !important;
-}
+// ::v-deep .el-table {
+//   background-color: #151D2C !important;
+// }
 
-::v-deep .el-table::before {
-  width: 0 !important;
-}
+// ::v-deep .el-table::before {
+//   width: 0 !important;
+// }
 
-::v-deep .el-table tbody tr:hover>td {
-  background: #122230 !important;
-}
+// ::v-deep .el-table tbody tr:hover>td {
+//   background: #122230 !important;
+// }
 
-::v-deep .el-table__body tr.current-row > td {
-  background-color: #122230 !important;
-  color: #fff;
-}
+// ::v-deep .el-table__body tr.current-row > td {
+//   background-color: #122230 !important;
+//   color: #fff;
+// }
 
 @media screen and (max-width: 1450px) {
   .text-box {
@@ -1136,21 +1156,21 @@ p {
   background: #151D2C;
 }
 
-::v-deep .gutter {
-  width: 0px !important;
-  background-color: #151D2C !important;
-}
+// ::v-deep .gutter {
+//   width: 0px !important;
+//   background-color: #151D2C !important;
+// }
 
-::v-deep .el-table td {
-  border: 0 !important;
-}
+// ::v-deep .el-table td {
+//   border: 0 !important;
+// }
 
-::v-deep .el-table th.is-leaf {
-  border: 0 !important;
-}
+// ::v-deep .el-table th.is-leaf {
+//   border: 0 !important;
+// }
 
-::v-deep .el-table__row--striped td {
-  background-color: #222C3C !important;
-}
+// ::v-deep .el-table__row--striped td {
+//   background-color: #222C3C !important;
+// }
 
 </style>

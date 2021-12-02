@@ -39,7 +39,20 @@ export default {
       chart: null
     }
   },
+  computed: {
+    theme() {
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
+    }
+  },
   watch: {
+    theme() {
+      this.setOptions(this.chartData)
+    },
     chartData: {
       deep: true,
       handler(val) {
@@ -115,16 +128,16 @@ export default {
       this.chart.setOption({
         tooltip: {
           trigger: 'item',
-          backgroundColor: '#151D2C',
+          backgroundColor: this.theme ? '#151D2C' : '#fff',
           textStyle: {
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           }
         },
         title: {
           text: '车辆概况',
           left: 'left',
           textStyle: {
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           }
         },
         legend: {
@@ -132,7 +145,7 @@ export default {
           left: 'center',
           textStyle: {
             fontSize: 10,
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           },
           itemWidth: 10,
           show: this.showlegend

@@ -41,7 +41,15 @@ export default {
       chart: null
     }
   },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
+    }
+  },
   watch: {
+    theme() {
+      this.setOptions()
+    },
     chartData: {
       deep: true,
       handler(val) {
@@ -76,7 +84,7 @@ export default {
           axisLabel: {
             show: true,
             textStyle: {
-              color: '#ccc'
+              color: this.theme ? '#ccc' : '#606266'
             }
           }
         },
@@ -85,7 +93,7 @@ export default {
           axisLabel: {
             show: true,
             textStyle: {
-              color: '#ccc'
+              color: this.theme ? '#ccc' : '#606266'
             }
           }
         },

@@ -48,9 +48,15 @@ export default {
     // 账号角色
     roleName() {
       return this.$store.state.user.roleName
+    },
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   watch: {
+    theme() {
+      this.setOptions()
+    },
     mapData: {
       deep: true,
       handler(val) {
@@ -185,9 +191,9 @@ export default {
           },
           textStyle: {
             align: 'left',
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           },
-          backgroundColor: '#151D2C'
+          backgroundColor: this.theme ? '#151D2C' : '#fff'
         }
       })
     },

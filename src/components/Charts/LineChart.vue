@@ -27,7 +27,15 @@ export default {
       chart: null
     }
   },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
+    }
+  },
   watch: {
+    theme() {
+      this.setOptions()
+    },
     chartData: {
       deep: true,
       handler(val) {
@@ -92,9 +100,9 @@ export default {
           axisPointer: {
             type: 'cross'
           },
-          backgroundColor: '#151D2C',
+          backgroundColor: this.theme ? '#151D2C' : '#fff',
           textStyle: {
-            color: '#fff'
+            color: this.theme ? '#fff' : '#606266'
           }
         },
         grid: {
@@ -110,7 +118,7 @@ export default {
             axisLabel: {
               show: true,
               textStyle: {
-                color: '#ccc'
+                color: this.theme ? '#ccc' : '#606266'
               }
             },
             axisPointer: {
@@ -142,7 +150,7 @@ export default {
             axisLabel: {
               show: true,
               textStyle: {
-                color: '#ccc'
+                color: this.theme ? '#ccc' : '#606266'
               },
               formatter: function(val) {
                 return val > 9999 ? val / 10000 + '万' : val

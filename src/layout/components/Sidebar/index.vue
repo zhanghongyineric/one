@@ -20,9 +20,9 @@
           <span class="model-text">{{ modelText }}</span>
         </div>
         <div class="box f-col-sb-c">
-          <div style="height: 34px;overflow:hidden;" class="f-c">
+          <!-- <div style="height: 34px;overflow:hidden;" class="f-c">
             <div id="he-plugin-simple" />
-          </div>
+          </div> -->
           <span class="time">{{ this.time }}</span>
           <div class="date">
             <span>{{ this.date }}</span>
@@ -51,7 +51,8 @@ export default {
     return {
       date: '-',
       time: '-',
-      theme: 'dark'
+      theme: 'dark',
+      modelText: '浅色模式'
     }
   },
   computed: {
@@ -79,9 +80,11 @@ export default {
     },
     iconClass() {
       return this.theme === 'dark' ? 'sun' : 'moon'
-    },
-    modelText() {
-      return this.theme === 'dark' ? '深色模式' : '浅色模式'
+    }
+  },
+  watch: {
+    theme() {
+      this.modelText = this.theme === 'dark' ? '浅色模式' : '深色模式'
     }
   },
   created() {
@@ -122,8 +125,10 @@ export default {
     const theme = localStorage.getItem('theme')
     if (theme !== 'dark') {
       window.document.body.className = ''
+      this.theme = ''
     } else {
       window.document.body.className = 'dark-theme'
+      this.theme = 'dark'
     }
 
     setInterval(() => {
