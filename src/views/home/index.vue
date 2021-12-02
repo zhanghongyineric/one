@@ -822,14 +822,12 @@ export default {
 <style lang="scss" scoped>
 .container {
   padding: 20px;
-  // background-color: #0E1521;
   position: relative;
 }
 
 .box {
   width: 100%;
   height: 407px;
-  // background-color: #151D2C;
   position: relative;
   box-sizing: border-box;
   cursor: pointer;
@@ -868,7 +866,6 @@ p {
   padding-top: 15px;
   font-size: 20px;
   font-weight: 700;
-
 }
 
 .chart-box-left {
@@ -916,7 +913,6 @@ p {
   right: 0;
   left: 0;
   padding-left: 20px;
-  // background-color: #0E1521;
   padding-top: 10px;
 }
 
@@ -927,13 +923,10 @@ p {
   top: 0;
   right: 0;
   left: 0;
-  // padding-left: 20px;
-  // background-color: #304156;
   padding-top: 10px;
   margin-left: 10px;
   margin-right: 20px;
   border-radius: 10px;
-  // background-color: #0E1521;
 }
 
 .back-color {
@@ -946,32 +939,26 @@ p {
 .back-triangle {
   position: absolute;
   bottom: 0;
-  // background-color: #0E1521;
   height: 5px;
   width: 5px;
   border-width: 4px 4px;
   border-style: solid;
   border-color: transparent;
-  // border-top-color: #304156;
-  // border-right-color: #304156;
 }
 
 .closed-box-inner {
   width: 98.8%;
   height: 100%;
   padding: 10px;
-  // background-color: #304156;
   border-radius: 10px;
 
   .content-box {
-    // background-color: #304156;
     width: 99%;
     height: 70px;
     text-align: center;
     line-height: 70px;
 
       .title-text {
-        // color: #fff;
         font-size: 18px;
         font-weight: 700;
         display:block;
@@ -1020,7 +1007,6 @@ p {
   border-width: 15px;
   border-style: solid;
   border-color: transparent;
-  // border-top-color: #0E1521;
   position: absolute;
   top: 100px;
   left: 48%;
@@ -1043,7 +1029,6 @@ p {
   height: calc(29vh - 30px);
   margin-bottom: 10px;
   border-radius: 10px;
-  // background-color: #151D2C;
   padding: 10px;
   box-sizing: border-box;
 }
@@ -1059,7 +1044,6 @@ p {
 
 .title {
   font-size: 18px;
-  // color: #fff;
   font-weight: 700;
 }
 
@@ -1096,23 +1080,6 @@ p {
 .fade1-enter, .fade-leave-to {
     opacity: 0.5
 }
-
-// ::v-deep .el-table {
-//   background-color: #151D2C !important;
-// }
-
-// ::v-deep .el-table::before {
-//   width: 0 !important;
-// }
-
-// ::v-deep .el-table tbody tr:hover>td {
-//   background: #122230 !important;
-// }
-
-// ::v-deep .el-table__body tr.current-row > td {
-//   background-color: #122230 !important;
-//   color: #fff;
-// }
 
 @media screen and (max-width: 1450px) {
   .text-box {
@@ -1155,22 +1122,4 @@ p {
 ::v-deep ::-webkit-scrollbar-corner {
   background: #151D2C;
 }
-
-// ::v-deep .gutter {
-//   width: 0px !important;
-//   background-color: #151D2C !important;
-// }
-
-// ::v-deep .el-table td {
-//   border: 0 !important;
-// }
-
-// ::v-deep .el-table th.is-leaf {
-//   border: 0 !important;
-// }
-
-// ::v-deep .el-table__row--striped td {
-//   background-color: #222C3C !important;
-// }
-
 </style>

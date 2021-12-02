@@ -21,29 +21,27 @@
               @select="selectPlateNum"
             />
           </el-form-item>
-          <el-form-item label="查询日期:" prop="date">
+          <el-form-item label="开始时间:" prop="startTime">
             <el-date-picker
-              v-model="searchFormData.date"
-              type="date"
-              placeholder="请选择查询日期"
+              v-model="searchFormData.startTime"
+              type="datetime"
+              placeholder="选择日期时间"
               size="small"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              :picker-options="startPickerOptions"
             />
           </el-form-item>
-          <el-form-item label="时间范围:" prop="time">
-            <el-time-picker
-              v-model="searchFormData.time"
-              is-range
+          <el-form-item label="结束时间:" prop="endTime">
+            <el-date-picker
+              v-model="searchFormData.endTime"
+              type="datetime"
+              placeholder="选择日期时间"
               size="small"
-              range-separator="至"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-              placeholder="请选择时间范围"
-              style="width:220px;"
-              value-format=" HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              :picker-options="endPickerOptions"
+              :disabled="disabled"
             />
           </el-form-item>
-
         </el-form>
         <div id="sbtn">
           <el-button type="warning" size="small" @click="reset">重置</el-button>
@@ -142,15 +140,41 @@ export default {
       alreadyPercent: 0,
       rules: {
         plateNum: [{ required: true, message: '请输入车牌号', trigger: 'blur' }],
-        date: [{ required: true, message: '请选择查询日期', trigger: 'change' }],
-        time: [{ required: true, message: '请选择时间范围', trigger: 'change' }]
+        startTime: [{ required: true, message: '请选择查询日期', trigger: 'change' }],
+        endTime: [{ required: true, message: '请选择时间范围', trigger: 'change' }]
       },
-      time_variable: 0
+      time_variable: 0,
+      // 开始时间限制
+      startPickerOptions: {
+        disabledDate: (time) => {
+          return time.getTime() > new Date().getTime()
+        }
+      },
+      // 结束时间限制
+      endPickerOptions: {
+        disabledDate: (time) => {
+          const stime = this.searchFormData.startTime
+          if (time) {
+            const st = Date.parse(stime.replace(/-/g, '/'))
+            return time.getTime() > st + 86400000 || time.getTime() < st - 0
+          }
+        }
+      },
+      // 未选择开始时间则禁用结束时间选择
+      disabled: true
     }
   },
   computed: {
     token() {
       return this.$store.state.user.token
+    }
+  },
+  watch: {
+    'searchFormData.startTime': {
+      deep: true,
+      handler(n, o) {
+        if (n) this.disabled = false
+      }
     }
   },
   created() {
@@ -290,9 +314,6 @@ export default {
         if (valid) {
           this.loading = true
           this.clearMap()
-          const { date, time } = this.searchFormData
-          this.searchFormData.startTime = date + time[0]
-          this.searchFormData.endTime = date + time[1]
           position({
             topic: this.topic,
             ...this.searchFormData

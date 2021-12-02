@@ -359,8 +359,14 @@ div:focus {
   .el-year-table td.disabled .cell {
     background-color: inherit;
   }
-}
 
+
+}
+.el-picker-panel__footer {
+  .el-button--text {
+    display: none !important;
+  }
+}
 //定制搜索栏和弹窗的样式
 .table-page-search-wrapper, .base-dialog {
 
