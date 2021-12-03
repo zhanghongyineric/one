@@ -216,12 +216,6 @@ export default {
     }
   },
   watch: {
-    // markers: {
-    //   deep: true,
-    //   handler() {
-    //     this.setMarkers()
-    //   }
-    // },
     updateTreeCount() {
       this.getUnitVehicle()
     }
@@ -238,9 +232,6 @@ export default {
   mounted() {
     this.getmap()
     this.labelArr = document.getElementsByClassName('el-tree-node__label')
-  },
-  beforeDestroy() {
-    // this.pausemix()
   },
   methods: {
     openIfram(id, status, e) {
@@ -320,7 +311,12 @@ export default {
               lnglat = [item.longitude, item.latitude]
               this.markers.push({
                 icon: 'https://webapi.amap.com/images/car.png',
-                position: lnglat
+                position: lnglat,
+                acc: item.acc === '1' ? '开启' : '关闭',
+                vehiIdNo: item.vehiIdNo,
+                unitName: item.unitName,
+                speed: item.speed + 'km/h',
+                reportTime: item.reportTime
               })
               console.log(this.markers)
               geocoder.getAddress(lnglat, function(status, result) {
@@ -374,14 +370,44 @@ export default {
         zoom: 10,
         mapStyle: 'amap://styles/grey'
       })
+      const infoWindow = new AMap.InfoWindow({
+        offset: new AMap.Pixel(0, -30)
+      })
       this.markers.forEach(marker => {
-        new AMap.Marker({
+        const position = [marker.position[0], marker.position[1]]
+        const maker = new AMap.Marker({
           map: this.map,
           icon: marker.icon,
-          position: [marker.position[0], marker.position[1]],
+          position,
           offset: new AMap.Pixel(-13, -30)
         })
+        let geocoder
+        AMap.plugin('AMap.Geocoder', function() {
+          geocoder = new AMap.Geocoder({ city: '' })
+        })
+        geocoder.getAddress(marker.position, function(status, result) {
+          if (status === 'complete' && result.info === 'OK') {
+            marker.location = result.regeocode.formattedAddress
+          }
+        })
+        maker.on('mouseover', (e) => {
+          infoWindow.setContent(
+            `
+            车牌号：${marker.vehiIdNo}<br>
+            ACC状态：${marker.acc}<br>
+            企业名：${marker.unitName}<br>          
+            速度：${marker.speed}<br>          
+            位置：${marker.location}<br>          
+            上报时间：${marker.reportTime}         
+            `
+          )
+          infoWindow.open(this.map, position)
+        })
+        maker.on('mouseout', (e) => {
+          infoWindow.close(this.map, position)
+        })
       })
+      // 因要求显示车辆时展示出其附近的地区名，故不使用自适应缩放比
       // this.map.setFitView()
       this.containerLoading = false
     },

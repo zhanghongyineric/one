@@ -87,12 +87,13 @@ export default {
       this.modelText = this.theme === 'dark' ? '浅色模式' : '深色模式'
     }
   },
-  created() {
+  async created() {
     this.setTime()
     setInterval((item, index) => {
       this.setTime()
     }, 1000)
-    this.getUnitVehicle()
+    const tree = await yuxStorage.getItem('monitorTree')
+    if (!tree) this.getUnitVehicle()
   },
   mounted() {
     window.WIDGET = {
