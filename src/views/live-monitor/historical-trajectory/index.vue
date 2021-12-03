@@ -25,7 +25,7 @@
             <el-date-picker
               v-model="searchFormData.startTime"
               type="datetime"
-              placeholder="选择日期时间"
+              placeholder="请选择开始时间"
               size="small"
               value-format="yyyy-MM-dd HH:mm:ss"
               :picker-options="startPickerOptions"
@@ -35,7 +35,7 @@
             <el-date-picker
               v-model="searchFormData.endTime"
               type="datetime"
-              placeholder="选择日期时间"
+              placeholder="请选择结束时间"
               size="small"
               value-format="yyyy-MM-dd HH:mm:ss"
               :picker-options="endPickerOptions"
@@ -78,7 +78,7 @@
     <div v-show="showTable" class="bottom-table">
       <el-table
         :data="tableData"
-        style="width: 100%;height:100%;"
+        style="width:100%;height:100%;"
         border
         fit
         highlight-current-row

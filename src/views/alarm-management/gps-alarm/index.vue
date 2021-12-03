@@ -71,6 +71,11 @@
                 </el-form-item>
               </el-col>
               <el-col :md="5" :sm="24">
+                <el-form-item label="报警时长:">
+                  <el-input v-model="listQuery.alarmDuration" placeholder="请输入报警时长（秒）" size="small" />
+                </el-form-item>
+              </el-col>
+              <el-col :md="5" :sm="24">
                 <el-form-item label="报警类型:">
                   <el-select
                     v-model="listQuery.alarmType"
@@ -109,7 +114,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="5" :sm="24">
+              <el-col :md="4" :sm="24">
                 <el-form-item label="报警来源:">
                   <el-select
                     v-model="listQuery.from"
@@ -123,7 +128,7 @@
                 </el-form-item>
               </el-col>
             </template>
-            <el-col :md="!advanced && 5 || 19" :sm="24">
+            <el-col :md="!advanced && 5 || 16" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
@@ -136,7 +141,7 @@
                 </el-button>
               </div>
             </el-col>
-            <el-col :md="5" :sm="24" style="margin-top:3px;">
+            <el-col :md="4" :sm="24" style="margin-top:3px;">
               <el-button type="primary" size="small" @click="resetQuery">表格导出</el-button>
               <el-button type="primary" size="small" @click="handleSearch">批量处理</el-button>
             </el-col>
@@ -201,7 +206,7 @@ import CompanySelect from '../component/company-select.vue'
 import HandleAlarm from '../component/handle-alarm.vue'
 
 export default {
-  name: 'PreventionAlarm',
+  name: 'GPSAlarm',
   components: { CompanySelect, HandleAlarm },
   data() {
     return {
