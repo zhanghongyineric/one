@@ -391,8 +391,13 @@ div:focus {
   }
 }
 
+// 隐藏高德地图logo
+.amap-logo, .amap-copyright {
+  display: none !important;
+}
+
 // 报警详情弹框
-.customClass {
+.min-width-dialog {
   width: 50%;
   min-width: 780px;
 }

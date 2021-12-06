@@ -166,7 +166,7 @@
         />
         <el-table-column label="操作" align="center" fixed="left" width="120px">
           <i class="el-icon-edit-outline icon" @click="handleVisible = true" />
-          <i class="el-icon-view icon icon-spacing" />
+          <i class="el-icon-view icon icon-spacing" @click="detailVisible = true" />
           <i class="el-icon-data-line icon icon-spacing" />
         </el-table-column>
         <el-table-column label="车牌号" prop="plateNum" min-width="100px" align="center" />
@@ -192,6 +192,7 @@
       </el-table>
       <CompanySelect :visible="companyVisible" @close="updateVisible" />
       <HandleAlarm :visible="handleVisible" @close="updateVisible" />
+      <AlarmDetail :visible="detailVisible" @close="updateVisible" />
     </el-card>
   </div>
 </template>
@@ -199,10 +200,11 @@
 <script>
 import CompanySelect from '../component/company-select.vue'
 import HandleAlarm from '../component/handle-alarm.vue'
+import AlarmDetail from '../component/alarm-detail.vue'
 
 export default {
   name: 'PreventionAlarm',
-  components: { CompanySelect, HandleAlarm },
+  components: { CompanySelect, HandleAlarm, AlarmDetail },
   data() {
     return {
       // 搜索条件
@@ -221,7 +223,8 @@ export default {
         }
       ],
       companyVisible: false, // 企业选择框
-      handleVisible: false // 报警处理框
+      handleVisible: false, // 报警处理框
+      detailVisible: false // 报警详情弹框
     }
   },
   methods: {
@@ -233,6 +236,7 @@ export default {
     updateVisible(val) {
       this.companyVisible = val
       this.handleVisible = val
+      this.detailVisible = val
     }
   }
 }

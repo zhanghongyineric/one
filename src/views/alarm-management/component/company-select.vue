@@ -3,7 +3,7 @@
     title="选择企业"
     :visible.sync="visible"
     :close-on-click-modal="false"
-    top="50px"
+    top="100px"
     custom-class="base-dialog dialog-col-1"
     :before-close="closeDialog"
   >

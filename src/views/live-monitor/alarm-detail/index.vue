@@ -204,7 +204,7 @@
         :visible.sync="visible"
         top="100px"
         :before-close="closeDialog"
-        custom-class="customClass"
+        custom-class="min-width-dialog"
       >
         <div class="alarm-info">
           <span><span class="info-title">车牌号：</span>{{ currentRow.plateNum }}</span>
