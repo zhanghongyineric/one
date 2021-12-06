@@ -2,8 +2,8 @@
   <div class="login-page">
     <div id="contPar" class="contPar">
       <div id="page1" style="z-index:1;">
-        <div class="title0">四川省交通安全风控大数据平台</div>
-        <div class="title1">助力政府监管，降低安全隐患</div>
+        <div class="title0">明亚智行风控大数据平台</div>
+        <div class="title1">助力政府监管，防控安全隐患</div>
         <div class="imgGroug">
           <ul>
             <img alt="" class="img0 png" draggable="false" src="./img/page1_0.png">
