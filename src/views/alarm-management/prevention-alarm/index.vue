@@ -167,7 +167,7 @@
         <el-table-column label="操作" align="center" fixed="left" width="120px">
           <i class="el-icon-edit-outline icon" @click="handleVisible = true" />
           <i class="el-icon-view icon icon-spacing" @click="detailVisible = true" />
-          <i class="el-icon-data-line icon icon-spacing" />
+          <i class="el-icon-data-line icon icon-spacing" @click="trajectoryVisible = true" />
         </el-table-column>
         <el-table-column label="车牌号" prop="plateNum" min-width="100px" align="center" />
         <el-table-column label="车牌颜色" prop="plateColor" />
@@ -175,6 +175,7 @@
         <el-table-column label="驾驶员" prop="driver" />
         <el-table-column label="所属企业" prop="unitName" />
         <el-table-column label="报警类型" prop="alarmType" />
+        <el-table-column label="程度/分级" prop="alarmType" />
         <el-table-column label="报警来源" prop="alarmSource" />
         <el-table-column label="开始时间" prop="alarmSource" />
         <el-table-column label="结束时间" prop="alarmSource" />
@@ -193,6 +194,7 @@
       <CompanySelect :visible="companyVisible" @close="updateVisible" />
       <HandleAlarm :visible="handleVisible" @close="updateVisible" />
       <AlarmDetail :visible="detailVisible" @close="updateVisible" />
+      <HistoricalTrajectory :visible="trajectoryVisible" @close="updateVisible" />
     </el-card>
   </div>
 </template>
@@ -201,10 +203,11 @@
 import CompanySelect from '../component/company-select.vue'
 import HandleAlarm from '../component/handle-alarm.vue'
 import AlarmDetail from '../component/alarm-detail.vue'
+import HistoricalTrajectory from '../component/historical-trajectory.vue'
 
 export default {
   name: 'PreventionAlarm',
-  components: { CompanySelect, HandleAlarm, AlarmDetail },
+  components: { CompanySelect, HandleAlarm, AlarmDetail, HistoricalTrajectory },
   data() {
     return {
       // 搜索条件
@@ -224,7 +227,8 @@ export default {
       ],
       companyVisible: false, // 企业选择框
       handleVisible: false, // 报警处理框
-      detailVisible: false // 报警详情弹框
+      detailVisible: false, // 报警详情弹框
+      trajectoryVisible: false // 历史轨迹弹框
     }
   },
   methods: {
@@ -237,6 +241,7 @@ export default {
       this.companyVisible = val
       this.handleVisible = val
       this.detailVisible = val
+      this.trajectoryVisible = val
     }
   }
 }
