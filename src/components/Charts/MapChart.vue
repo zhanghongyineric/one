@@ -1,7 +1,14 @@
 <template>
   <div :style="{height,width}">
     <div ref="map" :class="className" style="width:100%;height:100%;" @click.right="mounseRightClick" />
-    <img v-show="showReturn" src="../../assets/return.png" class="return" @click="mounseRightClick">
+    <!-- <img v-show="showReturn" src="../../assets/return.png" class="return" @click="mounseRightClick"> -->
+    <svg-icon
+      v-show="showReturn"
+      icon-class="return"
+      class="return"
+      :style="{fill: theme?'#fff':'#606266'}"
+      @click="mounseRightClick"
+    />
   </div>
 
 </template>
@@ -240,7 +247,7 @@ export default {
   top: 20px;
   left: 50px;
   cursor: pointer;
-  height: 16px;
-  width: 16px;
+  height: 20px;
+  width: 20px;
 }
 </style>
