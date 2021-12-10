@@ -15,7 +15,6 @@
         ref="tree"
         :data="treeData"
         show-checkbox
-        default-expand-all
         node-key="id"
         highlight-current
         :props="defaultProps"
@@ -29,6 +28,8 @@
 </template>
 
 <script>
+import { enterpriseTree } from '@/api/alarm-management/prevention-alarm'
+
 export default {
   name: 'CompanySelect',
   props: {
@@ -40,96 +41,27 @@ export default {
   data() {
     return {
       unitName: '',
-      treeData: [{
-        id: 1,
-        label: '一级 1',
-        children: [{
-          id: 4,
-          label: '二级 1-1',
-          children: [{
-            id: 9,
-            label: '三级 1-1-1'
-          }, {
-            id: 10,
-            label: '三级 1-1-2'
-          }]
-        }]
-      }, {
-        id: 2,
-        label: '一级 2',
-        children: [{
-          id: 5,
-          label: '二级 2-1'
-        }, {
-          id: 6,
-          label: '二级 2-2'
-        }]
-      }, {
-        id: 3,
-        label: '一级 3',
-        children: [{
-          id: 7,
-          label: '二级 3-1'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }]
-      }],
+      treeData: [],
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'unitName'
       }
     }
   },
+  created() {
+    this.getEnterpriseTree()
+  },
   methods: {
+    // 获取企业树
+    getEnterpriseTree() {
+      enterpriseTree()
+        .then(({ data }) => {
+          this.treeData = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     // 关闭弹框
     closeDialog() {
       this.$emit('close', false)
@@ -138,7 +70,9 @@ export default {
     search() {},
     // 确定选择
     submit() {
+      const nodes = this.$refs.tree.getCheckedNodes(true)
       this.$emit('close', false)
+      this.$emit('selected-unit', nodes)
     }
   }
 }

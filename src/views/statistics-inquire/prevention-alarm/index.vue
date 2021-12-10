@@ -372,7 +372,7 @@ export default {
           throw err
         })
     },
-    // 删除最后一层空的 hilren
+    // 删除最后一层空的 chilren
     deleteEmptyChilren(data) {
       data.children.length === 0 ? data.children = null : data.children.forEach(v => this.deleteEmptyChilren(v))
     },
