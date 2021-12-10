@@ -232,7 +232,11 @@
             <span v-else style="color:#F56C6C;">未处理</span>
           </template>
         </el-table-column>
-        <el-table-column label="处理方式" prop="cbHandleModeCode" align="center" min-width="100px" />
+        <el-table-column label="处理方式" prop="cbHandleModeCode" align="center" min-width="100px">
+          <template slot-scope="scope">
+            {{ scope.row.cbHandleModeCode | handleModeFilter }}
+          </template>
+        </el-table-column>
         <el-table-column label="处理时间" prop="cbHandleTime" min-width="160px" align="center" />
         <el-table-column label="备注内容" prop="cbHandleInfo" align="center" min-width="100px" show-overflow-tooltip />
         <el-table-column label="处理人" prop="cbHandlerName" align="center" min-width="100px" />
@@ -293,6 +297,9 @@ export default {
     },
     sourceCodeFilter(code) {
       return that.alarmSourceMap[code]
+    },
+    handleModeFilter(code) {
+      return that.alarmHandleTypeMap[code]
     }
   },
   data() {
@@ -360,7 +367,8 @@ export default {
         children: 'children',
         label: 'violationName'
       },
-      choiceDate: '' // 限制选择日期
+      choiceDate: '', // 限制选择日期
+      alarmHandleTypeMap: {} // 报警处理方式对象
     }
   },
   created() {
@@ -371,6 +379,7 @@ export default {
     this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
     this.alarmLevels = onlineOption['alarm_level'].list
     this.plateColorMap = onlineOption['车牌颜色编码'].map
+    this.alarmHandleTypeMap = onlineOption['alarm_handle_type'].map
   },
   mounted() {
     this.getDate()
@@ -384,7 +393,7 @@ export default {
       const date = new Date()
       const month = date.getMonth() + 1
       const day = date.getDate()
-      this.listQuery.time = [`2021-${month}-01`, `2021-${month}-${day}`]
+      this.listQuery.time = [`2021-${month}-${day < 2 ? 1 : day - 1}`, `2021-${month}-${day}`]
     },
     // 查询报警信息
     getList() {
@@ -394,6 +403,9 @@ export default {
         .then(({ data }) => {
           this.tableData = data.list
           this.total = data.total
+          this.tableData.forEach(item => {
+            this.getLocation(item)
+          })
           this.listLoading = false
         })
         .catch(err => {
@@ -459,12 +471,37 @@ export default {
         cbHandleStatus: null,
         startTime: '',
         endTime: '',
-        flag: '1',
+        flag: '2',
         time: [],
         unitName: ''
       }
       this.getDate()
       this.getList()
+    },
+    // 通过经纬度获取位置
+    getLocation(row) {
+      let geocoder
+      AMap.plugin('AMap.Geocoder', function() {
+        geocoder = new AMap.Geocoder({ city: '', radius: 1000 })
+      })
+      const startlnglat = row.startPosition.split(',').reverse()
+      const endlnglat = row.endPosition.split(',').reverse()
+      if (startlnglat.length > 1) {
+        geocoder.getAddress(startlnglat, (status, result) => {
+          const { regeocode } = result
+          if (status === 'complete' && regeocode) {
+            row.startPosition = regeocode.formattedAddress
+          }
+        })
+      }
+      if (endlnglat.length > 1) {
+        geocoder.getAddress(endlnglat, (status, result) => {
+          const { regeocode } = result
+          if (status === 'complete' && regeocode) {
+            row.endPosition = regeocode.formattedAddress
+          }
+        })
+      }
     },
     // 点击搜索按钮
     handleSearch() {
