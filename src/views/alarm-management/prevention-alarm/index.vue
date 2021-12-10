@@ -216,9 +216,21 @@
         </el-table-column>
         <el-table-column label="开始时间" prop="armTimeStart" min-width="160px" align="center" />
         <el-table-column label="结束时间" prop="armTimeEnd" min-width="160px" align="center" />
-        <el-table-column label="报警时长" prop="alarmTime" align="center" min-width="100px" />
-        <el-table-column label="开始速度" prop="startSpeed" align="center" min-width="100px" />
-        <el-table-column label="结束速度" prop="endSpeed" align="center" min-width="100px" />
+        <el-table-column label="报警时长" prop="alarmTime" align="center" min-width="100px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.alarmTime || 0 }} s</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="开始速度" prop="startSpeed" align="center" min-width="120px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.startSpeed || 0 }} km/h</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="结束速度" prop="endSpeed" align="center" min-width="120px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.endSpeed || 0 }} km/h</span>
+          </template>
+        </el-table-column>
         <el-table-column label="开始位置" prop="startPosition" min-width="250px" align="center" show-overflow-tooltip />
         <el-table-column label="结束位置" prop="endPosition" min-width="250px" align="center" show-overflow-tooltip />
         <el-table-column label="报警信息" prop="" align="center" min-width="150px" />
