@@ -1,10 +1,18 @@
 import createRequest from '@/utils/createRequest'
 const request = createRequest('/monitor/alarmManagement')
 
-// 查询川报警类型
+// 查询主防报警类型
 export function activeDefenseAlarmType() {
   return request({
     url: '/activeDefenseAlarmType',
+    method: 'GET'
+  })
+}
+
+// 查询卫星报警类型
+export function satelliteAlarmType() {
+  return request({
+    url: '/satelliteAlarmType',
     method: 'GET'
   })
 }

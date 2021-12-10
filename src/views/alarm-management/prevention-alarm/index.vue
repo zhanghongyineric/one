@@ -97,7 +97,6 @@
                       />
                     </el-option>
                   </el-select>
-                  <!--  -->
                 </el-form-item>
               </el-col>
               <el-col :md="5" :sm="24">
@@ -530,9 +529,5 @@ export default {
   height:240px;
   overflow:auto;
   background-color:#fff;
-}
-
-::v-deep .el-select-dropdown__item.hover {
-  height: 200px !important;
 }
 </style>
