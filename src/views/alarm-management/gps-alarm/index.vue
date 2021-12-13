@@ -22,14 +22,14 @@
               <el-form-item label="查询时间:">
                 <el-date-picker
                   v-model="listQuery.time"
-                  type="daterange"
+                  type="datetimerange"
                   range-separator="至"
                   start-placeholder="开始时间"
                   end-placeholder="结束时间"
                   placeholder="请选择时间范围"
                   size="small"
                   :picker-options="pickerOptions"
-                  value-format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                 />
               </el-form-item>
             </el-col>
@@ -409,7 +409,7 @@ export default {
       const date = new Date()
       const month = date.getMonth() + 1
       const day = date.getDate()
-      this.listQuery.time = [`2021-${month}-${day < 2 ? 1 : day - 1}`, `2021-${month}-${day}`]
+      this.listQuery.time = [`2021-${month}-${day < 2 ? 1 : day - 1} 00:00:00`, `2021-${month}-${day} 00:00:00`]
     },
     // 查询报警信息
     getList() {
