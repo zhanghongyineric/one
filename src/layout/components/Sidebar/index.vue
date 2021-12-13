@@ -42,8 +42,6 @@ import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 import { parseTime } from '@/utils'
-import { unitVehicle } from '@/api/live-monitor/message'
-import yuxStorage from 'yux-storage'
 
 export default {
   components: { SidebarItem, Logo },
@@ -89,11 +87,9 @@ export default {
   },
   async created() {
     this.setTime()
-    setInterval((item, index) => {
+    setInterval(_ => {
       this.setTime()
     }, 1000)
-    const tree = await yuxStorage.getItem('monitorTree')
-    if (!tree) this.getUnitVehicle()
   },
   mounted() {
     window.WIDGET = {
@@ -131,10 +127,6 @@ export default {
       window.document.body.className = 'dark-theme'
       this.theme = 'dark'
     }
-
-    setInterval(() => {
-      this.getUnitVehicle()
-    }, 300000)
   },
   methods: {
 
@@ -156,20 +148,6 @@ export default {
         this.$store.commit('settings/CHANGE_THEME', 'dark')
         localStorage.setItem('theme', 'dark')
       }
-    },
-    // 获取实时监测树结构数据
-    getUnitVehicle() {
-      unitVehicle({ unitName: '' })
-        .then(({ data }) => {
-          yuxStorage.setItem('monitorTree', data)
-            .then(() => {
-              this.$store.commit('settings/CHANGE_TREE_DATA')
-              console.log('更新实时数据成功')
-            })
-        })
-        .catch(err => {
-          throw err
-        })
     }
   }
 }

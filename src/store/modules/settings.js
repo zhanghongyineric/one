@@ -8,8 +8,7 @@ const state = {
   sidebarLogo: sidebarLogo,
   tagsView: true,
   theme: 'dark',
-  title,
-  monitorTreeData: 0
+  title
 }
 
 const mutations = {
@@ -21,9 +20,6 @@ const mutations = {
   },
   CHANGE_THEME: (state, theme) => {
     state.theme = theme
-  },
-  CHANGE_TREE_DATA: (state) => {
-    state.monitorTreeData++
   }
 }
 

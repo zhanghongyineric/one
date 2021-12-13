@@ -212,7 +212,7 @@ export default {
   },
   computed: {
     updateTreeCount() {
-      return this.$store.state.settings.monitorTreeData
+      return this.$store.state.user.monitorTreeData
     }
   },
   watch: {

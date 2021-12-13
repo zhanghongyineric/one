@@ -4,6 +4,8 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import CityTextToCode from '@/utils/AreaTextToCode'
 import { platformName } from '@/api/home'
+import { unitVehicle } from '@/api/live-monitor/message'
+import yuxStorage from 'yux-storage'
 
 const getDefaultState = () => {
   return {
@@ -18,7 +20,8 @@ const getDefaultState = () => {
     area: '',
     unitId: '',
     userId: '',
-    cityCode: ''
+    cityCode: '',
+    monitorTreeData: 0
   }
 }
 
@@ -55,14 +58,32 @@ const mutations = {
   },
   SET_CITY_CODE: (state, cityCode) => {
     state.cityCode = cityCode
+  },
+  CHANGE_TREE_DATA: (state) => {
+    state.monitorTreeData++
   }
 }
+
+// 定时请求实时监测树
+let timer
 
 const actions = {
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
-
+    timer = setInterval(() => {
+      unitVehicle()
+        .then(({ data }) => {
+          yuxStorage.setItem('monitorTree', data)
+            .then(() => {
+              commit('CHANGE_TREE_DATA')
+              console.log('更新实时数据成功')
+            })
+        })
+        .catch(err => {
+          throw err
+        })
+    }, 300000)
     return new Promise((resolve, reject) => {
       const formData = new FormData()
       formData.append('username', username.trim())
@@ -75,6 +96,17 @@ const actions = {
         const { data } = response
         commit('SET_TOKEN', data.accessToken)
         setToken(data.accessToken)
+        unitVehicle()
+          .then(({ data }) => {
+            yuxStorage.setItem('monitorTree', data)
+              .then(() => {
+                commit('CHANGE_TREE_DATA')
+                console.log('更新实时数据成功')
+              })
+          })
+          .catch(err => {
+            throw err
+          })
         resolve()
       }).catch(error => {
         reject(error)
@@ -95,6 +127,19 @@ const actions = {
 
   // 获取用户信息和字典
   getInfo({ commit, state }) {
+    timer = setInterval(() => {
+      unitVehicle()
+        .then(({ data }) => {
+          yuxStorage.setItem('monitorTree', data)
+            .then(() => {
+              commit('CHANGE_TREE_DATA')
+              console.log('更新实时数据成功')
+            })
+        })
+        .catch(err => {
+          throw err
+        })
+    }, 300000)
     return Promise.allSettled([getInfo(state.token), fetchAllDictionary()]).then(([userRes, dictRes]) => {
       if (dictRes.status === 'fulfilled') {
         // 存储字典数据
@@ -131,6 +176,11 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
+    clearInterval(timer)
+    yuxStorage.removeItem('monitorTree')
+      .then(_ => {
+        console.log('移除数据成功')
+      })
     return new Promise((resolve, reject) => {
       logout().then(res => {
         removeToken() // must remove  token  first
