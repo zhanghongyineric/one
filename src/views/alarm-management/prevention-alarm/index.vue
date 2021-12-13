@@ -188,10 +188,16 @@
         />
         <el-table-column label="操作" align="center" fixed="left" width="120px">
           <template slot-scope="scope">
-            <i v-if="scope.row.cbHandleStatus === 1" class="el-icon-edit-outline icon-disabled" />
-            <i v-else class="el-icon-edit-outline icon" @click="openHandleDialog(scope.row)" />
-            <i class="el-icon-view icon icon-spacing" @click="detailVisible = true" />
-            <i class="el-icon-data-line icon icon-spacing" @click="trajectoryVisible = true" />
+            <el-tooltip class="item" effect="dark" content="报警处理" placement="top">
+              <i v-if="scope.row.cbHandleStatus === 1" class="el-icon-edit-outline icon-disabled" />
+              <i v-else class="el-icon-edit-outline icon" @click="openHandleDialog(scope.row)" />
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="报警详情" placement="top">
+              <i class="el-icon-view icon icon-spacing" @click="detailVisible = true" />
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="轨迹回放" placement="top">
+              <i class="el-icon-data-line icon icon-spacing" @click="trajectoryVisible = true" />
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column label="车牌号" prop="plateNum" min-width="100px" align="center" fixed="left" />
