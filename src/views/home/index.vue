@@ -247,7 +247,11 @@
             <el-row :gutter="20">
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span class="title-text" :style="{'color': theme?'#fff':'#606266'}">驾驶员信息</span>
+                  <span
+                    class="title-text"
+                    :style="{'color': theme?'#fff':'#606266'}"
+                    @click="gotoPage('/information-manage/driver-base-information')"
+                  >驾驶员信息</span>
                   <span class="little-num">从业：{{ driverData.work }}</span>
                   <span class="little-num">待业：{{ driverData.unwork }}</span>
                   <span class="little-num">注销：{{ driverData.logout }}</span>
@@ -255,7 +259,11 @@
               </el-col>
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span class="title-text" :style="{'color': theme?'#fff':'#606266'}">车辆信息</span>
+                  <span
+                    class="title-text"
+                    :style="{'color': theme?'#fff':'#606266'}"
+                    @click="gotoPage('/information-manage/car-base-information')"
+                  >车辆信息</span>
                   <span class="little-num">正常：{{ carData.normal }}</span>
                   <span class="little-num">停运：{{ carData.stop }}</span>
                   <span class="little-num">注销：{{ carData.logout }}</span>
@@ -265,7 +273,11 @@
               </el-col>
               <el-col :md="8" :span="24">
                 <div class="content-box">
-                  <span class="title-text" :style="{'color': theme?'#fff':'#606266'}">企业信息</span>
+                  <span
+                    class="title-text"
+                    :style="{'color': theme?'#fff':'#606266'}"
+                    @click="gotoPage('/information-manage/company-base-information')"
+                  >企业信息</span>
                   <span class="little-num">营运：{{ companyData.normal }}</span>
                   <span class="little-num">歇业：{{ companyData.pause }}</span>
                 </div>
@@ -964,6 +976,7 @@ p {
         display:block;
         position: relative;
         bottom: 17px;
+        cursor: pointer;
       }
 
       .little-num {
