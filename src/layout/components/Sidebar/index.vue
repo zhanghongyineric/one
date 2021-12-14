@@ -159,12 +159,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-::v-deep .el-submenu__title,
-::v-deep .el-menu-item {
-  &:hover {
-    background-color: #ECF5FF !important;
-  }
-}
+// ::v-deep .el-submenu__title,
+// ::v-deep .el-menu-item {
+//   &:hover {
+//     background-color: #ECF5FF !important;
+//   }
+// }
 .footer{
   //position: absolute;
   //bottom: 0;

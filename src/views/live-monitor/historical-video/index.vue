@@ -1,7 +1,10 @@
 <template>
   <div class="container">
-    <div class="left-box">
-      <div class="search-box box-style">
+    <div class="left-box" :style="{'background-color':theme?'#0E1521':''}">
+      <div
+        class="search-box box-style"
+        :style="{'background-color':theme?'#1C2F41':'#fff'}"
+      >
         <el-form
           ref="searchForm"
           :model="searchFormData"
@@ -47,7 +50,7 @@
           <el-button type="primary" size="small" @click="getList">查询</el-button>
         </div>
       </div>
-      <div class="table box-style">
+      <div class="table box-style" :style="{'background-color':theme?'#1C2F41':'#fff'}">
         <el-table
           v-loading="listLoading"
           :data="tableData"
@@ -162,6 +165,16 @@ export default {
       vm.searchFormData.plateNum = vm.$route.query.plateNum
     })
   },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
+    }
+  },
+  watch: {
+    theme() {
+      this.changeTheme()
+    }
+  },
   mounted() {
     this.changeTime()
     this.iframeWin = this.$refs.iframe.contentWindow
@@ -191,6 +204,7 @@ export default {
         item.time = `${this.searchFormData.startTime}  ${strHour}:${strMinute}:${strSecond} - ${endHour}:${endMinute}:${endSecond}`
       }
     },
+    // 播放视频向 iframe 传递播放链接
     playVideo(row) {
       this.iframeWin.postMessage({
         cmd: 'getParams',
@@ -198,6 +212,11 @@ export default {
           key: row.PlaybackUrlWs
         }
       }, '*')
+    },
+    // 更改主题后，向 iframe 传递主题
+    changeTheme() {
+      console.log(this.theme, 'theme')
+      this.iframeWin.postMessage(this.theme, '*')
     },
     getList() {
       this.listLoading = true
@@ -211,7 +230,7 @@ export default {
 
       getDevId({ plateNum: this.searchFormData.plateNum })
         .then(({ data }) => {
-          axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123')
+          axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=MYYFB123')
             .then(res => {
               axios.get('https://www.api.gosmooth.com.cn/video/history', {
                 params: {
@@ -291,7 +310,7 @@ export default {
 .left-box {
   width: 700px;
   height: 100%;
-  background-color: #0E1521;
+  /* background-color: #0E1521; */
   position: absolute;
   left: 0;
   top: 0;
@@ -311,7 +330,7 @@ export default {
 .box-style {
   box-sizing: border-box;
   padding: 20px;
-  background-color:#1C2F41;
+  /* background-color:#1C2F41; */
   border-radius: 10px;
 }
 
@@ -335,10 +354,6 @@ export default {
   display: flex;
   justify-content: space-around;
   padding-left: 60px;
-}
-
-::v-deep .el-form-item__label {
-  color: #fff !important;
 }
 
 ::v-deep .el-tree-node.is-current > .el-tree-node__content {

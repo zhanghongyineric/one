@@ -481,7 +481,7 @@ export default {
       this.currentRow.vehicleType = that.vehicleTypeMap[parseInt(row.vehicleType)]
       this.currentRow.endtime = row.endtime || '无'
       this.visible = true
-      axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123')
+      axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=MYYFB123')
         .then(res => {
           axios.get('https://www.api.gosmooth.com.cn/attach', {
             params: {

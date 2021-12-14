@@ -143,10 +143,21 @@
         var current = 0
         window.addEventListener('message', (e) => {
             let data = e.data
-            const arr = data.params.key.split('jsession=')
-            url = arr[0] + 'jsession=' + `${jsession}` + arr[1]
-            swfobject.stopVodM();
-            swfobject.startVodM(url, 0)
+            if (data === true) {
+                document.getElementById('body').style.backgroundColor = '#0E1521'
+                document.getElementsByClassName('video-container')[0].style.backgroundColor = '#1C2F41'
+                console.log('深色主题');
+            } else if (data === false) {
+                document.getElementById('body').style.backgroundColor = '#F0F2F5'
+                document.getElementsByClassName('video-container')[0].style.backgroundColor = '#fff'
+                console.log('浅色主题');
+            } else {
+                const arr = data.params.key.split('jsession=')
+                url = arr[0] + 'jsession=' + `${jsession}` + arr[1]
+                swfobject.stopVodM();
+                swfobject.startVodM(url, 0)
+            }
+            
             // switch(data.cmd) {
             //     case 'getParams':
             //         const arr = data.params.key.split('jsession=')
@@ -309,7 +320,7 @@
         function userLogin() {
             ajax({
                 type: 'GET',
-                url: 'https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=myyfb123',
+                url: 'https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=MYYFB123',
                 cache: false,
                 success: function (data) {
                     if (JSON.parse(data).result == 0) {
@@ -340,13 +351,13 @@
             min-height: 870px;
             border-radius: 10px;
             padding: 10px;
-            background-color:#1C2F41;
+            /* background-color:#1C2F41; */
         }
         #body {
             min-width:900px;
             /* min-height: 700px; */
             height: calc(100vh - 40px);
-            background-color: #0E1521;
+            /* background-color: #0E1521; */
             overflow-y: hidden;
         }
     </style>
@@ -365,6 +376,19 @@
 <div class="player-box">
     <div id="cmsv6flash3"></div>
 </div> -->
+<script>
+    // 初始化背景样式
+    (function() {
+        const theme = localStorage.getItem('theme')
+        if (theme === 'dark') {
+            document.getElementById('body').style.backgroundColor = '#0E1521'
+            document.getElementsByClassName('video-container')[0].style.backgroundColor = '#1C2F41'
+        } else {
+            document.getElementById('body').style.backgroundColor = '#F0F2F5'
+            document.getElementsByClassName('video-container')[0].style.backgroundColor = '#fff'
+        }
+    })()
+</script>
 </body>
 </html>
 </body>

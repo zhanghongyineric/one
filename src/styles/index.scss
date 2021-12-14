@@ -385,6 +385,14 @@ div:focus {
     color: $subMenuActiveText !important;
   }
 }
+// 侧边栏浅色样式
+.el-submenu__title,
+.el-menu-item {
+  &:hover {
+    background-color: #ECF5FF !important;
+  }
+}
+
 .el-picker-panel__footer {
   .el-button--text {
     display: none !important;

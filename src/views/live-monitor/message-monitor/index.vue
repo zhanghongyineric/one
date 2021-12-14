@@ -242,7 +242,7 @@ export default {
         })
       } else {
         const devNo = id
-        this.videoSrc = `http://121.36.18.123/808gps/open/player/video.html?lang=zh&devIdno=${devNo}&account=myyfb&password=myyfb123`
+        this.videoSrc = `http://121.36.18.123/808gps/open/player/video.html?lang=zh&devIdno=${devNo}&account=myyfb&password=MYYFB123`
         this.showVideo = true
       }
       this.stopPropagation(e)
