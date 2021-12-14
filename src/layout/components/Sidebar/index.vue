@@ -1,14 +1,17 @@
 <template>
   <div :class="{'has-logo':showLogo}">
     <logo v-if="showLogo" :collapse="isCollapse" />
-    <el-scrollbar wrap-class="scrollbar-wrapper">
+    <el-scrollbar
+      wrap-class="scrollbar-wrapper"
+      :style="{'background-color':darkTheme?'':'#fff'}"
+    >
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
-        :background-color="variables.menuBg"
-        :text-color="variables.menuText"
+        :background-color="darkTheme?variables.menuBg:'#fff'"
+        :text-color="darkTheme?variables.menuText:'#606266'"
         :unique-opened="false"
-        :active-text-color="variables.menuActiveText"
+        :active-text-color="darkTheme?variables.menuActiveText:'#53A8FF'"
         :collapse-transition="false"
         mode="vertical"
       >
@@ -16,18 +19,18 @@
       </el-menu>
       <div class="footer " :style="{display:isCollapse?'none':'block' }">
         <div class="toggle-theme f jc-c ai-c" @click="toggleTheme">
-          <svg-icon :icon-class="iconClass" class="theme-icon" />
-          <span class="model-text">{{ modelText }}</span>
+          <svg-icon :icon-class="iconClass" class="theme-icon" :style="{fill: darkTheme?'#fff' : '#606266'}" />
+          <span class="model-text" :style="{color: darkTheme?'' : '#606266'}">{{ modelText }}</span>
         </div>
         <div class="box f-col-sb-c">
-          <!-- <div style="height: 34px;overflow:hidden;" class="f-c">
+          <!-- <div style="height:34px;overflow:hidden;" class="f-c">
             <div id="he-plugin-simple" />
           </div> -->
-          <span class="time">{{ this.time }}</span>
-          <div class="date">
+          <span class="time" :style="{color: darkTheme?'' : '#606266'}">{{ this.time }}</span>
+          <div class="date" :style="{color: darkTheme?'' : '#606266'}">
             <span>{{ this.date }}</span>
           </div>
-          <div class="company">
+          <div class="company" :style="{color: darkTheme?'' : '#606266'}">
             四川明亚智行提供技术支持
           </div>
         </div>
@@ -78,6 +81,9 @@ export default {
     },
     iconClass() {
       return this.theme === 'dark' ? 'sun' : 'moon'
+    },
+    darkTheme() {
+      return this.$store.state.settings.theme === 'dark'
     }
   },
   watch: {
@@ -153,6 +159,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+::v-deep .el-submenu__title,
+::v-deep .el-menu-item {
+  &:hover {
+    background-color: #ECF5FF !important;
+  }
+}
 .footer{
   //position: absolute;
   //bottom: 0;
@@ -175,7 +187,6 @@ export default {
       margin-right: 6px !important;
       width: 28px;
       height: 28px;
-      fill:white;
     }
 
     .model-text {

@@ -360,7 +360,30 @@ div:focus {
     background-color: inherit;
   }
 
-
+  // 侧边栏深色样式
+  .el-submenu__title {
+    &:hover {
+      background-color: $menuHover !important;
+    }
+  }
+  .el-submenu .el-menu-item {
+    &:hover {
+      background-color: $subMenuHover !important;
+    }
+  }
+  .el-menu-item {
+    &:hover {
+      background-color: $menuHover !important;
+    }
+  }
+  .submenu-title-noDropdown {
+    &:hover {
+      background-color: $menuHover !important;
+    }
+  }
+  .is-active > .el-submenu__title {
+    color: $subMenuActiveText !important;
+  }
 }
 .el-picker-panel__footer {
   .el-button--text {
