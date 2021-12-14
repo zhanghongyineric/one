@@ -23,6 +23,11 @@
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
+              <el-form-item label="车牌号:">
+                <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :md="6" :sm="24">
               <el-form-item label="所属地区:">
                 <el-cascader
                   v-model="listQuery.zoneId"
@@ -34,25 +39,20 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :md="6" :sm="24">
-              <el-form-item label="所属企业:">
-                <el-autocomplete
-                  v-model="listQuery.unitName"
-                  :fetch-suggestions="searchType"
-                  placeholder="请输入企业名称关键字"
-                  :debounce="500"
-                  size="small"
-                  clearable
-                  style="width:100%;"
-                  @select="selectSearchCompany"
-                />
-              </el-form-item>
-            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="6" :sm="24">
-                <el-form-item label="车牌号:">
-                  <el-input v-model="listQuery.plateNum" placeholder="请输入车牌号" clearable />
+                <el-form-item label="所属企业:">
+                  <el-autocomplete
+                    v-model="listQuery.unitName"
+                    :fetch-suggestions="searchType"
+                    placeholder="请输入企业名称关键字"
+                    :debounce="500"
+                    size="small"
+                    clearable
+                    style="width:100%;"
+                    @select="selectSearchCompany"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :md="6" :sm="24">

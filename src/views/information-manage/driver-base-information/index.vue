@@ -22,11 +22,6 @@
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
-              <el-form-item label="籍贯:">
-                <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择籍贯地区" style="width:100%;" size="small" :options="cityOptions" />
-              </el-form-item>
-            </el-col>
-            <el-col :md="6" :sm="24">
               <el-form-item label="所属运输企业:">
                 <el-autocomplete
                   v-model="listQuery.unitName"
@@ -40,11 +35,16 @@
                 />
               </el-form-item>
             </el-col>
+            <el-col :md="6" :sm="24">
+              <el-form-item label="驾驶员名字:">
+                <el-input v-model="listQuery.personName" placeholder="请输入驾驶员名字" size="small" clearable />
+              </el-form-item>
+            </el-col>
             <!--高级搜索条件-->
             <template v-if="advanced">
               <el-col :md="6" :sm="24">
-                <el-form-item label="驾驶员名字:">
-                  <el-input v-model="listQuery.personName" placeholder="请输入驾驶员名字" size="small" clearable />
+                <el-form-item label="籍贯:">
+                  <el-cascader v-model="listQuery.qualificationCity" placeholder="请选择籍贯地区" style="width:100%;" size="small" :options="cityOptions" />
                 </el-form-item>
               </el-col>
               <el-col :md="6" :sm="24">

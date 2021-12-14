@@ -26,7 +26,7 @@
             </el-col>
             <el-col :md="6" :sm="24">
               <el-form-item label="所属地区:">
-                <AreaSelect v-model="listQuery.place" :disabled="true" size="small" limit-area :area-text.sync="listQuery.area" />
+                <AreaSelect v-model="listQuery.place" :disabled="disabled" size="small" limit-area :area-text.sync="listQuery.area" />
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
