@@ -7,7 +7,7 @@
     custom-class="base-dialog min-width-dialog"
     :before-close="closeDialog"
   >
-    <div>
+    <div v-loading="downloading">
       <el-row>
         <el-divider />
         <el-col :md="7">
@@ -133,7 +133,12 @@
               size="mini"
               @click="alarmHandle"
             >报警处理</el-button>
-            <el-button type="primary" plain size="mini">证据导出</el-button>
+            <el-button
+              type="primary"
+              plain
+              size="mini"
+              @click="dowloadFiles"
+            >证据导出</el-button>
             <el-button type="primary" plain size="mini">状态数据</el-button>
           </div>
         </div>
@@ -145,6 +150,8 @@
 <script>
 import { findDriver } from '@/api/alarm-management/prevention-alarm'
 import axios from 'axios'
+import { saveAs } from 'file-saver'
+import * as JSZip from 'jszip'
 
 // 字典
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
@@ -190,7 +197,9 @@ export default {
       images: [], // 报警图片
       preImages: [], // 预览图片
       currentImgSrc: '', // 当前展示的图片
-      imgIndex: 0 // 当前展示图片的索引
+      imgIndex: 0, // 当前展示图片的索引
+      downloading: false, // 证据导出打包过程中显示
+      videoList: [] // 视频组件列表
     }
   },
   watch: {
@@ -249,6 +258,15 @@ export default {
       this.currentImgSrc = ''
       this.preImages = []
       this.imgIndex = 0
+      this.destroyVideo()
+    },
+    // 销毁视频组件
+    destroyVideo() {
+      for (let i = 0; i < this.videoList.length; i++) {
+        setTimeout(() => {
+          this.$video('video' + i).dispose()
+        }, 300)
+      }
     },
     // 初始化地图
     initialMap() {
@@ -310,7 +328,7 @@ export default {
       if (this.videos.length > 0) {
         for (let index = 0; index < this.videos.length; index++) {
           setTimeout(() => {
-            this.$video('video' + index, {
+            const player = this.$video('video' + index, {
               controls: true,
               autoplay: 'muted',
               preload: 'auto',
@@ -324,6 +342,7 @@ export default {
                 'remainingTimeDisplay': false
               }
             })
+            this.videoList.push(player)
           })
         }
       }
@@ -336,6 +355,66 @@ export default {
     // 点击页码切换图片
     handleChange(val) {
       this.imgIndex = val - 1
+    },
+    // 证据导出
+    dowloadFiles() {
+      this.downloading = true
+      const zip = new JSZip()
+      const img = zip.folder('图片')
+      const video = zip.folder('视频')
+      const carInfo = this.carInfo
+      const promises = []
+      this.images.forEach(item => {
+        this.main(item.downloadUrl, (base64) => {
+          const basePic = base64.replace(/^data:image\/(png|jpg);base64,/, '')
+          img.file(item.fs + '.png', basePic, { base64: true })
+        })
+      })
+      this.videos.forEach(item => {
+        const promise = this.getFile(item.downloadUrl).then(data => { // 下载文件, 并存成ArrayBuffer对象
+          video.file(item.fs + '.mp4', data, { binary: true }) // 逐个添加文件
+        })
+        promises.push(promise)
+      })
+      Promise.all(promises).then(() => {
+        zip.generateAsync({ type: 'blob' }).then(content => { // 生成二进制流
+          saveAs(content, `${carInfo.plateNum} ${carInfo.cbArmName} ${carInfo.armTimeStart}.zip`) // zip下载后的名字
+          this.downloading = false
+        })
+      })
+    },
+    // 将图片链接转换成 base64
+    getBase64Image(img) {
+      var canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      var ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, img.width, img.height)
+      var dataURL = canvas.toDataURL('image/png') // 可选其他值 image/jpeg
+      return dataURL
+    },
+    main(src, cb) {
+      var image = new Image()
+      image.src = src + '?v=' + Math.random() // 处理缓存
+      image.crossOrigin = '*' // 支持跨域图片
+      image.onload = () => {
+        var base64 = this.getBase64Image(image)
+        cb && cb(base64)
+      }
+    },
+    // 下载视频文件
+    getFile(url) {
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'get',
+          url,
+          responseType: 'arraybuffer'
+        }).then(data => {
+          resolve(data.data)
+        }).catch(error => {
+          reject(error.toString())
+        })
+      })
     }
   }
 }
