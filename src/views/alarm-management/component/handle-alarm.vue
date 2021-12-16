@@ -58,6 +58,10 @@ export default {
     rows: {
       type: Array,
       default: () => []
+    },
+    returnToDetail: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -84,7 +88,8 @@ export default {
   methods: {
     // 关闭弹框
     closeDialog() {
-      this.$emit('close', false)
+      if (this.returnToDetail) this.$emit('open-detail')
+      else this.$emit('close', false)
     },
     // 确定选择
     submit() {
@@ -96,7 +101,7 @@ export default {
             message: '处理成功！'
           })
           this.$emit('close', false)
-          this.$emit('update-date')
+          this.$emit('update-data')
         })
         .catch(err => {
           this.$message({

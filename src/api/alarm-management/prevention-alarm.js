@@ -52,3 +52,42 @@ export function handleAlarm(data) {
     data
   })
 }
+
+// 报警excel下载
+export function alarmDowload(params) {
+  return request({
+    url: '/alarmDowload',
+    method: 'GET',
+    params,
+    responseType: 'blob'
+  })
+}
+
+// 获取驾驶员信息
+export function findDriver(params) {
+  return request({
+    url: '/findDriver',
+    method: 'GET',
+    params
+  })
+}
+
+// 报警轨迹execl下载
+export function alarmTrajectoryDowload(params) {
+  return request({
+    url: '/alarmTrajectoryDowload',
+    method: 'GET',
+    params,
+    responseType: 'blob'
+  })
+}
+
+// 报警轨迹
+export function alarmTrajectory(data) {
+  return request({
+    url: '/alarmTrajectory',
+    method: 'POST',
+    data
+  })
+}
+

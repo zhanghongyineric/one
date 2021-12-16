@@ -26,9 +26,9 @@
           <!-- <div style="height:34px;overflow:hidden;" class="f-c">
             <div id="he-plugin-simple" />
           </div> -->
-          <span class="time" :style="{color: darkTheme?'' : '#606266'}">{{ this.time }}</span>
+          <span class="time" :style="{color: darkTheme?'' : '#606266'}">{{ time }}</span>
           <div class="date" :style="{color: darkTheme?'' : '#606266'}">
-            <span>{{ this.date }}</span>
+            <span>{{ date }}</span>
           </div>
           <div class="company" :style="{color: darkTheme?'' : '#606266'}">
             四川明亚智行提供技术支持
@@ -36,7 +36,6 @@
         </div>
       </div>
     </el-scrollbar>
-
   </div>
 </template>
 <script>

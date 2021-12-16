@@ -193,10 +193,10 @@
               <i v-else class="el-icon-edit-outline icon" @click="openHandleDialog(scope.row)" />
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="报警详情" placement="top">
-              <i class="el-icon-view icon icon-spacing" @click="detailVisible = true" />
+              <i class="el-icon-view icon icon-spacing" @click="openDetailDialog(scope.row)" />
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="轨迹回放" placement="top">
-              <i class="el-icon-data-line icon icon-spacing" @click="trajectoryVisible = true" />
+              <i class="el-icon-data-line icon icon-spacing" @click="openTrajectoryDialog(scope.row)" />
             </el-tooltip>
           </template>
         </el-table-column>
@@ -271,11 +271,22 @@
       <HandleAlarm
         :rows="currentRow"
         :visible="handleVisible"
+        :return-to-detail="returnToDetail"
         @close="updateVisible"
-        @update-date="getList"
+        @update-data="getList"
+        @open-detail="handleToDetail"
       />
-      <AlarmDetail :visible="detailVisible" @close="updateVisible" />
-      <HistoricalTrajectory :visible="trajectoryVisible" @close="updateVisible" />
+      <AlarmDetail
+        :visible="detailVisible"
+        :rows="currentRow"
+        @close="updateVisible"
+        @handle-alarm="detailToHandle"
+      />
+      <HistoricalTrajectory
+        :visible="trajectoryVisible"
+        :rows="currentRow"
+        @close="updateVisible"
+      />
     </el-card>
   </div>
 </template>
@@ -289,7 +300,8 @@ import Pagination from '@/components/Pagination'
 import {
   activeDefenseAlarmType,
   areaCode,
-  selectAlarm
+  selectAlarm,
+  alarmDowload
 } from '@/api/alarm-management/prevention-alarm'
 
 // 字典
@@ -371,7 +383,12 @@ export default {
         disabledDate: (time) => {
           if (this.choiceDate) {
             const startDay = (new Date(this.choiceDate).getDate() - 1) * 24 * 3600 * 1000
-            const endDay = (new Date(new Date(this.choiceDate).getFullYear(), new Date(this.choiceDate).getMonth() + 1, 0).getDate() - new Date(this.choiceDate).getDate()) * 24 * 3600 * 1000
+            // const limitDay = (new Date().getDate() - 1) * 24 * 3600 * 1000 * 30
+            const endDay = (
+              new Date(new Date(this.choiceDate).getFullYear(),
+                new Date(this.choiceDate).getMonth() + 1, 0).getDate() -
+              new Date(this.choiceDate).getDate()
+            ) * 24 * 3600 * 1000
             const minTime = this.choiceDate - startDay
             const maxTime = this.choiceDate + endDay
             return time.getTime() < minTime || time.getTime() > maxTime
@@ -385,18 +402,13 @@ export default {
         label: 'violationName'
       },
       choiceDate: '', // 限制选择日期
-      alarmHandleTypeMap: {} // 报警处理方式对象
+      alarmHandleTypeMap: {}, // 报警处理方式对象
+      returnToDetail: false
     }
   },
   created() {
     that = this
-    this.alarmSource = onlineOption['数据来源'].list
-    this.alarmSourceMap = onlineOption['数据来源'].map
-    this.vehicleTypes = onlineOption['vehicle_type_code'].list
-    this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
-    this.alarmLevels = onlineOption['alarm_level'].list
-    this.plateColorMap = onlineOption['车牌颜色编码'].map
-    this.alarmHandleTypeMap = onlineOption['alarm_handle_type'].map
+    this.getValue()
   },
   mounted() {
     this.getDate()
@@ -405,6 +417,16 @@ export default {
     this.getList()
   },
   methods: {
+    // 取字典对应值
+    getValue() {
+      this.alarmSource = onlineOption['数据来源'].list
+      this.alarmSourceMap = onlineOption['数据来源'].map
+      this.vehicleTypes = onlineOption['vehicle_type_code'].list
+      this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
+      this.alarmLevels = onlineOption['alarm_level'].list
+      this.plateColorMap = onlineOption['车牌颜色编码'].map
+      this.alarmHandleTypeMap = onlineOption['alarm_handle_type'].map
+    },
     // 获取本月初到当前日期
     getDate() {
       const date = new Date()
@@ -416,6 +438,8 @@ export default {
     getList() {
       this.listLoading = true
       this.setListQuery()
+      this.listQuery.startTime = '2021-12-01 00:00:00'
+      this.listQuery.endTime = '2021-12-16 00:00:00'
       selectAlarm({ ...this.listQuery })
         .then(({ data }) => {
           data.list.forEach(item => {
@@ -484,7 +508,8 @@ export default {
         geocoder.getAddress(startlnglat, (status, result) => {
           const { regeocode } = result
           if (status === 'complete' && regeocode) {
-            row.startPosition = regeocode.formattedAddress
+            row.startLocation = regeocode.formattedAddress
+            // row.startPosition = regeocode.formattedAddress
           }
         })
       }
@@ -492,7 +517,8 @@ export default {
         geocoder.getAddress(endlnglat, (status, result) => {
           const { regeocode } = result
           if (status === 'complete' && regeocode) {
-            row.endPosition = regeocode.formattedAddress
+            row.endLocation = regeocode.formattedAddress
+            // row.endPosition = regeocode.formattedAddress
           }
         })
       }
@@ -534,6 +560,7 @@ export default {
     },
     // 打开处理弹框
     openHandleDialog(row) {
+      this.returnToDetail = false
       this.currentRow.push(row)
       this.handleVisible = true
     },
@@ -543,7 +570,31 @@ export default {
       this.handleVisible = true
     },
     // 表格导出
-    dowloadExcel() {},
+    dowloadExcel() {
+      this.listLoading = true
+      const req = {
+        unitIds: this.listQuery.unitIds,
+        sourceCode: this.listQuery.sourceCode,
+        deptId: this.listQuery.deptId,
+        plateNum: this.listQuery.plateNum,
+        driverName: this.listQuery.driverName,
+        vehicleTypeCodes: this.listQuery.vehicleTypeCodes,
+        cbArmType: this.listQuery.cbArmType,
+        alarmLevel: this.listQuery.alarmLevel,
+        cbHandleStatus: this.listQuery.cbHandleStatus,
+        alarmTime: this.listQuery.alarmTime,
+        startTime: this.listQuery.startTime,
+        endTime: this.listQuery.endTime,
+        flag: this.listQuery.flag
+      }
+      alarmDowload({ ...req })
+        .then(_ => {
+          this.listLoading = false
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     // 获取选中的企业
     getSelectedUnit(unit) {
       unit.forEach(item => {
@@ -558,6 +609,27 @@ export default {
       nodes.forEach(item => {
         this.listQuery.cbArmType.push(item.violationCode)
       })
+    },
+    // 打开报警详情弹框
+    openDetailDialog(row) {
+      this.currentRow.push(row)
+      this.detailVisible = true
+    },
+    // 打开历史轨迹弹框
+    openTrajectoryDialog(row) {
+      this.currentRow.push(row)
+      this.trajectoryVisible = true
+    },
+    // 报警详情中点击处理按钮
+    detailToHandle() {
+      this.returnToDetail = true
+      this.detailVisible = false
+      this.handleVisible = true
+    },
+    // 报警处理中点击取消返回报警详情
+    handleToDetail() {
+      this.handleVisible = false
+      this.detailVisible = true
     }
   }
 }

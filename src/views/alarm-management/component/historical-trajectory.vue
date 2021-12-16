@@ -70,6 +70,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
+import { alarmTrajectoryDowload } from '@/api/alarm-management/prevention-alarm'
 
 export default {
   name: 'HistoricalTrajectory',
@@ -78,6 +79,10 @@ export default {
     visible: {
       type: Boolean,
       default: false
+    },
+    rows: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -117,7 +122,26 @@ export default {
       })
     },
     // 下载文件
-    dowloadFile() {},
+    dowloadFile() {
+      const row = this.rows[0]
+      const params = {
+        startTime: row.armTimeStart,
+        endTime: row.armTimeEnd,
+        vehicleId: row.vehicleId,
+        plateNum: row.plateNum,
+        unitName: row.unitName,
+        cbArmName: row.cbArmName
+        // pageNum: 1,
+        // pageSize: 10
+      }
+      alarmTrajectoryDowload({ ...params })
+        .then(_ => {
+          this.closeDialog()
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     // 展开表格
     openTable() {
       this.mapHeight.height = '275px'
