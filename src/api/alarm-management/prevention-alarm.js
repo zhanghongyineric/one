@@ -91,3 +91,12 @@ export function alarmTrajectory(data) {
   })
 }
 
+// 模糊查询企业
+export function findUnitName(data) {
+  return request({
+    url: `/findUnitName`,
+    method: 'POST',
+    data
+  })
+}
+

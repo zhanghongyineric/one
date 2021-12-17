@@ -33,7 +33,7 @@
         </el-col>
         <el-col :md="12" class="col-spacing">
           <i class="el-icon-s-grid icon" />
-          <span class="text">起：{{ carInfo.startPosition }} 止：{{ carInfo.endPosition }}</span>
+          <span class="text">起:{{ carInfo.startPosition }} 止:{{ carInfo.endPosition }}</span>
         </el-col>
         <el-col :md="24" class="col-spacing">
           <i class="el-icon-map-location icon" />
@@ -139,7 +139,6 @@
               size="mini"
               @click="dowloadFiles"
             >证据导出</el-button>
-            <el-button type="primary" plain size="mini">状态数据</el-button>
           </div>
         </div>
       </div>
@@ -199,7 +198,8 @@ export default {
       currentImgSrc: '', // 当前展示的图片
       imgIndex: 0, // 当前展示图片的索引
       downloading: false, // 证据导出打包过程中显示
-      videoList: [] // 视频组件列表
+      videoList: [], // 视频组件列表
+      jsession: '' // 获取报警附件时需传 jseesion
     }
   },
   watch: {
@@ -240,6 +240,7 @@ export default {
   },
   created() {
     this.plateColorMap = onlineOption['车牌颜色编码'].map
+    this.getJseesion()
   },
   methods: {
     // 设置车牌颜色背景色
@@ -273,53 +274,64 @@ export default {
       this.map = new AMap.Map('mapContainer', {
         resizeEnable: true,
         center: [104.06632, 30.572903],
-        zoom: 12
+        zoom: 12,
+        mapStyle: 'amap://styles/light'
       })
+      this.setAlarmMaker()
+      this.map.setZoom(14)
     },
     // 获取驾驶员信息
     getDriverInfo() {
-      findDriver({ driverId: this.rows[0].driverId })
-        .then(({ data }) => {
-          this.driverInfo = data
-        })
-        .catch(err => {
-          throw err
-        })
+      if (this.rows[0].driverId !== 0) {
+        findDriver({ driverId: this.rows[0].driverId })
+          .then(({ data }) => {
+            this.driverInfo = data
+          })
+          .catch(err => {
+            throw err
+          })
+      }
     },
     // 报警处理
     alarmHandle() {
       this.$emit('handle-alarm')
     },
-    // 获取报警片和视频
-    getAlarmInfomation() {
-      const row = this.rows[0]
-      axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=MYYFB123')
+    // 获取 jseesion
+    getJseesion() {
+      axios.get(
+        'https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=MYYFB123'
+      )
         .then(res => {
-          axios.get('https://www.api.gosmooth.com.cn/attach', {
-            params: {
-              jsession: res.data.jsession,
-              toMap: 2,
-              guid: row.guid,
-              devIdno: row.deviceIdNo,
-              alarmType: row.armType,
-              begintime: row.armTimeStart
-            },
-            timeout: 10000
-          })
-            .then(({ data }) => {
-              this.videos = data.vedios
-              this.images = data.images
-              this.initVideo()
-            })
-            .catch(err => {
-              throw err
-            })
+          this.jsession = res.data.jsession
         })
         .catch(err => {
           this.$message({
             type: 'error',
-            message: '登录失败！'
+            message: '获取jseesion失败！'
           })
+          throw err
+        })
+    },
+    // 获取报警片和视频
+    getAlarmInfomation() {
+      const row = this.rows[0]
+      axios.get('https://www.api.gosmooth.com.cn/attach', {
+        params: {
+          jsession: this.jsession,
+          toMap: 2,
+          guid: row.guid,
+          devIdno: row.deviceIdNo,
+          alarmType: row.armType,
+          begintime: row.armTimeStart
+        },
+        timeout: 10000
+      })
+        .then(({ data }) => {
+          this.videos = data.vedios
+          this.images = data.images
+          this.initVideo()
+        })
+        .catch(err => {
           throw err
         })
     },
@@ -415,7 +427,32 @@ export default {
           reject(error.toString())
         })
       })
+    },
+    // 标记报警位置
+    setAlarmMaker() {
+      const position = this.rows[0].startPosition.split(',')
+      const icon = new AMap.Icon({
+        size: new AMap.Size(40, 50), // 图标尺寸
+        image: require('../../../assets/alarm.png'), // Icon的图像
+        imageOffset: new AMap.Pixel(0, 0), // 图像相对展示区域的偏移量，适于雪碧图等
+        imageSize: new AMap.Size(42, 40) // 根据所设置的大小拉伸或压缩图片
+      })
+      // 将 Icon 实例添加到 marker 上:
+      const marker = new AMap.Marker({
+        position: new AMap.LngLat(position[1], position[0]),
+        offset: new AMap.Pixel(-10, -10),
+        icon: icon, // 添加 Icon 实例
+        zoom: 14
+      })
+      marker.setLabel({
+        offset: new AMap.Pixel(0, -10),
+        content: `<div style="border:1px soild #FCF9F2 !important;">${this.rows[0].cbArmName}</div>`,
+        direction: 'top'
+      })
+      this.map.add(marker)
+      this.map.setFitView()
     }
+
   }
 }
 </script>
@@ -528,7 +565,13 @@ export default {
         }
     }
 }
-
+::v-deep .amap-marker-label {
+  padding:7px;
+  border-radius:3px;
+  border:1px solid #fff !important;
+  font-weight: 700;
+  font-size: 14px;
+}
 .vjs-fluid {
   height: 224px !important;
 }

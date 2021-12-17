@@ -4,7 +4,23 @@
       <div class="table-page-search-wrapper">
         <el-row :gutter="12">
           <el-form :model="listQuery" label-width="80px">
-            <el-col :md="4" :sm="24">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="报警来源:">
+                <el-select
+                  v-model="listQuery.sourceCode"
+                  size="small"
+                  placeholder="请选择报警来源"
+                >
+                  <el-option
+                    v-for="{label,value} in alarmSource"
+                    :key="value"
+                    :label="label"
+                    :value="value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="5" :sm="24">
               <el-form-item label="地区:">
                 <el-cascader
                   v-model="listQuery.deptId"
@@ -33,18 +49,19 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :md="5" :sm="24">
-              <el-form-item label="车牌号:">
-                <el-input
-                  v-model="listQuery.plateNum"
-                  size="small"
-                  placeholder="请输入车牌号"
-                  clearable
-                />
-              </el-form-item>
-            </el-col>
+
             <template v-if="advanced">
-              <el-col :md="5" :sm="12">
+              <el-col :md="5" :sm="24">
+                <el-form-item label="车牌号:">
+                  <el-input
+                    v-model="listQuery.plateNum"
+                    size="small"
+                    placeholder="请输入车牌号"
+                    clearable
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="12">
                 <el-form-item label="企业:">
                   <el-input v-model="listQuery.unitName" placeholder="请选择企业" size="small" style="margin-top:4px;">
                     <el-button slot="append" icon="el-icon-plus" @click="companyVisible = true" />
@@ -61,7 +78,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :md="4" :sm="24">
+              <el-col :md="5" :sm="24">
                 <el-form-item label="车辆类型:">
                   <el-select
                     v-model="listQuery.vehicleTypeCodes"
@@ -99,7 +116,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="5" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="报警分级:">
                   <el-select
                     v-model="listQuery.alarmLevel"
@@ -127,24 +144,9 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="5" :sm="24">
-                <el-form-item label="报警来源:">
-                  <el-select
-                    v-model="listQuery.sourceCode"
-                    size="small"
-                    placeholder="请选择报警来源"
-                  >
-                    <el-option
-                      v-for="{label,value} in alarmSource"
-                      :key="value"
-                      :label="label"
-                      :value="value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+
             </template>
-            <el-col :md="!advanced && 5 || 19" :sm="24">
+            <el-col :md="!advanced && 3 || 19" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
@@ -173,6 +175,7 @@
         fit
         highlight-current-row
         style="width: 100%;"
+        stripe
       >
         <el-table-column
           type="selection"
@@ -212,7 +215,7 @@
           </template>
         </el-table-column>
         <el-table-column label="驾驶员" prop="driverName" min-width="100px" align="center" />
-        <el-table-column label="所属企业" prop="unitName" min-width="150px" align="center" show-overflow-tooltip />
+        <el-table-column label="所属企业" prop="unitName" min-width="220px" align="center" show-overflow-tooltip />
         <el-table-column label="报警类型" prop="cbArmName" min-width="150px" align="center" show-overflow-tooltip />
         <el-table-column label="程度/分级" prop="alarmType" align="center" min-width="100px" />
         <el-table-column label="报警来源" prop="sourceCode" align="center" min-width="120px">
@@ -237,8 +240,8 @@
             <span>{{ scope.row.endSpeed || 0 }} km/h</span>
           </template>
         </el-table-column>
-        <el-table-column label="开始位置" prop="startPosition" min-width="250px" align="center" show-overflow-tooltip />
-        <el-table-column label="结束位置" prop="endPosition" min-width="250px" align="center" show-overflow-tooltip />
+        <el-table-column label="开始位置" prop="startLocation" min-width="250px" align="center" show-overflow-tooltip />
+        <el-table-column label="结束位置" prop="endLocation" min-width="250px" align="center" show-overflow-tooltip />
         <el-table-column label="报警信息" prop="" align="center" min-width="150px" />
         <el-table-column label="处理状态" prop="cbHandleStatus" align="center" min-width="100px">
           <template slot-scope="scope">
@@ -406,6 +409,17 @@ export default {
       returnToDetail: false
     }
   },
+  watch: {
+    // cbArmType: {
+    //   deep: true,
+    //   handle(n) {
+    //     console.log(n)
+    //     if (n.length === 0) {
+
+    //     }
+    //   }
+    // }
+  },
   created() {
     that = this
     this.getValue()
@@ -438,15 +452,20 @@ export default {
     getList() {
       this.listLoading = true
       this.setListQuery()
-      this.listQuery.startTime = '2021-12-01 00:00:00'
-      this.listQuery.endTime = '2021-12-16 00:00:00'
       selectAlarm({ ...this.listQuery })
         .then(({ data }) => {
-          data.list.forEach(item => {
-            this.getLocation(item)
-          })
-          this.tableData = data.list
-          this.total = data.total
+          if (data) {
+            data.list.forEach(item => {
+              item.startLocation = ''
+              item.endLocation = ''
+              this.getLocation(item)
+            })
+            this.tableData = data.list
+            this.total = data.total
+          } else {
+            this.total = 0
+            this.tableData = []
+          }
           this.listLoading = false
         })
         .catch(err => {

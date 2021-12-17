@@ -8,7 +8,17 @@
     :before-close="closeDialog"
   >
     <span class="text">查找:</span>
-    <el-input v-model="unitName" class="input" size="small" clearable placeholder="请输入企业名称" />
+    <!-- <el-input v-model="unitName" class="input" size="small" clearable placeholder="请输入企业名称" /> -->
+    <el-autocomplete
+      v-model="unitName"
+      class="input"
+      :fetch-suggestions="searchType"
+      placeholder="请输入车牌号关键字"
+      :debounce="500"
+      clearable
+      size="small"
+      @select="selectUnit"
+    />
     <el-button type="primary" size="small" @click="search">查询</el-button>
     <div class="tree-container">
       <el-tree
@@ -28,7 +38,10 @@
 </template>
 
 <script>
-import { enterpriseTree } from '@/api/alarm-management/prevention-alarm'
+import {
+  enterpriseTree,
+  findUnitName
+} from '@/api/alarm-management/prevention-alarm'
 
 export default {
   name: 'CompanySelect',
@@ -61,6 +74,31 @@ export default {
         .catch(err => {
           throw err
         })
+    },
+    searchType(queryString, cb) {
+      if (queryString) {
+        findUnitName({ unitName: queryString })
+          .then(res => {
+            const { data } = res
+            const arr = []
+            data.forEach(item => {
+              arr.push({
+                label: item.unitName,
+                value: item.unitName
+              })
+            })
+            cb(arr)
+          })
+          .catch(err => {
+            throw err
+          })
+      } else {
+        cb([])
+        return
+      }
+    },
+    selectUnit(item) {
+      this.unitName = item.label
     },
     // 关闭弹框
     closeDialog() {

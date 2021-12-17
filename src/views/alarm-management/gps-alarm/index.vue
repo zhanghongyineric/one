@@ -4,7 +4,23 @@
       <div class="table-page-search-wrapper">
         <el-row :gutter="12">
           <el-form :model="listQuery" label-width="80px">
-            <el-col :md="4" :sm="24">
+            <el-col :md="6" :sm="24">
+              <el-form-item label="报警来源:">
+                <el-select
+                  v-model="listQuery.sourceCode"
+                  size="small"
+                  placeholder="请选择报警来源"
+                >
+                  <el-option
+                    v-for="{label,value} in alarmSource"
+                    :key="value"
+                    :label="label"
+                    :value="value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="5" :sm="24">
               <el-form-item label="地区:">
                 <el-cascader
                   v-model="listQuery.deptId"
@@ -33,18 +49,18 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :md="5" :sm="24">
-              <el-form-item label="车牌号:">
-                <el-input
-                  v-model="listQuery.plateNum"
-                  size="small"
-                  placeholder="请输入车牌号"
-                  clearable
-                />
-              </el-form-item>
-            </el-col>
             <template v-if="advanced">
-              <el-col :md="5" :sm="12">
+              <el-col :md="5" :sm="24">
+                <el-form-item label="车牌号:">
+                  <el-input
+                    v-model="listQuery.plateNum"
+                    size="small"
+                    placeholder="请输入车牌号"
+                    clearable
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :sm="12">
                 <el-form-item label="企业:">
                   <el-input v-model="listQuery.unitName" placeholder="请选择企业" size="small" style="margin-top:4px;">
                     <el-button slot="append" icon="el-icon-plus" @click="companyVisible = true" />
@@ -61,7 +77,7 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :md="4" :sm="24">
+              <el-col :md="5" :sm="24">
                 <el-form-item label="车辆类型:">
                   <el-select
                     v-model="listQuery.vehicleTypeCodes"
@@ -80,10 +96,15 @@
               </el-col>
               <el-col :md="5" :sm="24">
                 <el-form-item label="报警时长:">
-                  <el-input v-model="listQuery.alarmTime" placeholder="请输入报警时长（秒）" size="small" />
+                  <el-input
+                    v-model="listQuery.alarmTime"
+                    placeholder="请输入报警时长（秒）"
+                    size="small"
+                    clearable
+                  />
                 </el-form-item>
               </el-col>
-              <el-col :md="5" :sm="24">
+              <el-col :md="6" :sm="24">
                 <el-form-item label="报警类型:">
                   <el-select
                     v-model="listQuery.cbArmType"
@@ -132,24 +153,9 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :md="4" :sm="24">
-                <el-form-item label="报警来源:">
-                  <el-select
-                    v-model="listQuery.sourceCode"
-                    size="small"
-                    placeholder="请选择报警来源"
-                  >
-                    <el-option
-                      v-for="{label,value} in alarmSource"
-                      :key="value"
-                      :label="label"
-                      :value="value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+
             </template>
-            <el-col :md="!advanced && 5 || 16" :sm="24">
+            <el-col :md="!advanced && 3 || 16" :sm="24">
               <div
                 class="table-page-search-submitButtons"
                 :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
@@ -198,7 +204,7 @@
               <i v-else class="el-icon-edit-outline icon" @click="openHandleDialog(scope.row)" />
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="报警详情" placement="top">
-              <i class="el-icon-data-line icon icon-spacing" @click="trajectoryVisible = true" />
+              <i class="el-icon-data-line icon icon-spacing" @click="openTrajectoryDialog(scope.row)" />
             </el-tooltip>
           </template>
         </el-table-column>
@@ -276,7 +282,11 @@
         @close="updateVisible"
         @update-date="getList"
       />
-      <HistoricalTrajectory :visible="trajectoryVisible" @close="updateVisible" />
+      <HistoricalTrajectory
+        :visible="trajectoryVisible"
+        :rows="currentRow"
+        @close="updateVisible"
+      />
     </el-card>
   </div>
 </template>
@@ -289,7 +299,8 @@ import Pagination from '@/components/Pagination'
 import {
   satelliteAlarmType,
   areaCode,
-  selectAlarm
+  selectAlarm,
+  alarmDowload
 } from '@/api/alarm-management/prevention-alarm'
 
 // 字典
@@ -417,17 +428,27 @@ export default {
       this.setListQuery()
       selectAlarm({ ...this.listQuery })
         .then(({ data }) => {
-          this.tableData = data.list
-          this.total = data.total
-          this.tableData.forEach(item => {
-            this.getLocation(item)
-          })
+          if (data) {
+            this.tableData = data.list
+            this.total = data.total
+            this.tableData.forEach(item => {
+              this.getLocation(item)
+            })
+          } else {
+            this.total = 0
+            this.tableData = []
+          }
           this.listLoading = false
         })
         .catch(err => {
           this.listLoading = false
           throw err
         })
+    },
+    // 打开历史轨迹弹框
+    openTrajectoryDialog(row) {
+      this.currentRow.push(row)
+      this.trajectoryVisible = true
     },
     // 转换部分搜索条件的数据格式
     setListQuery() {
@@ -531,6 +552,7 @@ export default {
       this.detailVisible = val
       this.trajectoryVisible = val
       this.currentRow = []
+      this.getList()
     },
     // 打开处理弹框
     openHandleDialog(row) {
@@ -543,7 +565,31 @@ export default {
       this.handleVisible = true
     },
     // 表格导出
-    dowloadExcel() {},
+    dowloadExcel() {
+      this.listLoading = true
+      const req = {
+        unitIds: this.listQuery.unitIds,
+        sourceCode: this.listQuery.sourceCode,
+        deptId: this.listQuery.deptId,
+        plateNum: this.listQuery.plateNum,
+        driverName: this.listQuery.driverName,
+        vehicleTypeCodes: this.listQuery.vehicleTypeCodes,
+        cbArmType: this.listQuery.cbArmType,
+        alarmLevel: this.listQuery.alarmLevel,
+        cbHandleStatus: this.listQuery.cbHandleStatus,
+        alarmTime: this.listQuery.alarmTime,
+        startTime: this.listQuery.startTime,
+        endTime: this.listQuery.endTime,
+        flag: this.listQuery.flag
+      }
+      alarmDowload({ ...req })
+        .then(_ => {
+          this.listLoading = false
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     // 获取选中的企业
     getSelectedUnit(unit) {
       unit.forEach(item => {
