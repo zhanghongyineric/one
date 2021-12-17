@@ -41,7 +41,7 @@
         </el-col>
       </el-row>
       <div class="content">
-        <div class="left">
+        <div class="left-detail">
           <el-tabs tab-position="bottom">
             <el-tab-pane label="报警视频">
               <p v-if="videos.length === 0" class="none-file">本报警未上传视频附件</p>
@@ -108,7 +108,7 @@
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div class="right">
+        <div class="right-detail">
           <div class="driver-info-card">
             <el-row>
               <el-col :md="12">
@@ -485,7 +485,7 @@ export default {
     margin-top: 5px;
     width: 100%;
 
-    .left {
+    .left-detail {
         width: 50%;
         display: inline-block;
 
@@ -533,7 +533,7 @@ export default {
         }
     }
 
-    .right {
+    .right-detail {
         width: 50%;
         height: 100%;
         display: inline-block;
