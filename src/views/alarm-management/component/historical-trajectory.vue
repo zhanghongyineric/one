@@ -26,7 +26,7 @@
           <el-slider
             v-if="tableHeight.height==='0'"
             v-model="sliderVal"
-            class="slider"
+            class="slider-tra"
             :show-tooltip="false"
             :step="0.0001"
           />
@@ -478,10 +478,10 @@ export default {
       cursor: pointer;
     }
 
-    .slider {
+    .slider-tra {
       width: 85%;
       display: inline-block;
-      position:absolute;
+      position: absolute;
       left: 55px;
     }
 

@@ -113,6 +113,7 @@ export default {
     },
     // 组成请求参数
     setHandleReq() {
+      this.data.guids = []
       const typeMap = onlineOption['alarm_handle_type'].map
       const userId = this.$store.state.user.userId
       const userName = this.$store.state.user.name

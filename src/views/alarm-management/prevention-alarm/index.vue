@@ -98,18 +98,19 @@
               <el-col :md="5" :sm="24">
                 <el-form-item label="报警类型:">
                   <el-select
-                    v-model="listQuery.cbArmType"
+                    v-model="cbArmName"
                     size="small"
                     placeholder="请选择报警类型"
                     multiple
                   >
-                    <el-option :value="listQuery.cbArmType" class="selece-tree">
+                    <el-option value="" class="selece-tree">
                       <el-tree
                         ref="alarmTypeTree"
                         :data="alarmTypeTree"
                         :props="defaultProps"
                         style="min-height: 200px;"
                         show-checkbox
+                        node-key="violationName"
                         @check="checkAlarmType"
                       />
                     </el-option>
@@ -217,7 +218,15 @@
         <el-table-column label="驾驶员" prop="driverName" min-width="100px" align="center" />
         <el-table-column label="所属企业" prop="unitName" min-width="220px" align="center" show-overflow-tooltip />
         <el-table-column label="报警类型" prop="cbArmName" min-width="150px" align="center" show-overflow-tooltip />
-        <el-table-column label="程度/分级" prop="alarmType" align="center" min-width="100px" />
+        <el-table-column
+          v-slot="{row}"
+          label="程度/分级"
+          prop="armDegreeCode"
+          align="center"
+          min-width="100px"
+        >
+          {{ row.armDegreeCode | armDegreeCodeFilter }}
+        </el-table-column>
         <el-table-column label="报警来源" prop="sourceCode" align="center" min-width="120px">
           <template slot-scope="scope">
             {{ scope.row.sourceCode | sourceCodeFilter }}
@@ -332,6 +341,9 @@ export default {
     },
     handleModeFilter(code) {
       return that.alarmHandleTypeMap[code]
+    },
+    armDegreeCodeFilter(code) {
+      return that.alarmLevelsMap[code]
     }
   },
   data() {
@@ -355,6 +367,7 @@ export default {
         time: [],
         unitName: ''
       },
+      cbArmName: [], // 选中的报警类型名
       total: 0, // 数据总数
       listLoading: false,
       searchCityOptions: [], // 搜索条件地区选项
@@ -375,6 +388,7 @@ export default {
       vehicleTypes: [], // 车辆类型选项
       vehicleTypeMap: {}, // 车辆类型对象
       alarmLevels: [], // 报警等级选项
+      alarmLevelsMap: [], // 报警等级对象
       plateColorMap: {}, // 车牌颜色对象
       pickerOptions: {
         onPick: ({ maxDate, minDate }) => {
@@ -409,16 +423,25 @@ export default {
       returnToDetail: false
     }
   },
+  computed: {
+    // 当前账号部门 id
+    deptId() {
+      return this.$store.state.user.unitId
+    }
+  },
   watch: {
-    // cbArmType: {
-    //   deep: true,
-    //   handle(n) {
-    //     console.log(n)
-    //     if (n.length === 0) {
-
-    //     }
-    //   }
-    // }
+    cbArmName: {
+      deep: true,
+      handler(n, o) {
+        if (n.length < o.length) {
+          const difference = n.concat(o).filter(v => !n.includes(v) || !o.includes(v))
+          difference.forEach(item => {
+            this.$refs.alarmTypeTree.setChecked(item, false)
+          })
+          this.checkAlarmType()
+        }
+      }
+    }
   },
   created() {
     that = this
@@ -431,15 +454,22 @@ export default {
     this.getList()
   },
   methods: {
-    // 取字典对应值
+    // 取字典对应值并赋值
     getValue() {
       this.alarmSource = onlineOption['数据来源'].list
       this.alarmSourceMap = onlineOption['数据来源'].map
+      this.$set(this.listQuery, 'sourceCode', '200100')
       this.vehicleTypes = onlineOption['vehicle_type_code'].list
       this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
       this.alarmLevels = onlineOption['alarm_level'].list
+      this.alarmLevelsMap = onlineOption['alarm_level'].map
       this.plateColorMap = onlineOption['车牌颜色编码'].map
       this.alarmHandleTypeMap = onlineOption['alarm_handle_type'].map
+      // eslint-disable-next-line
+      if (this.deptId != 1) {
+        this.listQuery.deptId = this.deptId.toString()
+        this.disabled = true
+      }
     },
     // 获取本月初到当前日期
     getDate() {
@@ -611,6 +641,7 @@ export default {
           this.listLoading = false
         })
         .catch(err => {
+          this.listLoading = false
           throw err
         })
     },
@@ -624,9 +655,11 @@ export default {
     // 选择报警类型
     checkAlarmType() {
       this.listQuery.cbArmType = []
+      this.cbArmName = []
       const nodes = this.$refs.alarmTypeTree.getCheckedNodes(true)
       nodes.forEach(item => {
         this.listQuery.cbArmType.push(item.violationCode)
+        this.cbArmName.push(item.violationName)
       })
     },
     // 打开报警详情弹框

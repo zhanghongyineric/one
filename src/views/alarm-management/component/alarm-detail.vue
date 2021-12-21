@@ -7,7 +7,7 @@
     custom-class="base-dialog min-width-dialog"
     :before-close="closeDialog"
   >
-    <div v-loading="downloading">
+    <div v-loading="downloading" :class="[theme?'dark-box':'light-box']">
       <el-row>
         <el-divider />
         <el-col :md="7">
@@ -202,6 +202,11 @@ export default {
       jsession: '' // 获取报警附件时需传 jseesion
     }
   },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme === 'dark'
+    }
+  },
   watch: {
     visible(n, o) {
       if (n) {
@@ -271,12 +276,21 @@ export default {
     },
     // 初始化地图
     initialMap() {
-      this.map = new AMap.Map('mapContainer', {
-        resizeEnable: true,
-        center: [104.06632, 30.572903],
-        zoom: 12,
-        mapStyle: 'amap://styles/light'
-      })
+      if (this.theme) {
+        this.map = new AMap.Map('mapContainer', {
+          resizeEnable: true,
+          center: [104.06632, 30.572903],
+          zoom: 12,
+          mapStyle: 'amap://styles/grey'
+        })
+      } else {
+        this.map = new AMap.Map('mapContainer', {
+          resizeEnable: true,
+          center: [104.06632, 30.572903],
+          zoom: 12,
+          mapStyle: 'amap://styles/light'
+        })
+      }
       this.setAlarmMaker()
       this.map.setZoom(14)
     },
@@ -383,7 +397,7 @@ export default {
         })
       })
       this.videos.forEach(item => {
-        const promise = this.getFile(item.downloadUrl).then(data => { // 下载文件, 并存成ArrayBuffer对象
+        const promise = this.getFile(item.downloadUrl).then(data => { // 下载文件, 并存成 ArrayBuffer 对象
           video.file(item.fs + '.mp4', data, { binary: true }) // 逐个添加文件
         })
         promises.push(promise)
@@ -397,20 +411,20 @@ export default {
     },
     // 将图片链接转换成 base64
     getBase64Image(img) {
-      var canvas = document.createElement('canvas')
+      const canvas = document.createElement('canvas')
       canvas.width = img.width
       canvas.height = img.height
-      var ctx = canvas.getContext('2d')
+      const ctx = canvas.getContext('2d')
       ctx.drawImage(img, 0, 0, img.width, img.height)
-      var dataURL = canvas.toDataURL('image/png') // 可选其他值 image/jpeg
+      const dataURL = canvas.toDataURL('image/png')
       return dataURL
     },
     main(src, cb) {
-      var image = new Image()
+      const image = new Image()
       image.src = src + '?v=' + Math.random() // 处理缓存
       image.crossOrigin = '*' // 支持跨域图片
       image.onload = () => {
-        var base64 = this.getBase64Image(image)
+        const base64 = this.getBase64Image(image)
         cb && cb(base64)
       }
     },
@@ -452,33 +466,99 @@ export default {
       this.map.add(marker)
       this.map.setFitView()
     }
-
   }
 }
 </script>
 <style scoped lang="scss">
-.icon {
+.light-box {
+  .icon {
     font-size: 18px;
     margin-right: 5px;
-}
-.text {
-    font-size: 15px;
-    font-weight: 700;
-}
-.plate-text {
-    // color: #fff;
-    display: inline-block;
-    padding: 2px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    margin-left: 5px;
-    margin-bottom: -2px;
-}
-.color {
-  color: #FF7272;
-}
-.col-spacing {
+  }
+  .text {
+      font-size: 15px;
+      font-weight: 700;
+  }
+  .plate-text {
+      // color: #fff;
+      display: inline-block;
+      padding: 2px;
+      box-sizing: border-box;
+      border-radius: 5px;
+      margin-left: 5px;
+      margin-bottom: -2px;
+  }
+  .color {
+    color: #FF7272;
+  }
+  .col-spacing {
     margin-top: 10px;
+  }
+
+  .driver-info-card {
+    box-sizing: border-box;
+    padding: 5px 10px;
+    width: 275px;
+    height: 50px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px #808080;
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    border-radius: 5px;
+    z-index: 999;
+  }
+}
+.dark-box {
+  .icon {
+    font-size: 18px;
+    margin-right: 5px;
+    color: #DBDBDB;
+  }
+  .text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #DBDBDB;
+  }
+  .plate-text {
+      // color: #fff;
+      display: inline-block;
+      padding: 2px;
+      box-sizing: border-box;
+      border-radius: 5px;
+      margin-left: 5px;
+      margin-bottom: -2px;
+  }
+  .color {
+    color: #FF7272;
+  }
+  .col-spacing {
+      margin-top: 10px;
+  }
+
+  .driver-info-card {
+    box-sizing: border-box;
+    padding: 5px 10px;
+    width: 275px;
+    height: 50px;
+    background-color: #1C2638;
+    box-shadow: 0px 0px 10px #808080;
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    border-radius: 5px;
+    z-index: 999;
+  }
+  .none-file {
+    color: #dbdbdb;
+  }
+  ::v-deep .el-tabs__item {
+    color: #fff;
+  }
+  ::v-deep .el-tabs__item:hover,
+  ::v-deep .el-tabs__item.is-active {
+    color: #409EFF !important;
+  }
 }
 .content {
     height: 500px;
@@ -550,19 +630,6 @@ export default {
             width:100%;
         }
 
-        .driver-info-card {
-            box-sizing: border-box;
-            padding: 5px 10px;
-            width: 250px;
-            height: 50px;
-            background-color: #fff;
-            box-shadow: 0px 0px 10px #808080;
-            position: absolute;
-            top: 5px;
-            left: 10px;
-            border-radius: 5px;
-            z-index: 999;
-        }
     }
 }
 ::v-deep .amap-marker-label {

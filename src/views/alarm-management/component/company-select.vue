@@ -4,7 +4,7 @@
     :visible.sync="visible"
     :close-on-click-modal="false"
     top="100px"
-    custom-class="base-dialog dialog-col-1"
+    custom-class="base-dialog dialog-col-1 company-select"
     :before-close="closeDialog"
   >
     <span class="text">查找:</span>
@@ -13,10 +13,11 @@
       v-model="unitName"
       class="input"
       :fetch-suggestions="searchType"
-      placeholder="请输入车牌号关键字"
+      placeholder="请输入企业关键字"
       :debounce="500"
       clearable
       size="small"
+      style="width:300px;"
       @select="selectUnit"
     />
     <el-button type="primary" size="small" @click="search">查询</el-button>
@@ -25,8 +26,9 @@
         ref="tree"
         :data="treeData"
         show-checkbox
-        node-key="id"
+        node-key="unitName"
         highlight-current
+        :default-expanded-keys="searchKeys"
         :props="defaultProps"
       />
     </div>
@@ -58,6 +60,16 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'unitName'
+      },
+      treeNodes: [], // 树节点
+      searchKeys: []
+    }
+  },
+  watch: {
+    searchKeys: {
+      deep: true,
+      handler() {
+        this.treeNodes = document.getElementsByClassName('company-select')[0].getElementsByClassName('el-tree-node__label')
       }
     }
   },
@@ -105,7 +117,29 @@ export default {
       this.$emit('close', false)
     },
     // 查询企业
-    search() {},
+    search() {
+      this.searchKeys = []
+      document.getElementsByClassName('tree-container')[0].scrollTop = 0
+      this.getInfoByUnitname()
+      setTimeout(() => {
+        this.treeNodes.forEach(item => {
+          if (item.innerText === this.unitName) {
+            document.getElementsByClassName('tree-container')[0].scrollTop = item.offsetTop - 50
+          }
+        })
+      }, 500)
+    },
+    // 获取搜索企业的信息
+    getInfoByUnitname() {
+      findUnitName({ unitName: this.unitName })
+        .then(({ data }) => {
+          this.searchKeys.push(data[0].unitName)
+          this.$refs.tree.setCurrentKey(data[0].unitName)
+        })
+        .catch(err => {
+          throw err
+        })
+    },
     // 确定选择
     submit() {
       const nodes = this.$refs.tree.getCheckedNodes(true)

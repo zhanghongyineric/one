@@ -112,7 +112,7 @@
                     placeholder="请选择报警类型"
                     multiple
                   >
-                    <el-option :value="listQuery.cbArmType" class="selece-tree">
+                    <!-- <el-option value="" class="selece-tree">
                       <el-tree
                         ref="alarmTypeTree"
                         :data="alarmTypeTree"
@@ -121,19 +121,25 @@
                         show-checkbox
                         @check="checkAlarmType"
                       />
-                    </el-option>
+                    </el-option> -->
+                    <el-option
+                      v-for="{violationCode, violationName} in alarmTypeTree"
+                      :key="violationCode"
+                      :label="violationName"
+                      :value="violationCode"
+                    />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :md="5" :sm="24">
                 <el-form-item label="报警分级:">
                   <el-select
-                    v-model="listQuery.alarmLevel"
+                    v-model="listQuery.alarmDegree"
                     size="small"
                     placeholder="请选择报警分级"
                   >
                     <el-option
-                      v-for="{label,value} in alarmLevels"
+                      v-for="{label,value} in alaDegreeOptions"
                       :key="value"
                       :value="value"
                       :label="label"
@@ -184,6 +190,7 @@
         fit
         highlight-current-row
         style="width: 100%;"
+        stripe
       >
         <el-table-column
           type="selection"
@@ -222,7 +229,15 @@
         <el-table-column label="驾驶员" prop="driverName" min-width="100px" align="center" />
         <el-table-column label="所属企业" prop="unitName" min-width="150px" align="center" show-overflow-tooltip />
         <el-table-column label="报警类型" prop="cbArmName" min-width="150px" align="center" show-overflow-tooltip />
-        <el-table-column label="程度/分级" prop="alarmType" align="center" min-width="100px" />
+        <el-table-column
+          v-slot="{row}"
+          label="程度/分级"
+          prop="armDegreeCode"
+          align="center"
+          min-width="100px"
+        >
+          {{ row.armDegreeCode | armDegreeCodeFilter }}
+        </el-table-column>
         <el-table-column label="报警来源" prop="sourceCode" align="center" min-width="120px">
           <template slot-scope="scope">
             {{ scope.row.sourceCode | sourceCodeFilter }}
@@ -280,7 +295,7 @@
         :rows="currentRow"
         :visible="handleVisible"
         @close="updateVisible"
-        @update-date="getList"
+        @update-data="getList"
       />
       <HistoricalTrajectory
         :visible="trajectoryVisible"
@@ -327,6 +342,9 @@ export default {
     },
     handleModeFilter(code) {
       return that.alarmHandleTypeMap[code]
+    },
+    armDegreeCodeFilter(code) {
+      return that.alaDegreeMap[code]
     }
   },
   data() {
@@ -369,7 +387,6 @@ export default {
       alarmSourceMap: {}, // 报警来源对象
       vehicleTypes: [], // 车辆类型选项
       vehicleTypeMap: {}, // 车辆类型对象
-      alarmLevels: [], // 报警等级选项
       plateColorMap: {}, // 车牌颜色对象
       pickerOptions: {
         onPick: ({ maxDate, minDate }) => {
@@ -395,18 +412,20 @@ export default {
         label: 'violationName'
       },
       choiceDate: '', // 限制选择日期
-      alarmHandleTypeMap: {} // 报警处理方式对象
+      alarmHandleTypeMap: {}, // 报警处理方式对象
+      alaDegreeMap: {}, // 违章程度对象
+      alaDegreeOptions: [] // 违章程度
+    }
+  },
+  computed: {
+    // 当前账号部门 id
+    deptId() {
+      return this.$store.state.user.unitId
     }
   },
   created() {
     that = this
-    this.alarmSource = onlineOption['数据来源'].list
-    this.alarmSourceMap = onlineOption['数据来源'].map
-    this.vehicleTypes = onlineOption['vehicle_type_code'].list
-    this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
-    this.alarmLevels = onlineOption['alarm_level'].list
-    this.plateColorMap = onlineOption['车牌颜色编码'].map
-    this.alarmHandleTypeMap = onlineOption['alarm_handle_type'].map
+    this.getValue()
   },
   mounted() {
     this.getDate()
@@ -415,6 +434,23 @@ export default {
     this.getList()
   },
   methods: {
+    // 取字典对应值并赋值
+    getValue() {
+      this.alarmSource = onlineOption['数据来源'].list
+      this.alarmSourceMap = onlineOption['数据来源'].map
+      this.$set(this.listQuery, 'sourceCode', '200100')
+      this.vehicleTypes = onlineOption['vehicle_type_code'].list
+      this.vehicleTypeMap = onlineOption['vehicle_type_code'].map
+      this.plateColorMap = onlineOption['车牌颜色编码'].map
+      this.alarmHandleTypeMap = onlineOption['alarm_handle_type'].map
+      this.alaDegreeMap = onlineOption['违章严重程度编码'].map
+      this.alaDegreeOptions = onlineOption['违章严重程度编码'].list
+      // eslint-disable-next-line
+      if (this.deptId != 1) {
+        this.listQuery.deptId = this.deptId.toString()
+        this.disabled = true
+      }
+    },
     // 获取本月初到当前日期
     getDate() {
       const date = new Date()
@@ -552,7 +588,7 @@ export default {
       this.detailVisible = val
       this.trajectoryVisible = val
       this.currentRow = []
-      this.getList()
+      // this.getList()
     },
     // 打开处理弹框
     openHandleDialog(row) {
@@ -575,7 +611,7 @@ export default {
         driverName: this.listQuery.driverName,
         vehicleTypeCodes: this.listQuery.vehicleTypeCodes,
         cbArmType: this.listQuery.cbArmType,
-        alarmLevel: this.listQuery.alarmLevel,
+        alarmDegree: this.listQuery.alarmDegree,
         cbHandleStatus: this.listQuery.cbHandleStatus,
         alarmTime: this.listQuery.alarmTime,
         startTime: this.listQuery.startTime,
@@ -587,6 +623,7 @@ export default {
           this.listLoading = false
         })
         .catch(err => {
+          this.listLoading = false
           throw err
         })
     },
