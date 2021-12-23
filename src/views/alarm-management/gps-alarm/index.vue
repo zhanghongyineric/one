@@ -132,11 +132,11 @@
                 </el-form-item>
               </el-col>
               <el-col :md="5" :sm="24">
-                <el-form-item label="报警分级:">
+                <el-form-item label="报警程度:">
                   <el-select
                     v-model="listQuery.alarmDegree"
                     size="small"
-                    placeholder="请选择报警分级"
+                    placeholder="请选择报警程度"
                   >
                     <el-option
                       v-for="{label,value} in alaDegreeOptions"

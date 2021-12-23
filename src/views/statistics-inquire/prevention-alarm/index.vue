@@ -218,8 +218,8 @@ export default {
       }
       return localStorage.getItem('theme') === 'dark'
     },
-    roleName() {
-      return this.$store.state.user.roleName
+    role() {
+      return this.$store.state.user.role
     },
     unitId() {
       return this.$store.state.user.unitId
@@ -253,9 +253,9 @@ export default {
   methods: {
     // 判断角色赋值地区
     judgeRole() {
-      this.roleName === '平台管理员'
-        ? (this.searchQuery.unitId = ['622', this.unitId]) && (this.disabled = true)
-        : ''
+      this.role !== 'area'
+        ? ''
+        : (this.searchQuery.unitId = ['622', this.unitId]) && (this.disabled = true)
     },
     getDate() {
       const currentDate = new Date()

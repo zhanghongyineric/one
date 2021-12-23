@@ -205,7 +205,12 @@
                 <span class="center-num">{{ allCars }}</span> 辆</span>
               <span class="center-text" :style="{'color': theme?'#fff':'#606266'}">在线车辆：
                 <span class="center-num">{{ totalOnlineCars }}</span> 辆</span>
-              <map-chart :map-data="mapData" @city-data="updateCityData" @right-click="getOnlineVehicle" />
+              <map-chart
+                :map-data="mapData"
+                @city-data="updateCityData"
+                @right-click="getOnlineVehicle"
+                @show-city="setShowCity"
+              />
               <dataset-bar-chart :chart-data="mapChartData" />
             </div>
           </el-col>
@@ -398,18 +403,30 @@ export default {
       mechanismChartData: [],
       unitAssessChartData: [],
       trendData: [],
-      mapDataMap: new Map()
+      mapDataMap: new Map(),
+      timer: null, // 定时任务请求地图数据
+      showCity: false // 地图当前展示是否是城市
     }
   },
   computed: {
     unitId() {
       return this.$store.state.user.unitId
     },
-    roleName() {
-      return this.$store.state.user.roleName
+    role() {
+      return this.$store.state.user.role
     },
     theme() {
       return this.$store.state.settings.theme === 'dark'
+    }
+  },
+  watch: {
+    showCity(n) {
+      if (n) {
+        clearInterval(this.timer)
+        this.timer = null
+      } else {
+        this.intervalOnlineCars()
+      }
     }
   },
   created() {
@@ -421,9 +438,9 @@ export default {
     this.getEnterpriseRanking()
     this.getVehicleProportion()
     this.getKeyVehicle()
-    this.getFacilitator()
-    this.getMechanism()
-    this.getUnit()
+    // this.getFacilitator()
+    // this.getMechanism()
+    // this.getUnit()
     this.getCityData()
     this.getTrendAnalysis()
     this.getAlarmEvent()
@@ -442,10 +459,12 @@ export default {
   methods: {
     getAlarmEvent() {
       alarmEvent()
-        .then(res => {
-          this.eventList = res.data
-          const colorMap = onlineOption['车牌颜色编码'].map
-          this.eventList.forEach(item => { item.plateColor = colorMap[item.plateColor] })
+        .then(({ data }) => {
+          if (data) {
+            this.eventList = data
+            const colorMap = onlineOption['车牌颜色编码'].map
+            this.eventList.forEach(item => { item.plateColor = colorMap[item.plateColor] })
+          }
         })
         .catch(err => {
           throw err
@@ -454,18 +473,23 @@ export default {
     toAlarmDetail() {
       this.$router.push('/live-monitor/alarm-detail')
     },
+    // 定时请求数据
     intervalOnlineCars() {
-      let timer = window.setInterval(() => {
+      this.timer = window.setInterval(() => {
         this.getOnlineVehicle()
         this.getAlarmEvent()
       }, 150000)
       this.$once('hook:deactivated', () => {
-        clearInterval(timer)
-        timer = null
+        clearInterval(this.timer)
+        this.timer = null
       })
       this.$once('hook:activated', () => {
         this.intervalOnlineCars()
       })
+    },
+    // 判断当前是否在展示城市
+    setShowCity(val) {
+      this.showCity = val
     },
     getFacilitator() {
       facilitatorAssessmentAnalysis()
@@ -805,7 +829,7 @@ export default {
     },
     // 角色为市级时，获取该市级数据,为 admin 时获取四川省
     getCityData() {
-      if (this.roleName !== '平台管理员') {
+      if (this.role !== 'area') {
         this.getOnlineVehicle()
       } else {
         cityVehicle({ cityId: this.unitId })

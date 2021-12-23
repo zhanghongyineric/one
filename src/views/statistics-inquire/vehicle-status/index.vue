@@ -186,8 +186,8 @@ export default {
       }
       return localStorage.getItem('theme') === 'dark'
     },
-    roleName() {
-      return this.$store.state.user.roleName
+    role() {
+      return this.$store.state.user.role
     },
     unitId() {
       return this.$store.state.user.unitId
@@ -208,9 +208,9 @@ export default {
   methods: {
     // 判断角色赋值地区
     judgeRole() {
-      this.roleName === '平台管理员'
-        ? (this.listQuery.regionId = ['622', this.unitId.toString()]) && (this.disabled = true)
-        : ''
+      this.role !== 'area'
+        ? ''
+        : (this.listQuery.regionId = ['622', this.unitId.toString()]) && (this.disabled = true)
     },
     // 获取当前月份，并赋值搜索条件中的默认开始和结束时间
     getTime() {

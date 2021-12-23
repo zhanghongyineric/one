@@ -56,11 +56,10 @@ export function unitAssessmentAnalysis(data) {
 }
 
 // 地图展示车辆
-export function onlineVehicle(data) {
+export function onlineVehicle() {
   return request({
     url: '/onlineVehicle',
-    method: 'POST',
-    data
+    method: 'GET'
   })
 }
 

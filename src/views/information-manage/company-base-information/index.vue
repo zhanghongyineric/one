@@ -559,8 +559,8 @@ export default {
     }
   },
   computed: {
-    roleName() {
-      return this.$store.state.user.roleName
+    role() {
+      return this.$store.state.user.role
     },
     cityCode() {
       return this.$store.state.user.cityCode
@@ -583,9 +583,9 @@ export default {
   methods: {
     // 判断角色赋值地区
     judgeRole() {
-      this.roleName === '平台管理员'
-        ? (this.listQuery.place = ['510000', this.cityCode, '']) && (this.disabled = true)
-        : ''
+      this.role !== 'area'
+        ? ''
+        : (this.listQuery.place = ['510000', this.cityCode, '']) && (this.disabled = true)
     },
     closeDialog() {
       this.dialogFormVisible = false

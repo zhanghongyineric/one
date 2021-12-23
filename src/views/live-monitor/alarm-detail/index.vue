@@ -324,8 +324,8 @@ export default {
     }
   },
   computed: {
-    roleName() {
-      return this.$store.state.user.roleName
+    role() {
+      return this.$store.state.user.role
     },
     unitId() {
       return this.$store.state.user.unitId
@@ -383,9 +383,9 @@ export default {
   methods: {
     // 判断角色赋值地区
     judgeRole() {
-      this.roleName === '平台管理员'
-        ? (this.listQuery.regionId = ['622', this.unitId.toString()]) && (this.disabled = true)
-        : ''
+      this.role !== 'area'
+        ? ''
+        : (this.listQuery.regionId = ['622', this.unitId.toString()]) && (this.disabled = true)
     },
     getAlarmType() {
       alarmType({ type: this.listQuery.type })

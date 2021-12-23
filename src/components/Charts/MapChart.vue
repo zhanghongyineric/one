@@ -53,8 +53,8 @@ export default {
       return this.$store.state.user.unitId
     },
     // 账号角色
-    roleName() {
-      return this.$store.state.user.roleName
+    role() {
+      return this.$store.state.user.role
     },
     theme() {
       return this.$store.state.settings.theme === 'dark'
@@ -108,7 +108,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      if (this.roleName !== '平台管理员') this.initChart(sichuan)
+      if (this.role !== 'area') this.initChart(sichuan)
       else this.getCityName()
     })
   },
@@ -120,6 +120,7 @@ export default {
     this.chart = null
   },
   methods: {
+    // 初始化地图
     initChart(dataJson) {
       echarts.registerMap('四川', dataJson)
       this.chart = echarts.init(this.$refs.map)
@@ -128,13 +129,13 @@ export default {
       this.chart.off('click')
       // 添加点击事件
       this.chart.on('click', params => {
-        console.log(params)
         const code = citysCode[params.name]
         if (code) {
           if (params.data) {
             this.getCityData(params.data.deptId)
             this.getMapJson(code)
             this.showReturn = true
+            this.$emit('show-city', true)
           } else {
             this.$message({
               type: 'warning',
@@ -143,9 +144,6 @@ export default {
           }
         }
       })
-    },
-    returnUpper() {
-
     },
     setOptions() {
       this.chart.setOption({
@@ -204,20 +202,24 @@ export default {
         }
       })
     },
+    // 获取市级地区地图数据
     getMapJson(code) {
       const cityJson = require(`../../utils/mapJson/${code}.json`)
       this.initChart(cityJson)
     },
+    // 鼠标右键点击事件（返回上一层）
     mounseRightClick() {
-      if (this.roleName !== '平台管理员') {
+      if (this.role !== 'area') {
         this.showReturn = false
         this.initChart(sichuan)
         this.$emit('right-click')
+        this.$emit('show-city', false)
       }
       document.oncontextmenu = function() {
         return false
       }
     },
+    // 获取该城市车辆数据
     getCityData(id) {
       cityVehicle({ cityId: id })
         .then(({ data }) => {
@@ -227,6 +229,7 @@ export default {
           throw err
         })
     },
+    // 通过地区 ID 获取地区中文
     getCityName() {
       platformName({ plarformId: this.unitId })
         .then(({ data }) => {

@@ -116,6 +116,7 @@ export default {
         xAxis: {
           type: 'category',
           axisLabel: {
+            interval: 0,
             show: true,
             textStyle: {
               color: this.theme ? '#ccc' : '#606266'
