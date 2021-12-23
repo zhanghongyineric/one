@@ -129,6 +129,7 @@
 <script src="//webapi.amap.com/ui/1.1/main.js?v=1.1.1"></script>
 <script>
 import Pagination from '@/components/Pagination'
+import truckImg from '../img/truck.png'
 import {
   alarmTrajectoryDowload,
   alarmTrajectory
@@ -230,7 +231,6 @@ export default {
     // 获取表格数据
     getList() {
       const row = this.rows[0]
-      console.log(row);
       const params = {
         startTime: row.armTimeStart,
         endTime: row.armTimeEnd,
@@ -244,14 +244,21 @@ export default {
         .then(({ data }) => {
           this.tableData = data.list
           this.total = data.total || 0
-          data.list.forEach(item => {
-            this.actualList.push([item.longitude,item.latitude])
-            if (!item.location) {
-              this.getLocation(item)
+          if (data.list) {
+            data.list.forEach(item => {
+              this.actualList.push([item.longitude,item.latitude])
+              if (!item.location) {
+                this.getLocation(item)
+              }
+            })
+            if (this.actualList.length > 0) {
+              this.initPathSimplifier()
             }
-          })
-          if (this.actualList.length > 0) {
-            this.initPathSimplifier()
+          } else {
+            this.$message({
+              type: 'warning',
+              message: '暂无轨迹信息！'
+            })
           }
         })
         .catch(err => {
@@ -340,12 +347,12 @@ export default {
             return pathData.path
           },
           // hover每一个轨迹点，展示内容
-          getHoverTitle: function(pathData, pathIndex, pointIndex) {
-            if (pointIndex >= 0) {
-              return pathData.name + '，点：' + pointIndex + '/' + pathData.path.length
-            }
-            return pathData.name + '，点数量' + pathData.path.length
-          },
+          // getHoverTitle: function(pathData, pathIndex, pointIndex) {
+          //   if (pointIndex >= 0) {
+          //     return pathData.name + '，点：' + pointIndex + '/' + pathData.path.length
+          //   }
+          //   return pathData.name + '，点数量' + pathData.path.length
+          // },
           // 自定义样式，可设置巡航器样式，巡航轨迹样式，巡航轨迹点击、hover等不同状态下的样式，不设置则用默认样式，详情请参考api文档 renderOptions:{}
           // 绘制路线节点
           renderOptions: {
@@ -407,8 +414,17 @@ export default {
         // 对第一条线路（即索引 0）创建一个巡航器
         that.navgtr = that.pathSimplifierIns.createPathNavigator(0, {
           loop: false, // 循环播放
-          speed: that.navgtrSpeed // 巡航速度，单位千米/小时
+          speed: that.navgtrSpeed, // 巡航速度，单位千米/小时
+          pathNavigatorStyle: {
+            initRotateDegree: -90,
+            width: 32,
+            height: 32,
+            content: PathSimplifier.Render.Canvas.getImageContent(truckImg, onload, onerror),
+            strokeStyle: null,
+            fillStyle: null
+          }
         })
+        this.map.setZoom(17)
 
         that.navgtr.on('start resume', function() {
           that.navgtr._startTime = Date.now()

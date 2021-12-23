@@ -139,7 +139,6 @@
 </template>
 
 <script>
-
 import ChoosePlatform from '@/components/ChoosePlatform'
 import RegionVehicle from '@/views/monitor-report/components/RegionVehicle'
 import VehicleStatistics from '@/views/monitor-report/components/VehicleStatistics'
