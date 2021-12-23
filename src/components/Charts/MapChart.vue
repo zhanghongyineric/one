@@ -191,7 +191,8 @@ export default {
             if (val.value) {
               return val.name + '：' + '<br/>' +
               '当前在线：' + val.value + '辆' + '<br/>' +
-              '累计在线：' + val.data.count + '辆'
+              '累计在线：' + val.data.count + '辆' + '<br/>' +
+              '车辆总数：' + val.data.sum + '辆'
             } else return val.name + '：暂无数据'
           },
           textStyle: {

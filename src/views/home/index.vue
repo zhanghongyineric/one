@@ -573,12 +573,13 @@ export default {
             ['city', '当前在线', '累计在线']
           ]
           city.forEach(item => {
-            const { realTimeCount, onlineCount, deptName, deptId } = item
+            const { realTimeCount, onlineCount, deptName, deptId, vehicleSum } = item
             if (deptName.includes('分中心')) {
               this.mapData.push({
                 value: realTimeCount,
                 name: deptName.split('分中心')[0] + '市',
                 count: onlineCount,
+                sum: vehicleSum,
                 deptId
               })
             } else if (deptName.includes('中心')) {
@@ -586,6 +587,7 @@ export default {
                 value: realTimeCount,
                 name: deptName.split('中心')[0] + '市',
                 count: onlineCount,
+                sum: vehicleSum,
                 deptId
               })
             }
@@ -593,6 +595,7 @@ export default {
               value: realTimeCount,
               name: deptName,
               count: onlineCount,
+              sum: vehicleSum,
               deptId
             })
             this.mapChartData.push([deptName, realTimeCount, onlineCount])
@@ -817,11 +820,12 @@ export default {
         ['city', '当前在线', '累计在线']
       ]
       data.city.forEach(item => {
-        const { realTimeCount, onlineCount, deptName, deptId } = item
+        const { realTimeCount, onlineCount, deptName, deptId, vehicleSum } = item
         this.mapData.push({
           value: realTimeCount,
           name: deptName,
           count: onlineCount,
+          sum: vehicleSum,
           deptId
         })
         this.mapChartData.push([deptName, realTimeCount, onlineCount])
@@ -836,11 +840,12 @@ export default {
           .then(({ data }) => {
             this.updateCityData(data)
             data.city.forEach(item => {
-              const { realTimeCount, onlineCount, deptName, deptId } = item
+              const { realTimeCount, onlineCount, deptName, deptId, vehicleSum } = item
               this.mapData.push({
                 value: realTimeCount,
                 name: deptName,
                 count: onlineCount,
+                sum: vehicleSum,
                 deptId
               })
               this.mapChartData.push([deptName, realTimeCount, onlineCount])
