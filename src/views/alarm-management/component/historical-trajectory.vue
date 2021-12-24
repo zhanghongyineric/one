@@ -250,7 +250,7 @@ export default {
         .then(({ data }) => {
           this.tableData = data.list
           this.total = data.total || 0
-          if (data.list) {
+          if (data.list && data.list.length > 0) {
             data.list.forEach(item => {
               this.actualList.push([item.longitude,item.latitude])
               if (!item.location) {
