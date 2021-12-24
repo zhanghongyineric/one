@@ -146,6 +146,11 @@ export default {
     rows: {
       type: Array,
       default: () => []
+    },
+    from: {
+      type: String,
+      default: '',
+      required: true
     }
   },
   data() {
@@ -168,7 +173,7 @@ export default {
       navgtrSpeed: 800,
       times: 1, // 倍速
       alreadyPlay: false, // 判断是继续播放开始重头开始
-      showMulBox: false
+      showMulBox: false, // 显示倍速选项框
     }
   },
   watch: {
@@ -238,7 +243,8 @@ export default {
         plateNum: row.plateNum,
         unitName: row.unitName,
         cbArmName: row.cbArmName,
-        ...this.listQuery
+        ...this.listQuery,
+        flag: this.from
       }
       alarmTrajectory({ ...params })
         .then(({ data }) => {
@@ -425,6 +431,7 @@ export default {
           }
         })
         this.map.setZoom(17)
+        // this.map.setFitView()
 
         that.navgtr.on('start resume', function() {
           that.navgtr._startTime = Date.now()
@@ -523,6 +530,9 @@ export default {
       ul li{
         list-style-type:none;
         cursor: pointer;
+      }
+      li:hover {
+        color: #409EFF;
       }
     }
   }

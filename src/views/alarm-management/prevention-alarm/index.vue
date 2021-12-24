@@ -297,6 +297,7 @@
       <HistoricalTrajectory
         :visible="trajectoryVisible"
         :rows="currentRow"
+        :from="'1'"
         @close="updateVisible"
       />
     </el-card>
@@ -312,9 +313,9 @@ import Pagination from '@/components/Pagination'
 import {
   activeDefenseAlarmType,
   areaCode,
-  selectAlarm,
   alarmDowload
 } from '@/api/alarm-management/prevention-alarm'
+import axios from 'axios'
 
 // 字典
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
@@ -427,6 +428,9 @@ export default {
     // 当前账号部门 id
     deptId() {
       return this.$store.state.user.unitId
+    },
+    token() {
+      return this.$store.state.user.token
     }
   },
   watch: {
@@ -482,19 +486,31 @@ export default {
     getList() {
       this.listLoading = true
       this.setListQuery()
-      selectAlarm({ ...this.listQuery })
+      const address = process.env.VUE_APP_BASE_API
+      axios.post(
+        address + '/monitor/alarmManagement/selectAlarm',
+        { ...this.listQuery },
+        { headers: { 'Authorization': 'Bearer ' + this.token }}
+      )
         .then(({ data }) => {
-          if (data) {
-            data.list.forEach(item => {
-              item.startLocation = ''
-              item.endLocation = ''
-              this.getLocation(item)
+          if (data.msg === '请查询一个月之内的信息！！！') {
+            this.$message({
+              type: 'warning',
+              message: data.msg
             })
-            this.tableData = data.list
-            this.total = data.total
           } else {
-            this.total = 0
-            this.tableData = []
+            if (data.data.list) {
+              data.data.list.forEach(item => {
+                item.startLocation = ''
+                item.endLocation = ''
+                this.getLocation(item)
+              })
+              this.tableData = data.data.list
+              this.total = data.data.total
+            } else {
+              this.total = 0
+              this.tableData = []
+            }
           }
           this.listLoading = false
         })
