@@ -479,15 +479,14 @@ export default {
               message: data.msg
             })
           } else {
+            this.total = 0
+            this.tableData = []
             if (data.data.list) {
               this.tableData = data.data.list
               this.total = data.data.total
               this.tableData.forEach(item => {
                 this.getLocation(item)
               })
-            } else {
-              this.total = 0
-              this.tableData = []
             }
           }
           this.listLoading = false

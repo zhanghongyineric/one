@@ -129,7 +129,7 @@
 <script src="//webapi.amap.com/ui/1.1/main.js?v=1.1.1"></script>
 <script>
 import Pagination from '@/components/Pagination'
-import truckImg from '../img/truck.png'
+import carImg from '../img/car.png'
 import {
   alarmTrajectoryDowload,
   alarmTrajectory
@@ -423,15 +423,20 @@ export default {
           speed: that.navgtrSpeed, // 巡航速度，单位千米/小时
           pathNavigatorStyle: {
             initRotateDegree: -90,
-            width: 32,
-            height: 32,
-            content: PathSimplifier.Render.Canvas.getImageContent(truckImg, onload, onerror),
+            width: 48,
+            height: 24,
+            autoRotate: true,
+            content: PathSimplifier.Render.Canvas.getImageContent(
+              carImg,
+              function onload() {
+                that.pathSimplifierIns.renderLater()
+              },
+              onerror
+              ),
             strokeStyle: null,
             fillStyle: null
           }
         })
-        this.map.setZoom(17)
-        // this.map.setFitView()
 
         that.navgtr.on('start resume', function() {
           that.navgtr._startTime = Date.now()

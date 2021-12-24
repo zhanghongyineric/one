@@ -499,6 +499,8 @@ export default {
               message: data.msg
             })
           } else {
+            this.total = 0
+            this.tableData = []
             if (data.data.list) {
               data.data.list.forEach(item => {
                 item.startLocation = ''
@@ -507,9 +509,6 @@ export default {
               })
               this.tableData = data.data.list
               this.total = data.data.total
-            } else {
-              this.total = 0
-              this.tableData = []
             }
           }
           this.listLoading = false

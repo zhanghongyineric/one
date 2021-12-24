@@ -296,6 +296,11 @@ export default {
     },
     // 获取驾驶员信息
     getDriverInfo() {
+      this.driverInfo = {
+        idCardNum: '',
+        tel: '',
+        personName: ''
+      }
       if (this.rows[0].driverId !== 0) {
         findDriver({ driverId: this.rows[0].driverId })
           .then(({ data }) => {
