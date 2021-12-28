@@ -63,7 +63,13 @@
               </el-col>
               <el-col :md="6" :sm="12">
                 <el-form-item label="企业:">
-                  <el-input v-model="listQuery.unitName" placeholder="请选择企业" size="small" style="margin-top:4px;">
+                  <el-input
+                    v-model="listQuery.unitName"
+                    placeholder="请选择企业"
+                    size="small"
+                    style="margin-top:4px;"
+                    :disabled="true"
+                  >
                     <el-button slot="append" icon="el-icon-plus" @click="companyVisible = true" />
                   </el-input>
                 </el-form-item>
@@ -662,10 +668,14 @@ export default {
     },
     // 获取选中的企业
     getSelectedUnit(unit) {
-      unit.forEach(item => {
-        this.listQuery.unitName = this.listQuery.unitName + ' ' + item.unitName
-        this.listQuery.unitIds.push(item.unitId)
-      })
+      this.listQuery.unitName = ''
+      this.listQuery.unitIds = []
+      if (unit.length > 0) {
+        unit.forEach(item => {
+          this.listQuery.unitName = this.listQuery.unitName + ' ' + item.unitName
+          this.listQuery.unitIds.push(item.unitId)
+        })
+      }
     },
     // 选择报警类型
     checkAlarmType() {

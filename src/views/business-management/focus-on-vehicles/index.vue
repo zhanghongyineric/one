@@ -14,6 +14,7 @@
                 size="small"
                 placeholder="请选择车辆类型"
                 style="width:100%"
+                clearable
               >
                 <el-option
                   v-for="item in typeOptions"
@@ -24,17 +25,35 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :md="6" :sm="24">
+            <el-form-item label="所属平台:">
+              <el-select
+                v-model="listQuery.platformId"
+                size="small"
+                placeholder="请选择车辆类型"
+                style="width:100%"
+                clearable
+              >
+                <el-option
+                  v-for="item in platFormOptions"
+                  :key="item.platformId"
+                  :label="item.platformName"
+                  :value="item.platformId"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
           <el-col :md="8" :sm="24">
             <div class="table-page-search-submitButtons">
               <el-button
                 type="warning"
                 size="small"
                 style="margin-bottom: 10px"
-                @click="reset"
+                @click="resetQuery"
               >重置
               </el-button>
               <el-button
-                type="primary"
+                type="success"
                 size="small"
                 style="margin-bottom: 10px"
                 @click="addVehicle"
@@ -47,7 +66,6 @@
                 @click="search"
               >查询
               </el-button>
-
             </div>
           </el-col>
         </el-row>
@@ -62,34 +80,46 @@
         :stripe="true"
       >
         <el-table-column type="index" label="编号" width="60" align="center" />
-        <el-table-column prop="plateNum" label="车牌号码" min-width="150px" align="center" />
-        <el-table-column prop="plateColor" label="车牌颜色" min-width="150px" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.plateColor | plateColorFilter }}
-          </template>
+        <el-table-column prop="plateNum" label="车牌号码" min-width="140px" align="center" />
+        <el-table-column
+          v-slot="{row}"
+          prop="plateColor"
+          label="车牌颜色"
+          min-width="150px"
+          align="center"
+        >
+          {{ row.plateColor | plateColorFilter }}
         </el-table-column>
-        <el-table-column prop="vehicleType" label="车辆类型" min-width="200px" align="center" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row.vehicleType | vehicleTypeFilter }}
-          </template>
+        <el-table-column
+          v-slot="{row}"
+          prop="vehicleType"
+          label="车辆类型"
+          min-width="200px"
+          align="center"
+          show-overflow-tooltip
+        >
+          {{ row.vehicleType | vehicleTypeFilter }}
         </el-table-column>
         <el-table-column prop="safecodeScore" label="安全码得分" min-width="120px" align="center" />
-        <el-table-column prop="safecodeColor" label="安全码颜色" align="center" min-width="120px" show-overflow-tooltip>
-          <template slot-scope="scope">
-            <svg-icon v-if="scope.row.safecodeColor == 1" icon-class="safecode" style="width:23px;height: 23px;background-color:#018E60;" />
-            <svg-icon v-else-if="scope.row.safecodeColor == 2" icon-class="safecode" style="width:23px;height: 23px;background-color:#4ea1db;" />
-            <svg-icon v-else-if="scope.row.safecodeColor == 3" icon-class="safecode" style="width:23px;height: 23px;background-color:#E6A23C;" />
-            <svg-icon v-else icon-class="safecode" style="width:23px;height: 23px;background-color:#F56C6C;" />
-          </template>
+        <el-table-column
+          v-slot="{row}"
+          prop="safecodeColor"
+          label="安全码颜色"
+          align="center"
+          min-width="120px"
+          show-overflow-tooltip
+        >
+          <svg-icon v-if="row.safecodeColor == 1" icon-class="safecode" style="width:23px;height: 23px;background-color:#018E60;" />
+          <svg-icon v-else-if="row.safecodeColor == 2" icon-class="safecode" style="width:23px;height: 23px;background-color:#4ea1db;" />
+          <svg-icon v-else-if="row.safecodeColor == 3" icon-class="safecode" style="width:23px;height: 23px;background-color:#E6A23C;" />
+          <svg-icon v-else icon-class="safecode" style="width:23px;height: 23px;background-color:#F56C6C;" />
         </el-table-column>
-        <el-table-column prop="unitName" label="企业名称" min-width="180px" align="center" show-overflow-tooltip />
+        <el-table-column prop="unitName" label="企业名称" min-width="200px" align="center" show-overflow-tooltip />
         <el-table-column prop="creator" label="平台名称" min-width="180px" align="center" show-overflow-tooltip />
         <el-table-column prop="updateTime" label="更新日期" min-width="200px" align="center" />
-        <el-table-column label="操作" align="center" width="200px" fixed="right">
-          <template v-slot="{row}">
-            <el-button type="warning" size="mini" @click="updateData(row)">修改</el-button>
-            <el-button type="danger" size="mini" @click="delData(row)">删除</el-button>
-          </template>
+        <el-table-column v-slot="{row}" label="操作" align="center" width="200px" fixed="right">
+          <el-button type="warning" size="mini" @click="updateData(row)">修改</el-button>
+          <el-button type="danger" size="mini" @click="delData(row)">删除</el-button>
         </el-table-column>
       </el-table>
 
@@ -143,7 +173,12 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="车辆类型:" prop="vehicleType">
-                <el-select v-model="formData.vehicleType" size="small" placeholder="请选择车辆类型">
+                <el-select
+                  v-model="formData.vehicleType"
+                  size="small"
+                  placeholder="请选择车辆类型"
+                  :disabled="true"
+                >
                   <el-option
                     v-for="item in typeOptions"
                     :key="item.value"
@@ -151,6 +186,24 @@
                     :value="item.value"
                   />
                 </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :sm="24">
+              <el-form-item label="平台名称:" prop="platformName">
+                <el-input
+                  v-model="formData.platformName"
+                  :disabled="true"
+                  size="small"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :md="24" :sm="24">
+              <el-form-item label="企业名称:" prop="unitName">
+                <el-input
+                  v-model="formData.unitName"
+                  :disabled="true"
+                  size="small"
+                />
               </el-form-item>
             </el-col>
             <el-col :md="12" :sm="24">
@@ -170,11 +223,6 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <!-- <el-col :md="12" :sm="24">
-              <el-form-item label="平台名称:" prop="creator">
-                <el-input v-model="formData.creator" clearable size="small" placeholder="请输入平台名称" />
-              </el-form-item>
-            </el-col> -->
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -191,9 +239,11 @@ import {
   focusVehicles,
   save,
   deleteVehicle,
-  selectPlateNum
+  selectPlateNum,
+  getPlatform
 } from '@/api/business-manage/focus-on-vehicles'
 import Pagination from '@/components/Pagination'
+import axios from 'axios'
 
 const onlineOption = JSON.parse(localStorage.getItem('onlineOption'))
 let that
@@ -222,10 +272,13 @@ export default {
       listQuery: {
         pageNum: 1,
         pageSize: 10,
-        vehicleType: ''
+        vehicleType: '',
+        platformId: ''
       },
       total: 0,
+      // 弹框当前操作类型
       type: 'add',
+      // 弹框标题
       titles: {
         'add': '新增',
         'update': '修改'
@@ -237,8 +290,9 @@ export default {
         safecodeScore: [{ required: true, trigger: 'blur', message: '请输入安全码得分' }],
         vehicleType: [{ required: true, trigger: 'change', message: '请选择车辆类型' }],
         plateColor: [{ required: true, trigger: 'change', message: '请选择车牌颜色' }],
-        plateNum: [{ required: true, trigger: 'blur', message: '请输入车牌号' }]
-        // creator: [{ required: true, trigger: 'blur', message: '请输入平台名称' }]
+        plateNum: [{ required: true, trigger: 'blur', message: '请输入车牌号' }],
+        platformName: [{ required: true, trigger: 'blur', message: '请输入正确的车牌号和车牌颜色' }],
+        unitName: [{ required: true, trigger: 'blur', message: '请输入正确的车牌号和车牌颜色' }]
       },
       colorOptions: [],
       colorMap: {},
@@ -247,36 +301,116 @@ export default {
       codeOptions: [],
       codeMap: {},
       currentRow: {},
-      codeColorStyle: ''
+      codeColorStyle: '',
+      platFormOptions: [] // 平台选项
     }
   },
   computed: {
-    plateName() {
+    // 权限验证
+    token() {
+      return this.$store.state.user.token
+    },
+    // 当前账户名
+    userName() {
       return this.$store.state.user.name
+    },
+    // 当前平台id
+    deptId() {
+      return this.$store.state.user.unitId.toString()
+    }
+  },
+  watch: {
+    'formData.plateNum': {
+      handler(n) {
+        if (
+          n &&
+          n.length > 6 &&
+          this.formData.plateColor &&
+          this.type === 'add'
+        ) {
+          this.matchVehicle()
+        }
+      }
+    },
+    'formData.plateColor': {
+      handler(n) {
+        if (
+          n &&
+          this.formData.plateNum.length > 6 &&
+          this.type === 'add'
+        ) {
+          this.matchVehicle()
+        }
+      }
     }
   },
   mounted() {
     that = this
     this.getList()
-    this.colorOptions = onlineOption['车牌颜色编码'].list
-    this.colorMap = onlineOption['车牌颜色编码'].map
-    this.typeOptions = onlineOption['vehicle_type_code'].list
-    this.typeMap = onlineOption['vehicle_type_code'].map
-    this.codeMap = onlineOption['safe_code'].map
-    this.codeOptions = onlineOption['safe_code'].list
+    this.getPlatform()
+    this.setOptions()
   },
   methods: {
+    // 获取字典值并赋值
+    setOptions() {
+      this.colorOptions = onlineOption['车牌颜色编码'].list
+      this.colorMap = onlineOption['车牌颜色编码'].map
+      this.typeOptions = onlineOption['vehicle_type_code'].list
+      this.typeMap = onlineOption['vehicle_type_code'].map
+      this.codeMap = onlineOption['safe_code'].map
+      this.codeOptions = onlineOption['safe_code'].list
+    },
+    // 新增车辆
     addVehicle() {
       this.type = 'add'
       this.visible = true
       this.formData = {}
       this.clearForm()
     },
+    // 清除表单提示文字
     clearForm() {
       this.$nextTick(() => {
         this.$refs['dialogForm'].clearValidate()
       })
     },
+    // 获取平台
+    getPlatform() {
+      getPlatform()
+        .then(({ data }) => {
+          this.platFormOptions = data
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 通过车牌号和颜色获取车辆信息
+    matchVehicle() {
+      const address = process.env.VUE_APP_BASE_API
+      axios({
+        methods: 'get',
+        baseURL: address,
+        url: '/baseInfo/businessManagement/focusVehicles/matchingVehicle',
+        headers: { 'Authorization': 'Bearer ' + this.token },
+        params: {
+          plateNum: this.formData.plateNum,
+          plateColor: this.formData.plateColor
+        }
+      })
+        .then(({ data }) => {
+          if (data.code === 500) {
+            this.$message({
+              type: 'warning',
+              message: data.msg
+            })
+          } else {
+            this.formData = { ...data.data }
+          }
+        })
+        .catch(err => {
+          throw err
+        })
+    },
+    // 获取表格数据
     getList() {
       this.listLoading = true
       focusVehicles({ ...this.listQuery })
@@ -290,6 +424,7 @@ export default {
           throw err
         })
     },
+    // 删除数据
     delData(row) {
       this.$confirm('确定删除该条数据吗？')
         .then(() => {
@@ -315,10 +450,12 @@ export default {
           })
         })
     },
+    // 关闭弹框
     closeDialog() {
       this.visible = false
       this.formData = {}
     },
+    // 更新数据
     updateData(row) {
       this.type = 'update'
       this.visible = true
@@ -326,18 +463,17 @@ export default {
       this.formData = { ...row }
       this.clearForm()
     },
+    // 查询
     search() {
       this.listQuery.pageNum = 1
       this.getList()
     },
-    reset() {
-      this.listQuery = {
-        pageNum: 1,
-        pageSize: 10,
-        vehicleType: ''
-      }
+    // 搜索条件恢复默认
+    resetQuery() {
+      this.listQuery = this.$options.data().listQuery
       this.getList()
     },
+    // 模糊查询
     searchType(queryString, cb) {
       if (queryString) {
         if (queryString.length !== 7) {
@@ -362,15 +498,18 @@ export default {
         return
       }
     },
+    // 模糊查询联想词选择
     selectPlateNum(item) {
       this.formData.plateNum = item.value
     },
+    // 提交新增或修改
     submit() {
       this.$refs['dialogForm'].validate(valid => {
         if (valid) {
           this.listLoading = true
           if (this.type === 'update') this.formData.id = this.currentRow.id
-          this.formData.creator = this.plateName
+          this.formData.creator = this.formData.updator = this.userName
+          this.formData.creatorNo = this.formData.updatorNo = this.deptId
           save({ ...this.formData })
             .then(_ => {
               this.$message({

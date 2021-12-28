@@ -19,6 +19,15 @@ export function save(data) {
   })
 }
 
+// 匹配车辆
+export function matchingVehicle(params) {
+  return request({
+    url: '/matchingVehicle',
+    method: 'GET',
+    params
+  })
+}
+
 // 删除
 export function deleteVehicle(id) {
   return request({
@@ -31,6 +40,14 @@ export function deleteVehicle(id) {
 export function selectPlateNum(plateNum) {
   return request({
     url: `/selectPlateNum/${plateNum}`,
+    method: 'GET'
+  })
+}
+
+// 获取平台
+export function getPlatform() {
+  return request({
+    url: '/getPlatform',
     method: 'GET'
   })
 }
