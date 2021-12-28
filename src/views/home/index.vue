@@ -241,6 +241,14 @@
             </div>
             <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff'}">
               <span class="title" :style="{'color': theme?'#fff':'#606266'}">报警趋势分析</span>
+              <el-date-picker
+                v-model="trendYear"
+                type="year"
+                placeholder="选择年"
+                size="mini"
+                style="position:absolute;right:40px;"
+                value-format="yyyy"
+              />
               <line-chart :chart-data="trendData" />
             </div>
           </el-col>
@@ -405,7 +413,8 @@ export default {
       trendData: [],
       mapDataMap: new Map(),
       timer: null, // 定时任务请求地图数据
-      showCity: false // 地图当前展示是否是城市
+      showCity: false, // 地图当前展示是否是城市
+      trendYear: '' // 趋势当前年
     }
   },
   computed: {
@@ -427,6 +436,9 @@ export default {
       } else {
         this.intervalOnlineCars()
       }
+    },
+    trendYear() {
+      this.getTrendAnalysis()
     }
   },
   created() {
@@ -442,7 +454,6 @@ export default {
     // this.getMechanism()
     // this.getUnit()
     this.getCityData()
-    this.getTrendAnalysis()
     this.getAlarmEvent()
     this.intervalOnlineCars()
   },
@@ -455,6 +466,7 @@ export default {
       if (etable.scrollTop + etable.clientHeight >= etable.scrollHeight) etable.scrollTop = 0
       if (ctable.scrollTop + ctable.clientHeight >= ctable.scrollHeight) ctable.scrollTop = 0
     }, 100)
+    this.trendYear = new Date().getFullYear().toString()
   },
   methods: {
     getAlarmEvent() {
@@ -508,7 +520,7 @@ export default {
         })
     },
     getTrendAnalysis() {
-      trendAnalysis()
+      trendAnalysis({ year: this.trendYear })
         .then(res => {
           const { data } = res
           const arr = new Array(12).fill(0)
@@ -617,14 +629,6 @@ export default {
         this.carList = data
       })
     },
-    // tableHeaderColor({ row, column, rowIndex, columnIndex }) {
-    //   if (rowIndex === 0) {
-    //     return 'background-color: #202B3A;color: #fff;font-weight: 500;'
-    //   }
-    // },
-    // tableRowStyle() {
-    //   return { 'background-color': '#122230', 'color': '#fff', 'height': 0 }
-    // },
     getEnterpriseRanking() {
       enterpriseRanking({
         pageNum: 1,

@@ -119,7 +119,8 @@ export default {
               show: true,
               textStyle: {
                 color: this.theme ? '#ccc' : '#606266'
-              }
+              },
+              interval: 0
             },
             axisPointer: {
               label: {

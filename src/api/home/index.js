@@ -64,11 +64,11 @@ export function onlineVehicle() {
 }
 
 // 趋势分析
-export function trendAnalysis(data) {
+export function trendAnalysis(params) {
   return request({
     url: '/trendAnalysis',
-    method: 'POST',
-    data
+    method: 'GET',
+    params
   })
 }
 
