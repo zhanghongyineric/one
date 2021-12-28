@@ -332,14 +332,14 @@ import {
   keyVehicle,
   cityVehicle
 } from '@/api/home'
-import BarChart from '@/components/Charts/VerticalBarChart.vue'
-import PieChart from '@/components/Charts/InfomationPie.vue'
-import MonitorPieChart from '@/components/Charts/PieChart.vue'
-import MonitorBarChart from '@/components/Charts/HorizontalBarChart.vue'
-import MutilPieChart from '@/components/Charts/MutilPieChart.vue'
-import LineChart from '@/components/Charts/LineChart.vue'
-import MapChart from '@/components/Charts/MapChart.vue'
-import DatasetBarChart from '@/components/Charts/DatasetBarChart.vue'
+import BarChart from './components/VerticalBarChart.vue'
+import PieChart from './components/InfomationPie.vue'
+import MonitorPieChart from './components/PieChart.vue'
+import MonitorBarChart from './components/HorizontalBarChart.vue'
+import MutilPieChart from './components/MutilPieChart.vue'
+import LineChart from './components/LineChart.vue'
+import MapChart from './components/MapChart.vue'
+import DatasetBarChart from './components/DatasetBarChart.vue'
 
 export default {
   name: 'Home',

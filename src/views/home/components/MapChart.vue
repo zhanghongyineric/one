@@ -14,7 +14,7 @@
 </template>
 <script>
 import * as echarts from 'echarts'
-import chartResize from './chart-resize'
+import chartResize from '@/components/Charts/chart-resize'
 import sichuan from '@/utils/mapJson/sichuan.json'
 import citysCode from '@/utils/mapJson/citysCode.js'
 import { cityVehicle, platformName } from '@/api/home'
@@ -205,7 +205,7 @@ export default {
     },
     // 获取市级地区地图数据
     getMapJson(code) {
-      const cityJson = require(`../../utils/mapJson/${code}.json`)
+      const cityJson = require(`../../../utils/mapJson/${code}.json`)
       this.initChart(cityJson)
     },
     // 鼠标右键点击事件（返回上一层）

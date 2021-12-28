@@ -1,10 +1,10 @@
-<!-- 趋势变化曲线图 -->
+<!--主要用于监测首页的横向柱状图-->
 <template>
   <div :style="{height,width}" />
 </template>
 <script>
 import * as echarts from 'echarts'
-import chartResize from './chart-resize'
+import chartResize from '@/components/Charts/chart-resize'
 
 export default {
   mixins: [chartResize],
@@ -17,9 +17,22 @@ export default {
       type: String,
       default: '100%'
     },
-    chartData: {
+    yData: {
       type: Array,
+      required: true
+    },
+    xData: {
+      type: Array,
+      require: true,
       default: () => []
+    },
+    showlegend: {
+      type: Boolean,
+      default: false
+    },
+    position: {
+      type: Array,
+      default: () => ['50%', '50%']
     }
   },
   data() {
@@ -29,19 +42,30 @@ export default {
   },
   computed: {
     theme() {
-      return this.$store.state.settings.theme === 'dark'
+      const localTheme = localStorage.getItem('theme')
+      const stateTheme = this.$store.state.settings.theme
+      if (stateTheme !== localTheme) {
+        this.$store.commit('settings/CHANGE_THEME', localTheme)
+      }
+      return localStorage.getItem('theme') === 'dark'
     }
   },
   watch: {
+    xData: {
+      deep: true,
+      handler(val) {
+        this.setOptions()
+      }
+    },
     theme() {
       this.setOptions()
     },
-    chartData: {
+    yData: {
       deep: true,
       handler(val) {
-        this.setOptions(val)
+        this.setOptions()
         let index = 0
-        const { length } = this.chartData
+        const { length } = this.yData
         setInterval(() => {
           if (this.chart) {
             this.chart.dispatchAction({
@@ -92,86 +116,68 @@ export default {
       this.setOptions(this.chartData)
     },
     setOptions() {
-      const colors = ['#5470C6', '#EE6666']
-      const option = {
-        color: colors,
+      const colors = ['#FFFFCB', '#FFFEA7', '#FFFD7F', '#FFFE66', '#FFFD4A', '#FFFD29', '#FFFC01']
+      this.chart.setOption({
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'cross'
+            type: 'shadow'
           },
-          backgroundColor: this.theme ? '#151D2C' : '#fff',
+          backgroundColor: '#151D2C',
+          textStyle: {
+            color: '#fff'
+          }
+        },
+        title: {
+          text: '安全隐患企业排行',
+          left: 'left',
           textStyle: {
             color: this.theme ? '#fff' : '#606266'
           }
         },
-        grid: {
-          top: 70,
-          bottom: 50
-        },
-        xAxis: [
-          {
-            type: 'category',
-            axisTick: {
-              alignWithLabel: true
-            },
-            axisLabel: {
-              show: true,
-              textStyle: {
-                color: this.theme ? '#ccc' : '#606266'
-              },
-              interval: 0
-            },
-            axisPointer: {
-              label: {
-                formatter: function(params) {
-                  return params.value
-                }
-              }
-            },
-            data: [
-              '1月',
-              '2月',
-              '3月',
-              '4月',
-              '5月',
-              '6月',
-              '7月',
-              '8月',
-              '9月',
-              '10月',
-              '11月',
-              '12月'
-            ]
+        xAxis: {
+          type: 'value',
+          boundaryGap: [0, 0.01],
+          axisLabel: {
+            show: true,
+            textStyle: {
+              color: '#ccc'
+            }
           }
-        ],
-        yAxis: [
+        },
+        yAxis: {
+          type: 'category',
+          data: this.xData,
+          axisLabel: {
+            textStyle: {
+              color: '#ccc'
+            },
+            formatter: function(val) {
+              if (val.length > 10) {
+                return val.substring(0, 10) + '...'
+              }
+              return val
+            }
+          }
+        },
+        grid: {
+          containLabel: true
+        },
+        series: [
           {
-            type: 'value',
-            axisLabel: {
-              show: true,
-              textStyle: {
-                color: this.theme ? '#ccc' : '#606266'
-              },
-              formatter: function(val) {
-                return val > 9999 ? val / 10000 + '万' : val
+            name: '风险程度',
+            type: 'bar',
+            data: this.yData,
+            itemStyle: {
+              normal: {
+                color: (params) => {
+                  return colors[params.dataIndex]
+                }
               }
             }
           }
-        ],
-        series: [
-          {
-            name: '数量',
-            type: 'line',
-            smooth: true,
-            emphasis: {
-              focus: 'series'
-            },
-            data: this.chartData
-          }
         ]
-      }
-      this.chart.setOption(option)
+      })
     }
   }
 }
