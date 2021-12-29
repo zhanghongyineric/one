@@ -37,10 +37,11 @@ export function deleteVehicle(id) {
 }
 
 // 模糊查询车牌号
-export function selectPlateNum(plateNum) {
+export function selectPlateNum(params) {
   return request({
-    url: `/selectPlateNum/${plateNum}`,
-    method: 'GET'
+    url: '/selectPlateNum',
+    method: 'GET',
+    params
   })
 }
 

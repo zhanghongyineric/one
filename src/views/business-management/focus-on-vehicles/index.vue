@@ -115,7 +115,7 @@
           <svg-icon v-else icon-class="safecode" style="width:23px;height: 23px;background-color:#F56C6C;" />
         </el-table-column>
         <el-table-column prop="unitName" label="企业名称" min-width="200px" align="center" show-overflow-tooltip />
-        <el-table-column prop="creator" label="平台名称" min-width="180px" align="center" show-overflow-tooltip />
+        <el-table-column prop="platformName" label="平台名称" min-width="180px" align="center" show-overflow-tooltip />
         <el-table-column prop="updateTime" label="更新日期" min-width="200px" align="center" />
         <el-table-column v-slot="{row}" label="操作" align="center" width="200px" fixed="right">
           <el-button type="warning" size="mini" @click="updateData(row)">修改</el-button>
@@ -161,7 +161,12 @@
             </el-col>
             <el-col :md="12" :sm="24">
               <el-form-item label="车牌颜色:" prop="plateColor">
-                <el-select v-model="formData.plateColor" size="small" placeholder="请选择车牌颜色">
+                <el-select
+                  v-model="formData.plateColor"
+                  size="small"
+                  placeholder="请选择车牌颜色"
+                  :disabled="true"
+                >
                   <el-option
                     v-for="item in colorOptions"
                     :key="item.value"
@@ -288,11 +293,11 @@ export default {
       rules: {
         safecodeColor: [{ required: true, trigger: 'change', message: '请选择安全码颜色' }],
         safecodeScore: [{ required: true, trigger: 'blur', message: '请输入安全码得分' }],
-        vehicleType: [{ required: true, trigger: 'change', message: '请选择车辆类型' }],
-        plateColor: [{ required: true, trigger: 'change', message: '请选择车牌颜色' }],
+        vehicleType: [{ required: true, trigger: 'change', message: '请选择正确的车牌号' }],
+        plateColor: [{ required: true, trigger: 'change', message: '请选择正确的车牌号' }],
         plateNum: [{ required: true, trigger: 'blur', message: '请输入车牌号' }],
-        platformName: [{ required: true, trigger: 'blur', message: '请输入正确的车牌号和车牌颜色' }],
-        unitName: [{ required: true, trigger: 'blur', message: '请输入正确的车牌号和车牌颜色' }]
+        platformName: [{ required: true, trigger: 'blur', message: '请选择正确的车牌号' }],
+        unitName: [{ required: true, trigger: 'blur', message: '请选择正确的车牌号' }]
       },
       colorOptions: [],
       colorMap: {},
@@ -322,25 +327,7 @@ export default {
   watch: {
     'formData.plateNum': {
       handler(n) {
-        if (
-          n &&
-          n.length > 6 &&
-          this.formData.plateColor &&
-          this.type === 'add'
-        ) {
-          this.matchVehicle()
-        }
-      }
-    },
-    'formData.plateColor': {
-      handler(n) {
-        if (
-          n &&
-          this.formData.plateNum.length > 6 &&
-          this.type === 'add'
-        ) {
-          this.matchVehicle()
-        }
+        n && n.length > 8 && this.matchVehicle()
       }
     }
   },
@@ -392,8 +379,7 @@ export default {
         url: '/baseInfo/businessManagement/focusVehicles/matchingVehicle',
         headers: { 'Authorization': 'Bearer ' + this.token },
         params: {
-          plateNum: this.formData.plateNum,
-          plateColor: this.formData.plateColor
+          vehicleId: this.formData.vehicleId
         }
       })
         .then(({ data }) => {
@@ -403,7 +389,17 @@ export default {
               message: data.msg
             })
           } else {
-            this.formData = { ...data.data }
+            const info = {
+              plateColor: data.data.plateColor,
+              plateNum: data.data.plateNum,
+              platformId: data.data.platformId,
+              platformName: data.data.platformName,
+              unitId: data.data.unitId,
+              unitName: data.data.unitName,
+              vehicleId: data.data.vehicleId,
+              vehicleType: data.data.vehicleType
+            }
+            this.formData = { ...info }
           }
         })
         .catch(err => {
@@ -476,23 +472,22 @@ export default {
     // 模糊查询
     searchType(queryString, cb) {
       if (queryString) {
-        if (queryString.length !== 7) {
-          selectPlateNum(queryString)
-            .then(res => {
-              const { data } = res
-              const arr = []
-              data.forEach(item => {
-                arr.push({
-                  label: item,
-                  value: item
-                })
+        selectPlateNum({ plateNum: queryString })
+          .then(res => {
+            const { data } = res
+            const arr = []
+            data.forEach(item => {
+              arr.push({
+                label: item.plateNum,
+                value: item.plateNum + '\xa0\xa0\xa0' + this.colorMap[item.plateColor],
+                id: item.vehicleId
               })
-              cb(arr)
             })
-            .catch(err => {
-              throw err
-            })
-        }
+            cb(arr)
+          })
+          .catch(err => {
+            throw err
+          })
       } else {
         cb([])
         return
@@ -501,6 +496,7 @@ export default {
     // 模糊查询联想词选择
     selectPlateNum(item) {
       this.formData.plateNum = item.value
+      this.formData.vehicleId = item.id
     },
     // 提交新增或修改
     submit() {
