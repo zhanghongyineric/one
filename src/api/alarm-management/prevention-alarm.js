@@ -54,11 +54,11 @@ export function handleAlarm(data) {
 }
 
 // 报警excel下载
-export function alarmDowload(params) {
+export function alarmDowload(data) {
   return request({
     url: '/alarmDowload',
-    method: 'GET',
-    params,
+    method: 'POST',
+    data,
     responseType: 'blob'
   })
 }

@@ -507,7 +507,7 @@ export default {
           } else {
             this.total = 0
             this.tableData = []
-            if (data.data.list) {
+            if (data.data && data.data.list) {
               data.data.list.forEach(item => {
                 item.startLocation = ''
                 item.endLocation = ''

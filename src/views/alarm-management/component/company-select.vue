@@ -8,8 +8,8 @@
     :before-close="closeDialog"
   >
     <span class="text">查找:</span>
-    <!-- <el-input v-model="unitName" class="input" size="small" clearable placeholder="请输入企业名称" /> -->
     <el-autocomplete
+      ref="autocomplete"
       v-model="unitName"
       class="input"
       :fetch-suggestions="searchType"
@@ -19,6 +19,7 @@
       size="small"
       style="width:300px;"
       @select="selectUnit"
+      @clear="setBlur"
     />
     <el-button type="primary" size="small" @click="search">查询</el-button>
     <div class="tree-container">
@@ -128,6 +129,11 @@ export default {
           }
         })
       }, 500)
+    },
+    // 使输入框失去焦点（修复点击清空按钮时，继续输入检索内容，这时候没有继续触发事件的 bug）
+    setBlur() {
+      document.activeElement.blur()
+      this.$refs.autocomplete.focus()
     },
     // 获取搜索企业的信息
     getInfoByUnitname() {

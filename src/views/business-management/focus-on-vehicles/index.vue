@@ -155,6 +155,7 @@
                   :debounce="500"
                   clearable
                   size="small"
+                  :disabled="type === 'update'"
                   @select="selectPlateNum"
                 />
               </el-form-item>
@@ -327,7 +328,7 @@ export default {
   watch: {
     'formData.plateNum': {
       handler(n) {
-        n && n.length > 8 && this.matchVehicle()
+        n && n.length > 8 && this.type === 'add' && this.matchVehicle()
       }
     }
   },
