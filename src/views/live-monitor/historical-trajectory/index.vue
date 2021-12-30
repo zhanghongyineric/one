@@ -9,8 +9,9 @@
           label-width="100px"
           :rules="rules"
         >
-          <el-form-item label="车牌号码:" prop="plateNum">
+          <el-form-item label="车牌信息:" prop="plateNum">
             <el-autocomplete
+              ref="autocomplete"
               v-model="searchFormData.plateNum"
               size="small"
               placeholder="请输入车牌号"
@@ -19,6 +20,7 @@
               :debounce="500"
               style="width:220px;"
               @select="selectPlateNum"
+              @clear="setBlur"
             />
           </el-form-item>
           <el-form-item label="开始时间:" prop="startTime">
@@ -73,37 +75,27 @@
       </div>
     </div>
     <div :class="[showTable ? 'close-symbol' : 'expand-symbol']" @click="showTable = !showTable">
-      <div :class="[showTable ? 'bottom-arrow' : 'top-arrow']" />
+      <div :class="[showTable ? 'close-arrow' : 'expand-arrow']" />
     </div>
-    <div v-show="showTable" class="bottom-table">
-      <el-table
-        :data="tableData"
-        style="width:100%;height:100%;"
-        border
-        fit
-        highlight-current-row
-        height="200"
-        @cell-mouse-enter="getLocation"
-      >
-        <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column prop="status" label="ACC状态" min-width="120" align="center" />
-        <el-table-column prop="time" label="上报时间" min-width="120" align="center" />
-        <el-table-column prop="speed" label="速度(km/h)" min-width="120" align="center" />
-        <el-table-column
-          prop="positionDes"
-          label="位置描述"
-          min-width="120"
-          align="center"
-        />
-      </el-table>
+    <div v-show="showTable" class="table-box">
+      <Table
+        ref="tableList"
+        :start-time="searchFormData.startTime"
+        :end-time="searchFormData.endTime"
+        :vehicle-id="vehicleId"
+      />
     </div>
   </div>
 </template>
 <script>
 import { position, findPlateNum } from '@/api/live-monitor/history'
+import Table from './components/table.vue'
+
+const plateColorMap = JSON.parse(localStorage.getItem('onlineOption'))['车牌颜色编码'].map
 
 export default {
   name: 'HistoricalTrajectory',
+  components: { Table },
   data() {
     return {
       styleSize: {
@@ -115,7 +107,9 @@ export default {
         startTime: '',
         endTime: '',
         date: '',
-        time: []
+        time: [],
+        pageNum: 1,
+        pageSize: 20
       },
       passedTime: 0,
       passedTimeTemp: 0,
@@ -144,6 +138,7 @@ export default {
         endTime: [{ required: true, message: '请选择时间范围', trigger: 'change' }]
       },
       time_variable: 0,
+      vehicleId: '', // 搜索车辆的 ID
       // 开始时间限制
       startPickerOptions: {
         disabledDate: (time) => {
@@ -199,6 +194,7 @@ export default {
     window.addEventListener('resize', this.getHeight)
   },
   methods: {
+    // 模糊查询
     searchType(queryString, cb) {
       if (queryString) {
         findPlateNum({ plateNum: queryString })
@@ -207,8 +203,9 @@ export default {
             const searchData = []
             data.forEach(item => {
               searchData.push({
-                label: item,
-                value: item
+                label: item.plateNum,
+                value: item.plateNum + '\xa0\xa0\xa0' + plateColorMap[item.plateColor],
+                id: item.vehicleId
               })
             })
             cb(searchData)
@@ -221,19 +218,19 @@ export default {
         return
       }
     },
+    // 选择车牌联想
     selectPlateNum(item) {
       this.searchFormData.plateNum = item.value
+      this.vehicleId = item.id
     },
+    // 重置搜索条件
     reset() {
-      this.searchFormData = {
-        plateNum: '',
-        startTime: '',
-        endTime: ''
-      }
+      this.searchFormData = this.$options.data().searchFormData
       this.$nextTick(() => {
         this.$refs['searchForm'].clearValidate()
       })
     },
+    // 获取窗口高度
     getHeight() {
       this.styleSize.height = window.innerHeight - 84 + 'px'
       this.styleSize.width = window.innerWidth + 'px'
@@ -287,7 +284,6 @@ export default {
       // this.begin = false
       // this.lineArrlast = this.lineArrCopy
       // this.marker.stopMove()
-
       // this.marker.moveAlong(this.lineArrlast, markerSpeed)
     },
     clearMap() {
@@ -309,42 +305,49 @@ export default {
       this.passedTimeTemp = 0
       this.passedTime = 0
     },
+    // 模糊查询存在 bug，点击清空后，再输入内容不显示联想词，需先失去焦点，再对焦
+    setBlur() {
+      document.activeElement.blur()
+      this.$refs.autocomplete.focus()
+    },
+    // 点击查询
     search() {
       this.$refs['searchForm'].validate(valid => {
         if (valid) {
-          this.loading = true
+          this.tableData = []
           this.clearMap()
-          position({
-            topic: this.topic,
-            ...this.searchFormData
-          })
-            .then(res => {
-              this.lineArr = []
-              const { data } = res
-              data.forEach(item => {
-                const lat = item.latitude
-                const lng = item.longitude
-                this.lineArr.push([lat, lng])
-                this.tableData.push({
-                  status: item.acc === '0' ? 'ACC关闭' : 'ACC开启',
-                  time: item.reportTime,
-                  speed: item.speed,
-                  positionDes: lng + ',' + lat
-                })
-              })
-              if (data.length > 0) {
-                this.getmap([data[0].longitude, data[0].latitude])
-                this.setLine()
-              }
-              this.loading = false
-            })
-            .catch(err => {
-              this.loading = false
-              throw err
-            })
+          this.getAllPosition()
+          this.$refs.tableList.$emit('clear-data')
+          this.$refs.tableList.getTableData()
         }
       })
     },
+    // 获取所有点位信息数据，用于绘制轨迹
+    getAllPosition() {
+      this.loading = true
+      position({
+        vehicleId: this.vehicleId,
+        startTime: this.searchFormData.startTime,
+        endTime: this.searchFormData.endTime
+      })
+        .then(res => {
+          this.lineArr = []
+          const { data } = res
+          data.forEach(item => {
+            this.lineArr.push([item.latitude, item.longitude])
+          })
+          if (data.length > 0) {
+            this.getmap([data[0].longitude, data[0].latitude])
+            this.setLine()
+          }
+          this.loading = false
+        })
+        .catch(err => {
+          this.loading = false
+          throw err
+        })
+    },
+    // 绘制轨迹
     setLine() {
       if (this.lineArrlast.length > 0) {
         this.marker = new AMap.Marker({
@@ -368,7 +371,7 @@ export default {
         this.passedPath = e.passedPath.length
       })
     },
-    // 初始化回放路线
+    // 初始化回放路线组件
     initPolyline() {
       this.polyline = new AMap.Polyline({
         map: this.map,
@@ -383,6 +386,7 @@ export default {
         strokeWeight: 6
       })
     },
+    // 改变播放倍速
     changeCount() {
       const markerSpeed = this.speedCount * this.markerSpeed
       this.time_variable = (this.polyline.getLength() / 1000 / markerSpeed) * 60 * 60
@@ -401,24 +405,10 @@ export default {
         this.marker.moveAlong(this.lineArrlast, markerSpeed)
         this.alreadyPercent = this.perValue
       }
-    },
-    getLocation(row) {
-      let geocoder
-      AMap.plugin('AMap.Geocoder', function() {
-        geocoder = new AMap.Geocoder({ city: '', radius: 1000 })
-      })
-      const lnglat = row.positionDes.split(',')
-      if (lnglat.length > 1) {
-        geocoder.getAddress(lnglat, (status, result) => {
-          const { regeocode } = result
-          if (status === 'complete' && regeocode) {
-            row.positionDes = regeocode.formattedAddress
-          }
-        })
-      }
     }
   }
 }
+
 </script>
 <style scoped lang="scss">
 .contbtn {
@@ -434,9 +424,6 @@ export default {
   align-items: center;
   border-radius: 5px;
 }
-.btncol {
-  margin: 10px 0;
-}
 .search-box {
   padding: 15px;
   box-sizing: border-box;
@@ -446,7 +433,6 @@ export default {
 #sbtn {
   position: relative;
   left: 185px;
-  // left: 250px;
 }
 
 ::v-deep .el-form-item__label {
@@ -542,28 +528,12 @@ export default {
   position: relative;
 }
 
-.bottom-table {
-  width: 100%;
-  height: 200px;
+.table-box {
+  width: 621px;
+  height: 100%;
   position: absolute;
-  bottom: 0;
-
-}
-
-.hidden-btn {
-  color: #fff;
-  position: relative;
-  left: 49%;
-  cursor: pointer;
-  display: block;
-}
-
-::v-deep .amap-logo {
-  display: none !important;
-}
-
-::v-deep .amap-copyright {
-  display: none !important;
+  right: 0;
+  top: 0;
 }
 
 .expand-symbol {
@@ -572,12 +542,11 @@ export default {
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color:  transparent transparent #0E1521 transparent;
+  border-color:  transparent #b4b5b6 transparent  transparent;
   position: absolute;
-  bottom: 0;
-  left: 50%;
+  top: 50%;
+  right: 0;
   cursor: pointer;
-  // transition: left .3s;
 }
 
 .close-symbol {
@@ -586,32 +555,32 @@ export default {
   background: transparent;
   border-width: 15px;
   border-style: solid;
-  border-color: transparent transparent #0E1521  transparent;
+  border-color: transparent #b4b5b6 transparent   transparent;
   position: absolute;
-  bottom: 200px;
-  left: 50%;
+  top: 50%;
+  right: 621px;
   cursor: pointer;
 }
 
-.bottom-arrow {
+.close-arrow {
   width: 10px;
   height: 10px;
-  border-bottom: 2px solid #b4b5b6;
-  border-right: 2px solid #b4b5b6;
+  border-top: 2px solid #0E1521;
+  border-right: 2px solid #0E1521;
   transform: rotate(45deg);
   position: relative;
-  top: 30px;
-  left: 10px;
+  top: 10px;
+  left: 30px;
 }
 
-.top-arrow {
+.expand-arrow {
   width: 10px;
   height: 10px;
-  border-top: 2px solid #b4b5b6;
-  border-left: 2px solid #b4b5b6;
+  border-bottom: 2px solid #0E1521;
+  border-left: 2px solid #0E1521;
   transform: rotate(45deg);
   position: relative;
-  top: 35px;
-  left: 10px;
+  top: 10px;
+  left: 35px;
 }
 </style>
