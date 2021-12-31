@@ -64,10 +64,8 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.$on('clear-data', () => {
-        Object.assign(this.$data, this.$options.data()) // 重置 data 数据，恢复初始值
-      })
+    this.$on('clear-data', () => {
+      Object.assign(this.$data, this.$options.data()) // 重置 data 数据，恢复初始值
     })
     this.tableListener()
   },
@@ -100,7 +98,6 @@ export default {
     },
     // 分页获取表格数据
     getTableData() {
-      console.log(this.listQuery.pageNum)
       pagingPosition({
         pageNum: this.listQuery.pageNum,
         pageSize: this.listQuery.pageSize,

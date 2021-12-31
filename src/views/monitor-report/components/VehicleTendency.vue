@@ -146,6 +146,9 @@ export default {
         })
         this.renderChart()
       }
+    },
+    theme() {
+      this.renderChart()
     }
   },
   methods: {
@@ -162,10 +165,10 @@ export default {
           trigger: 'axis'
         },
         legend: {
-          data: ['疲劳驾驶', '时段禁行', '离线位移', '超速报警'],
           textStyle: {
             color: this.theme ? '#fff' : '#606266'
-          }
+          },
+          data: ['疲劳驾驶', '时段禁行', '离线位移', '超速报警']
         },
         color: ['#D97559', '#E4C477', '#5087EC', '#68BBC4'],
         toolbox: {
@@ -182,10 +185,20 @@ export default {
         },
         xAxis: {
           type: 'category',
+          axisLabel: {
+            textStyle: {
+              color: this.theme ? '#ccc' : '#606266'
+            }
+          },
           data: this.chartLegend
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          axisLabel: {
+            textStyle: {
+              color: this.theme ? '#ccc' : '#606266'
+            }
+          }
         },
         series: [
           {

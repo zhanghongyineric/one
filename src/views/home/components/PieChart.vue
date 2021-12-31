@@ -141,14 +141,15 @@ export default {
           }
         },
         legend: {
-          top: '10%',
+          top: '13%',
           left: 'center',
           textStyle: {
             fontSize: 10,
             color: this.theme ? '#fff' : '#606266'
           },
           itemWidth: 10,
-          show: this.showlegend
+          show: this.showlegend,
+          selectedMode: true
         },
         series: [
           {
