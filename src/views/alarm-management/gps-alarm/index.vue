@@ -466,7 +466,8 @@ export default {
       const date = new Date()
       const month = date.getMonth() + 1
       const day = date.getDate()
-      this.listQuery.time = [`2021-${month}-${day < 2 ? 1 : day - 1} 00:00:00`, `2021-${month}-${day} 00:00:00`]
+      const year = date.getFullYear()
+      this.listQuery.time = [`${year}-${month}-${day < 2 ? 1 : day - 1} 00:00:00`, `${year}-${month}-${day} 00:00:00`]
     },
     // 查询报警信息
     getList() {

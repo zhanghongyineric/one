@@ -215,7 +215,7 @@
             </div>
           </el-col>
           <el-col :span="8">
-            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff',cursor:'pointer'}" @click="toAlarmDetail">
+            <div class="box-monitor" :style="{'background-color': theme?'#151d2c':'#fff',cursor:'pointer'}">
               <span class="title" :style="{'color': theme?'#fff':'#606266'}">报警事件</span>
               <el-table
                 ref="eventTable"
@@ -226,6 +226,7 @@
                 :cell-style="{padding:'0px'}"
                 height="80%"
                 :stripe="true"
+                @row-click="toAlarmDetail"
               >
                 <el-table-column prop="plateNum" label="车牌号码" align="center" show-overflow-tooltip width="90px" />
                 <el-table-column prop="plateColor" label="车牌颜色" align="center" show-overflow-tooltip width="80px" />
@@ -482,8 +483,13 @@ export default {
           throw err
         })
     },
-    toAlarmDetail() {
-      this.$router.push('/live-monitor/alarm-detail')
+    toAlarmDetail(row) {
+      this.$router.push({
+        path: '/alarm-management/prevention-alarm',
+        query: {
+          plateNum: row.plateNum
+        }
+      })
     },
     // 定时请求数据
     intervalOnlineCars() {
