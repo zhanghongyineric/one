@@ -538,6 +538,7 @@ export default {
         unitName: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
         telephone: [{ required: true, trigger: 'blur', validator: validateUnitTel }],
         shortName: [{ required: true, message: '请输入企业简称', trigger: 'blur' }],
+        upUnitName: [{ required: true, message: '请输入上级单位名称', trigger: 'blur' }],
         // aptitudeLevel: [{ required: true, message: '请选择企业级别', trigger: 'change' }],
         zoneId: [{ required: true, message: '请选择行政区域', trigger: 'change' }],
         businessLicense: [{ required: true, message: '请输入社会统一信用代码', trigger: 'blur' }],
@@ -708,7 +709,7 @@ export default {
     },
     // 点击查看详情
     handleDetail(row) {
-      if (row.economicType) row.economicType = parseInt(row.economicType)
+      if (row.economicType) row.economicType = row.economicType.toString()
       this.rowId = row.unitId
       this.createFormData = { ...row }
       if (this.createFormData.zoneId) {
@@ -723,7 +724,7 @@ export default {
     },
     // 点击更新信息
     handleUpdate(row) {
-      if (row.economicType) row.economicType = parseInt(row.economicType)
+      if (row.economicType) row.economicType = row.economicType.toString()
       this.rowId = row.unitId
       this.createFormData = { ...row }
       if (this.createFormData.zoneId) {

@@ -85,6 +85,9 @@ export default {
   created() {
     this.handleTypeOptions = onlineOption['alarm_handle_type'].list
   },
+  mounted() {
+    console.log(this.$parent, 'parent')
+  },
   methods: {
     // 关闭弹框
     closeDialog() {

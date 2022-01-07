@@ -470,6 +470,7 @@ export default {
     this.trendYear = new Date().getFullYear().toString()
   },
   methods: {
+    // 获取报警事件数据
     getAlarmEvent() {
       alarmEvent()
         .then(({ data }) => {
