@@ -32,7 +32,11 @@
                   clearable
                   style="width:100%;"
                   @select="searchCompany"
-                />
+                >
+                  <template slot-scope="{item}">
+                    <ellipsisTooltip :text="item.value" />
+                  </template>
+                </el-autocomplete>
               </el-form-item>
             </el-col>
             <el-col :md="6" :sm="24">
@@ -512,6 +516,7 @@
 <script>
 import { regionDataPlus, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
+import EllipsisTooltip from './components/EllipsisTooltip'
 import { cultureOptions } from '@/options'
 import {
   selectList,
@@ -532,7 +537,7 @@ let that
 
 export default {
   name: 'DriverBaseInformation',
-  components: { Pagination },
+  components: { Pagination, EllipsisTooltip },
   filters: {
     showZoneText(zoneid) {
       const text = CodeToText[zoneid]
