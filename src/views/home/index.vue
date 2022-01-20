@@ -531,10 +531,12 @@ export default {
         .then(res => {
           const { data } = res
           const arr = new Array(12).fill(0)
-          data.forEach(v => {
-            arr[parseInt(v.month - 1)] = v.count
-          })
-          this.trendData = arr
+          if (data) {
+            data.forEach(v => {
+              arr[parseInt(v.month - 1)] = v.count
+            })
+            this.trendData = arr
+          } else this.trendData = []
         })
         .catch(err => {
           throw err
