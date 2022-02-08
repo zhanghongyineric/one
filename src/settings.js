@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '四川省交通安全风控大数据平台',
+  title: '明亚智行风控大数据平台',
 
   /**
    * @type {boolean} true | false

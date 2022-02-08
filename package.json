@@ -1,7 +1,7 @@
 {
   "name": "admin-web",
   "version": "1.0.0",
-  "description": "四川省交通安全风控大数据平台监测管理端",
+  "description": "明亚智行风控大数据平台",
   "scripts": {
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
