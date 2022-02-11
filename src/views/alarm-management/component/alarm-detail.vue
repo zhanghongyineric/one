@@ -318,7 +318,7 @@ export default {
     // 获取 jseesion
     getJseesion() {
       axios.get(
-        'https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=MYYFB123'
+        'https://https://www.api.myzx.sc.cn/jsession/get?account=myyfb&password=MYYFB123'
       )
         .then(res => {
           this.jsession = res.data.jsession
@@ -334,7 +334,7 @@ export default {
     // 获取报警片和视频
     getAlarmInfomation() {
       const row = this.rows[0]
-      axios.get('https://www.api.gosmooth.com.cn/attach', {
+      axios.get('https://https://www.api.myzx.sc.cn/attach', {
         params: {
           jsession: this.jsession,
           toMap: 2,

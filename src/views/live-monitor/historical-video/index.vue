@@ -230,9 +230,9 @@ export default {
 
       getDevId({ plateNum: this.searchFormData.plateNum })
         .then(({ data }) => {
-          axios.get('https://www.api.gosmooth.com.cn/jsession/get?account=myyfb&password=MYYFB123')
+          axios.get('https://https://www.api.myzx.sc.cn/jsession/get?account=myyfb&password=MYYFB123')
             .then(res => {
-              axios.get('https://www.api.gosmooth.com.cn/video/history', {
+              axios.get('https://https://www.api.myzx.sc.cn/video/history', {
                 params: {
                   jsession: res.data.jsession,
                   DownType: 2,
